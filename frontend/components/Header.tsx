@@ -84,6 +84,9 @@ export default function Header() {
               `${address.substr(0, 6)}...
                     ${address.slice(address.length - 4)}`}
         </button>
+        <Link href={"/login"} passHref>
+          <button>Login</button>
+        </Link>
 
         {/* Actions button */}
         <button onClick={() => setMenuOpen((previous) => !previous)}>
