@@ -13,8 +13,6 @@ export default function StateProvider({
 }): ReactElement {
   return (
     // Wrap in sub-providers
-    <eth.Provider>
-      <></>
-    </eth.Provider>
+    <eth.Provider>{children}</eth.Provider>
   );
 }

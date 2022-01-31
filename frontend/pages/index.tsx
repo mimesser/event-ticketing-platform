@@ -1,8 +1,11 @@
-import Image from "next/image"; // Images
-import { eth } from "state/eth"; // State container
 import Layout from "components/Layout"; // Layout wrapper
-import { useRouter } from "next/router"; // Routing
-import styles from "styles/pages/Home.module.scss"; // Page styles
+import styles from "../styles/pages/Login.module.scss";
+import Image from "next/image"; // Images
+import { TextField } from "@material-ui/core";
+import { Button } from "@material-ui/core";
+import { useForm } from "react-hook-form";
+import { Magic } from "magic-sdk";
+import Router from "next/router";
 
 // Setup project details
 const tokenName: string = process.env.NEXT_PUBLIC_TOKEN_NAME ?? "Token Name";
@@ -11,45 +14,80 @@ const description: string =
   process.env.NEXT_PUBLIC_DESCRIPTION ?? "Some description";
 
 export default function Home() {
-  // Routing
-  const { push } = useRouter();
-  // Authentication status
-  const { address }: { address: string | null } = eth.useContainer();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const onSubmit: any = async ({ email }: { email: any }) => {
+    const magic = new Magic(
+      process.env.NEXT_PUBLIC_MAGIC_PUBLISHABLE_KEY ?? ""
+    );
+    const didToken = await magic.auth.loginWithMagicLink({ email });
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + didToken,
+      },
+      body: JSON.stringify({ email }),
+    });
+    if (res.status === 200) {
+      // redirect
+      Router.push("/");
+    } else {
+      // display an error
+    }
+  };
 
   return (
     <Layout>
-      <div className={styles.home}>
-        {/* Project logo */}
-        <div>
-          <Image src="/logo.png" alt="Logo" width={250} height={250} priority />
+      <div className={styles.login_page}>
+        <div className={styles.info}>
+          {/* Project heading */}
+          <h1>{heading}</h1>
+          {/* Project description */}
+          <p>{description}</p>
         </div>
-
-        {/* Project introduction article, if it exists */}
-        {process.env.NEXT_PUBLIC_ARTICLE ? (
-          <a
-            href={process.env.NEXT_PUBLIC_ARTICLE}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Introducing {tokenName}{" "}
-            <Image src="/icons/arrow.svg" alt="Arrow" height={12} width={12} />
-          </a>
-        ) : null}
-
-        {/* Project heading */}
-        <h1>{heading}</h1>
-
-        {/* Project description */}
-        <p>{description}</p>
-
-        {/* Claim button */}
-        {!address ? (
-          // If not authenticated, disabled
-          <button disabled>Connect Wallet to Claim Tokens</button>
-        ) : (
-          // Else, reroute to /claim
-          <button onClick={() => push("/claim")}>Claim Tokens</button>
-        )}
+        <div className={styles.login}>
+          <div className={styles.login_logo}>
+            <Image src="/logo.png" alt="Logo" width={60} height={60} priority />
+          </div>
+          <h1>Welcome</h1>
+          <div>
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className={styles.login_items}
+            >
+              <TextField
+                id="standard-basic"
+                label="Email address"
+                variant="standard"
+                autoComplete="email"
+                autoFocus
+                {...register("email", {
+                  required: "Required field",
+                  pattern: {
+                    value:
+                      /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+                    message: "Invalid email address",
+                  },
+                })}
+                error={!!errors?.email}
+                helperText={errors?.email ? errors.email.message : null}
+              />
+              <Button
+                type="submit"
+                color="primary"
+                size="large"
+                variant="outlined"
+              >
+                Log in / Sign up
+              </Button>
+              {/* <button type="submit">Log in / Sign up</button> */}
+            </form>
+          </div>
+        </div>
       </div>
     </Layout>
   );
