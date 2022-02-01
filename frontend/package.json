@@ -12,6 +12,7 @@
     "@hapi/iron": "^6.0.0",
     "@magic-sdk/admin": "^1.3.4",
     "@material-ui/core": "^4.12.3",
+    "@prisma/client": "^3.8.1",
     "bnc-onboard": "^1.37.0",
     "cookie": "^0.4.1",
     "ethereumjs-abi": "^0.6.8",
@@ -34,6 +35,7 @@
     "@types/react": "17.0.38",
     "eslint": "8.5.0",
     "eslint-config-next": "12.0.7",
+    "prisma": "^3.8.1",
     "typescript": "4.5.4"
   }
 }
