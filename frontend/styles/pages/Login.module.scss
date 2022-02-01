@@ -12,14 +12,19 @@
 
   .name {
     padding: 112px 0 16px;
-    // name
-    > h1 {
-      font-size: 2vw;
-      font-weight: bold;
-      line-height: 1.34;
-      margin: -20px 0;
-      color: #107cf1;
+
+    .logo {
+      margin: -28px;
     }
+
+    // // name
+    // > h1 {
+    //   font-size: 2vw;
+    //   font-weight: bold;
+    //   line-height: 1.34;
+    //   margin: -20px 0;
+    //   color: #107cf1;
+    // }
   }
 
   > p {

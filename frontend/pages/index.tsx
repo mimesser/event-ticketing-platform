@@ -46,7 +46,14 @@ export default function Home() {
         <div className={styles.info}>
           {/* Project name/logo */}
           <div className={styles.name}>
-            <h1>{heading}</h1>
+            <div className={styles.logo}>
+              <Image
+                src="/icons/impish.svg"
+                width={250}
+                height={100}
+                alt={`Impish icon`}
+              />
+            </div>
           </div>
           {/* Project description */}
           <p>{description}</p>
