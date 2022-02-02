@@ -1,12 +1,10 @@
-import { Magic } from "@magic-sdk/admin";
+import { magic } from "lib/magic";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import { setLoginSession } from "../../lib/auth";
 import prisma from "../../lib/prisma";
 
 export default async function login(req: NextApiRequest, res: NextApiResponse) {
-  const magic = new Magic(process.env.MAGIC_SECRET_KEY);
-
   const didToken = req.headers.authorization?.substr(7) || "";
 
   const metadata = await magic.users.getMetadataByToken(didToken);
