@@ -1,11 +1,13 @@
+import { useState } from "react";
 import Layout from "components/Layout"; // Layout wrapper
 import Image from "next/image"; // Images
 import { TextField } from "@material-ui/core";
-import { Button } from "@material-ui/core";
+import { LoadingButton } from "@mui/lab";
 import { useForm } from "react-hook-form";
 import { Magic } from "magic-sdk";
 import Router from "next/router";
 import styles from "styles/pages/Login.module.scss";
+import { useUser } from "../lib/hooks";
 
 // Setup project details
 const tokenName: string = process.env.NEXT_PUBLIC_TOKEN_NAME ?? "Token Name";
@@ -14,29 +16,42 @@ const description: string =
   process.env.NEXT_PUBLIC_DESCRIPTION ?? "Some description";
 
 export default function Home() {
+  useUser({ redirectTo: "/profile", redirectIfFound: true });
+  const [loading, setLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
+
   const onSubmit: any = async ({ email }: { email: any }) => {
+    setLoading(true);
+
     const magic = new Magic(
       process.env.NEXT_PUBLIC_MAGIC_PUBLISHABLE_KEY ?? ""
     );
-    const didToken = await magic.auth.loginWithMagicLink({ email });
-    const res = await fetch("/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + didToken,
-      },
-      body: JSON.stringify({ email }),
-    });
-    if (res.status === 200) {
-      // redirect
-      Router.push("/");
-    } else {
-      // display an error
+
+    try {
+      const didToken = await magic.auth.loginWithMagicLink({ email });
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + didToken,
+        },
+        body: JSON.stringify({ email }),
+      });
+      setLoading(false);
+
+      if (res.status === 200) {
+        // redirect
+        Router.push("/profile");
+      } else {
+        // display an error
+      }
+    } catch (error) {
+      setLoading(false);
     }
   };
 
@@ -92,15 +107,15 @@ export default function Home() {
                   error={!!errors?.email}
                   helperText={errors?.email ? errors.email.message : null}
                 />
-                <Button
+                <LoadingButton
+                  loading={loading}
                   type="submit"
                   color="primary"
                   size="large"
                   variant="outlined"
                 >
                   Log in / Sign up
-                </Button>
-                {/* <button type="submit">Log in / Sign up</button> */}
+                </LoadingButton>
               </form>
             </div>
           </div>
