@@ -3,14 +3,13 @@ import { useUser } from "../lib/hooks";
 import Link from "next/link";
 
 function Profile() {
-  const user = useUser({ redirectTo: "/" });
+  const user = useUser({ redirectTo: "/profile" });
 
   return (
     <div className="body">
-      <h1>Profile</h1>
-
       {user && (
         <>
+          <h1>Profile</h1>
           <p>Your session:</p>
           <pre>{JSON.stringify(user, null, 2)}</pre>
           <Link href="/api/logout" passHref>
