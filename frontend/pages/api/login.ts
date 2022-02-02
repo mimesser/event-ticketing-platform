@@ -1,26 +1,35 @@
 import { Magic } from "@magic-sdk/admin";
+import { NextApiRequest, NextApiResponse } from "next";
+
 import { setLoginSession } from "../../lib/auth";
 import prisma from "../../lib/prisma";
 
-export default async function login(req, res) {
+export default async function login(req: NextApiRequest, res: NextApiResponse) {
   const magic = new Magic(process.env.MAGIC_SECRET_KEY);
-  const didToken = req.headers.authorization.substr(7);
+
+  const didToken = req.headers.authorization?.substr(7) || "";
+
   const metadata = await magic.users.getMetadataByToken(didToken);
+
   await setLoginSession(res, metadata);
+
   try {
     const dbInfo = {
-      wallet: metadata.publicAddress,
       email: metadata.email,
-    }
-    const result = await prisma.user.upsert({
+      issuer: metadata.issuer,
+      walletAddress: metadata.publicAddress,
+    };
+
+    await prisma.user.upsert({
       where: {
-        email: metadata.email
-      },
+        email: metadata.email,
+      } as any,
       create: dbInfo,
       update: dbInfo,
     });
-  } catch(e) {
+  } catch (e) {
     console.error(e);
   }
-  res.send({ done: true });
+
+  res.send({ status: "login success" });
 }

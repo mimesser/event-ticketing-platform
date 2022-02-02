@@ -10,6 +10,7 @@ import type {
   WalletModule,
 } from "bnc-onboard/dist/src/interfaces";
 import type { Web3Provider } from "@ethersproject/providers";
+const isBrowser = typeof window !== 'undefined';
 
 // Network
 const networkId = process.env.NEXT_PUBLIC_RPC_NETWORK
@@ -93,7 +94,7 @@ function useEth() {
             setProvider(provider);
 
             // Update selected wallet
-            window.localStorage.setItem("selectedWallet", wallet.name ?? "");
+            isBrowser && window.localStorage.setItem("selectedWallet", wallet.name ?? "");
           } else {
             // Nullify data
             setProvider(null);
@@ -113,7 +114,7 @@ function useEth() {
   useEffect(() => {
     // If wallet was already selected and onboard exists
     const previouslySelectedWallet =
-      window.localStorage.getItem("selectedWallet");
+      isBrowser && window.localStorage.getItem("selectedWallet");
     if (previouslySelectedWallet && onboard) {
       // Select, existing wallet
       onboard.walletSelect(previouslySelectedWallet);
