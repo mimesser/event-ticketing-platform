@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Layout from "components/Layout"; // Layout wrapper
 import Image from "next/image"; // Images
 import { TextField } from "@material-ui/core";
@@ -17,7 +17,13 @@ const description: string =
 
 export default function Home() {
   useUser({ redirectTo: "/profile", redirectIfFound: true });
-  const [loading, setLoading] = useState(false);
+
+  const [loading, setLoading] = useState(true);
+  const [signingIn, setSigningIn] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 200);
+  }, []);
 
   const {
     register,
@@ -26,7 +32,7 @@ export default function Home() {
   } = useForm();
 
   const onSubmit: any = async ({ email }: { email: any }) => {
-    setLoading(true);
+    setSigningIn(true);
 
     const magic = new Magic(
       process.env.NEXT_PUBLIC_MAGIC_PUBLISHABLE_KEY ?? ""
@@ -42,85 +48,88 @@ export default function Home() {
         },
         body: JSON.stringify({ email }),
       });
-      setLoading(false);
 
       if (res.status === 200) {
         // redirect
         Router.push("/profile", "/");
+        setSigningIn(false);
       } else {
         // display an error
+        setSigningIn(false);
       }
     } catch (error) {
-      setLoading(false);
+      setSigningIn(false);
     }
   };
 
   return (
     <Layout>
-      <div className={styles.login_page}>
-        <div className={styles.info}>
-          {/* Project name/logo */}
-          <div className={styles.name}>
-            <div className={styles.logo}>
-              <Image
-                src="/icons/impish.svg"
-                width={250}
-                height={100}
-                alt={`Impish icon`}
-              />
-            </div>
-          </div>
-          {/* Project description */}
-          <p>{description}</p>
-        </div>
-        <div className={styles.login_container}>
-          <div className={styles.login}>
-            <div className={styles.login_logo}>
-              <Image
-                src="/logo.png"
-                alt="Logo"
-                width={60}
-                height={60}
-                priority
-              />
-            </div>
-            <h1>Welcome</h1>
-            <div>
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                className={styles.login_items}
-              >
-                <TextField
-                  id="standard-basic"
-                  label="Email address"
-                  variant="standard"
-                  autoComplete="email"
-                  autoFocus
-                  {...register("email", {
-                    required: "Required field",
-                    pattern: {
-                      value:
-                        /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
-                      message: "Invalid email address",
-                    },
-                  })}
-                  error={!!errors?.email}
-                  helperText={errors?.email ? errors.email.message : null}
+      {loading === false && (
+        <div className={styles.login_page}>
+          <div className={styles.info}>
+            {/* Project name/logo */}
+            <div className={styles.name}>
+              <div className={styles.logo}>
+                <Image
+                  src="/icons/impish.svg"
+                  width={250}
+                  height={100}
+                  alt={`Impish icon`}
                 />
-                <LoadingButton
-                  loading={loading}
-                  type="submit"
-                  color="primary"
-                  size="large"
-                  variant="outlined"
+              </div>
+            </div>
+            {/* Project description */}
+            <p>{description}</p>
+          </div>
+          <div className={styles.login_container}>
+            <div className={styles.login}>
+              <div className={styles.login_logo}>
+                <Image
+                  src="/logo.png"
+                  alt="Logo"
+                  width={60}
+                  height={60}
+                  priority
+                />
+              </div>
+              <h1>Welcome</h1>
+              <div>
+                <form
+                  onSubmit={handleSubmit(onSubmit)}
+                  className={styles.login_items}
                 >
-                  Log in / Sign up
-                </LoadingButton>
-              </form>
+                  <TextField
+                    id="standard-basic"
+                    label="Email address"
+                    variant="standard"
+                    autoComplete="email"
+                    autoFocus
+                    {...register("email", {
+                      required: "Required field",
+                      pattern: {
+                        value:
+                          /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+                        message: "Invalid email address",
+                      },
+                    })}
+                    error={!!errors?.email}
+                    helperText={errors?.email ? errors.email.message : null}
+                  />
+                  <LoadingButton
+                    loading={signingIn}
+                    type="submit"
+                    color="primary"
+                    size="large"
+                    variant="outlined"
+                  >
+                    Log in / Sign up
+                  </LoadingButton>
+                </form>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </Layout>
   );
 }
