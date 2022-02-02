@@ -23,7 +23,7 @@ export function useUser({ redirectTo, redirectIfFound }: any = {}) {
       // If redirectIfFound is also set, redirect if the user was found
       (redirectIfFound && hasUser)
     ) {
-      Router.push(redirectTo);
+      Router.push(redirectTo, "/");
     }
   }, [redirectTo, redirectIfFound, finished, hasUser]);
 

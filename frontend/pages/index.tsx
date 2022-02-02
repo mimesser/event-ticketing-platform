@@ -46,7 +46,7 @@ export default function Home() {
 
       if (res.status === 200) {
         // redirect
-        Router.push("/profile");
+        Router.push("/profile", "/");
       } else {
         // display an error
       }
