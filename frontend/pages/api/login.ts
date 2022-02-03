@@ -23,7 +23,7 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
         email: metadata.email,
       } as any,
       create: dbInfo,
-      update: dbInfo,
+      update: {},
     });
   } catch (e) {
     console.error(e);
