@@ -37,6 +37,19 @@ export default function Home() {
   const onSubmit: any = async ({ email }: { email: any }) => {
     setSigningIn(true);
 
+    const { user: userExists } = await (
+      await fetch("/api/signup", {
+        method: "POST",
+        body: JSON.stringify({
+          email,
+        }),
+      })
+    ).json();
+
+    if (userExists) {
+      // pop up sign-up flow/modal
+    }
+
     const magic = new Magic(
       process.env.NEXT_PUBLIC_MAGIC_PUBLISHABLE_KEY ?? ""
     );
