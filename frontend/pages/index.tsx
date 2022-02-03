@@ -7,7 +7,8 @@ import { LoadingButton } from "@mui/lab";
 import { useForm } from "react-hook-form";
 import { Magic } from "magic-sdk";
 import Router from "next/router";
-import styles from "styles/pages/Login.module.scss";
+import styles from "styles/pages/Home.module.scss";
+
 import { useUser } from "../lib/hooks";
 
 // Setup project details
