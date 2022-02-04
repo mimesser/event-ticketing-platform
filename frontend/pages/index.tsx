@@ -19,7 +19,7 @@ const description: string =
 
 export default function Home() {
   const isMobile = useMediaQuery("(max-width:599px)");
-  useUser({ redirectTo: "/profile", redirectIfFound: true });
+  useUser({ redirectTo: "/dashboard", redirectIfFound: true });
 
   const [loading, setLoading] = useState(true);
   const [signingIn, setSigningIn] = useState(false);
@@ -63,7 +63,7 @@ export default function Home() {
         ).json();
 
         // redirect
-        Router.push("/profile", "/");
+        Router.push("/dashboard", "/");
         setSigningIn(false);
       } else {
         // display an error
