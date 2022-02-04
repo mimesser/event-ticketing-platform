@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import Layout from "components/Layout"; // Layout wrapper
 import Image from "next/image"; // Images
 import { TextField } from "@material-ui/core";
@@ -19,14 +19,14 @@ const description: string =
 
 export default function Home() {
   const isMobile = useMediaQuery("(max-width:599px)");
-  useUser({ redirectTo: "/dashboard", redirectIfFound: true });
+  const user = useUser({ redirectTo: "/dashboard", redirectIfFound: true });
 
   const [loading, setLoading] = useState(true);
   const [signingIn, setSigningIn] = useState(false);
 
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 200);
-  }, []);
+  useCallback(() => {
+    if (user !== undefined) setLoading(false);
+  }, [user]);
 
   const {
     register,
@@ -77,7 +77,7 @@ export default function Home() {
   return (
     <Layout>
       <>
-        {loading === false && (
+        {(loading === false || user === null) && (
           <div className={styles.login_page}>
             <div className={styles.info}>
               <Image

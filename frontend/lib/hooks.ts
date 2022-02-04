@@ -17,6 +17,11 @@ export function useUser({ redirectTo, redirectIfFound }: any = {}) {
 
   useEffect(() => {
     if (!redirectTo || !finished) return;
+
+    if (!hasUser) {
+      Router.push("/");
+    }
+
     if (
       // If redirectTo is set, redirect if the user was not found.
       (redirectTo && !redirectIfFound && !hasUser) ||
@@ -25,7 +30,7 @@ export function useUser({ redirectTo, redirectIfFound }: any = {}) {
     ) {
       Router.push(redirectTo, "/");
     }
-  }, [redirectTo, redirectIfFound, finished, hasUser]);
+  }, [redirectTo, redirectIfFound, finished, hasUser, user]);
 
   return error ? null : user;
 }

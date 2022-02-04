@@ -3,7 +3,7 @@ import { useUser } from "../lib/hooks";
 import Link from "next/link";
 
 function Profile() {
-  const user = useUser({ redirectTo: "/profile" });
+  const user = useUser({ redirectTo: "/" });
 
   return (
     <div className="body">
