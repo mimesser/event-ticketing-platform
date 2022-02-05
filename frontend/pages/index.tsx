@@ -1,15 +1,14 @@
-import { useCallback, useState } from "react";
+import TextField from "@mui/material/TextField";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import Layout from "components/Layout"; // Layout wrapper
-import Image from "next/image"; // Images
-import { TextField } from "@material-ui/core";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { LoadingButton } from "@mui/lab";
-import { useForm } from "react-hook-form";
+import { useUser } from "lib/hooks";
 import { Magic } from "magic-sdk";
+import Image from "next/image"; // Images
 import Router from "next/router";
+import LoadingButton from "@mui/lab/LoadingButton";
+import { useCallback, useState } from "react";
+import { useForm } from "react-hook-form";
 import styles from "styles/pages/Home.module.scss";
-
-import { useUser } from "../lib/hooks";
 
 // Setup project details
 const tokenName: string = process.env.NEXT_PUBLIC_TOKEN_NAME ?? "Token Name";
@@ -37,6 +36,18 @@ export default function Home() {
   const onSubmit: any = async ({ email }: { email: any }) => {
     setSigningIn(true);
 
+    const userExists =
+      (
+        await (
+          await fetch("/api/signup", {
+            method: "POST",
+            body: JSON.stringify({
+              email,
+            }),
+          })
+        ).json()
+      ).user ?? false;
+
     const magic = new Magic(
       process.env.NEXT_PUBLIC_MAGIC_PUBLISHABLE_KEY ?? ""
     );
@@ -53,17 +64,14 @@ export default function Home() {
       });
 
       if (res.status === 200) {
-        const { user: userExists } = await (
-          await fetch("/api/signup", {
-            method: "POST",
-            body: JSON.stringify({
-              email,
-            }),
-          })
-        ).json();
-
         // redirect
-        Router.push("/dashboard", "/");
+        Router.push(
+          {
+            pathname: "/dashboard",
+            query: { userExists: JSON.stringify(userExists) },
+          },
+          "/"
+        );
         setSigningIn(false);
       } else {
         // display an error
