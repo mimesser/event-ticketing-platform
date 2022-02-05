@@ -11,14 +11,14 @@ datasource db {
 }
 
 model User {
-  id            Int       @default(autoincrement()) @id
-  email         String?   @unique
-  issuer        String?   @unique
+  id            Int      @id @default(autoincrement())
+  email         String?  @unique
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  phoneNumber   String?  @unique
+  walletAddress String?  @unique
+  issuer        String?  @unique
   name          String?
-  phoneNumber   String?   @unique
-  username      String?   @unique
-  walletAddress String?   @unique
-  createdAt     DateTime  @default(now()) @map(name: "created_at")
-  updatedAt     DateTime  @updatedAt @map(name: "updated_at")
-  @@map(name: "users")
+  username      String?  @unique
+  @@map("users")
 }
