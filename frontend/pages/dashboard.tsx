@@ -1,4 +1,5 @@
 import AppBar from "@mui/material/AppBar";
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import Backdrop from "@mui/material/Backdrop";
 import Badge from "@mui/material/Badge";
@@ -6,8 +7,14 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CloseIcon from "@mui/icons-material/Close";
 import Container from "@mui/material/Container";
+import CssBaseline from "@mui/material/CssBaseline";
+import Drawer from "@mui/material/Drawer";
 import Fade from "@mui/material/Fade";
+import HomeIcon from "@mui/icons-material/Home";
 import IconButton from "@mui/material/IconButton";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
 import MaterialLink from "@mui/material/Link";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -27,12 +34,9 @@ import styles from "styles/pages/Dashboard.module.scss";
 
 const pages = [
   {
-    link: "/",
-    title: "Home",
-  },
-  {
     link: "/profile",
     title: "Profile",
+    icon: AccountBoxIcon,
   },
 ];
 
@@ -45,21 +49,8 @@ function Dashboard() {
   });
   const [open, setOpen] = useState(firstTimeUser ? true : false);
 
-  const [anchorElNav, setAnchorElNav] =
-    React.useState<HTMLButtonElement | null>(null);
   const [anchorElNotification, setAnchorElNotification] =
     React.useState<HTMLButtonElement | null>(null);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null
-  );
-
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
   const handleOpenNotification = (event: any) => {
     setAnchorElNotification(event.currentTarget);
   };
@@ -67,6 +58,9 @@ function Dashboard() {
     setAnchorElNotification(null);
   };
 
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    null
+  );
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -89,6 +83,28 @@ function Dashboard() {
     boxShadow: 24,
     p: 4,
   };
+
+  const drawerWidth = 240;
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  const drawer = (
+    <>
+      <Toolbar />
+      <List>
+        {pages.map((page, index) => (
+          <ListItem button key={index} style={{ margin: "10px 0" }}>
+            <ListItemIcon>
+              <page.icon />
+            </ListItemIcon>
+            <Link href={page.link}>{page.title}</Link>
+          </ListItem>
+        ))}
+      </List>
+    </>
+  );
 
   return (
     <React.Fragment>
@@ -159,9 +175,14 @@ function Dashboard() {
               </Box>
             </Fade>
           </Modal>
+          <CssBaseline />
           <AppBar
             position="fixed"
-            sx={{ bgcolor: "#FFFFFF" }}
+            sx={{
+              bgcolor: "#FFFFFF",
+              boxShadow: "1px 1px 5px rgba(0, 0, 0, 0.2)",
+              zIndex: (theme) => theme.zIndex.drawer + 1,
+            }}
             style={{
               filter: open ? "blur(2px)" : "none",
             }}
@@ -188,69 +209,20 @@ function Dashboard() {
                     </a>
                   </Link>
                 </Box>
-
                 <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
                   <IconButton
                     size="large"
-                    aria-label="account of current user"
-                    aria-controls="menu-appbar"
-                    aria-haspopup="true"
-                    onClick={handleOpenNavMenu}
+                    onClick={handleDrawerToggle}
                     sx={{
                       color: "#000000",
                     }}
                   >
                     <MenuIcon />
                   </IconButton>
-                  <Menu
-                    id="menu-appbar"
-                    anchorEl={anchorElNav}
-                    anchorOrigin={{
-                      vertical: "bottom",
-                      horizontal: "left",
-                    }}
-                    keepMounted
-                    transformOrigin={{
-                      vertical: "top",
-                      horizontal: "left",
-                    }}
-                    open={Boolean(anchorElNav)}
-                    onClose={handleCloseNavMenu}
-                    sx={{
-                      display: { xs: "block", md: "none" },
-                    }}
-                  >
-                    {pages.map((page, index) => (
-                      <MenuItem key={index} onClick={handleCloseNavMenu}>
-                        <Link href={page.link}>{page.title}</Link>
-                      </MenuItem>
-                    ))}
-                  </Menu>
-                </Box>
-                <Box
-                  component="div"
-                  sx={{
-                    whitespace: "nowrap",
-                    variant: "h6",
-                    flexGrow: 1,
-                    display: { xs: "flex", md: "none" },
-                  }}
-                >
-                  <Link href="/">
-                    <a>
-                      <Image
-                        src="/logo.png"
-                        width={45}
-                        height={45}
-                        alt={`Impish icon`}
-                      />
-                    </a>
-                  </Link>
                 </Box>
                 <Box
                   sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
                 ></Box>
-
                 <Box sx={{ flexGrow: 0 }}>
                   <IconButton
                     size="large"
@@ -314,6 +286,43 @@ function Dashboard() {
               </Toolbar>
             </Container>
           </AppBar>
+          <Box
+            component="nav"
+            sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+          >
+            <Drawer
+              variant="temporary"
+              open={mobileOpen}
+              onClose={handleDrawerToggle}
+              ModalProps={{
+                keepMounted: true,
+              }}
+              sx={{
+                display: { xs: "block", sm: "none" },
+                "& .MuiDrawer-paper": {
+                  boxSizing: "border-box",
+                  width: drawerWidth,
+                },
+              }}
+            >
+              {drawer}
+            </Drawer>
+            <Drawer
+              PaperProps={{
+                sx: { bgcolor: "#f7f8fa", borderRight: 0 },
+              }}
+              variant="permanent"
+              sx={{
+                display: { xs: "none", md: "flex" },
+                "& .MuiDrawer-paper": {
+                  boxSizing: "border-box",
+                  width: drawerWidth,
+                },
+              }}
+            >
+              {drawer}
+            </Drawer>
+          </Box>
         </>
       )}
     </React.Fragment>
