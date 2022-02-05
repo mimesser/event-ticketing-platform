@@ -1,22 +1,29 @@
 import AppBar from "@mui/material/AppBar";
 import AccountCircle from "@mui/icons-material/AccountCircle";
+import Backdrop from "@mui/material/Backdrop";
 import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import CloseIcon from "@mui/icons-material/Close";
 import Container from "@mui/material/Container";
+import Fade from "@mui/material/Fade";
 import IconButton from "@mui/material/IconButton";
 import MaterialLink from "@mui/material/Link";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import Modal from "@mui/material/Modal";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Popover from "@mui/material/Popover";
+import TextField from "@mui/material/TextField";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import { useUser } from "lib/hooks";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
-
-import { useUser } from "../lib/hooks";
+import { useRouter } from "next/router";
+import React, { useState } from "react";
+import styles from "styles/pages/Dashboard.module.scss";
 
 const pages = [
   {
@@ -30,7 +37,13 @@ const pages = [
 ];
 
 function Dashboard() {
-  const user = useUser({ redirectTo: "/dashboard", redirectIfFound: true });
+  const { query } = useRouter();
+  const firstTimeUser = query.userExists === "false";
+  const user = useUser({
+    redirectTo: firstTimeUser ? false : "/dashboard",
+    redirectIfFound: true,
+  });
+  const [open, setOpen] = useState(firstTimeUser ? true : false);
 
   const [anchorElNav, setAnchorElNav] =
     React.useState<HTMLButtonElement | null>(null);
@@ -61,11 +74,98 @@ function Dashboard() {
     setAnchorElUser(null);
   };
 
+  async function modalClose() {
+    setOpen(false);
+  }
+
+  const modalStyle = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 320,
+    bgcolor: "background.paper",
+    borderRadius: "25px",
+    boxShadow: 24,
+    p: 4,
+  };
+
   return (
     <React.Fragment>
       {user && (
         <>
-          <AppBar position="fixed" sx={{ bgcolor: "#FFFFFF" }}>
+          <Modal
+            BackdropComponent={Backdrop}
+            BackdropProps={{
+              timeout: 500,
+            }}
+            closeAfterTransition
+            onClose={modalClose}
+            open={open}
+            aria-labelledby="transition-modal-title"
+            aria-describedby="transition-modal-description"
+          >
+            <Fade in={open}>
+              <Box sx={modalStyle}>
+                <div className={styles.modal_box}>
+                  <IconButton
+                    aria-label="close"
+                    onClick={modalClose}
+                    className={styles.close_button}
+                  >
+                    <CloseIcon
+                      sx={{
+                        color: "#000000",
+                      }}
+                    />
+                  </IconButton>
+
+                  <h2>Signup</h2>
+                  <div className={styles.modal_body}>
+                    <form id={styles.modal_form}>
+                      <TextField
+                        variant="outlined"
+                        label="Username"
+                        placeholder="dystopian"
+                      />
+                      <Box>
+                        <Button
+                          id={styles.signup_buttons}
+                          // disabled, to enable modal close
+                          href={true as any}
+                          onClick={modalClose}
+                          color="inherit"
+                          type="submit"
+                          size="large"
+                          variant="outlined"
+                        >
+                          Not Now
+                        </Button>
+                        <Button
+                          id={styles.signup_buttons}
+                          // disabled for now
+                          href={true as any}
+                          type="submit"
+                          color="primary"
+                          size="large"
+                          variant="outlined"
+                        >
+                          Continue
+                        </Button>
+                      </Box>
+                    </form>
+                  </div>
+                </div>
+              </Box>
+            </Fade>
+          </Modal>
+          <AppBar
+            position="fixed"
+            sx={{ bgcolor: "#FFFFFF" }}
+            style={{
+              filter: open ? "blur(2px)" : "none",
+            }}
+          >
             <Container maxWidth="xl">
               <Toolbar disableGutters>
                 <Box

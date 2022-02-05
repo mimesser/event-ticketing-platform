@@ -1,0 +1,29 @@
+.modal_box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  > h2 {
+    margin-top: -30px;
+  }
+
+  .close_button {
+    position: "absolute";
+    top: -20px;
+    left: 155px;
+  }
+  .modal_body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    #modal_form {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  #signup_buttons {
+    margin: 10% 16px 0;
+  }
+}
