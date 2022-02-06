@@ -186,7 +186,7 @@ function Dashboard() {
               filter: open ? "blur(2px)" : "none",
             }}
           >
-            <Container maxWidth="xl">
+            <Container maxWidth={false}>
               <Toolbar disableGutters>
                 <Box
                   component="div"
