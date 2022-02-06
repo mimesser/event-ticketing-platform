@@ -10,7 +10,6 @@ import Container from "@mui/material/Container";
 import CssBaseline from "@mui/material/CssBaseline";
 import Drawer from "@mui/material/Drawer";
 import Fade from "@mui/material/Fade";
-import HomeIcon from "@mui/icons-material/Home";
 import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -298,7 +297,7 @@ function Dashboard() {
                 keepMounted: true,
               }}
               sx={{
-                display: { xs: "block", sm: "none" },
+                display: { xs: "flex", md: "none" },
                 "& .MuiDrawer-paper": {
                   boxSizing: "border-box",
                   width: drawerWidth,
