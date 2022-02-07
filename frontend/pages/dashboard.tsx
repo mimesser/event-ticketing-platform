@@ -1,6 +1,8 @@
-import AppBar from "@mui/material/AppBar";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import AccountCircle from "@mui/icons-material/AccountCircle";
+import AppBar from "@mui/material/AppBar";
+import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import Backdrop from "@mui/material/Backdrop";
 import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
@@ -20,8 +22,9 @@ import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Modal from "@mui/material/Modal";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import PaymentsIcon from "@mui/icons-material/Payments";
 import Popover from "@mui/material/Popover";
-import TextField from "@mui/material/TextField";
+import TwitterIcon from "@mui/icons-material/Twitter";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { useUser } from "lib/hooks";
@@ -47,6 +50,9 @@ function Dashboard() {
     redirectIfFound: true,
   });
   const [open, setOpen] = useState(firstTimeUser ? true : false);
+  const [firstModal, setFirstModal] = useState(true);
+  const [secondModal, setSecondModal] = useState(false);
+  const [thirdModal, setThirdModal] = useState(false);
 
   const [anchorElNotification, setAnchorElNotification] =
     React.useState<HTMLButtonElement | null>(null);
@@ -67,9 +73,19 @@ function Dashboard() {
     setAnchorElUser(null);
   };
 
-  async function modalClose() {
+  const modalClose = () => {
     setOpen(false);
-  }
+  };
+
+  const continueToSecond = () => {
+    setFirstModal(false);
+    setSecondModal(true);
+  };
+
+  const continueToThird = () => {
+    setSecondModal(false);
+    setThirdModal(true);
+  };
 
   const modalStyle = {
     position: "absolute",
@@ -136,30 +152,94 @@ function Dashboard() {
                       }}
                     />
                   </IconButton>
-
-                  <h2>Signup</h2>
-                  <div className={styles.modal_body}>
-                    <form id={styles.modal_form}>
-                      <TextField
-                        variant="outlined"
-                        label="Username"
-                        placeholder="dystopian"
-                      />
+                  {firstModal && (
+                    <div className={styles.modal_body}>
+                      <Typography id={styles.h5} variant="h5">
+                        Welcome to Web3
+                      </Typography>
+                      <Typography variant="h6">
+                        {"Let's"} get started!
+                      </Typography>
                       <Box>
                         <Button
-                          id={styles.signup_buttons}
-                          // disabled for now
-                          href={true as any}
+                          id={styles.continueButtons}
+                          onClick={continueToSecond}
                           type="submit"
                           color="primary"
                           size="large"
                           variant="outlined"
+                          endIcon={<ArrowRightIcon />}
                         >
                           Continue
                         </Button>
                       </Box>
-                    </form>
-                  </div>
+                    </div>
+                  )}
+                  {secondModal && (
+                    <div className={styles.modal_body}>
+                      <Typography id={styles.h5} variant="h4">
+                        Buy Crypto With Fiat
+                      </Typography>
+                      <Box className={styles.paymentOptButtonBox}>
+                        <Typography id={styles.body1} variant="body1">
+                          Choose one of the available options
+                        </Typography>
+                        <Button
+                          id={styles.paymentOptButton}
+                          onClick={continueToThird}
+                          type="submit"
+                          color="primary"
+                          size="large"
+                          variant="outlined"
+                          startIcon={<PaymentsIcon />}
+                        >
+                          Ramp
+                        </Button>
+                        <Button
+                          id={styles.paymentOptButton}
+                          onClick={continueToThird}
+                          type="submit"
+                          color="primary"
+                          size="large"
+                          variant="outlined"
+                          startIcon={<AccountBalanceWalletIcon />}
+                        >
+                          MoonPay
+                        </Button>
+                      </Box>
+                    </div>
+                  )}
+                  {thirdModal && (
+                    <div className={styles.modal_body}>
+                      <Typography id={styles.h5} variant="h5">
+                        Connect to Socials!
+                      </Typography>
+                      <Box className={styles.linkSocialButtons}>
+                        <Button
+                          href="https://twitter.com"
+                          target="blank"
+                          type="submit"
+                          color="primary"
+                          size="large"
+                          variant="outlined"
+                          startIcon={<TwitterIcon />}
+                        >
+                          Connect to Twitter
+                        </Button>
+                        <Button
+                          id={styles.continueButtons}
+                          onClick={continueToThird}
+                          type="submit"
+                          color="primary"
+                          size="large"
+                          variant="outlined"
+                          endIcon={<ArrowRightIcon />}
+                        >
+                          Continue
+                        </Button>
+                      </Box>
+                    </div>
+                  )}
                 </div>
               </Box>
             </Fade>
