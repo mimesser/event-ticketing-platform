@@ -94,12 +94,14 @@ function Dashboard() {
       <Toolbar />
       <List>
         {pages.map((page, index) => (
-          <ListItem button key={index} style={{ margin: "10px 0" }}>
-            <ListItemIcon>
-              <page.icon />
-            </ListItemIcon>
-            <Link href={page.link}>{page.title}</Link>
-          </ListItem>
+          <Link key={index} href={page.link} passHref>
+            <ListItem button key={index} style={{ margin: "10px 0" }}>
+              <ListItemIcon>
+                <page.icon />
+              </ListItemIcon>
+              {page.title}
+            </ListItem>
+          </Link>
         ))}
       </List>
     </>
