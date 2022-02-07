@@ -347,7 +347,7 @@ function Dashboard() {
                         underline="none"
                         sx={{ color: "black" }}
                       >
-                        Logout
+                        Log Out
                       </MaterialLink>
                     </MenuItem>
                   </Menu>
