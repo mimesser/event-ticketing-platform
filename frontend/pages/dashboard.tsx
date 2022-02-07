@@ -146,18 +146,6 @@ function Dashboard() {
                       <Box>
                         <Button
                           id={styles.signup_buttons}
-                          // disabled, to enable modal close
-                          href={true as any}
-                          onClick={modalClose}
-                          color="inherit"
-                          type="submit"
-                          size="large"
-                          variant="outlined"
-                        >
-                          Not Now
-                        </Button>
-                        <Button
-                          id={styles.signup_buttons}
                           // disabled for now
                           href={true as any}
                           type="submit"
