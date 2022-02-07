@@ -13,7 +13,7 @@ function Profile() {
           <p>Your session:</p>
           <pre>{JSON.stringify(user, null, 2)}</pre>
           <Link href="/api/logout" passHref>
-            <button>Logout</button>
+            <button>Log Out</button>
           </Link>
         </>
       )}
