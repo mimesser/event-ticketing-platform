@@ -1,4 +1,4 @@
-import Layout from 'components/Layout';
+import Layout from "components/Layout";
 import { useUser } from "lib/hooks";
 import { useRouter } from "next/router";
 import React from "react";
@@ -10,15 +10,8 @@ function ExportPage() {
     redirectTo: firstTimeUser ? false : "/dashboard",
     redirectIfFound: true,
   });
-  
-  return (
-    <Layout>
-      {user && (
-        <>
-        </>
-      )}
-    </Layout>
-  );
+
+  return <Layout>{user && <></>}</Layout>;
 }
 
 export default ExportPage;

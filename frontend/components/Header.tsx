@@ -1,15 +1,15 @@
 import AppBar from "@mui/material/AppBar";
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
-import CreditCardIcon from '@mui/icons-material/CreditCard';
+import CreditCardIcon from "@mui/icons-material/CreditCard";
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import ListItemIcon from '@mui/material/ListItemIcon';
-import LogoutIcon from '@mui/icons-material/Logout';
+import ListItemIcon from "@mui/material/ListItemIcon";
+import LogoutIcon from "@mui/icons-material/Logout";
 import MaterialLink from "@mui/material/Link";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -18,13 +18,13 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import Popover from "@mui/material/Popover";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import SettingsIcon from '@mui/icons-material/Settings';
+import SettingsIcon from "@mui/icons-material/Settings";
 import { useUser } from "lib/hooks";
 import { shortenAddress } from "lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import Identicon from 'react-identicons';
+import Identicon from "react-identicons";
 
 export default function Header() {
   const user = useUser({});
@@ -38,12 +38,13 @@ export default function Header() {
     setAnchorElNotification(null);
   };
 
-  const [anchorElUser, setAnchorElUser] =
-    React.useState<null | HTMLElement>(null);
-  const [selectedMenu, setSelectedMenu] = React.useState('');
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    null
+  );
+  const [selectedMenu, setSelectedMenu] = React.useState("");
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
-    setSelectedMenu('');
+    setSelectedMenu("");
   };
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
@@ -54,14 +55,23 @@ export default function Header() {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-  const drawer = (
-    user && <>
+  const drawer = user && (
+    <>
       <Toolbar />
       <List>
         <ListItem button style={{ margin: "10px 0" }}>
-          <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', padding: 12}}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              padding: 12,
+            }}
+          >
             <Identicon string={user.publicAddress} size={24} />
-            <span style={{color: 'black', height: 16, marginLeft: 5}}>{shortenAddress(user.publicAddress)}</span>
+            <span style={{ color: "black", height: 16, marginLeft: 5 }}>
+              {shortenAddress(user.publicAddress)}
+            </span>
           </div>
         </ListItem>
       </List>
@@ -77,9 +87,6 @@ export default function Header() {
           boxShadow: "1px 1px 5px rgba(0, 0, 0, 0.2)",
           zIndex: (theme) => theme.zIndex.drawer + 1,
         }}
-        // style={{
-        //   filter: open ? "blur(2px)" : "none",
-        // }}
       >
         <Container maxWidth={false}>
           <Toolbar disableGutters>
@@ -174,14 +181,13 @@ export default function Header() {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-
-                {selectedMenu === '' ?
+                {selectedMenu === "" ? (
                   <>
-                    <MenuItem onClick={() => setSelectedMenu('settings')}>
+                    <MenuItem onClick={() => setSelectedMenu("settings")}>
                       <ListItemIcon>
                         <SettingsIcon />
                       </ListItemIcon>
-                      <span style={{color: 'black'}}>Settings</span>
+                      <span style={{ color: "black" }}>Settings</span>
                     </MenuItem>
                     <MenuItem onClick={handleCloseUserMenu}>
                       <ListItemIcon>
@@ -195,8 +201,8 @@ export default function Header() {
                         Logout
                       </MaterialLink>
                     </MenuItem>
-                  </>  
-                : selectedMenu === 'settings' ?
+                  </>
+                ) : selectedMenu === "settings" ? (
                   <>
                     <MenuItem onClick={handleCloseUserMenu}>
                       <ListItemIcon>
@@ -211,9 +217,7 @@ export default function Header() {
                       </MaterialLink>
                     </MenuItem>
                   </>
-                :
-                  null
-                }
+                ) : null}
               </Menu>
             </Box>
           </Toolbar>
