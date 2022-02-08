@@ -87,7 +87,7 @@ function Dashboard() {
                   {firstModal && (
                     <div className={styles.modal_body}>
                       <Typography id={styles.h5} variant="h5">
-                        Welcome to Web3
+                        Welcome to Impish
                       </Typography>
                       <Typography variant="h6">
                         {"Let's"} get started!
