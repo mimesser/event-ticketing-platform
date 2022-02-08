@@ -28,6 +28,9 @@ function Dashboard() {
   const [firstModal, setFirstModal] = useState(true);
   const [secondModal, setSecondModal] = useState(false);
   const [thirdModal, setThirdModal] = useState(false);
+  const [fourthModal, setFourthModal] = useState(false);
+  const [followBtnText, setFollowBtnText] = useState("Follow all");
+  const [followBtnStyle, setFollowBtnStyle] = useState(true);
 
   const modalClose = () => {
     setOpen(false);
@@ -41,6 +44,21 @@ function Dashboard() {
   const continueToThird = () => {
     setSecondModal(false);
     setThirdModal(true);
+  };
+
+  const continueToFourth = () => {
+    setThirdModal(false);
+    setFourthModal(true);
+  };
+
+  const followAll = () => {
+    if (followBtnText === "Follow all") {
+      setFollowBtnText("Unfollow all");
+      setFollowBtnStyle(false);
+    } else {
+      setFollowBtnText("Follow all");
+      setFollowBtnStyle(true);
+    }
   };
 
   const modalStyle = {
@@ -144,23 +162,58 @@ function Dashboard() {
                   {thirdModal && (
                     <div className={styles.modal_body}>
                       <Typography id={styles.h5} variant="h5">
-                        Connect to Socials!
+                        Find frens you follow on Twitter
+                      </Typography>
+                      <Typography id={styles.body1} variant="body1">
+                        To get the most of your Web3 adventure, connect with
+                        frens on Twitter.
                       </Typography>
                       <Box className={styles.linkSocialButtons}>
                         <Button
-                          href="https://twitter.com"
-                          target="blank"
+                          onClick={continueToFourth}
+                          id={styles.twtButton}
                           type="submit"
-                          color="primary"
                           size="large"
                           variant="outlined"
                           startIcon={<TwitterIcon />}
                         >
-                          Connect to Twitter
+                          Find frens I follow
                         </Button>
+                      </Box>
+                    </div>
+                  )}
+                  {fourthModal && (
+                    <div className={styles.modal_body}>
+                      <Typography id={styles.h5} variant="h5">
+                        Frens you follow on Twitter
+                      </Typography>
+                      <Typography id={styles.body1} variant="body1">
+                        Follow their Web3 journey on Impish
+                      </Typography>
+                      <Box className={styles.linkSocialButtons}>
+                        <Button
+                          id={
+                            followBtnStyle
+                              ? styles.followAllBtn
+                              : styles.unfollowAllBtn
+                          }
+                          onClick={followAll}
+                          type="submit"
+                          color="primary"
+                          size="large"
+                          variant="outlined"
+                        >
+                          {followBtnText}
+                        </Button>
+                        <ul>
+                          <li>Lorem ipsum</li>
+                          <li>Dolor sit amet</li>
+                          <li>Lorem ipsum</li>
+                          <li>Dolor sit amet</li>
+                        </ul>
                         <Button
                           id={styles.continueButtons}
-                          onClick={continueToThird}
+                          onClick={modalClose}
                           type="submit"
                           color="primary"
                           size="large"
