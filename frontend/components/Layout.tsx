@@ -3,19 +3,24 @@ import Meta from "components/Meta"; // Components: Meta
 import Header from "components/Header"; // Components: Header
 
 export default function Layout({
+  onboarding,
   children,
 }: {
+  onboarding?: boolean;
   children: ReactElement | ReactElement[];
 }) {
   return (
-    <React.Fragment>
+    <div
+      style={{
+        filter: onboarding ? "blur(2px)" : "none",
+      }}
+    >
       {/* Site meta */}
       <Meta />
 
       <Header />
       {/* Injected child content */}
       <div>{children}</div>
-
-    </React.Fragment>
+    </div>
   );
 }

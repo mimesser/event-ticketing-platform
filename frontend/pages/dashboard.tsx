@@ -56,7 +56,7 @@ function Dashboard() {
   };
 
   return (
-    <Layout>
+    <Layout onboarding={open}>
       {user && (
         <>
           <Modal
