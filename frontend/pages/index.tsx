@@ -1,6 +1,5 @@
 import TextField from "@mui/material/TextField";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import Layout from "components/Layout"; // Layout wrapper
 import { useUser } from "lib/hooks";
 import { Magic } from "magic-sdk";
 import Image from "next/image"; // Images
@@ -11,8 +10,6 @@ import { useForm } from "react-hook-form";
 import styles from "styles/pages/Home.module.scss";
 
 // Setup project details
-const tokenName: string = process.env.NEXT_PUBLIC_TOKEN_NAME ?? "Token Name";
-const heading: string = process.env.NEXT_PUBLIC_HEADING ?? "Some heading";
 const description: string =
   process.env.NEXT_PUBLIC_DESCRIPTION ?? "Some description";
 
@@ -83,67 +80,65 @@ export default function Home() {
   };
 
   return (
-    <Layout>
-      <>
-        {(loading === false || user === null) && (
-          <div className={styles.login_page}>
-            <div className={styles.info}>
-              <Image
-                src="/icons/impish.svg"
-                width={isMobile ? 125 : 250}
-                height={isMobile ? 50 : 100}
-                alt={`Impish icon`}
-              />
-              {isMobile === false && (
-                <p className={styles.description}>{description}</p>
-              )}
-            </div>
-            <div className={styles.login}>
-              <Image
-                src="/logo.png"
-                alt="Logo"
-                width={60}
-                height={60}
-                priority
-              />
-              <h1>Welcome</h1>
-              <div>
-                <form
-                  onSubmit={handleSubmit(onSubmit)}
-                  className={styles.login_items}
+    <>
+      {(loading === false || user === null) && (
+        <div className={styles.login_page}>
+          <div className={styles.info}>
+            <Image
+              src="/icons/impish.svg"
+              width={isMobile ? 125 : 250}
+              height={isMobile ? 50 : 100}
+              alt={`Impish icon`}
+            />
+            {isMobile === false && (
+              <p className={styles.description}>{description}</p>
+            )}
+          </div>
+          <div className={styles.login}>
+            <Image
+              src="/logo.png"
+              alt="Logo"
+              width={60}
+              height={60}
+              priority
+            />
+            <h1>Welcome</h1>
+            <div>
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className={styles.login_items}
+              >
+                <TextField
+                  id="standard-basic"
+                  label="Email address"
+                  variant="standard"
+                  autoComplete="email"
+                  autoFocus
+                  {...register("email", {
+                    required: "Required field",
+                    pattern: {
+                      value:
+                        /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+                      message: "Invalid email address",
+                    },
+                  })}
+                  error={!!errors?.email}
+                  helperText={errors?.email ? errors.email.message : null}
+                />
+                <LoadingButton
+                  loading={signingIn}
+                  type="submit"
+                  color="primary"
+                  size="large"
+                  variant="outlined"
                 >
-                  <TextField
-                    id="standard-basic"
-                    label="Email address"
-                    variant="standard"
-                    autoComplete="email"
-                    autoFocus
-                    {...register("email", {
-                      required: "Required field",
-                      pattern: {
-                        value:
-                          /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
-                        message: "Invalid email address",
-                      },
-                    })}
-                    error={!!errors?.email}
-                    helperText={errors?.email ? errors.email.message : null}
-                  />
-                  <LoadingButton
-                    loading={signingIn}
-                    type="submit"
-                    color="primary"
-                    size="large"
-                    variant="outlined"
-                  >
-                    Log in / Sign up
-                  </LoadingButton>
-                </form>
-              </div>
+                  Log in / Sign up
+                </LoadingButton>
+              </form>
             </div>
           </div>
-        )}
-      </>
-    </Layout>
+        </div>
+      )}
+    </>
   );
 }

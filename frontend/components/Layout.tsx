@@ -1,7 +1,6 @@
+import React, { ReactElement } from "react";
 import Meta from "components/Meta"; // Components: Meta
-import Footer from "components/Footer"; // Components: Footer
-import type { ReactElement } from "react"; // Types
-import styles from "styles/components/Layout.module.scss"; // Component styles
+import Header from "components/Header"; // Components: Header
 
 export default function Layout({
   children,
@@ -9,16 +8,14 @@ export default function Layout({
   children: ReactElement | ReactElement[];
 }) {
   return (
-    // Layout wrapper
-    <div className={styles.layout}>
+    <React.Fragment>
       {/* Site meta */}
       <Meta />
 
+      <Header />
       {/* Injected child content */}
-      <div className={styles.layout__content}>{children}</div>
+      <div>{children}</div>
 
-      {/* Global footer */}
-      <Footer />
-    </div>
+    </React.Fragment>
   );
 }

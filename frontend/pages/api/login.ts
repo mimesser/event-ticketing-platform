@@ -25,9 +25,9 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
       create: dbInfo,
       update: {},
     });
+    res.status(200).json({ status: "login success" });
   } catch (e) {
-    console.error(e);
+    res.status(500).json({ e });
   }
 
-  res.send({ status: "login success" });
 }
