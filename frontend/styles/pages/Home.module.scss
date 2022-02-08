@@ -1,13 +1,13 @@
 .login_page {
   margin: 0 auto;
-  padding: 20px 0;
+  padding: 10% 0;
   width: calc(100% - 40px);
   max-width: 900px;
   display: flex;
   flex-direction: row;
 
   @media (max-width: 599px) {
-    padding: 0 20px;
+    padding: 20% 20px;
     flex-direction: column;
   }
 
