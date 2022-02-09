@@ -25,10 +25,10 @@ function Dashboard() {
     redirectIfFound: true,
   });
   const [open, setOpen] = useState(firstTimeUser ? true : false);
-  const [firstModal, setFirstModal] = useState(true);
-  const [secondModal, setSecondModal] = useState(false);
-  const [thirdModal, setThirdModal] = useState(false);
-  const [fourthModal, setFourthModal] = useState(false);
+  const [firstModal, setFirstModal] = useState(true); // Welcome modal
+  const [secondModal, setSecondModal] = useState(false); // Buy crypto modal
+  const [thirdModal, setThirdModal] = useState(false); // Find frens on Twitter modal
+  const [fourthModal, setFourthModal] = useState(false); // Follow frens on Twitter modal
   const [followBtnText, setFollowBtnText] = useState("Follow all");
   const [followBtnStyle, setFollowBtnStyle] = useState(true);
 
@@ -36,21 +36,25 @@ function Dashboard() {
     setOpen(false);
   };
 
+  // Welcome modal to buy crypto modal
   const continueToSecond = () => {
     setFirstModal(false);
     setSecondModal(true);
   };
 
+  // Buy crypto modal to find frens on Twitter modal
   const continueToThird = () => {
     setSecondModal(false);
     setThirdModal(true);
   };
 
+  // Find frens on Twitter modal to follow frens on Twitter modal
   const continueToFourth = () => {
     setThirdModal(false);
     setFourthModal(true);
   };
 
+  // Twitter modal, Follow all button function
   const followAll = () => {
     if (followBtnText === "Follow all") {
       setFollowBtnText("Unfollow all");

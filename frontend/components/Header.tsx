@@ -1,7 +1,10 @@
 import AppBar from "@mui/material/AppBar";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import CloseIcon from "@mui/icons-material/Close";
 import Container from "@mui/material/Container";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import Drawer from "@mui/material/Drawer";
@@ -14,7 +17,9 @@ import MaterialLink from "@mui/material/Link";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import Modal from "@mui/material/Modal";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import PaymentsIcon from "@mui/icons-material/Payments";
 import Popover from "@mui/material/Popover";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -25,6 +30,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import Identicon from "react-identicons";
+import styles from "styles/components/Header.module.scss";
 
 export default function Header({ drawerWidth }: { drawerWidth: number }) {
   const user = useUser({});
@@ -54,6 +60,16 @@ export default function Header({ drawerWidth }: { drawerWidth: number }) {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+
+  const [handleBuyModal, setHandleBuyModal] = React.useState(false);
+  const buyModal = () => {
+    setHandleBuyModal(true);
+  };
+
+  const buyModalClose = () => {
+    setHandleBuyModal(false);
+  };
+
   const drawer = user && (
     <>
       <Toolbar />
@@ -77,8 +93,82 @@ export default function Header({ drawerWidth }: { drawerWidth: number }) {
     </>
   );
 
+  const modalStyle = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 320,
+    bgcolor: "background.paper",
+    borderRadius: "25px",
+    boxShadow: 24,
+    p: 4,
+  };
+
   return (
     <>
+      <Modal
+        BackdropProps={{
+          timeout: 500,
+        }}
+        closeAfterTransition
+        onClose={buyModalClose}
+        open={handleBuyModal}
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+      >
+        <Box sx={modalStyle}>
+          <div className={styles.modal_box}>
+            <IconButton
+              aria-label="close"
+              onClick={buyModalClose}
+              className={styles.close_button}
+            >
+              <CloseIcon
+                sx={{
+                  color: "#000000",
+                }}
+              />
+            </IconButton>
+            <div className={styles.modal_body}>
+              <Typography id={styles.h5} variant="h4">
+                Buy Crypto With Fiat
+              </Typography>
+              <Box className={styles.paymentOptButtonBox}>
+                <Typography id={styles.body1} variant="body1">
+                  Choose one of the available options
+                </Typography>
+                <Link href="/" passHref>
+                  <Button
+                    id={styles.paymentOptButton}
+                    // onClick={continueToThird}
+                    type="submit"
+                    color="primary"
+                    size="large"
+                    variant="outlined"
+                    startIcon={<PaymentsIcon />}
+                  >
+                    Ramp
+                  </Button>
+                </Link>
+                <Link href="/" passHref>
+                  <Button
+                    id={styles.paymentOptButton}
+                    // onClick={continueToThird}
+                    type="submit"
+                    color="primary"
+                    size="large"
+                    variant="outlined"
+                    startIcon={<AccountBalanceWalletIcon />}
+                  >
+                    MoonPay
+                  </Button>
+                </Link>
+              </Box>
+            </div>
+          </div>
+        </Box>
+      </Modal>
       <AppBar
         position="fixed"
         sx={{
@@ -140,6 +230,7 @@ export default function Header({ drawerWidth }: { drawerWidth: number }) {
                 sx={{
                   color: "#000000",
                 }}
+                onClick={buyModal}
               >
                 <CreditCardIcon />
               </IconButton>
