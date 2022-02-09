@@ -1,3 +1,11 @@
-import { Magic } from "@magic-sdk/admin";
+import { Magic } from "magic-sdk";
 
-export const magic = new Magic(process.env.MAGIC_SECRET_KEY);
+const customNodeOptions = {
+  rpcUrl: "https://polygon-rpc.com",
+  chainId: 137,
+};
+
+export const magic = new Magic(
+  process.env.NEXT_PUBLIC_MAGIC_PUBLISHABLE_KEY ?? "",
+  { network: customNodeOptions }
+);
