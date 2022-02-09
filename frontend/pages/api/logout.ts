@@ -1,6 +1,6 @@
+import { getLoginSession } from "lib/auth";
+import { removeTokenCookie } from "lib/auth-cookie";
 import { magic } from "lib/magicAdmin";
-import { removeTokenCookie } from "../../lib/auth-cookie";
-import { getLoginSession } from "../../lib/auth";
 import { NextApiResponse, NextApiRequest } from "next";
 
 export default async function logout(
