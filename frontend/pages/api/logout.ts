@@ -1,4 +1,4 @@
-import { magic } from "lib/magic";
+import { magic } from "lib/magicAdmin";
 import { removeTokenCookie } from "../../lib/auth-cookie";
 import { getLoginSession } from "../../lib/auth";
 import { NextApiResponse, NextApiRequest } from "next";

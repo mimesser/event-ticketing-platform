@@ -1,4 +1,4 @@
-import { magic } from "lib/magic";
+import { magic } from "lib/magicAdmin";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import { setLoginSession } from "../../lib/auth";
@@ -29,5 +29,4 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
   } catch (e) {
     res.status(500).json({ e });
   }
-
 }

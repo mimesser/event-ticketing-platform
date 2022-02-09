@@ -26,7 +26,7 @@ import Link from "next/link";
 import React from "react";
 import Identicon from "react-identicons";
 
-export default function Header() {
+export default function Header({ drawerWidth }: { drawerWidth: number }) {
   const user = useUser({});
 
   const [anchorElNotification, setAnchorElNotification] =
@@ -50,7 +50,6 @@ export default function Header() {
     setAnchorElUser(null);
   };
 
-  const drawerWidth = 240;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -166,66 +165,78 @@ export default function Header() {
                 <Typography sx={{ p: 2 }}>Notification 2</Typography>
                 <Typography sx={{ p: 2 }}>Notification 3</Typography>
               </Popover>
-              <Menu
-                sx={{ mt: "45px" }}
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {selectedMenu === "" ? (
-                  <>
-                    <MenuItem onClick={() => setSelectedMenu("settings")}>
-                      <ListItemIcon>
-                        <SettingsIcon />
-                      </ListItemIcon>
-                      <span style={{ color: "black" }}>Settings</span>
-                    </MenuItem>
-                    <MenuItem onClick={handleCloseUserMenu}>
-                      <ListItemIcon>
-                        <LogoutIcon />
-                      </ListItemIcon>
-                      <MaterialLink
-                        href="/api/logout"
-                        underline="none"
-                        sx={{ color: "black" }}
-                      >
-                        Logout
-                      </MaterialLink>
-                    </MenuItem>
-                  </>
-                ) : selectedMenu === "settings" ? (
-                  <>
-                    <MenuItem onClick={handleCloseUserMenu}>
-                      <ListItemIcon>
-                        <SettingsIcon />
-                      </ListItemIcon>
-                      <MaterialLink
-                        href="/export"
-                        underline="none"
-                        sx={{ color: "black" }}
-                      >
-                        Export Private Key
-                      </MaterialLink>
-                    </MenuItem>
-                  </>
-                ) : null}
-              </Menu>
+              {selectedMenu === "" ? (
+                <Menu
+                  sx={{ mt: "45px" }}
+                  anchorEl={anchorElUser}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}
+                >
+                  <MenuItem onClick={() => setSelectedMenu("settings")}>
+                    <ListItemIcon>
+                      <SettingsIcon />
+                    </ListItemIcon>
+                    <span style={{ color: "black" }}>Settings</span>
+                  </MenuItem>
+                  <MenuItem onClick={handleCloseUserMenu}>
+                    <ListItemIcon>
+                      <LogoutIcon />
+                    </ListItemIcon>
+                    <MaterialLink
+                      href="/api/logout"
+                      underline="none"
+                      sx={{ color: "black" }}
+                    >
+                      Logout
+                    </MaterialLink>
+                  </MenuItem>
+                </Menu>
+              ) : selectedMenu === "settings" ? (
+                <Menu
+                  sx={{ mt: "45px" }}
+                  anchorEl={anchorElUser}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}
+                >
+                  <MenuItem onClick={handleCloseUserMenu}>
+                    <ListItemIcon>
+                      <SettingsIcon />
+                    </ListItemIcon>
+                    <MaterialLink
+                      href="/export"
+                      underline="none"
+                      sx={{ color: "black" }}
+                    >
+                      Export Private Key
+                    </MaterialLink>
+                  </MenuItem>
+                </Menu>
+              ) : null}
             </Box>
           </Toolbar>
         </Container>
       </AppBar>
       <Box
         component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        sx={{ width: { md: drawerWidth }, flexShrink: { sm: 0 } }}
       >
         <Drawer
           variant="temporary"

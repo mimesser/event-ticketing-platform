@@ -1,10 +1,10 @@
+import LoadingButton from "@mui/lab/LoadingButton";
 import TextField from "@mui/material/TextField";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useUser } from "lib/hooks";
-import { Magic } from "magic-sdk";
-import Image from "next/image"; // Images
+import { magic } from "lib/magic";
+import Image from "next/image";
 import Router from "next/router";
-import LoadingButton from "@mui/lab/LoadingButton";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import styles from "styles/pages/Home.module.scss";
@@ -44,10 +44,6 @@ export default function Home() {
           })
         ).json()
       ).user ?? false;
-
-    const magic = new Magic(
-      process.env.NEXT_PUBLIC_MAGIC_PUBLISHABLE_KEY ?? ""
-    );
 
     try {
       const didToken = await magic.auth.loginWithMagicLink({ email });
@@ -95,13 +91,7 @@ export default function Home() {
             )}
           </div>
           <div className={styles.login}>
-            <Image
-              src="/logo.png"
-              alt="Logo"
-              width={60}
-              height={60}
-              priority
-            />
+            <Image src="/logo.png" alt="Logo" width={60} height={60} priority />
             <h1>Welcome</h1>
             <div>
               <form
