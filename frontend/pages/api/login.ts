@@ -1,8 +1,7 @@
+import { setLoginSession } from "lib/auth";
 import { magic } from "lib/magicAdmin";
+import prisma from "lib/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
-
-import { setLoginSession } from "../../lib/auth";
-import prisma from "../../lib/prisma";
 
 export default async function login(req: NextApiRequest, res: NextApiResponse) {
   const didToken = req.headers.authorization?.substr(7) || "";
