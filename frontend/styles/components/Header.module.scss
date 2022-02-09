@@ -110,6 +110,44 @@
   }
 }
 
+// Header: Buy crypto modal
+.modal_box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .close_button {
+    position: "absolute";
+    top: -25px;
+    left: 130px;
+  }
+  .modal_body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    #h5 {
+      margin-top: -30px;
+      font-weight: bold;
+      letter-spacing: -1px;
+    }
+  }
+  .paymentOptButtonBox {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    #paymentOptButton {
+      margin-top: 10px;
+      width: 100%;
+      color: black;
+    }
+    #body1 {
+      margin-top: 2rem;
+    }
+  }
+}
+
 // Responsive
 @media screen and (max-width: 728px) {
   .header {
