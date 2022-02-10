@@ -1,6 +1,7 @@
 import AppBar from "@mui/material/AppBar";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -270,12 +271,18 @@ export default function Header({ drawerWidth }: { drawerWidth: number }) {
                   }}
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseUserMenu}
+                  PaperProps={{
+                    style: {
+                      width: 250,
+                    },
+                  }}
                 >
                   <MenuItem onClick={() => setSelectedMenu("settings")}>
                     <ListItemIcon>
                       <SettingsIcon sx={{ color: "black" }} />
                     </ListItemIcon>
                     <span style={{ color: "black" }}>Settings</span>
+                    <ArrowForwardIosIcon style={{ marginLeft: "47%" }} />
                   </MenuItem>
                   <MenuItem onClick={handleCloseUserMenu}>
                     <ListItemIcon>
