@@ -13,7 +13,6 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import LogoutIcon from "@mui/icons-material/Logout";
-import MaterialLink from "@mui/material/Link";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -282,13 +281,7 @@ export default function Header({ drawerWidth }: { drawerWidth: number }) {
                     <ListItemIcon>
                       <LogoutIcon />
                     </ListItemIcon>
-                    <MaterialLink
-                      href="/api/logout"
-                      underline="none"
-                      sx={{ color: "black" }}
-                    >
-                      Logout
-                    </MaterialLink>
+                    <Link href="/api/logout">Log Out</Link>
                   </MenuItem>
                 </Menu>
               ) : selectedMenu === "settings" ? (
@@ -311,13 +304,7 @@ export default function Header({ drawerWidth }: { drawerWidth: number }) {
                     <ListItemIcon>
                       <SettingsIcon />
                     </ListItemIcon>
-                    <MaterialLink
-                      href="/export"
-                      underline="none"
-                      sx={{ color: "black" }}
-                    >
-                      Export Private Key
-                    </MaterialLink>
+                    <Link href="/export">Export Private Key</Link>
                   </MenuItem>
                 </Menu>
               ) : null}
