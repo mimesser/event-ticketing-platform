@@ -2,7 +2,6 @@ import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
-import MaterialLink from "@mui/material/Link";
 import Modal from "@mui/material/Modal";
 import Snackbar from "@mui/material/Snackbar";
 import Layout from "components/Layout";
@@ -47,15 +46,14 @@ function ExportPage() {
               <Checkbox onChange={checkClicked} />
               <div>
                 You have read and agreed to
-                <MaterialLink
+                <a
                   href="https://magic.link/legal/user-terms"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                   target="_blank"
-                  underline="none"
-                  sx={{ margin: "0 5px" }}
+                  style={{ margin: "0 5px", color: "blue" }}
                 >
                   Magic&apos;s Terms of Service.
-                </MaterialLink>
+                </a>
                 including the risks related to owning your private key disclosed
                 in the Terms of Service.
               </div>

@@ -11,8 +11,6 @@ export default function Layout({
   onboarding?: boolean;
   children: ReactElement | ReactElement[];
 }) {
-  const drawerWidth = 240;
-
   return (
     <div
       style={{
@@ -23,13 +21,12 @@ export default function Layout({
       {/* Site meta */}
       <Meta />
 
-      <Header drawerWidth={drawerWidth} />
+      <Header />
       {/* Injected child content */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          width: { md: `calc(100% - ${drawerWidth}px)` },
         }}
       >
         <Toolbar />
