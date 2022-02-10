@@ -216,7 +216,7 @@ export default function Header({ drawerWidth }: { drawerWidth: number }) {
               <IconButton
                 size="large"
                 sx={{
-                  color: "#000000",
+                  color: "black",
                 }}
                 onClick={handleOpenNotification}
               >
@@ -227,7 +227,7 @@ export default function Header({ drawerWidth }: { drawerWidth: number }) {
               <IconButton
                 size="large"
                 sx={{
-                  color: "#000000",
+                  color: "black",
                 }}
                 onClick={buyModal}
               >
@@ -236,7 +236,7 @@ export default function Header({ drawerWidth }: { drawerWidth: number }) {
               <IconButton
                 size="large"
                 sx={{
-                  color: "#000000",
+                  color: "black",
                 }}
                 onClick={handleOpenUserMenu}
               >
@@ -273,13 +273,13 @@ export default function Header({ drawerWidth }: { drawerWidth: number }) {
                 >
                   <MenuItem onClick={() => setSelectedMenu("settings")}>
                     <ListItemIcon>
-                      <SettingsIcon />
+                      <SettingsIcon sx={{ color: "black" }} />
                     </ListItemIcon>
                     <span style={{ color: "black" }}>Settings</span>
                   </MenuItem>
                   <MenuItem onClick={handleCloseUserMenu}>
                     <ListItemIcon>
-                      <LogoutIcon />
+                      <LogoutIcon sx={{ color: "black" }} />
                     </ListItemIcon>
                     <Link href="/api/logout">Log Out</Link>
                   </MenuItem>
@@ -299,10 +299,15 @@ export default function Header({ drawerWidth }: { drawerWidth: number }) {
                   }}
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseUserMenu}
+                  PaperProps={{
+                    style: {
+                      width: 250,
+                    },
+                  }}
                 >
                   <MenuItem onClick={handleCloseUserMenu}>
                     <ListItemIcon>
-                      <SettingsIcon />
+                      <SettingsIcon sx={{ color: "black" }} />
                     </ListItemIcon>
                     <Link href="/export">Export Private Key</Link>
                   </MenuItem>
