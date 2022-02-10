@@ -9,6 +9,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Container from "@mui/material/Container";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import Drawer from "@mui/material/Drawer";
+import EditIcon from "@mui/icons-material/Edit";
 import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -24,15 +25,17 @@ import Popover from "@mui/material/Popover";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import SettingsIcon from "@mui/icons-material/Settings";
+import Avatar from "boring-avatars";
 import { useUser } from "lib/hooks";
 import { shortenAddress } from "lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import Identicon from "react-identicons";
 import styles from "styles/components/Header.module.scss";
 
-export default function Header({ drawerWidth }: { drawerWidth: number }) {
+export default function Header() {
+  const drawerWidth = 240;
+
   const user = useUser({});
 
   const [anchorElNotification, setAnchorElNotification] =
@@ -74,20 +77,32 @@ export default function Header({ drawerWidth }: { drawerWidth: number }) {
     <>
       <Toolbar />
       <List>
-        <ListItem button style={{ margin: "10px 0" }}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              padding: 12,
-            }}
-          >
-            <Identicon string={user.publicAddress} size={24} />
-            <span style={{ color: "black", height: 16, marginLeft: 5 }}>
+        <ListItem
+          button
+          style={{
+            margin: "10px 0",
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            padding: "12px",
+          }}
+        >
+          <div className={styles.account}>
+            <Avatar
+              size={32}
+              name={user.public}
+              variant="pixel"
+              colors={["#ffad08", "#edd75a", "#73b06f", "#0c8f8f", "#405059"]}
+            />
+            <div className={styles.edit}>
+              <EditIcon style={{ margin: 0 }} />
+            </div>
+          </div>
+          <Link href="/profile" passHref>
+            <span style={{ color: "black", height: 16, marginLeft: 15 }}>
               {shortenAddress(user.publicAddress)}
             </span>
-          </div>
+          </Link>
         </ListItem>
       </List>
     </>
