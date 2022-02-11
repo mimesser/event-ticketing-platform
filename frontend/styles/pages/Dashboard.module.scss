@@ -2,11 +2,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 
   .close_button {
-    position: "absolute";
-    top: -25px;
-    left: 130px;
+    position: absolute;
+    right: 8px;
+    top: 8px;
   }
   .modal_body {
     display: flex;
@@ -19,7 +20,7 @@
       flex-direction: column;
     }
     #h5 {
-      margin-top: -30px;
+      margin-top: 16px;
       font-weight: bold;
       letter-spacing: -1px;
     }
