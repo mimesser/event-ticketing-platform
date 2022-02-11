@@ -353,6 +353,7 @@ export default function Header() {
           sx={{
             display: { xs: "flex", md: "none" },
             "& .MuiDrawer-paper": {
+              backgroundColor: "#f7f8fa",
               boxSizing: "border-box",
               width: drawerWidth,
             },
@@ -361,13 +362,11 @@ export default function Header() {
           {drawer}
         </Drawer>
         <Drawer
-          PaperProps={{
-            sx: { borderRight: 0 },
-          }}
           variant="permanent"
           sx={{
             display: { xs: "none", md: "flex" },
             "& .MuiDrawer-paper": {
+              backgroundColor: "#f7f8fa",
               boxSizing: "border-box",
               width: drawerWidth,
             },
