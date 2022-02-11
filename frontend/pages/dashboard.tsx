@@ -4,7 +4,6 @@ import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CloseIcon from "@mui/icons-material/Close";
-import CssBaseline from "@mui/material/CssBaseline";
 import Fade from "@mui/material/Fade";
 import IconButton from "@mui/material/IconButton";
 import Modal from "@mui/material/Modal";
@@ -233,7 +232,6 @@ function Dashboard() {
               </Box>
             </Fade>
           </Modal>
-          <CssBaseline />
         </>
       )}
     </Layout>
