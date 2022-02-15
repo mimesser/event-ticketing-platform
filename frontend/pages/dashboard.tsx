@@ -1,4 +1,3 @@
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
@@ -7,10 +6,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import Fade from "@mui/material/Fade";
 import IconButton from "@mui/material/IconButton";
 import Modal from "@mui/material/Modal";
-import PaymentsIcon from "@mui/icons-material/Payments";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import Typography from "@mui/material/Typography";
 import { useUser } from "lib/hooks";
+import { moonPaySrc } from "lib/utils";
 import Layout from "components/Layout";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
@@ -25,7 +24,7 @@ function Dashboard() {
   });
   const [open, setOpen] = useState(firstTimeUser ? true : false);
   const [firstModal, setFirstModal] = useState(true); // Welcome modal
-  const [secondModal, setSecondModal] = useState(false); // Buy crypto modal
+  const [moonPayModal, setMoonPayModal] = useState(false); // buy  crypto on moonpay modal
   const [thirdModal, setThirdModal] = useState(false); // Find frens on Twitter modal
   const [fourthModal, setFourthModal] = useState(false); // Follow frens on Twitter modal
   const [followBtnText, setFollowBtnText] = useState("Follow all");
@@ -33,18 +32,27 @@ function Dashboard() {
 
   const modalClose = () => {
     setOpen(false);
-  };
-
-  // Welcome modal to buy crypto modal
-  const continueToSecond = () => {
     setFirstModal(false);
-    setSecondModal(true);
+    setMoonPayModal(false);
   };
 
   // Buy crypto modal to find frens on Twitter modal
   const continueToThird = () => {
-    setSecondModal(false);
+    setMoonPayModal(false);
     setThirdModal(true);
+  };
+
+  // MoonPay modal to to buy crypto
+  const continueToMoonPayModal = () => {
+    setFirstModal(false);
+    setMoonPayModal(true);
+    const iframe = document.getElementById("moonPayFrame");
+    if (iframe !== null) {
+      iframe.addEventListener("close", function (event) {
+        console.log("iframe modal has been closed");
+        continueToThird();
+      });
+    }
   };
 
   // Find frens on Twitter modal to follow frens on Twitter modal
@@ -116,7 +124,7 @@ function Dashboard() {
                       <Box>
                         <Button
                           id={styles.continueButtons}
-                          onClick={continueToSecond}
+                          onClick={continueToMoonPayModal}
                           type="submit"
                           color="primary"
                           size="large"
@@ -128,40 +136,21 @@ function Dashboard() {
                       </Box>
                     </div>
                   )}
-                  {secondModal && (
-                    <div className={styles.modal_body}>
-                      <Typography id={styles.h5} variant="h4">
-                        Buy Crypto With Fiat
-                      </Typography>
-                      <Box className={styles.paymentOptButtonBox}>
-                        <Typography id={styles.body1} variant="body1">
-                          Choose one of the available options
-                        </Typography>
-                        <Button
-                          id={styles.paymentOptButton}
-                          onClick={continueToThird}
-                          type="submit"
-                          color="primary"
-                          size="large"
-                          variant="outlined"
-                          startIcon={<PaymentsIcon />}
-                        >
-                          Ramp
-                        </Button>
-                        <Button
-                          id={styles.paymentOptButton}
-                          onClick={continueToThird}
-                          type="submit"
-                          color="primary"
-                          size="large"
-                          variant="outlined"
-                          startIcon={<AccountBalanceWalletIcon />}
-                        >
-                          MoonPay
-                        </Button>
-                      </Box>
+                  {moonPayModal && (
+                    <div style={{ height: "60vh" }}>
+                      <iframe
+                        allow="accelerometer; autoplay; camera; gyroscope; payment"
+                        frameBorder="0"
+                        height="100%"
+                        id="moonPayFrame"
+                        src={moonPaySrc}
+                        width="100%"
+                      >
+                        <p>Your browser does not support iframes.</p>
+                      </iframe>
                     </div>
                   )}
+
                   {thirdModal && (
                     <div className={styles.modal_body}>
                       <Typography id={styles.h5} variant="h5">
