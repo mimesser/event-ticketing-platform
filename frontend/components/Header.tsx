@@ -1,10 +1,8 @@
 import AppBar from "@mui/material/AppBar";
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import CloseIcon from "@mui/icons-material/Close";
 import Container from "@mui/material/Container";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
@@ -20,17 +18,16 @@ import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Modal from "@mui/material/Modal";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import PaymentsIcon from "@mui/icons-material/Payments";
 import Popover from "@mui/material/Popover";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import SettingsIcon from "@mui/icons-material/Settings";
 import Avatar from "boring-avatars";
 import { useUser } from "lib/hooks";
-import { shortenAddress } from "lib/utils";
+import { moonPaySrc, shortenAddress } from "lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import styles from "styles/components/Header.module.scss";
 
 export default function Header() {
@@ -46,6 +43,8 @@ export default function Header() {
   const handleCloseNotification = () => {
     setAnchorElNotification(null);
   };
+  const [buyOpen, setBuyOpen] = useState(false);
+  const [moonPayModal, setMoonPayModal] = useState(false);
 
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
@@ -64,13 +63,20 @@ export default function Header() {
     setMobileOpen(!mobileOpen);
   };
 
-  const [handleBuyModal, setHandleBuyModal] = React.useState(false);
   const buyModal = () => {
-    setHandleBuyModal(true);
+    setBuyOpen(true);
+    setMoonPayModal(true);
+    const iframe = document.getElementById("moonPayFrame");
+    if (iframe !== null) {
+      iframe.addEventListener("close", function (event) {
+        console.log("iframe modal has been closed");
+      });
+    }
   };
 
-  const buyModalClose = () => {
-    setHandleBuyModal(false);
+  const modalClose = () => {
+    setBuyOpen(false);
+    setMoonPayModal(false);
   };
 
   const drawer = user && (
@@ -127,8 +133,8 @@ export default function Header() {
           timeout: 500,
         }}
         closeAfterTransition
-        onClose={buyModalClose}
-        open={handleBuyModal}
+        onClose={modalClose}
+        open={buyOpen}
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
       >
@@ -136,7 +142,7 @@ export default function Header() {
           <div className={styles.modal_box}>
             <IconButton
               aria-label="close"
-              onClick={buyModalClose}
+              onClick={modalClose}
               className={styles.close_button}
             >
               <CloseIcon
@@ -145,42 +151,20 @@ export default function Header() {
                 }}
               />
             </IconButton>
-            <div className={styles.modal_body}>
-              <Typography id={styles.h5} variant="h4">
-                Buy Crypto With Fiat
-              </Typography>
-              <Box className={styles.paymentOptButtonBox}>
-                <Typography id={styles.body1} variant="body1">
-                  Choose one of the available options
-                </Typography>
-                <Link href="/" passHref>
-                  <Button
-                    id={styles.paymentOptButton}
-                    // onClick={continueToThird}
-                    type="submit"
-                    color="primary"
-                    size="large"
-                    variant="outlined"
-                    startIcon={<PaymentsIcon />}
-                  >
-                    Ramp
-                  </Button>
-                </Link>
-                <Link href="/" passHref>
-                  <Button
-                    id={styles.paymentOptButton}
-                    // onClick={continueToThird}
-                    type="submit"
-                    color="primary"
-                    size="large"
-                    variant="outlined"
-                    startIcon={<AccountBalanceWalletIcon />}
-                  >
-                    MoonPay
-                  </Button>
-                </Link>
-              </Box>
-            </div>
+            {moonPayModal && (
+              <div style={{ height: "60vh" }}>
+                <iframe
+                  allow="accelerometer; autoplay; camera; gyroscope; payment"
+                  frameBorder="0"
+                  height="100%"
+                  id="moonPayFrame"
+                  src={moonPaySrc}
+                  width="100%"
+                >
+                  <p>Your browser does not support iframes.</p>
+                </iframe>
+              </div>
+            )}
           </div>
         </Box>
       </Modal>

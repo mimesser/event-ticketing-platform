@@ -11,3 +11,5 @@ export const shortenAddress = (address: string) => {
 export const stopPropagation = (e: React.MouseEvent<HTMLElement>) => {
   e.stopPropagation();
 };
+
+export const moonPaySrc = `https://buy-staging.moonpay.io?apiKey=${process.env.NEXT_PUBLIC_MOONPAY_TEST_KEY}&currencyCode=ETH&colorCode=%23107cf1`;
