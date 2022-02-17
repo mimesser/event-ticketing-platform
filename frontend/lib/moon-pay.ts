@@ -1,11 +1,12 @@
 import createHmac from "create-hmac";
+import { isProduction } from "lib/utils";
 
 const TEST_KEY = process.env.NEXT_PUBLIC_MOONPAY_TEST_KEY;
 const SECRET_KEY = process.env.NEXT_PUBLIC_MOONPAY_SECRET_KEY;
 
 export const moonPaySrc = (walletAddress: any, email: String) => {
   const originalUrl = `https://buy-sandbox.moonpay.com?apiKey=${TEST_KEY}&currencyCode=${
-    process.env.PRODUCTION ? "MATIC" : "ETH"
+    isProduction ? "MATIC" : "ETH"
   }&walletAddress=${walletAddress}&email=${email}`;
 
   const signature = createHmac("sha256", `${SECRET_KEY}`)

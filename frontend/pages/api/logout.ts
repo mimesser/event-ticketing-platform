@@ -11,7 +11,7 @@ export default async function logout(
     const session = await getLoginSession(req);
 
     if (session) {
-      await magic.users.logoutByIssuer(session.issuer);
+      await magic?.users.logoutByIssuer(session.issuer);
       removeTokenCookie(res);
     }
   } catch (error) {

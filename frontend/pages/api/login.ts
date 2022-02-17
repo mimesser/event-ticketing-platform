@@ -1,3 +1,4 @@
+import { User } from "@prisma/client";
 import { setLoginSession } from "lib/auth";
 import { magic } from "lib/magicAdmin";
 import prisma from "lib/prisma";
@@ -6,12 +7,19 @@ import { NextApiRequest, NextApiResponse } from "next";
 export default async function login(req: NextApiRequest, res: NextApiResponse) {
   const didToken = req.headers.authorization?.substr(7) || "";
 
-  const metadata = await magic.users.getMetadataByToken(didToken);
+  const metadata = await magic?.users.getMetadataByToken(didToken);
+
+  if (!metadata?.email || !metadata?.issuer || !metadata?.publicAddress) {
+    res
+      .status(401)
+      .json({ error: "Invalid token, expected metadata not returned" });
+    return;
+  }
 
   await setLoginSession(res, metadata);
 
   try {
-    const dbInfo = {
+    const dbInfo: Partial<User> = {
       email: metadata.email,
       issuer: metadata.issuer,
       walletAddress: metadata.publicAddress,
@@ -20,7 +28,7 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
     await prisma.user.upsert({
       where: {
         email: metadata.email,
-      } as any,
+      },
       create: dbInfo,
       update: {},
     });

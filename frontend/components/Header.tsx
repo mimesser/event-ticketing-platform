@@ -3,6 +3,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import CloseIcon from "@mui/icons-material/Close";
 import Container from "@mui/material/Container";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
@@ -19,9 +20,11 @@ import MenuItem from "@mui/material/MenuItem";
 import Modal from "@mui/material/Modal";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Popover from "@mui/material/Popover";
+import SettingsIcon from "@mui/icons-material/Settings";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import SettingsIcon from "@mui/icons-material/Settings";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import Avatar from "boring-avatars";
 import { useUser } from "lib/hooks";
 import { moonPaySrc } from "lib/moon-pay";
@@ -29,9 +32,14 @@ import { shortenAddress } from "lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import styles from "styles/components/Header.module.scss";
 
 export default function Header() {
+  const isMobile = useMediaQuery("(max-width:599px)");
+
+  const { data: session }: any = useSession();
+
   const drawerWidth = 240;
 
   const user = useUser({});
@@ -63,6 +71,9 @@ export default function Header() {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+
+  const [logoutModal, setLogoutModal] = useState(false);
+  const [twitterModal, setTwitterModal] = React.useState(false);
 
   const buyModal = () => {
     setBuyOpen(true);
@@ -123,6 +134,7 @@ export default function Header() {
 
   return (
     <>
+      {/* Buy crypto modal */}
       <Modal
         BackdropProps={{
           timeout: 500,
@@ -158,6 +170,147 @@ export default function Header() {
                 >
                   <p>Your browser does not support iframes.</p>
                 </iframe>
+              </div>
+            )}
+          </div>
+        </Box>
+      </Modal>
+      {/* Log out modal */}
+      <Modal
+        BackdropProps={{
+          timeout: 500,
+        }}
+        closeAfterTransition
+        onClose={() => {
+          setLogoutModal(false);
+        }}
+        open={logoutModal}
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+      >
+        <Box sx={modalStyle}>
+          <div className={styles.modal_box}>
+            <div className={styles.modal_body}>
+              <Image
+                src="/logo.png"
+                width={isMobile ? 45 : 90}
+                height={isMobile ? 45 : 90}
+                alt={`Impish icon`}
+              />
+              <Typography
+                id={styles.h5}
+                variant="h4"
+                sx={{
+                  marginBottom: "-2rem",
+                }}
+              >
+                Log out of Impish?
+              </Typography>
+              <Box className={styles.linkSocialButtons}>
+                <Typography id={styles.body1} variant="body1">
+                  You can always log back in at any time.
+                </Typography>
+                <Link href="/api/logout" passHref>
+                  <Button
+                    id={styles.logoutButton}
+                    type="submit"
+                    color="primary"
+                    size="large"
+                    variant="outlined"
+                  >
+                    Log out
+                  </Button>
+                </Link>
+                <Button
+                  onClick={() => {
+                    setLogoutModal(false);
+                  }}
+                  id={styles.cancelButton}
+                  type="submit"
+                  color="primary"
+                  size="large"
+                  variant="outlined"
+                >
+                  Cancel
+                </Button>
+              </Box>
+            </div>
+          </div>
+        </Box>
+      </Modal>
+      {/* Twitter modal */}
+      <Modal
+        BackdropProps={{
+          timeout: 500,
+        }}
+        closeAfterTransition
+        onClose={() => {
+          setTwitterModal(false);
+        }}
+        open={twitterModal}
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+      >
+        <Box sx={modalStyle}>
+          <div className={styles.modal_box}>
+            <IconButton
+              aria-label="close"
+              onClick={() => {
+                setTwitterModal(false);
+              }}
+              className={styles.close_button}
+            >
+              <CloseIcon
+                sx={{
+                  color: "#000000",
+                }}
+              />
+            </IconButton>
+            {!session && (
+              <div className={styles.modal_body}>
+                <Typography id={styles.h5} variant="h5">
+                  Find frens you follow on Twitter
+                </Typography>
+                <Typography id={styles.body1} variant="body1">
+                  To get the most of your Web3 adventure, connect with frens on
+                  Twitter.
+                </Typography>
+                <Box className={styles.linkSocialButtons}>
+                  <Button
+                    onClick={() =>
+                      signIn("twitter", { callbackUrl: "/twitter" })
+                    }
+                    id={styles.twtButton}
+                    type="submit"
+                    size="large"
+                    variant="outlined"
+                    startIcon={<TwitterIcon />}
+                  >
+                    Find frens I follow
+                  </Button>
+                </Box>
+              </div>
+            )}
+            {session && (
+              <div className={styles.modal_body}>
+                <Typography id={styles.h5} variant="h5">
+                  Unlink Twitter
+                </Typography>
+                <Typography id={styles.body1} variant="body1">
+                  Are you sure you want to unlink Twitter from Impish?
+                </Typography>
+                <Box>
+                  <Button
+                    sx={{ textTransform: "none", marginTop: "20px" }}
+                    onClick={() => signOut()}
+                    type="submit"
+                    color="primary"
+                    size="large"
+                    variant="outlined"
+                  >
+                    Unlink
+                  </Button>
+                </Box>
               </div>
             )}
           </div>
@@ -278,11 +431,16 @@ export default function Header() {
                     <span style={{ color: "black" }}>Settings</span>
                     <ArrowForwardIosIcon style={{ marginLeft: "47%" }} />
                   </MenuItem>
-                  <MenuItem onClick={handleCloseUserMenu}>
+                  <MenuItem
+                    onClick={() => {
+                      handleCloseUserMenu();
+                      setLogoutModal(true);
+                    }}
+                  >
                     <ListItemIcon>
                       <LogoutIcon sx={{ color: "black" }} />
                     </ListItemIcon>
-                    <Link href="/api/logout">Log Out</Link>
+                    <div>Log Out</div>
                   </MenuItem>
                 </Menu>
               ) : selectedMenu === "settings" ? (
@@ -311,6 +469,24 @@ export default function Header() {
                       <SettingsIcon sx={{ color: "black" }} />
                     </ListItemIcon>
                     <Link href="/export">Export Private Key</Link>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      handleCloseUserMenu();
+                      setTwitterModal(true);
+                    }}
+                    sx={{ color: "rgb(29, 161, 242)" }}
+                  >
+                    <ListItemIcon sx={{ color: "inherit" }}>
+                      <TwitterIcon style={{ marginRight: "5px" }} />
+                    </ListItemIcon>
+
+                    <div>
+                      {!session && "Link Twitter"}
+                      {session && (
+                        <div style={{ color: "red" }}>Unlink Twitter</div>
+                      )}
+                    </div>
                   </MenuItem>
                 </Menu>
               ) : null}

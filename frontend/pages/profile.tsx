@@ -15,7 +15,7 @@ import Avatar from "boring-avatars";
 import Layout from "components/Layout";
 import copy from "copy-to-clipboard";
 import { useUser } from "lib/hooks";
-import { shortenAddress, stopPropagation } from "lib/utils";
+import { isProduction, shortenAddress, stopPropagation } from "lib/utils";
 import moment from "moment";
 import Image from "next/image";
 import React from "react";
@@ -118,7 +118,7 @@ function Profile() {
     const upload = await fetch(url, {
       method: "POST",
       body: formData,
-      mode: process.env.PRODUCTION ? undefined : "no-cors",
+      mode: isProduction ? undefined : "no-cors",
     });
 
     if (upload.ok || upload.type === "opaque") {
