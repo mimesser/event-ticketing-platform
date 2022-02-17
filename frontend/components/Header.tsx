@@ -91,7 +91,7 @@ export default function Header() {
           <div className={styles.account}>
             <Avatar
               size={32}
-              name={user.public}
+              name={user.publicAddress}
               variant="pixel"
               colors={["#ffad08", "#edd75a", "#73b06f", "#0c8f8f", "#405059"]}
             />
