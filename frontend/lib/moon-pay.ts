@@ -1,0 +1,20 @@
+import createHmac from "create-hmac";
+
+const TEST_KEY = process.env.NEXT_PUBLIC_MOONPAY_TEST_KEY;
+const SECRET_KEY = process.env.NEXT_PUBLIC_MOONPAY_SECRET_KEY;
+
+export const moonPaySrc = (walletAddress: any, email: String) => {
+  const originalUrl = `https://buy-sandbox.moonpay.com?apiKey=${TEST_KEY}&currencyCode=${
+    process.env.PRODUCTION ? "MATIC" : "ETH"
+  }&walletAddress=${walletAddress}&email=${email}`;
+
+  const signature = createHmac("sha256", `${SECRET_KEY}`)
+    .update(new URL(originalUrl).search)
+    .digest("base64");
+
+  const urlWithSignature = `${originalUrl}&signature=${encodeURIComponent(
+    signature
+  )}`;
+
+  return urlWithSignature;
+};

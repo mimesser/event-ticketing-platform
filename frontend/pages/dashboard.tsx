@@ -9,10 +9,12 @@ import Modal from "@mui/material/Modal";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import Typography from "@mui/material/Typography";
 import { useUser } from "lib/hooks";
-import { moonPaySrc } from "lib/utils";
 import Layout from "components/Layout";
+import { ethers } from "ethers";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
+import { moonPaySrc } from "lib/moon-pay";
+import { magic } from "lib/magic";
 import styles from "styles/pages/Dashboard.module.scss";
 
 function Dashboard() {
@@ -29,6 +31,7 @@ function Dashboard() {
   const [fourthModal, setFourthModal] = useState(false); // Follow frens on Twitter modal
   const [followBtnText, setFollowBtnText] = useState("Follow all");
   const [followBtnStyle, setFollowBtnStyle] = useState(true);
+  const [twitterButton, setTwitterButton] = useState(false);
 
   const modalClose = () => {
     setOpen(false);
@@ -40,19 +43,32 @@ function Dashboard() {
   const continueToThird = () => {
     setMoonPayModal(false);
     setThirdModal(true);
+    setMoonPayModal(false);
   };
 
   // MoonPay modal to to buy crypto
   const continueToMoonPayModal = () => {
     setFirstModal(false);
     setMoonPayModal(true);
-    const iframe = document.getElementById("moonPayFrame");
-    if (iframe !== null) {
-      iframe.addEventListener("close", function (event) {
-        console.log("iframe modal has been closed");
-        continueToThird();
-      });
-    }
+    getUsersBalance();
+  };
+
+  //check users balance after moonplay load and show twitter button upon change in account balance
+  const getUsersBalance = async () => {
+    const provider = new ethers.providers.Web3Provider(
+      magic.rpcProvider as any
+    );
+    const signer = provider.getSigner();
+    const userAddress = await signer.getAddress();
+    const balance = await provider.getBalance(userAddress);
+    let timer = setInterval(async () => {
+      const currentUserAddress = await signer.getAddress();
+      const currentUserBalance = await provider.getBalance(currentUserAddress);
+      if (currentUserBalance.gt(balance)) {
+        setTwitterButton(true);
+        clearInterval(timer);
+      }
+    }, 250);
   };
 
   // Find frens on Twitter modal to follow frens on Twitter modal
@@ -136,18 +152,37 @@ function Dashboard() {
                       </Box>
                     </div>
                   )}
+
                   {moonPayModal && (
-                    <div style={{ height: "60vh" }}>
+                    <div
+                      className={styles.modal_body}
+                      style={{ height: "60vh" }}
+                    >
                       <iframe
                         allow="accelerometer; autoplay; camera; gyroscope; payment"
                         frameBorder="0"
                         height="100%"
                         id="moonPayFrame"
-                        src={moonPaySrc}
+                        src={moonPaySrc(user.publicAddress, user.email)}
                         width="100%"
                       >
                         <p>Your browser does not support iframes.</p>
                       </iframe>
+                      {twitterButton && (
+                        <Box>
+                          <Button
+                            id={styles.continueButtons}
+                            onClick={continueToThird}
+                            type="submit"
+                            color="primary"
+                            size="large"
+                            variant="outlined"
+                            endIcon={<ArrowRightIcon />}
+                          >
+                            Continue
+                          </Button>
+                        </Box>
+                      )}
                     </div>
                   )}
 

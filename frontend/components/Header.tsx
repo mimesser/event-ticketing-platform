@@ -24,7 +24,8 @@ import Typography from "@mui/material/Typography";
 import SettingsIcon from "@mui/icons-material/Settings";
 import Avatar from "boring-avatars";
 import { useUser } from "lib/hooks";
-import { moonPaySrc, shortenAddress } from "lib/utils";
+import { moonPaySrc } from "lib/moon-pay";
+import { shortenAddress } from "lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -66,12 +67,6 @@ export default function Header() {
   const buyModal = () => {
     setBuyOpen(true);
     setMoonPayModal(true);
-    const iframe = document.getElementById("moonPayFrame");
-    if (iframe !== null) {
-      iframe.addEventListener("close", function (event) {
-        console.log("iframe modal has been closed");
-      });
-    }
   };
 
   const modalClose = () => {
@@ -158,7 +153,7 @@ export default function Header() {
                   frameBorder="0"
                   height="100%"
                   id="moonPayFrame"
-                  src={moonPaySrc}
+                  src={moonPaySrc(user.publicAddress, user.email)}
                   width="100%"
                 >
                   <p>Your browser does not support iframes.</p>
