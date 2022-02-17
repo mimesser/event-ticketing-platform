@@ -55,20 +55,25 @@ function Dashboard() {
 
   //check users balance after moonplay load and show twitter button upon change in account balance
   const getUsersBalance = async () => {
-    const provider = new ethers.providers.Web3Provider(
-      magic.rpcProvider as any
-    );
-    const signer = provider.getSigner();
-    const userAddress = await signer.getAddress();
-    const balance = await provider.getBalance(userAddress);
-    let timer = setInterval(async () => {
-      const currentUserAddress = await signer.getAddress();
-      const currentUserBalance = await provider.getBalance(currentUserAddress);
-      if (currentUserBalance.gt(balance)) {
-        setTwitterButton(true);
-        clearInterval(timer);
-      }
-    }, 250);
+    if (typeof window !== "undefined") {
+      const provider = new ethers.providers.Web3Provider(
+        magic.rpcProvider as any
+      );
+
+      const signer = provider.getSigner();
+      const userAddress = await signer.getAddress();
+      const balance = await provider.getBalance(userAddress);
+      let timer = setInterval(async () => {
+        const currentUserAddress = await signer.getAddress();
+        const currentUserBalance = await provider.getBalance(
+          currentUserAddress
+        );
+        if (currentUserBalance.gt(balance)) {
+          setTwitterButton(true);
+          clearInterval(timer);
+        }
+      }, 250);
+    }
   };
 
   // Find frens on Twitter modal to follow frens on Twitter modal
