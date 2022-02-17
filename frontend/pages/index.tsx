@@ -46,31 +46,29 @@ export default function Home() {
       ).user ?? false;
 
     try {
-      if (typeof window !== "undefined") {
-        const didToken = await magic.auth.loginWithMagicLink({ email });
-        const res = await fetch("/api/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + didToken,
-          },
-          body: JSON.stringify({ email }),
-        });
+      const didToken = await magic?.auth.loginWithMagicLink({ email });
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + didToken,
+        },
+        body: JSON.stringify({ email }),
+      });
 
-        if (res.status === 200) {
-          // redirect
-          Router.push(
-            {
-              pathname: "/dashboard",
-              query: { userExists: JSON.stringify(userExists) },
-            },
-            "/"
-          );
-          setSigningIn(false);
-        } else {
-          // display an error
-          setSigningIn(false);
-        }
+      if (res.status === 200) {
+        // redirect
+        Router.push(
+          {
+            pathname: "/dashboard",
+            query: { userExists: JSON.stringify(userExists) },
+          },
+          "/"
+        );
+        setSigningIn(false);
+      } else {
+        // display an error
+        setSigningIn(false);
       }
     } catch (error) {
       setSigningIn(false);

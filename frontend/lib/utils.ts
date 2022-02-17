@@ -11,3 +11,7 @@ export const shortenAddress = (address: string) => {
 export const stopPropagation = (e: React.MouseEvent<HTMLElement>) => {
   e.stopPropagation();
 };
+
+export const isBrowser = typeof window !== "undefined";
+
+export const isProduction = process.env.NODE_ENV === "production";

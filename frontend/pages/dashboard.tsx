@@ -13,84 +13,60 @@ import Layout from "components/Layout";
 import { ethers } from "ethers";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
+import { signIn, getSession } from "next-auth/react";
 import { moonPaySrc } from "lib/moon-pay";
 import { magic } from "lib/magic";
 import styles from "styles/pages/Dashboard.module.scss";
 
-function Dashboard() {
+function Dashboard({ session }: any) {
   const { query } = useRouter();
   const firstTimeUser = query.userExists === "false";
   const user = useUser({
     redirectTo: firstTimeUser ? false : "/dashboard",
     redirectIfFound: true,
   });
-  const [open, setOpen] = useState(firstTimeUser ? true : false);
-  const [firstModal, setFirstModal] = useState(true); // Welcome modal
+  const [signupFlow, setSignupFlow] = useState(firstTimeUser ? true : false);
+  const [welcomeModal, setWelcomeModal] = useState(true); // Welcome modal
   const [moonPayModal, setMoonPayModal] = useState(false); // buy  crypto on moonpay modal
-  const [thirdModal, setThirdModal] = useState(false); // Find frens on Twitter modal
-  const [fourthModal, setFourthModal] = useState(false); // Follow frens on Twitter modal
-  const [followBtnText, setFollowBtnText] = useState("Follow all");
-  const [followBtnStyle, setFollowBtnStyle] = useState(true);
+  const [twitterModal, setTwitterModal] = useState(false); // Find frens on Twitter modal
   const [twitterButton, setTwitterButton] = useState(false);
 
   const modalClose = () => {
-    setOpen(false);
-    setFirstModal(false);
+    setSignupFlow(false);
+    setWelcomeModal(false);
     setMoonPayModal(false);
   };
 
   // Buy crypto modal to find frens on Twitter modal
-  const continueToThird = () => {
+  const continueToTwitter = () => {
     setMoonPayModal(false);
-    setThirdModal(true);
-    setMoonPayModal(false);
+    setTwitterModal(true);
   };
 
   // MoonPay modal to to buy crypto
   const continueToMoonPayModal = () => {
-    setFirstModal(false);
+    setWelcomeModal(false);
     setMoonPayModal(true);
     getUsersBalance();
   };
 
   //check users balance after moonplay load and show twitter button upon change in account balance
   const getUsersBalance = async () => {
-    if (typeof window !== "undefined") {
-      const provider = new ethers.providers.Web3Provider(
-        magic.rpcProvider as any
-      );
+    const provider = new ethers.providers.Web3Provider(
+      magic?.rpcProvider as any
+    );
 
-      const signer = provider.getSigner();
-      const userAddress = await signer.getAddress();
-      const balance = await provider.getBalance(userAddress);
-      let timer = setInterval(async () => {
-        const currentUserAddress = await signer.getAddress();
-        const currentUserBalance = await provider.getBalance(
-          currentUserAddress
-        );
-        if (currentUserBalance.gt(balance)) {
-          setTwitterButton(true);
-          clearInterval(timer);
-        }
-      }, 250);
-    }
-  };
-
-  // Find frens on Twitter modal to follow frens on Twitter modal
-  const continueToFourth = () => {
-    setThirdModal(false);
-    setFourthModal(true);
-  };
-
-  // Twitter modal, Follow all button function
-  const followAll = () => {
-    if (followBtnText === "Follow all") {
-      setFollowBtnText("Unfollow all");
-      setFollowBtnStyle(false);
-    } else {
-      setFollowBtnText("Follow all");
-      setFollowBtnStyle(true);
-    }
+    const signer = provider.getSigner();
+    const userAddress = await signer.getAddress();
+    const balance = await provider.getBalance(userAddress);
+    let timer = setInterval(async () => {
+      const currentUserAddress = await signer.getAddress();
+      const currentUserBalance = await provider.getBalance(currentUserAddress);
+      if (currentUserBalance.gt(balance)) {
+        setTwitterButton(true);
+        clearInterval(timer);
+      }
+    }, 250);
   };
 
   const modalStyle = {
@@ -106,7 +82,7 @@ function Dashboard() {
   };
 
   return (
-    <Layout onboarding={open}>
+    <Layout onboarding={signupFlow}>
       {user && (
         <>
           <Modal
@@ -116,11 +92,11 @@ function Dashboard() {
             }}
             closeAfterTransition
             onClose={modalClose}
-            open={open}
+            open={signupFlow}
             aria-labelledby="transition-modal-title"
             aria-describedby="transition-modal-description"
           >
-            <Fade in={open}>
+            <Fade in={signupFlow}>
               <Box sx={modalStyle}>
                 <div className={styles.modal_box}>
                   <IconButton
@@ -134,7 +110,8 @@ function Dashboard() {
                       }}
                     />
                   </IconButton>
-                  {firstModal && (
+                  {/* Welcome modal */}
+                  {welcomeModal && (
                     <div className={styles.modal_body}>
                       <Typography id={styles.h5} variant="h5">
                         Welcome to Impish
@@ -157,7 +134,7 @@ function Dashboard() {
                       </Box>
                     </div>
                   )}
-
+                  {/* MoonPay modal */}
                   {moonPayModal && (
                     <div
                       className={styles.modal_body}
@@ -177,7 +154,7 @@ function Dashboard() {
                         <Box>
                           <Button
                             id={styles.continueButtons}
-                            onClick={continueToThird}
+                            onClick={continueToTwitter}
                             type="submit"
                             color="primary"
                             size="large"
@@ -190,8 +167,8 @@ function Dashboard() {
                       )}
                     </div>
                   )}
-
-                  {thirdModal && (
+                  {/* Twitter modal */}
+                  {twitterModal && (
                     <div className={styles.modal_body}>
                       <Typography id={styles.h5} variant="h5">
                         Find frens you follow on Twitter
@@ -202,7 +179,9 @@ function Dashboard() {
                       </Typography>
                       <Box className={styles.linkSocialButtons}>
                         <Button
-                          onClick={continueToFourth}
+                          onClick={() =>
+                            signIn("twitter", { callbackUrl: "/twitter" })
+                          }
                           id={styles.twtButton}
                           type="submit"
                           size="large"
@@ -210,49 +189,6 @@ function Dashboard() {
                           startIcon={<TwitterIcon />}
                         >
                           Find frens I follow
-                        </Button>
-                      </Box>
-                    </div>
-                  )}
-                  {fourthModal && (
-                    <div className={styles.modal_body}>
-                      <Typography id={styles.h5} variant="h5">
-                        Frens you follow on Twitter
-                      </Typography>
-                      <Typography id={styles.body1} variant="body1">
-                        Follow their Web3 journey on Impish
-                      </Typography>
-                      <Box className={styles.linkSocialButtons}>
-                        <Button
-                          id={
-                            followBtnStyle
-                              ? styles.followAllBtn
-                              : styles.unfollowAllBtn
-                          }
-                          onClick={followAll}
-                          type="submit"
-                          color="primary"
-                          size="large"
-                          variant="outlined"
-                        >
-                          {followBtnText}
-                        </Button>
-                        <ul>
-                          <li>Lorem ipsum</li>
-                          <li>Dolor sit amet</li>
-                          <li>Lorem ipsum</li>
-                          <li>Dolor sit amet</li>
-                        </ul>
-                        <Button
-                          id={styles.continueButtons}
-                          onClick={modalClose}
-                          type="submit"
-                          color="primary"
-                          size="large"
-                          variant="outlined"
-                          endIcon={<ArrowRightIcon />}
-                        >
-                          Continue
                         </Button>
                       </Box>
                     </div>
@@ -265,6 +201,15 @@ function Dashboard() {
       )}
     </Layout>
   );
+}
+
+export async function getServerSideProps(context: any) {
+  const session = await getSession(context);
+  return {
+    props: {
+      session,
+    },
+  };
 }
 
 export default Dashboard;

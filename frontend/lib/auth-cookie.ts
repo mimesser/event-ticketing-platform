@@ -1,4 +1,5 @@
 import { CookieSerializeOptions, serialize, parse } from "cookie";
+import { isProduction } from "lib/utils";
 import { NextApiResponse } from "next";
 
 export const MAX_AGE = 60 * 60 * 8;
@@ -8,7 +9,7 @@ export const setTokenCookie = (res: NextApiResponse, token: string) => {
   const cookieOptions: CookieSerializeOptions = {
     maxAge: MAX_AGE,
     httpOnly: true,
-    secure: process.env.NODE_ENV == "production",
+    secure: isProduction,
     path: "/",
     sameSite: "lax",
   };
