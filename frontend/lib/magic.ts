@@ -7,5 +7,7 @@ const customNodeOptions = {
 
 export const magic = new Magic(
   process.env.NEXT_PUBLIC_MAGIC_PUBLISHABLE_KEY ?? "",
-  { network: customNodeOptions }
+  process.env.PRODUCTION
+    ? { network: customNodeOptions }
+    : { network: "ropsten" }
 );
