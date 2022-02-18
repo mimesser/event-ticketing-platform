@@ -492,10 +492,13 @@ export default function Header() {
                     <Typography>Notifications</Typography>
                     {notificationCount && (
                       <Tooltip title="Mark all as read">
-                        <IconButton color="primary" size="large">
+                        <IconButton
+                          color="primary"
+                          onClick={markNotifictionAsRead}
+                          size="large"
+                        >
                           <DoneAllIcon
                             color="primary"
-                            onClick={markNotifictionAsRead}
                             sx={{
                               fontSize: 18,
                             }}
