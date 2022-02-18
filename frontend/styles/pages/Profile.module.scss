@@ -59,6 +59,7 @@
 
     & > svg {
       margin-left: 10px;
+      margin-bottom: -5px;
     }
   }
 
@@ -186,5 +187,16 @@
   .username {
     margin-top: 80px;
     margin-bottom: 10px;
+  }
+}
+
+// Responsive
+@media screen and (max-width: 728px) {
+  .profile_page {
+    .address {
+      margin-top: 75px;
+      padding-left: 20px;
+      font-size: 16px;
+    }
   }
 }

@@ -7,7 +7,10 @@ import Button from "@mui/material/Button";
 import CloseIcon from "@mui/icons-material/Close";
 import Container from "@mui/material/Container";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
+import Divider from "@mui/material/Divider";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
 import Drawer from "@mui/material/Drawer";
+import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -17,6 +20,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import MenuList from "@mui/material/MenuList";
 import Modal from "@mui/material/Modal";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Popover from "@mui/material/Popover";
@@ -29,18 +33,35 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import Avatar from "boring-avatars";
 import { useUser } from "lib/hooks";
 import { moonPaySrc } from "lib/moon-pay";
-import { shortenAddress } from "lib/utils";
+import { shortenAddress, shortenText } from "lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
-import { signIn, signOut, useSession } from "next-auth/react";
-import styles from "styles/components/Header.module.scss";
 import { useRouter } from "next/router";
+import { signIn, signOut, useSession } from "next-auth/react";
+import React, { useEffect, useState } from "react";
+import styles from "styles/components/Header.module.scss";
+
+// mock data for notifications
+
+const notData: string[] = [
+  "this is the first notification available",
+  "this is the second notification available",
+  "this is the third notification available but longer so i can test responsiveness",
+];
 
 export default function Header() {
   const isMobile = useMediaQuery("(max-width:599px)");
   const router = useRouter();
+  const [notificationCount, setNotificationCount] = useState(true);
+  const [notifications, setNotifications] = useState<string[]>([]);
 
+  useEffect(() => {
+    loadNotifications();
+  }, []);
+
+  const loadNotifications = () => {
+    setNotifications(notData);
+  };
   const { data: session }: any = useSession();
 
   const drawerWidth = 240;
@@ -87,7 +108,10 @@ export default function Header() {
     setBuyOpen(false);
     setMoonPayModal(false);
   };
-
+  const markNotifictionAsRead = () => {
+    setNotificationCount(false);
+    setNotifications([]);
+  };
   const drawer = user && (
     <>
       <Toolbar />
@@ -385,7 +409,11 @@ export default function Header() {
                   }}
                   onClick={handleOpenNotification}
                 >
-                  <Badge badgeContent={3} color="error">
+                  <Badge
+                    badgeContent={notifications.length}
+                    invisible={!notificationCount}
+                    color="error"
+                  >
                     <NotificationsIcon
                       sx={{
                         color: (theme) =>
@@ -435,14 +463,60 @@ export default function Header() {
                 open={Boolean(anchorElNotification)}
                 anchorEl={anchorElNotification}
                 onClose={handleCloseNotification}
+                sx={{
+                  mt: "45px",
+                }}
                 anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "left",
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                PaperProps={{
+                  sx: {
+                    borderRadius: (theme) => theme.shape.borderRadius,
+                    width: 330,
+                  },
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
                 }}
               >
-                <Typography sx={{ p: 2 }}>Notification 1</Typography>
-                <Typography sx={{ p: 2 }}>Notification 2</Typography>
-                <Typography sx={{ p: 2 }}>Notification 3</Typography>
+                <Box sx={{ flexGrow: 1, p: 3 }}>
+                  <Grid
+                    container
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
+                    <Typography>Notifications</Typography>
+                    {notificationCount && (
+                      <Tooltip title="Mark all as read">
+                        <IconButton color="primary" size="large">
+                          <DoneAllIcon
+                            color="primary"
+                            onClick={markNotifictionAsRead}
+                            sx={{
+                              fontSize: 18,
+                            }}
+                          />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                  </Grid>
+                  <Typography color="text.secondary" variant="subtitle2">
+                    You have {notifications.length} unread messages
+                  </Typography>
+                </Box>
+                <Divider />
+                <MenuList>
+                  {notifications.map((data, i) => (
+                    <MenuItem key={i}>
+                      <ListItemText>{shortenText(data)}</ListItemText>
+                    </MenuItem>
+                  ))}
+                  <Divider />
+                </MenuList>
               </Popover>
               {selectedMenu === "" ? (
                 <Menu
@@ -460,7 +534,8 @@ export default function Header() {
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseUserMenu}
                   PaperProps={{
-                    style: {
+                    sx: {
+                      borderRadius: (theme) => theme.shape.borderRadius,
                       width: 250,
                     },
                   }}
@@ -500,7 +575,8 @@ export default function Header() {
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseUserMenu}
                   PaperProps={{
-                    style: {
+                    sx: {
+                      borderRadius: (theme) => theme.shape.borderRadius,
                       width: 250,
                     },
                   }}
