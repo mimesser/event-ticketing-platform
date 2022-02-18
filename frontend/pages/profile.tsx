@@ -20,6 +20,7 @@ import moment from "moment";
 import Image from "next/image";
 import React from "react";
 import styles from "styles/pages/Profile.module.scss";
+import { Tooltip } from "@mui/material";
 
 function Profile() {
   const user = useUser({ redirectTo: "/" });
@@ -169,12 +170,17 @@ function Profile() {
             </div>
 
             <div className={styles.menu}>
-              <div className={styles.edit} onClick={editProfile}>
-                Edit profile
-              </div>
-              <div className={styles.share} onClick={handleOpenShareMenu}>
-                <ReplyIcon />
-              </div>
+              <Tooltip title="Edit Profile">
+                <div className={styles.edit} onClick={editProfile}>
+                  Edit profile
+                </div>
+              </Tooltip>
+
+              <Tooltip title="Share Profile">
+                <div className={styles.share} onClick={handleOpenShareMenu}>
+                  <ReplyIcon />
+                </div>
+              </Tooltip>
             </div>
 
             <div className={styles.address}>
@@ -182,10 +188,12 @@ function Profile() {
               {snackShow ? (
                 <CheckIcon />
               ) : (
-                <ContentCopyIcon
-                  className={styles.copy}
-                  onClick={copyAddress}
-                />
+                <Tooltip title="Copy Address">
+                  <ContentCopyIcon
+                    className={styles.copy}
+                    onClick={copyAddress}
+                  />
+                </Tooltip>
               )}
             </div>
 
