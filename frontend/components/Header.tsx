@@ -8,11 +8,11 @@ import CloseIcon from "@mui/icons-material/Close";
 import Container from "@mui/material/Container";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import Drawer from "@mui/material/Drawer";
-import EditIcon from "@mui/icons-material/Edit";
 import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -22,6 +22,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import Popover from "@mui/material/Popover";
 import SettingsIcon from "@mui/icons-material/Settings";
 import Toolbar from "@mui/material/Toolbar";
+import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -34,9 +35,11 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import styles from "styles/components/Header.module.scss";
+import { useRouter } from "next/router";
 
 export default function Header() {
   const isMobile = useMediaQuery("(max-width:599px)");
+  const router = useRouter();
 
   const { data: session }: any = useSession();
 
@@ -88,9 +91,21 @@ export default function Header() {
   const drawer = user && (
     <>
       <Toolbar />
-      <List>
+      <List
+        sx={{
+          "&& .Mui-selected": {
+            "&, & .MuiListItemText-root": {
+              color: (theme) => theme.palette.primary.main,
+            },
+          },
+          px: 2,
+        }}
+      >
         <ListItem
           button
+          sx={{
+            borderRadius: (theme) => theme.shape.borderRadius,
+          }}
           style={{
             margin: "10px 0",
             display: "flex",
@@ -98,6 +113,7 @@ export default function Header() {
             alignItems: "center",
             padding: "12px",
           }}
+          selected={router.pathname === "/profile"}
         >
           <div className={styles.account}>
             <Avatar
@@ -106,14 +122,14 @@ export default function Header() {
               variant="pixel"
               colors={["#ffad08", "#edd75a", "#73b06f", "#0c8f8f", "#405059"]}
             />
-            <div className={styles.edit}>
-              <EditIcon style={{ margin: 0 }} />
-            </div>
           </div>
           <Link href="/profile" passHref>
-            <span style={{ color: "black", height: 16, marginLeft: 15 }}>
+            <ListItemText
+              disableTypography
+              style={{ height: 16, marginLeft: 15 }}
+            >
               {shortenAddress(user.publicAddress)}
-            </span>
+            </ListItemText>
           </Link>
         </ListItem>
       </List>
@@ -361,35 +377,60 @@ export default function Header() {
               sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
             ></Box>
             <Box sx={{ flexGrow: 0 }}>
-              <IconButton
-                size="large"
-                sx={{
-                  color: "black",
-                }}
-                onClick={handleOpenNotification}
-              >
-                <Badge badgeContent={3} color="error">
-                  <NotificationsIcon />
-                </Badge>
-              </IconButton>
-              <IconButton
-                size="large"
-                sx={{
-                  color: "black",
-                }}
-                onClick={buyModal}
-              >
-                <CreditCardIcon />
-              </IconButton>
-              <IconButton
-                size="large"
-                sx={{
-                  color: "black",
-                }}
-                onClick={handleOpenUserMenu}
-              >
-                <AccountCircleIcon />
-              </IconButton>
+              <Tooltip title="Notifications">
+                <IconButton
+                  size="large"
+                  sx={{
+                    color: "black",
+                  }}
+                  onClick={handleOpenNotification}
+                >
+                  <Badge badgeContent={3} color="error">
+                    <NotificationsIcon
+                      sx={{
+                        color: (theme) =>
+                          anchorElNotification
+                            ? theme.palette.primary.dark
+                            : "black",
+                      }}
+                    />
+                  </Badge>
+                </IconButton>
+              </Tooltip>
+
+              <Tooltip title="Buy Crypto">
+                <IconButton
+                  size="large"
+                  sx={{
+                    color: "black",
+                  }}
+                  onClick={buyModal}
+                >
+                  <CreditCardIcon
+                    sx={{
+                      color: (theme) =>
+                        buyOpen ? theme.palette.primary.dark : "black",
+                    }}
+                  />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Account">
+                <IconButton
+                  size="large"
+                  sx={{
+                    color: "black",
+                  }}
+                  onClick={handleOpenUserMenu}
+                >
+                  <AccountCircleIcon
+                    sx={{
+                      color: (theme) =>
+                        anchorElUser ? theme.palette.primary.dark : "black",
+                    }}
+                  />
+                </IconButton>
+              </Tooltip>
+
               <Popover
                 open={Boolean(anchorElNotification)}
                 anchorEl={anchorElNotification}
