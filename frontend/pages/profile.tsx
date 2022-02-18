@@ -1,4 +1,5 @@
 import Backdrop from "@mui/material/Backdrop";
+import Button from "@mui/material/Button";
 import CameraEnhanceIcon from "@mui/icons-material/CameraEnhance";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
@@ -11,6 +12,8 @@ import Modal from "@mui/material/Modal";
 import ReplyIcon from "@mui/icons-material/Reply";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
 import Avatar from "boring-avatars";
 import Layout from "components/Layout";
 import copy from "copy-to-clipboard";
@@ -20,7 +23,6 @@ import moment from "moment";
 import Image from "next/image";
 import React from "react";
 import styles from "styles/pages/Profile.module.scss";
-import { Tooltip } from "@mui/material";
 
 function Profile() {
   const user = useUser({ redirectTo: "/" });
@@ -171,15 +173,44 @@ function Profile() {
 
             <div className={styles.menu}>
               <Tooltip title="Edit Profile">
-                <div className={styles.edit} onClick={editProfile}>
-                  Edit profile
-                </div>
+                <Button
+                  color="inherit"
+                  sx={(theme) => ({
+                    borderRadius: theme.shape.borderRadius,
+                    margin: theme.spacing(1),
+                  })}
+                  variant="outlined"
+                  onClick={editProfile}
+                >
+                  <Typography
+                    sx={{
+                      fontFamily: "sans-serif",
+                      fontSize: "16px",
+                      fontWeight: 550,
+                      textTransform: "none",
+                    }}
+                    variant="body1"
+                  >
+                    Edit profile
+                  </Typography>
+                </Button>
               </Tooltip>
 
               <Tooltip title="Share Profile">
-                <div className={styles.share} onClick={handleOpenShareMenu}>
+                <Button
+                  color="inherit"
+                  variant="outlined"
+                  sx={(theme) => ({
+                    borderRadius: theme.shape.borderRadius,
+                    margin: theme.spacing(1),
+                    [theme.breakpoints.down("md")]: {
+                      maxWidth: "30px",
+                    },
+                  })}
+                  onClick={handleOpenShareMenu}
+                >
                   <ReplyIcon />
-                </div>
+                </Button>
               </Tooltip>
             </div>
 
@@ -226,6 +257,9 @@ function Profile() {
             }}
             open={Boolean(anchorElShare)}
             onClose={handleCloseShareMenu}
+            PaperProps={{
+              sx: { borderRadius: (theme) => theme.shape.borderRadius },
+            }}
           >
             <MenuItem onClick={copyShareLink}>
               <ListItemIcon>

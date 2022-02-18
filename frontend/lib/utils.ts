@@ -8,6 +8,16 @@ export const shortenAddress = (address: string) => {
   return address.slice(0, 4) + "..." + address.slice(-4);
 };
 
+export const shortenText = (text: string) => {
+  if (!text) return "";
+
+  if (text.length > 45) {
+    return text.slice(0, 38) + "...";
+  } else {
+    return text;
+  }
+};
+
 export const stopPropagation = (e: React.MouseEvent<HTMLElement>) => {
   e.stopPropagation();
 };
