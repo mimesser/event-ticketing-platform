@@ -7,7 +7,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 export default async function login(req: NextApiRequest, res: NextApiResponse) {
   const didToken = req.headers.authorization?.substr(7) || "";
 
-  const metadata = await magic?.users.getMetadataByToken(didToken);
+  const metadata = await magic.users.getMetadataByToken(didToken);
 
   if (!metadata?.email || !metadata?.issuer || !metadata?.publicAddress) {
     res
