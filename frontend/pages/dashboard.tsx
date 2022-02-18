@@ -6,19 +6,23 @@ import CloseIcon from "@mui/icons-material/Close";
 import Fade from "@mui/material/Fade";
 import IconButton from "@mui/material/IconButton";
 import Modal from "@mui/material/Modal";
+import Stack from "@mui/material/Stack";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import Typography from "@mui/material/Typography";
 import { useUser } from "lib/hooks";
+import { magic } from "lib/magic";
+import { moonPaySrc } from "lib/moon-pay";
 import Layout from "components/Layout";
 import { ethers } from "ethers";
+import Image from "next/image";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
-import { signIn, getSession } from "next-auth/react";
-import { moonPaySrc } from "lib/moon-pay";
-import { magic } from "lib/magic";
+import { signIn, getSession, useSession } from "next-auth/react";
+import React, { useState, useLayoutEffect } from "react";
+
 import styles from "styles/pages/Dashboard.module.scss";
 
-function Dashboard({ session }: any) {
+function Dashboard() {
+  const { status }: any = useSession();
   const { query } = useRouter();
   const firstTimeUser = query.userExists === "false";
   const user = useUser({
@@ -30,6 +34,28 @@ function Dashboard({ session }: any) {
   const [moonPayModal, setMoonPayModal] = useState(false); // buy  crypto on moonpay modal
   const [twitterModal, setTwitterModal] = useState(false); // Find frens on Twitter modal
   const [twitterButton, setTwitterButton] = useState(false);
+
+  const [twitterBanner, setTwitterBanner] = useState(
+    status === "unauthenticated" ? true : false
+  );
+  const [buyBanner, setBuyBanner] = useState(true);
+
+  useLayoutEffect(() => {
+    balanceCheck();
+  }, []);
+
+  // Check user's balance for the banner
+  async function balanceCheck() {
+    const provider = new ethers.providers.Web3Provider(
+      magic?.rpcProvider as any
+    );
+
+    const balance = await provider.getBalance(user.publicAddress);
+
+    if (balance.toString() === "0") {
+      setBuyBanner(true);
+    }
+  }
 
   const modalClose = () => {
     setSignupFlow(false);
@@ -83,6 +109,101 @@ function Dashboard({ session }: any) {
 
   return (
     <Layout onboarding={signupFlow}>
+      <Stack
+        direction="row"
+        mt={4}
+        spacing={2}
+        className={styles.reminderBanners}
+        sx={{
+          "@media screen and (max-width: 599px)": {
+            flexDirection: "column",
+          },
+        }}
+      >
+        {buyBanner && (
+          <Button
+            color="inherit"
+            variant="outlined"
+            className={styles.buyBanner}
+            sx={{
+              borderRadius: (theme) => theme.shape.borderRadius,
+              textTransform: "none",
+            }}
+          >
+            <div className={styles.closeBannerBtn}>
+              <IconButton
+                aria-label="close"
+                onClick={() => {
+                  setBuyBanner(false);
+                }}
+              >
+                <CloseIcon
+                  sx={{
+                    color: "#000000",
+                  }}
+                />
+              </IconButton>
+            </div>
+            <div className={styles.buyBannerBody}>
+              <Typography id={styles.h6} variant="h6">
+                Purchase MATIC
+              </Typography>
+              <Typography id={styles.body1} variant="body1">
+                Buy crypto with Fiat
+              </Typography>
+            </div>
+            <div className={styles.buyBannerLogo}>
+              <Image
+                src="/icons/matic.svg"
+                alt="Matic"
+                width={50}
+                height={50}
+                priority
+              />
+            </div>
+          </Button>
+        )}
+        {twitterBanner && (
+          <Button
+            color="inherit"
+            className={styles.twitterBanner}
+            variant="outlined"
+            sx={{
+              borderRadius: (theme) => theme.shape.borderRadius,
+              textTransform: "none",
+            }}
+          >
+            <div className={styles.closeBannerBtn}>
+              <IconButton
+                aria-label="close"
+                onClick={() => {
+                  setTwitterBanner(false);
+                }}
+              >
+                <CloseIcon
+                  sx={{
+                    color: "#000000",
+                  }}
+                />
+              </IconButton>
+            </div>
+            <div className={styles.twitterBannerBody}>
+              <Typography id={styles.h6} variant="h6">
+                Link Twitter
+              </Typography>
+              <Typography id={styles.body1} variant="body1">
+                To get the most of your Web3 adventure, connect with frens on
+                Twitter
+              </Typography>
+            </div>
+            <div className={styles.twitterBannerLogo}>
+              <TwitterIcon
+                sx={{ fontSize: "4rem", color: "rgb(29, 161, 242)" }}
+              />
+            </div>
+          </Button>
+        )}
+      </Stack>
       {user && (
         <>
           <Modal

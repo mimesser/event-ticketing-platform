@@ -73,3 +73,123 @@
     }
   }
 }
+
+.reminderBanners {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 10px;
+
+  #h6 {
+    margin-top: 15px;
+    margin-left: 30px;
+    margin-right: 30px;
+    font-weight: 900;
+  }
+
+  #body1 {
+    margin-top: 10px;
+    margin-left: 30px;
+    margin-right: 30px;
+    margin-bottom: 15px;
+    max-width: 23vw;
+    font-size: 1rem;
+    font-weight: bold;
+    line-height: 1.2rem;
+    letter-spacing: 0.1px;
+    color: rgb(118, 118, 118);
+  }
+
+  .closeBannerBtn {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+  }
+
+  .buyBanner {
+    min-height: 200px;
+    width: 310px;
+
+    .buyBannerBody {
+      margin-right: 50px;
+    }
+
+    .buyBannerLogo {
+      position: absolute;
+      right: 15px;
+      top: 30%;
+    }
+  }
+
+  .twitterBanner {
+    min-height: 200px;
+    width: 310px;
+
+    .twitterBannerBody {
+      margin-right: 50px;
+    }
+
+    .twitterBannerLogo {
+      position: absolute;
+      right: 10px;
+      top: 30%;
+    }
+  }
+}
+
+@media (max-width: 599px) {
+  .reminderBanners {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    #h6 {
+      margin-top: 15px;
+      margin-left: 30px;
+      margin-right: 50px;
+      font-weight: 900;
+    }
+
+    #body1 {
+      margin-top: 10px;
+      margin-left: 30px;
+      margin-right: 30px;
+      margin-bottom: 15px;
+      max-width: 75%;
+      font-size: 0.7rem;
+      font-weight: bold;
+      line-height: 0.9rem;
+      letter-spacing: 0.1px;
+      color: rgb(118, 118, 118);
+    }
+
+    .closeBannerBtn {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+    }
+
+    .buyBanner {
+      position: relative;
+      margin-bottom: 10px;
+      height: 160px;
+      width: 80%;
+    }
+
+    .twitterBanner {
+      margin-left: 0px;
+      text-align: center;
+      height: 160px;
+      width: 80%;
+
+      .twitterBannerLogo {
+        position: absolute;
+        right: 10px;
+        top: 30%;
+      }
+    }
+  }
+}
