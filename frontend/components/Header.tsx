@@ -140,19 +140,29 @@ export default function Header() {
           selected={router.pathname === "/profile"}
         >
           <div className={styles.account}>
-            <Avatar
-              size={32}
-              name={user.publicAddress}
-              variant="pixel"
-              colors={["#ffad08", "#edd75a", "#73b06f", "#0c8f8f", "#405059"]}
-            />
+            {
+              user.avatarImage ?
+                <Image
+                  src={user.avatarImage}
+                  width={32}
+                  height={32}
+                  alt="Avatar"
+                />
+              :
+                <Avatar
+                  size={32}
+                  name={user.walletAddress}
+                  variant="pixel"
+                  colors={["#ffad08", "#edd75a", "#73b06f", "#0c8f8f", "#405059"]}
+                />
+            }
           </div>
           <Link href="/profile" passHref>
             <ListItemText
               disableTypography
               style={{ height: 16, marginLeft: 15 }}
             >
-              {shortenAddress(user.publicAddress)}
+              {shortenAddress(user.walletAddress)}
             </ListItemText>
           </Link>
         </ListItem>
@@ -205,7 +215,7 @@ export default function Header() {
                   frameBorder="0"
                   height="100%"
                   id="moonPayFrame"
-                  src={moonPaySrc(user.publicAddress, user.email)}
+                  src={moonPaySrc(user.walletAddress, user.email)}
                   width="100%"
                 >
                   <p>Your browser does not support iframes.</p>

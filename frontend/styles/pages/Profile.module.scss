@@ -9,6 +9,10 @@
     height: 150px;
     background-image: linear-gradient(rgb(23, 160, 34), rgb(171, 66, 197));
     cursor: pointer;
+
+    img {
+      background-color: white;
+    }
   }
 
   .avatar {
@@ -87,6 +91,10 @@
     width: 100%;
     height: 250px;
     background-image: linear-gradient(rgb(23, 160, 34), rgb(171, 66, 197));
+
+    img {
+      background-color: white;
+    }
   }
 
   .avatar {
@@ -154,6 +162,10 @@
     height: 150px;
     background-image: linear-gradient(rgb(23, 160, 34), rgb(171, 66, 197));
 
+    img {
+      background-color: white;
+    }
+
     .icon_set {
       position: absolute;
       top: 50%;
@@ -184,10 +196,63 @@
     }
   }
 
-  .username {
+  .name {
     margin-top: 80px;
+  }
+
+  .username {
+    margin-top: 20px;
     margin-bottom: 10px;
   }
+}
+
+.discard_modal {
+  border-radius: 15px;
+  background-color: white;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  width: 240px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  .title {
+    font-weight: bold;
+    font-size: 18px;
+  }
+  .content {
+    color: #333;
+    margin-top: 10px;
+    font-size: 14px;
+  }
+  .discard {
+    background-color: #f5222f;
+    border-radius: 25px;
+    color: white;
+    cursor: pointer;
+    margin-top: 25px;
+    padding: 7px 15px;
+    text-align: center;
+  }
+  .cancel {
+    border: solid 1px #aaa;
+    border-radius: 25px;
+    cursor: pointer;
+    margin-top: 10px;
+    padding: 7px 15px;
+    text-align: center;
+  }
+}
+
+.dim {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
 }
 
 // Responsive

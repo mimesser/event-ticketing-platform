@@ -37,7 +37,7 @@ function ExportPage() {
         <div className={styles.export_page}>
           <div className={styles.title}>By receiving the private key for</div>
           <div className={styles.address}>
-            <span>{user.publicAddress}</span>
+            <span>{user.walletAddress}</span>
           </div>
           <div>you are agreeing that:</div>
 

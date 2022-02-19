@@ -18,18 +18,24 @@ import Avatar from "boring-avatars";
 import Layout from "components/Layout";
 import copy from "copy-to-clipboard";
 import { useUser } from "lib/hooks";
-import { isProduction, shortenAddress, stopPropagation } from "lib/utils";
+import {
+  checkUsernameEqual,
+  isProduction,
+  shortenAddress,
+  stopPropagation,
+} from "lib/utils";
 import moment from "moment";
 import Image from "next/image";
+import Router from "next/router";
 import React from "react";
 import styles from "styles/pages/Profile.module.scss";
 
 function Profile() {
-  const user = useUser({ redirectTo: "/" });
+  const user = useUser({ redirectTo: "/profile" });
 
   const [snackShow, openSnackBar] = React.useState(false);
   const copyAddress = async () => {
-    copy(user.publicAddress);
+    copy(user.walletAddress);
     openSnackBar(true);
   };
 
@@ -45,7 +51,7 @@ function Profile() {
 
   const [linkCopied, copyLink] = React.useState(false);
   const copyShareLink = () => {
-    let username = user.publicAddress;
+    let username = user.walletAddress;
     if (user.username) username = user.username;
     copy(process.env.NEXT_PUBLIC_URL + username);
     copyLink(true);
@@ -62,29 +68,80 @@ function Profile() {
     showPhotoModal(true);
   };
 
+  const [discardModal, showDiscardModal] = React.useState(false);
+  const discardModalClose = () => {
+    showDiscardModal(false);
+  };
+  const discard = () => {
+    showDiscardModal(false);
+    showEditProfile(false);
+  };
+
   const [profileModal, showEditProfile] = React.useState(false);
   const editProfile = () => {
+    setNewName(user.name);
     setNewUsername(user.username);
     invalidateUsername(false);
-    setNewAvatar("");
-    setNewBanner("");
+    setNewAvatar(user.avatarImage);
+    setNewBanner(user.bannerImage);
     showEditProfile(true);
   };
   const editModalClose = () => {
-    showEditProfile(false);
+    if (
+      !checkUsernameEqual(user.username, newUsername) ||
+      !checkUsernameEqual(user.name, newName) ||
+      user.avatarImage !== newAvatar ||
+      user.bannerImage !== newBanner
+    ) {
+      showDiscardModal(true);
+    } else {
+      showEditProfile(false);
+    }
+  };
+  const saveProfile = async () => {
+    if (invalidUsername) return;
+    const response = await (
+      await fetch("/api/update-profile", {
+        method: "POST",
+        body: JSON.stringify({
+          email: user.email,
+          name: newName,
+          username: newUsername,
+          avatarImage: newAvatar,
+          bannerImage: newBanner,
+        }),
+      })
+    ).json();
+    if (response.user) {
+      showEditProfile(false);
+      Router.reload();
+    }
+    if (response.error) {
+      invalidateUsername(true);
+    }
+  };
+
+  const [newName, setNewName] = React.useState("");
+  const nameUpdated = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    if (event.target.value.length > 50) return;
+    setNewName(event.target.value);
   };
 
   const [newUsername, setNewUsername] = React.useState("");
   const usernameUpdated = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
+    if (event.target.value.length > 50) return;
     invalidateUsername(false);
     setNewUsername(event.target.value);
   };
   const [invalidUsername, invalidateUsername] = React.useState(false);
   const checkUsername = async () => {
     const userExists =
-      (
+      !checkUsernameEqual(user.username, newUsername) &&
+      ((
         await (
           await fetch("/api/check-username", {
             method: "POST",
@@ -93,7 +150,8 @@ function Profile() {
             }),
           })
         ).json()
-      ).user ?? false;
+      ).user ??
+        false);
     invalidateUsername(!!userExists);
   };
 
@@ -105,9 +163,6 @@ function Profile() {
     if (!e.target.files) return;
 
     const file = e.target?.files[0];
-
-    if (selectedPhoto === "avatar") setNewAvatar(URL.createObjectURL(file));
-    if (selectedPhoto === "banner") setNewBanner(URL.createObjectURL(file));
 
     const filename = encodeURIComponent(file.name);
     const res = await fetch(`/api/upload-image?file=${filename}`);
@@ -126,6 +181,9 @@ function Profile() {
 
     if (upload.ok || upload.type === "opaque") {
       console.log("Uploaded successfully!");
+
+      if (selectedPhoto === "avatar") setNewAvatar(url + fields.key);
+      if (selectedPhoto === "banner") setNewBanner(url + fields.key);
     } else {
       console.error("Upload failed.");
     }
@@ -157,18 +215,42 @@ function Profile() {
             <div
               className={styles.banner}
               onClick={() => updatePhoto("banner")}
-            ></div>
+            >
+              {user.bannerImage && (
+                <Image
+                  src={user.bannerImage}
+                  layout="fill"
+                  objectFit="cover"
+                  alt="Banner"
+                />
+              )}
+            </div>
 
             <div
               className={styles.avatar}
               onClick={() => updatePhoto("avatar")}
             >
-              <Avatar
-                size={80}
-                name={user.publicAddress}
-                variant="pixel"
-                colors={["#ffad08", "#edd75a", "#73b06f", "#0c8f8f", "#405059"]}
-              />
+              {user.avatarImage ? (
+                <Image
+                  src={user.avatarImage}
+                  width={80}
+                  height={80}
+                  alt="Avatar"
+                />
+              ) : (
+                <Avatar
+                  size={80}
+                  name={user.walletAddress}
+                  variant="pixel"
+                  colors={[
+                    "#ffad08",
+                    "#edd75a",
+                    "#73b06f",
+                    "#0c8f8f",
+                    "#405059",
+                  ]}
+                />
+              )}
             </div>
 
             <div className={styles.menu}>
@@ -215,7 +297,7 @@ function Profile() {
             </div>
 
             <div className={styles.address}>
-              {shortenAddress(user.publicAddress)}
+              {shortenAddress(user.walletAddress)}
               {snackShow ? (
                 <CheckIcon />
               ) : (
@@ -282,7 +364,7 @@ function Profile() {
                 <div className={styles.avatar} onClick={stopPropagation}>
                   <Avatar
                     size={240}
-                    name={user.publicAddress}
+                    name={user.walletAddress}
                     variant="pixel"
                     colors={[
                       "#ffad08",
@@ -294,7 +376,16 @@ function Profile() {
                   />
                 </div>
               ) : (
-                <div className={styles.banner} onClick={stopPropagation}></div>
+                <div className={styles.banner} onClick={stopPropagation}>
+                  {user.bannerImage && (
+                    <Image
+                      src={user.bannerImage}
+                      layout="fill"
+                      objectFit="cover"
+                      alt="Banner"
+                    />
+                  )}
+                </div>
               )}
               <div className={styles.close}>
                 <IconButton
@@ -326,7 +417,7 @@ function Profile() {
                   <CloseIcon onClick={editModalClose} />
                   <span>Edit Profile</span>
                 </div>
-                <div className={styles.save_btn} onClick={editModalClose}>
+                <div className={styles.save_btn} onClick={saveProfile}>
                   Save
                 </div>
               </div>
@@ -340,6 +431,7 @@ function Profile() {
                     alt="Banner"
                   />
                 )}
+                <div className={styles.dim} />
                 <div className={styles.icon_set}>
                   <CameraEnhanceIcon
                     className={styles.icon}
@@ -368,7 +460,7 @@ function Profile() {
                   ) : (
                     <Avatar
                       size={80}
-                      name={user.publicAddress}
+                      name={user.walletAddress}
                       variant="pixel"
                       colors={[
                         "#ffad08",
@@ -379,6 +471,7 @@ function Profile() {
                       ]}
                     />
                   )}
+                  <div className={styles.dim} />
                   <div className={styles.icon_set}>
                     <CameraEnhanceIcon
                       className={styles.icon}
@@ -396,6 +489,14 @@ function Profile() {
               </div>
 
               <TextField
+                label="Name"
+                variant="outlined"
+                className={styles.name}
+                value={newName}
+                onChange={nameUpdated}
+              />
+
+              <TextField
                 label="Username"
                 error={invalidUsername}
                 helperText={
@@ -409,6 +510,28 @@ function Profile() {
                 onChange={usernameUpdated}
                 onBlur={checkUsername}
               />
+            </div>
+          </Modal>
+
+          <Modal
+            BackdropProps={{
+              timeout: 500,
+            }}
+            closeAfterTransition
+            onClose={discardModalClose}
+            open={discardModal}
+          >
+            <div className={styles.discard_modal}>
+              <span className={styles.title}>Discard changes?</span>
+              <span className={styles.content}>
+                This can&apos;t be undone and you&apos;ll lose your changes.
+              </span>
+              <span className={styles.discard} onClick={discard}>
+                Discard
+              </span>
+              <span className={styles.cancel} onClick={discardModalClose}>
+                Cancel
+              </span>
             </div>
           </Modal>
         </>
