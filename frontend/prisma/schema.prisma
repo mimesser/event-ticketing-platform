@@ -21,5 +21,8 @@ model User {
   name            String?
   username        String?  @unique
   twitterUsername String?  @unique
+  avatarImage     String?
+  bannerImage     String?
+
   @@map("users")
 }

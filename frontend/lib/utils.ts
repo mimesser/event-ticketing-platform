@@ -25,3 +25,10 @@ export const stopPropagation = (e: React.MouseEvent<HTMLElement>) => {
 export const isBrowser = typeof window !== "undefined";
 
 export const isProduction = process.env.NODE_ENV === "production";
+
+export const checkUsernameEqual = (left: any, right: any) => {
+  if (!left) left = "";
+  if (!right) right = "";
+
+  return left.toString().toLowerCase() === right.toString().toLowerCase();
+};

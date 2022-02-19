@@ -41,7 +41,9 @@ function Dashboard() {
   const [buyBanner, setBuyBanner] = useState(true);
 
   useLayoutEffect(() => {
-    balanceCheck();
+    if (user) {
+      balanceCheck();
+    }
   }, []);
 
   // Check user's balance for the banner
@@ -50,7 +52,7 @@ function Dashboard() {
       magic?.rpcProvider as any
     );
 
-    const balance = await provider.getBalance(user.publicAddress);
+    const balance = await provider.getBalance(user.walletAddress);
 
     if (balance.toString() === "0") {
       setBuyBanner(true);
@@ -268,7 +270,7 @@ function Dashboard() {
                         frameBorder="0"
                         height="100%"
                         id="moonPayFrame"
-                        src={moonPaySrc(user.publicAddress, user.email)}
+                        src={moonPaySrc(user.walletAddress, user.email)}
                         width="100%"
                       >
                         <p>Your browser does not support iframes.</p>

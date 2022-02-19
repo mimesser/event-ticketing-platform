@@ -17,11 +17,14 @@ export default async function uploadImage(
   const file = bucket.file(req.query.file as string);
 
   try {
-    if (await file.exists()) {
+    const [fileExists] = await file.exists();
+
+    if (fileExists) {
       await file.delete();
     }
   } catch (_error) {
     // ignore for now
+    console.error(_error);
   }
 
   const options = {
