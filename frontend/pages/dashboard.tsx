@@ -123,6 +123,7 @@ function Dashboard() {
         {buyBanner && (
           <Button
             color="inherit"
+            component="div"
             variant="outlined"
             className={styles.buyBanner}
             sx={{
@@ -166,6 +167,7 @@ function Dashboard() {
         {twitterBanner && (
           <Button
             color="inherit"
+            component="div"
             className={styles.twitterBanner}
             variant="outlined"
             sx={{
