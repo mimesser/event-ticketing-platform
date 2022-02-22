@@ -34,3 +34,17 @@ export function useUser({ redirectTo, redirectIfFound }: any = {}) {
 
   return error ? null : user;
 }
+
+export async function fetchPublicUser(username: string) {
+  const user = (
+    await (
+      await fetch("/api/public-user", {
+        method: "POST",
+        body: JSON.stringify({
+          username,
+        }),
+      })
+    ).json()
+  ).user ?? null;
+  return user;
+}
