@@ -11,18 +11,19 @@ datasource db {
 }
 
 model User {
-  id              Int      @id @default(autoincrement())
-  email           String?  @unique
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
-  phoneNumber     String?  @unique
-  walletAddress   String?  @unique
-  issuer          String?  @unique
-  name            String?
-  username        String?  @unique
-  twitterUsername String?  @unique
-  avatarImage     String?
-  bannerImage     String?
+  id                 Int      @id @default(autoincrement())
+  email              String?  @unique
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+  phoneNumber        String?  @unique
+  walletAddress      String?  @unique
+  issuer             String?  @unique
+  name               String?
+  username           String?  @unique
+  twitterUsername    String?  @unique
+  avatarImage        String?
+  bannerImage        String?
+  nativeAssetBalance String?
 
   @@map("users")
 }

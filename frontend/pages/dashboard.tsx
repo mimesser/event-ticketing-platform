@@ -17,7 +17,7 @@ import { ethers } from "ethers";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { signIn, getSession, useSession } from "next-auth/react";
-import React, { useState, useLayoutEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 import styles from "styles/pages/Dashboard.module.scss";
 
@@ -38,26 +38,41 @@ function Dashboard() {
   const [twitterBanner, setTwitterBanner] = useState(
     status === "unauthenticated" ? true : false
   );
-  const [buyBanner, setBuyBanner] = useState(true);
+  const [buyBanner, setBuyBanner] = useState(
+    user?.nativeAssetBalance.toString() === "0" ||
+      user?.nativeAssetBalance === undefined
+      ? true
+      : false
+  );
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    // Update user nativeAssetBalance
+    async function updateBalance() {
+      const provider = new ethers.providers.Web3Provider(
+        magic?.rpcProvider as any
+      );
+
+      const balance = await provider.getBalance(user.walletAddress);
+
+      if (balance) {
+        try {
+          await fetch("/api/update-balance", {
+            method: "POST",
+            body: JSON.stringify({
+              walletAddress: user.walletAddress,
+              balance: balance.toString(),
+            }),
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+
     if (user) {
-      balanceCheck();
+      updateBalance();
     }
-  }, []);
-
-  // Check user's balance for the banner
-  async function balanceCheck() {
-    const provider = new ethers.providers.Web3Provider(
-      magic?.rpcProvider as any
-    );
-
-    const balance = await provider.getBalance(user.walletAddress);
-
-    if (balance.toString() === "0") {
-      setBuyBanner(true);
-    }
-  }
+  }, [user]);
 
   const modalClose = () => {
     setSignupFlow(false);
