@@ -140,22 +140,21 @@ export default function Header() {
           selected={router.pathname === "/profile"}
         >
           <div className={styles.account}>
-            {
-              user.avatarImage ?
-                <Image
-                  src={user.avatarImage}
-                  width={32}
-                  height={32}
-                  alt="Avatar"
-                />
-              :
-                <Avatar
-                  size={32}
-                  name={user.walletAddress}
-                  variant="pixel"
-                  colors={["#ffad08", "#edd75a", "#73b06f", "#0c8f8f", "#405059"]}
-                />
-            }
+            {user.avatarImage ? (
+              <Image
+                src={user.avatarImage}
+                width={32}
+                height={32}
+                alt="Avatar"
+              />
+            ) : (
+              <Avatar
+                size={32}
+                name={user.walletAddress}
+                variant="pixel"
+                colors={["#ffad08", "#edd75a", "#73b06f", "#0c8f8f", "#405059"]}
+              />
+            )}
           </div>
           <Link href="/profile" passHref>
             <ListItemText
@@ -410,220 +409,219 @@ export default function Header() {
             <Box
               sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
             ></Box>
-            {
-              user &&
-                <Box sx={{ flexGrow: 0 }}>
-                  <Tooltip title="Notifications">
-                    <IconButton
-                      size="large"
-                      sx={{
-                        color: "black",
-                      }}
-                      onClick={handleOpenNotification}
-                    >
-                      <Badge
-                        badgeContent={notifications.length}
-                        invisible={!notificationCount}
-                        color="error"
-                      >
-                        <NotificationsIcon
-                          sx={{
-                            color: (theme) =>
-                              anchorElNotification
-                                ? theme.palette.primary.dark
-                                : "black",
-                          }}
-                        />
-                      </Badge>
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Buy Crypto">
-                    <IconButton
-                      size="large"
-                      sx={{
-                        color: "black",
-                      }}
-                      onClick={buyModal}
-                    >
-                      <CreditCardIcon
-                        sx={{
-                          color: (theme) =>
-                            buyOpen ? theme.palette.primary.dark : "black",
-                        }}
-                      />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Account">
-                    <IconButton
-                      size="large"
-                      sx={{
-                        color: "black",
-                      }}
-                      onClick={handleOpenUserMenu}
-                    >
-                      <AccountCircleIcon
-                        sx={{
-                          color: (theme) =>
-                            anchorElUser ? theme.palette.primary.dark : "black",
-                        }}
-                      />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Popover
-                    open={Boolean(anchorElNotification)}
-                    anchorEl={anchorElNotification}
-                    onClose={handleCloseNotification}
+            {user && (
+              <Box sx={{ flexGrow: 0 }}>
+                <Tooltip title="Notifications">
+                  <IconButton
+                    size="large"
                     sx={{
-                      mt: "45px",
+                      color: "black",
                     }}
+                    onClick={handleOpenNotification}
+                  >
+                    <Badge
+                      badgeContent={notifications.length}
+                      invisible={!notificationCount}
+                      color="error"
+                    >
+                      <NotificationsIcon
+                        sx={{
+                          color: (theme) =>
+                            anchorElNotification
+                              ? theme.palette.primary.dark
+                              : "black",
+                        }}
+                      />
+                    </Badge>
+                  </IconButton>
+                </Tooltip>
+
+                <Tooltip title="Buy Crypto">
+                  <IconButton
+                    size="large"
+                    sx={{
+                      color: "black",
+                    }}
+                    onClick={buyModal}
+                  >
+                    <CreditCardIcon
+                      sx={{
+                        color: (theme) =>
+                          buyOpen ? theme.palette.primary.dark : "black",
+                      }}
+                    />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Account">
+                  <IconButton
+                    size="large"
+                    sx={{
+                      color: "black",
+                    }}
+                    onClick={handleOpenUserMenu}
+                  >
+                    <AccountCircleIcon
+                      sx={{
+                        color: (theme) =>
+                          anchorElUser ? theme.palette.primary.dark : "black",
+                      }}
+                    />
+                  </IconButton>
+                </Tooltip>
+
+                <Popover
+                  open={Boolean(anchorElNotification)}
+                  anchorEl={anchorElNotification}
+                  onClose={handleCloseNotification}
+                  sx={{
+                    mt: "45px",
+                  }}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  keepMounted
+                  PaperProps={{
+                    sx: {
+                      borderRadius: (theme) => theme.shape.borderRadius,
+                      width: 330,
+                    },
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                >
+                  <Box sx={{ flexGrow: 1, p: 3 }}>
+                    <Grid
+                      container
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
+                      <Typography>Notifications</Typography>
+                      {notificationCount && (
+                        <Tooltip title="Mark all as read">
+                          <IconButton
+                            color="primary"
+                            onClick={markNotifictionAsRead}
+                            size="large"
+                          >
+                            <DoneAllIcon
+                              color="primary"
+                              sx={{
+                                fontSize: 18,
+                              }}
+                            />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </Grid>
+                    <Typography color="text.secondary" variant="subtitle2">
+                      You have {notifications.length} unread messages
+                    </Typography>
+                  </Box>
+                  <Divider />
+                  <MenuList>
+                    {notifications.map((data, i) => (
+                      <MenuItem key={i}>
+                        <ListItemText>{shortenText(data)}</ListItemText>
+                      </MenuItem>
+                    ))}
+                    <Divider />
+                  </MenuList>
+                </Popover>
+                {selectedMenu === "" ? (
+                  <Menu
+                    sx={{ mt: "45px" }}
+                    anchorEl={anchorElUser}
                     anchorOrigin={{
                       vertical: "top",
                       horizontal: "right",
                     }}
                     keepMounted
-                    PaperProps={{
-                      sx: {
-                        borderRadius: (theme) => theme.shape.borderRadius,
-                        width: 330,
-                      },
-                    }}
                     transformOrigin={{
                       vertical: "top",
                       horizontal: "right",
                     }}
+                    open={Boolean(anchorElUser)}
+                    onClose={handleCloseUserMenu}
+                    PaperProps={{
+                      sx: {
+                        borderRadius: (theme) => theme.shape.borderRadius,
+                        width: 250,
+                      },
+                    }}
                   >
-                    <Box sx={{ flexGrow: 1, p: 3 }}>
-                      <Grid
-                        container
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="center"
-                      >
-                        <Typography>Notifications</Typography>
-                        {notificationCount && (
-                          <Tooltip title="Mark all as read">
-                            <IconButton
-                              color="primary"
-                              onClick={markNotifictionAsRead}
-                              size="large"
-                            >
-                              <DoneAllIcon
-                                color="primary"
-                                sx={{
-                                  fontSize: 18,
-                                }}
-                              />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                      </Grid>
-                      <Typography color="text.secondary" variant="subtitle2">
-                        You have {notifications.length} unread messages
-                      </Typography>
-                    </Box>
-                    <Divider />
-                    <MenuList>
-                      {notifications.map((data, i) => (
-                        <MenuItem key={i}>
-                          <ListItemText>{shortenText(data)}</ListItemText>
-                        </MenuItem>
-                      ))}
-                      <Divider />
-                    </MenuList>
-                  </Popover>
-                  {selectedMenu === "" ? (
-                    <Menu
-                      sx={{ mt: "45px" }}
-                      anchorEl={anchorElUser}
-                      anchorOrigin={{
-                        vertical: "top",
-                        horizontal: "right",
-                      }}
-                      keepMounted
-                      transformOrigin={{
-                        vertical: "top",
-                        horizontal: "right",
-                      }}
-                      open={Boolean(anchorElUser)}
-                      onClose={handleCloseUserMenu}
-                      PaperProps={{
-                        sx: {
-                          borderRadius: (theme) => theme.shape.borderRadius,
-                          width: 250,
-                        },
+                    <MenuItem onClick={() => setSelectedMenu("settings")}>
+                      <ListItemIcon>
+                        <SettingsIcon sx={{ color: "black" }} />
+                      </ListItemIcon>
+                      <span style={{ color: "black" }}>Settings</span>
+                      <ArrowForwardIosIcon style={{ marginLeft: "47%" }} />
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        handleCloseUserMenu();
+                        setLogoutModal(true);
                       }}
                     >
-                      <MenuItem onClick={() => setSelectedMenu("settings")}>
-                        <ListItemIcon>
-                          <SettingsIcon sx={{ color: "black" }} />
-                        </ListItemIcon>
-                        <span style={{ color: "black" }}>Settings</span>
-                        <ArrowForwardIosIcon style={{ marginLeft: "47%" }} />
-                      </MenuItem>
-                      <MenuItem
-                        onClick={() => {
-                          handleCloseUserMenu();
-                          setLogoutModal(true);
-                        }}
-                      >
-                        <ListItemIcon>
-                          <LogoutIcon sx={{ color: "black" }} />
-                        </ListItemIcon>
-                        <div>Log Out</div>
-                      </MenuItem>
-                    </Menu>
-                  ) : selectedMenu === "settings" ? (
-                    <Menu
-                      sx={{ mt: "45px" }}
-                      anchorEl={anchorElUser}
-                      anchorOrigin={{
-                        vertical: "top",
-                        horizontal: "right",
+                      <ListItemIcon>
+                        <LogoutIcon sx={{ color: "black" }} />
+                      </ListItemIcon>
+                      <div>Log Out</div>
+                    </MenuItem>
+                  </Menu>
+                ) : selectedMenu === "settings" ? (
+                  <Menu
+                    sx={{ mt: "45px" }}
+                    anchorEl={anchorElUser}
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    open={Boolean(anchorElUser)}
+                    onClose={handleCloseUserMenu}
+                    PaperProps={{
+                      sx: {
+                        borderRadius: (theme) => theme.shape.borderRadius,
+                        width: 250,
+                      },
+                    }}
+                  >
+                    <MenuItem onClick={handleCloseUserMenu}>
+                      <ListItemIcon>
+                        <SettingsIcon sx={{ color: "black" }} />
+                      </ListItemIcon>
+                      <Link href="/export">Export Private Key</Link>
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        handleCloseUserMenu();
+                        setTwitterModal(true);
                       }}
-                      keepMounted
-                      transformOrigin={{
-                        vertical: "top",
-                        horizontal: "right",
-                      }}
-                      open={Boolean(anchorElUser)}
-                      onClose={handleCloseUserMenu}
-                      PaperProps={{
-                        sx: {
-                          borderRadius: (theme) => theme.shape.borderRadius,
-                          width: 250,
-                        },
-                      }}
+                      sx={{ color: "rgb(29, 161, 242)" }}
                     >
-                      <MenuItem onClick={handleCloseUserMenu}>
-                        <ListItemIcon>
-                          <SettingsIcon sx={{ color: "black" }} />
-                        </ListItemIcon>
-                        <Link href="/export">Export Private Key</Link>
-                      </MenuItem>
-                      <MenuItem
-                        onClick={() => {
-                          handleCloseUserMenu();
-                          setTwitterModal(true);
-                        }}
-                        sx={{ color: "rgb(29, 161, 242)" }}
-                      >
-                        <ListItemIcon sx={{ color: "inherit" }}>
-                          <TwitterIcon style={{ marginRight: "5px" }} />
-                        </ListItemIcon>
+                      <ListItemIcon sx={{ color: "inherit" }}>
+                        <TwitterIcon style={{ marginRight: "5px" }} />
+                      </ListItemIcon>
 
-                        <div>
-                          {!session && "Link Twitter"}
-                          {session && (
-                            <div style={{ color: "red" }}>Unlink Twitter</div>
-                          )}
-                        </div>
-                      </MenuItem>
-                    </Menu>
-                  ) : null}
-                </Box>
-            }
+                      <div>
+                        {!session && "Link Twitter"}
+                        {session && (
+                          <div style={{ color: "red" }}>Unlink Twitter</div>
+                        )}
+                      </div>
+                    </MenuItem>
+                  </Menu>
+                ) : null}
+              </Box>
+            )}
           </Toolbar>
         </Container>
       </AppBar>

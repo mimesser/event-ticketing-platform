@@ -26,21 +26,22 @@ import {
 } from "lib/utils";
 import moment from "moment";
 import Image from "next/image";
-import { useRouter } from 'next/router'
+import { useRouter } from "next/router";
 import React from "react";
 import styles from "styles/pages/Profile.module.scss";
 
 function Profile() {
-    const router = useRouter()
-    const { username } = router.query
-    const [user, setUser] = React.useState<any>(null);
-  
-    React.useEffect(() => {
-      if(username) {
-        fetchPublicUser(username as string)
-          .then(fetchedUser => setUser(fetchedUser));
-      }
-    }, [username]);
+  const router = useRouter();
+  const { username } = router.query;
+  const [user, setUser] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    if (username) {
+      fetchPublicUser(username as string).then((fetchedUser) =>
+        setUser(fetchedUser)
+      );
+    }
+  }, [username]);
 
   const [snackShow, openSnackBar] = React.useState(false);
   const copyAddress = async () => {
@@ -262,7 +263,10 @@ function Profile() {
               )}
             </div>
 
-            <div className={styles.menu} style={{ display: user.authenticated ? 'flex' : 'none' }}>
+            <div
+              className={styles.menu}
+              style={{ display: user.authenticated ? "flex" : "none" }}
+            >
               <Tooltip title="Edit Profile">
                 <Button
                   color="inherit"
@@ -371,15 +375,14 @@ function Profile() {
             <div className={styles.backdrop}>
               {photo === "avatar" ? (
                 <div className={styles.avatar} onClick={stopPropagation}>
-                {
-                  user.avatarImage ?
+                  {user.avatarImage ? (
                     <Image
                       src={user.avatarImage}
                       width={240}
                       height={240}
                       alt="Avatar"
                     />
-                  :
+                  ) : (
                     <Avatar
                       size={240}
                       name={user.walletAddress}
@@ -392,7 +395,7 @@ function Profile() {
                         "#405059",
                       ]}
                     />
-                }
+                  )}
                 </div>
               ) : (
                 <div className={styles.banner} onClick={stopPropagation}>
