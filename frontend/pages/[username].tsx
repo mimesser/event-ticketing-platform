@@ -17,7 +17,7 @@ import Typography from "@mui/material/Typography";
 import Avatar from "boring-avatars";
 import Layout from "components/Layout";
 import copy from "copy-to-clipboard";
-import { useUser } from "lib/hooks";
+import { fetchPublicUser } from "lib/hooks";
 import {
   checkUsernameEqual,
   isProduction,
@@ -26,12 +26,21 @@ import {
 } from "lib/utils";
 import moment from "moment";
 import Image from "next/image";
-import Router from "next/router";
+import { useRouter } from 'next/router'
 import React from "react";
 import styles from "styles/pages/Profile.module.scss";
 
 function Profile() {
-  const user = useUser({ redirectTo: "/profile" });
+    const router = useRouter()
+    const { username } = router.query
+    const [user, setUser] = React.useState<any>(null);
+  
+    React.useEffect(() => {
+      if(username) {
+        fetchPublicUser(username as string)
+          .then(fetchedUser => setUser(fetchedUser));
+      }
+    }, [username]);
 
   const [snackShow, openSnackBar] = React.useState(false);
   const copyAddress = async () => {
@@ -114,7 +123,7 @@ function Profile() {
     ).json();
     if (response.user) {
       showEditProfile(false);
-      Router.reload();
+      router.reload();
     }
     if (response.error) {
       invalidateUsername(true);
@@ -253,7 +262,7 @@ function Profile() {
               )}
             </div>
 
-            <div className={styles.menu}>
+            <div className={styles.menu} style={{ display: user.authenticated ? 'flex' : 'none' }}>
               <Tooltip title="Edit Profile">
                 <Button
                   color="inherit"
