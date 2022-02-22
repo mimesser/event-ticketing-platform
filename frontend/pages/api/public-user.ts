@@ -1,35 +1,38 @@
+import { Prisma } from "@prisma/client";
 import { ethers } from "ethers";
 import { getLoginSession } from "lib/auth";
 import prisma from "lib/prisma";
 import { NextApiResponse, NextApiRequest } from "next";
 
-export default async function publicUser(req: NextApiRequest, res: NextApiResponse) {
+export default async function publicUser(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   try {
     const session = await getLoginSession(req);
 
     const { username } = JSON.parse(req.body);
 
-    let whereCondition;
-    if(ethers.utils.isAddress(username)) {
+    let whereCondition: Prisma.UserWhereInput;
+    if (ethers.utils.isAddress(username)) {
       whereCondition = {
         walletAddress: {
           equals: username,
           mode: "insensitive",
-        }
+        },
       };
-    }
-    else {
+    } else {
       whereCondition = {
         username: {
           equals: username,
           mode: "insensitive",
-        }
+        },
       };
     }
-    
+
     const users = await prisma.user.findMany({
-      where: whereCondition as any,
-      select: { 
+      where: whereCondition,
+      select: {
         email: true,
         username: true,
         walletAddress: true,
