@@ -362,15 +362,14 @@ function Profile() {
             <div className={styles.backdrop}>
               {photo === "avatar" ? (
                 <div className={styles.avatar} onClick={stopPropagation}>
-                {
-                  user.avatarImage ?
+                  {user.avatarImage ? (
                     <Image
                       src={user.avatarImage}
                       width={240}
                       height={240}
                       alt="Avatar"
                     />
-                  :
+                  ) : (
                     <Avatar
                       size={240}
                       name={user.walletAddress}
@@ -383,7 +382,7 @@ function Profile() {
                         "#405059",
                       ]}
                     />
-                }
+                  )}
                 </div>
               ) : (
                 <div className={styles.banner} onClick={stopPropagation}>

@@ -40,13 +40,13 @@ export default async function publicUser(req: NextApiRequest, res: NextApiRespon
     });
 
     let user: any = users && users.length > 0 ? users[0] : null;
-    if(user && session && user.email === session.email) {
+    if (user && session && user.email === session.email) {
       user.authenticated = true;
     }
 
     res.status(200).json({ user });
-  } catch(e) {
-    console.log(e)
+  } catch (e) {
+    console.log(e);
     res.status(500).send({ e });
   }
 }

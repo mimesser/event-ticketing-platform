@@ -18,7 +18,7 @@ export default async function user(req: NextApiRequest, res: NextApiResponse) {
     });
 
     res.status(200).json({ user: user || null });
-  } catch(e) {
+  } catch (e) {
     res.status(500).send({ e });
   }
 }
