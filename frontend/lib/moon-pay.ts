@@ -4,7 +4,7 @@ import { isProduction } from "lib/utils";
 const TEST_KEY = process.env.NEXT_PUBLIC_MOONPAY_TEST_KEY;
 const SECRET_KEY = process.env.NEXT_PUBLIC_MOONPAY_SECRET_KEY;
 
-export const moonPaySrc = (walletAddress: any, email: String) => {
+export const moonPaySrc = (walletAddress: any, email: string) => {
   const originalUrl = `https://buy-sandbox.moonpay.com?apiKey=${TEST_KEY}&currencyCode=${
     isProduction ? "MATIC" : "ETH"
   }&walletAddress=${walletAddress}&email=${email}`;
