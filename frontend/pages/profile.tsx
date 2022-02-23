@@ -13,6 +13,7 @@ import ReplyIcon from "@mui/icons-material/Reply";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
+import TwitterIcon from "@mui/icons-material/Twitter";
 import Typography from "@mui/material/Typography";
 import Avatar from "boring-avatars";
 import Layout from "components/Layout";
@@ -323,6 +324,18 @@ function Profile() {
               <span className={styles.since}>
                 {moment(user.createdAt).format("MMMM YYYY")}
               </span>
+              {user.twitterUsername && (
+                <Tooltip title={`@${user.twitterUsername}`}>
+                  <a
+                    className={styles.twitter}
+                    href={`https://twitter.com/${user.twitterUsername}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <TwitterIcon sx={{ marginRight: "5px" }} />
+                  </a>
+                </Tooltip>
+              )}
             </div>
           </div>
 
