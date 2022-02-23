@@ -73,18 +73,35 @@
     }
   }
 
-  .address {
+  .user_details {
     margin-top: 60px;
     padding-left: 20px;
-    font-size: 20px;
 
-    .copy {
-      cursor: pointer;
+    .name {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: rgb(77, 77, 77);
     }
 
-    & > svg {
-      margin-left: 10px;
-      margin-bottom: -5px;
+    .username {
+      margin-top: 5px;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: rgb(130, 130, 130);
+    }
+
+    .address {
+      margin-top: 20px;
+      font-size: 20px;
+
+      .copy {
+        cursor: pointer;
+      }
+
+      & > svg {
+        margin-left: 10px;
+        margin-bottom: -5px;
+      }
     }
   }
 
@@ -294,10 +311,8 @@
 // Responsive
 @media screen and (max-width: 728px) {
   .profile_page {
-    .address {
-      margin-top: 75px;
-      padding-left: 20px;
-      font-size: 16px;
+    .user_details {
+      margin-top: 70px;
     }
   }
 }
