@@ -141,3 +141,14 @@
     right: 1rem;
   }
 }
+
+.login_items {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 5px 0;
+
+  button {
+    margin-left: 15px;
+  }
+}

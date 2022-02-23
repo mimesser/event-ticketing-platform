@@ -17,6 +17,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import ListSubheader from "@mui/material/ListSubheader";
+import LoadingButton from "@mui/lab/LoadingButton";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -26,6 +27,7 @@ import Modal from "@mui/material/Modal";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Popover from "@mui/material/Popover";
 import SettingsIcon from "@mui/icons-material/Settings";
+import TextField from "@mui/material/TextField";
 import Toolbar from "@mui/material/Toolbar";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
@@ -36,12 +38,14 @@ import Avatar from "boring-avatars";
 import { formatDistanceToNow, set, sub } from "date-fns";
 import { useUser } from "lib/hooks";
 import { moonPaySrc } from "lib/moon-pay";
+import { magic } from "lib/magic";
 import { shortenAddress, shortenText } from "lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { signIn, signOut, useSession } from "next-auth/react";
 import React, { useState } from "react";
+import { useForm } from "react-hook-form";
 import styles from "styles/components/Header.module.scss";
 
 // mock data for notifications
@@ -226,6 +230,41 @@ export default function Header() {
       signOut();
     }
   }
+  
+  const [signingIn, setSigningIn] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit: any = async ({ email }: { email: any }) => {
+    setSigningIn(true);
+
+    try {
+      const didToken = await magic?.auth.loginWithMagicLink({ email });
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + didToken,
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (res.status === 200) {
+        // redirect
+        router.reload();
+        setSigningIn(false);
+      } else {
+        // display an error
+        setSigningIn(false);
+      }
+    } catch (error) {
+      setSigningIn(false);
+    }
+  };
 
   return (
     <>
@@ -455,7 +494,7 @@ export default function Header() {
             <Box
               sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
             ></Box>
-            {user && (
+            {user ? (
               <Box sx={{ flexGrow: 0 }}>
                 <Tooltip title="Notifications">
                   <IconButton
@@ -782,6 +821,42 @@ export default function Header() {
                     </MenuItem>
                   </Menu>
                 ) : null}
+              </Box>
+            ) : (
+              <Box sx={{ flexGrow: 0 }}>
+                <div>
+                  <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    className={styles.login_items}
+                  >
+                    <TextField
+                      label="Email address"
+                      variant="outlined"
+                      autoComplete="email"
+                      autoFocus
+                      {...register("email", {
+                        required: "Required field",
+                        pattern: {
+                          value:
+                            /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+                          message: "Invalid email address",
+                        },
+                      })}
+                      error={!!errors?.email}
+                      helperText={errors?.email ? errors.email.message : null}
+                      size="small"
+                    />
+                    <LoadingButton
+                      loading={signingIn}
+                      type="submit"
+                      color="primary"
+                      size="large"
+                      variant="outlined"
+                    >
+                      Log in / Sign up
+                    </LoadingButton>
+                  </form>
+                </div>
               </Box>
             )}
           </Toolbar>
