@@ -296,18 +296,26 @@ function Profile() {
               </Tooltip>
             </div>
 
-            <div className={styles.address}>
-              {shortenAddress(user.walletAddress)}
-              {snackShow ? (
-                <CheckIcon />
-              ) : (
-                <Tooltip title="Copy Address">
-                  <ContentCopyIcon
-                    className={styles.copy}
-                    onClick={copyAddress}
-                  />
-                </Tooltip>
+            <div className={styles.user_details}>
+              {user.name && <div className={styles.name}>{user.name}</div>}
+
+              {user.username && (
+                <div className={styles.username}>{`@${user.username}`}</div>
               )}
+
+              <div className={styles.address}>
+                {shortenAddress(user.walletAddress)}
+                {snackShow ? (
+                  <CheckIcon />
+                ) : (
+                  <Tooltip title="Copy Address">
+                    <ContentCopyIcon
+                      className={styles.copy}
+                      onClick={copyAddress}
+                    />
+                  </Tooltip>
+                )}
+              </div>
             </div>
 
             <div className={styles.active}>
