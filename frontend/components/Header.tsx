@@ -230,7 +230,7 @@ export default function Header() {
       signOut();
     }
   }
-  
+
   const [signingIn, setSigningIn] = useState(false);
 
   const {

@@ -1,8 +1,7 @@
-.side_menu{
+.side_menu {
   background-color: rgb(157 197 237);
-  &:hover{
-  background-color: rgb(157 197 237);
-
+  &:hover {
+    background-color: rgb(157 197 237);
   }
 }
 
@@ -32,10 +31,9 @@
     }
   }
 }
-.icon_active{
+.icon_active {
   color: #1700ff;
 }
-
 
 // Header: Buy crypto modal
 .modal_box {
