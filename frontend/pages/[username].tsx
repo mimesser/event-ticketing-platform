@@ -221,69 +221,55 @@ function Profile() {
     setNewBanner("");
   };
 
-  if(loading) {
+  if (loading) {
     return (
       <Layout>
         <div className={styles.loading}>
           <CircularProgress size={120} />
         </div>
       </Layout>
-    )
+    );
   }
 
   return (
     <Layout>
       <div className={styles.profile_page}>
-        {
-          user ?
-            <div
-              className={styles.banner}
-              onClick={() => updatePhoto("banner")}
-            >
-              {user.bannerImage && (
-                <Image
-                  src={user.bannerImage}
-                  layout="fill"
-                  objectFit="cover"
-                  alt="Banner"
-                />
-              )}
-            </div>
-          :
-            <div className={styles.nobanner}></div>
-        }
+        {user ? (
+          <div className={styles.banner} onClick={() => updatePhoto("banner")}>
+            {user.bannerImage && (
+              <Image
+                src={user.bannerImage}
+                layout="fill"
+                objectFit="cover"
+                alt="Banner"
+              />
+            )}
+          </div>
+        ) : (
+          <div className={styles.nobanner}></div>
+        )}
 
-        {
-          user ?
-            <div
-              className={styles.avatar}
-              onClick={() => updatePhoto("avatar")}
-            >
-              {user.avatarImage ? (
-                <Image
-                  src={user.avatarImage}
-                  width={80}
-                  height={80}
-                  alt="Avatar"
-                />
-              ) : (
-                <Avatar
-                  size={80}
-                  name={user.walletAddress}
-                  variant="pixel"
-                  colors={[
-                    "#ffad08",
-                    "#edd75a",
-                    "#73b06f",
-                    "#0c8f8f",
-                    "#405059",
-                  ]}
-                />
-              )}
-            </div>
-          :
-            <div className={styles.noavatar}></div>
-        }
+        {user ? (
+          <div className={styles.avatar} onClick={() => updatePhoto("avatar")}>
+            {user.avatarImage ? (
+              <Image
+                src={user.avatarImage}
+                width={80}
+                height={80}
+                alt="Avatar"
+              />
+            ) : (
+              <Avatar
+                size={80}
+                name={user.walletAddress}
+                variant="pixel"
+                colors={["#ffad08", "#edd75a", "#73b06f", "#0c8f8f", "#405059"]}
+              />
+            )}
+          </div>
+        ) : (
+          <div className={styles.noavatar}></div>
+        )}
 
         <div
           className={styles.menu}
@@ -333,8 +319,8 @@ function Profile() {
 
         <div className={styles.address}>
           {shortenAddress(user?.walletAddress || username)}
-          {
-            user && <>
+          {user && (
+            <>
               {snackShow ? (
                 <CheckIcon />
               ) : (
@@ -346,25 +332,26 @@ function Profile() {
                 </Tooltip>
               )}
             </>
-          }
+          )}
         </div>
 
-        {
-          user ?
-            <div className={styles.active}>
-              Joined
-              <span className={styles.since}>
-                {moment(user.createdAt).format("MMMM YYYY")}
-              </span>
-            </div>
-          :
-            <div className={styles.nouser}>
-              <div>
-                <div className={styles.noexist}>This account doesn&apos;t exist</div>
-                <div className={styles.trysearch}>Try searching for another.</div>
+        {user ? (
+          <div className={styles.active}>
+            Joined
+            <span className={styles.since}>
+              {moment(user.createdAt).format("MMMM YYYY")}
+            </span>
+          </div>
+        ) : (
+          <div className={styles.nouser}>
+            <div>
+              <div className={styles.noexist}>
+                This account doesn&apos;t exist
               </div>
+              <div className={styles.trysearch}>Try searching for another.</div>
             </div>
-        }
+          </div>
+        )}
       </div>
 
       <Snackbar
@@ -400,69 +387,68 @@ function Profile() {
         </MenuItem>
       </Menu>
 
-      {
-        user &&
-          <Backdrop
-            sx={{
-              background: "rgba(61, 64, 51, 0.9)",
-              zIndex: (theme) => theme.zIndex.drawer + 1,
-            }}
-            open={photoModal}
-            onClick={() => showPhotoModal(false)}
-          >
-            <div className={styles.backdrop}>
-              {photo === "avatar" ? (
-                <div className={styles.avatar} onClick={stopPropagation}>
-                  {user.avatarImage ? (
-                    <Image
-                      src={user.avatarImage}
-                      width={240}
-                      height={240}
-                      alt="Avatar"
-                    />
-                  ) : (
-                    <Avatar
-                      size={240}
-                      name={user.walletAddress}
-                      variant="pixel"
-                      colors={[
-                        "#ffad08",
-                        "#edd75a",
-                        "#73b06f",
-                        "#0c8f8f",
-                        "#405059",
-                      ]}
-                    />
-                  )}
-                </div>
-              ) : (
-                <div className={styles.banner} onClick={stopPropagation}>
-                  {user.bannerImage && (
-                    <Image
-                      src={user.bannerImage}
-                      layout="fill"
-                      objectFit="cover"
-                      alt="Banner"
-                    />
-                  )}
-                </div>
-              )}
-              <div className={styles.close}>
-                <IconButton
-                  aria-label="close"
-                  sx={{
-                    backgroundColor: "rgba(61, 64, 51, 0.75)",
-                    color: "white",
-                    width: "36px",
-                    height: "36px",
-                  }}
-                >
-                  <CloseIcon />
-                </IconButton>
+      {user && (
+        <Backdrop
+          sx={{
+            background: "rgba(61, 64, 51, 0.9)",
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+          }}
+          open={photoModal}
+          onClick={() => showPhotoModal(false)}
+        >
+          <div className={styles.backdrop}>
+            {photo === "avatar" ? (
+              <div className={styles.avatar} onClick={stopPropagation}>
+                {user.avatarImage ? (
+                  <Image
+                    src={user.avatarImage}
+                    width={240}
+                    height={240}
+                    alt="Avatar"
+                  />
+                ) : (
+                  <Avatar
+                    size={240}
+                    name={user.walletAddress}
+                    variant="pixel"
+                    colors={[
+                      "#ffad08",
+                      "#edd75a",
+                      "#73b06f",
+                      "#0c8f8f",
+                      "#405059",
+                    ]}
+                  />
+                )}
               </div>
+            ) : (
+              <div className={styles.banner} onClick={stopPropagation}>
+                {user.bannerImage && (
+                  <Image
+                    src={user.bannerImage}
+                    layout="fill"
+                    objectFit="cover"
+                    alt="Banner"
+                  />
+                )}
+              </div>
+            )}
+            <div className={styles.close}>
+              <IconButton
+                aria-label="close"
+                sx={{
+                  backgroundColor: "rgba(61, 64, 51, 0.75)",
+                  color: "white",
+                  width: "36px",
+                  height: "36px",
+                }}
+              >
+                <CloseIcon />
+              </IconButton>
             </div>
-          </Backdrop>
-      }
+          </div>
+        </Backdrop>
+      )}
 
       <Modal
         BackdropProps={{
@@ -512,12 +498,7 @@ function Profile() {
 
             <div className={styles.avatar}>
               {newAvatar ? (
-                <Image
-                  src={newAvatar}
-                  width={80}
-                  height={80}
-                  alt="Avatar"
-                />
+                <Image src={newAvatar} width={80} height={80} alt="Avatar" />
               ) : (
                 <Avatar
                   size={80}
