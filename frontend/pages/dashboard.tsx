@@ -16,13 +16,14 @@ import Layout from "components/Layout";
 import { ethers } from "ethers";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { signIn, getSession, useSession } from "next-auth/react";
+import { signIn, getSession, useSession, signOut } from "next-auth/react";
 import React, { useState, useEffect } from "react";
 
 import styles from "styles/pages/Dashboard.module.scss";
+import { Tooltip } from "@mui/material";
 
 function Dashboard() {
-  const { status }: any = useSession();
+  const { status, data: session }: any = useSession();
   const { query } = useRouter();
   const firstTimeUser = query.userExists === "false";
   const user = useUser({
@@ -31,16 +32,17 @@ function Dashboard() {
   });
   const [signupFlow, setSignupFlow] = useState(firstTimeUser ? true : false);
   const [welcomeModal, setWelcomeModal] = useState(true); // Welcome modal
-  const [moonPayModal, setMoonPayModal] = useState(false); // buy  crypto on moonpay modal
+  const [moonpayModalForBanner, setMoonpayModalForBanner] = useState(false); // buy crypto on moonpay modal for banner
+  const [moonPayModal, setMoonPayModal] = useState(false); // buy crypto on moonpay modal
   const [twitterModal, setTwitterModal] = useState(false); // Find frens on Twitter modal
+  const [twitterModalForBanner, setTwitterModalForBanner] = useState(false); // Find frens on Twitter modal for banner
   const [twitterButton, setTwitterButton] = useState(false);
 
   const [twitterBanner, setTwitterBanner] = useState(
     status === "unauthenticated" ? true : false
   );
   const [buyBanner, setBuyBanner] = useState(
-    user?.nativeAssetBalance.toString() === "0" ||
-      user?.nativeAssetBalance === undefined
+    user?.nativeAssetBalance === "0" || user?.nativeAssetBalance === null
       ? true
       : false
   );
@@ -125,124 +127,160 @@ function Dashboard() {
   };
 
   return (
-    <Layout onboarding={signupFlow}>
-      <Stack
-        direction="row"
-        mt={4}
-        spacing={2}
-        className={styles.reminderBanners}
-        sx={{
-          "@media screen and (max-width: 599px)": {
-            flexDirection: "column",
-          },
+    <>
+      {/* Buy crypto modal for banner */}
+      <Modal
+        BackdropProps={{
+          timeout: 500,
         }}
+        closeAfterTransition
+        onClose={() => {
+          setMoonpayModalForBanner(false);
+        }}
+        open={moonpayModalForBanner}
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
       >
-        {buyBanner && (
-          <Button
-            color="inherit"
-            component="div"
-            variant="outlined"
-            className={styles.buyBanner}
-            sx={{
-              borderRadius: (theme) => theme.shape.borderRadius,
-              textTransform: "none",
-            }}
-          >
-            <div className={styles.closeBannerBtn}>
-              <IconButton
-                aria-label="close"
-                onClick={() => {
-                  setBuyBanner(false);
+        <Box sx={modalStyle}>
+          <div className={styles.modal_box}>
+            <IconButton
+              aria-label="close"
+              onClick={() => {
+                setMoonpayModalForBanner(false);
+              }}
+              className={styles.close_button}
+            >
+              <CloseIcon
+                sx={{
+                  color: "#000000",
+                }}
+              />
+            </IconButton>
+            {moonpayModalForBanner && (
+              <div style={{ height: "60vh" }}>
+                <iframe
+                  allow="accelerometer; autoplay; camera; gyroscope; payment"
+                  frameBorder="0"
+                  height="100%"
+                  id="moonPayFrame"
+                  src={moonPaySrc(user.walletAddress, user.email)}
+                  width="100%"
+                >
+                  <p>Your browser does not support iframes.</p>
+                </iframe>
+              </div>
+            )}
+          </div>
+        </Box>
+      </Modal>
+      {/* Twitter modal for banner  */}
+      <Modal
+        BackdropProps={{
+          timeout: 500,
+        }}
+        closeAfterTransition
+        onClose={() => {
+          setTwitterModalForBanner(false);
+        }}
+        open={twitterModalForBanner}
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+      >
+        <Box sx={modalStyle}>
+          <div className={styles.modal_box}>
+            <IconButton
+              aria-label="close"
+              onClick={() => {
+                setTwitterModalForBanner(false);
+              }}
+              className={styles.close_button}
+            >
+              <CloseIcon
+                sx={{
+                  color: "#000000",
+                }}
+              />
+            </IconButton>
+            {!session && (
+              <div className={styles.modal_body}>
+                <Typography id={styles.h5} variant="h5">
+                  Find frens you follow on Twitter
+                </Typography>
+                <Typography id={styles.body1} variant="body1">
+                  To get the most of your Web3 adventure, connect with frens on
+                  Twitter.
+                </Typography>
+                <Box className={styles.linkSocialButtons}>
+                  <Button
+                    onClick={() =>
+                      signIn("twitter", { callbackUrl: "/twitter" })
+                    }
+                    id={styles.twtButton}
+                    type="submit"
+                    size="large"
+                    variant="outlined"
+                    startIcon={<TwitterIcon />}
+                  >
+                    Find frens I follow
+                  </Button>
+                </Box>
+              </div>
+            )}
+            {session && (
+              <div className={styles.modal_body}>
+                <Typography id={styles.h5} variant="h5">
+                  Unlink Twitter
+                </Typography>
+                <Typography id={styles.body1} variant="body1">
+                  Are you sure you want to unlink Twitter from Impish?
+                </Typography>
+                <Box>
+                  <Button
+                    sx={{ textTransform: "none", marginTop: "20px" }}
+                    onClick={() => signOut()}
+                    type="submit"
+                    color="primary"
+                    size="large"
+                    variant="outlined"
+                  >
+                    Unlink
+                  </Button>
+                </Box>
+              </div>
+            )}
+          </div>
+        </Box>
+      </Modal>
+      <Layout onboarding={signupFlow}>
+        <Stack
+          direction="row"
+          mt={4}
+          spacing={2}
+          className={styles.reminderBanners}
+          sx={{
+            "@media screen and (max-width: 599px)": {
+              flexDirection: "column",
+            },
+          }}
+        >
+          {buyBanner && (
+            <Tooltip title="Purchase MATIC">
+              <Button
+                color="inherit"
+                component="div"
+                variant="outlined"
+                className={styles.buyBanner}
+                sx={{
+                  borderRadius: (theme) => theme.shape.borderRadius,
+                  textTransform: "none",
                 }}
               >
-                <CloseIcon
-                  sx={{
-                    color: "#000000",
-                  }}
-                />
-              </IconButton>
-            </div>
-            <div className={styles.buyBannerBody}>
-              <Typography id={styles.h6} variant="h6">
-                Purchase MATIC
-              </Typography>
-              <Typography id={styles.body1} variant="body1">
-                Buy crypto with Fiat
-              </Typography>
-            </div>
-            <div className={styles.buyBannerLogo}>
-              <Image
-                src="/icons/matic.svg"
-                alt="Matic"
-                width={50}
-                height={50}
-                priority
-              />
-            </div>
-          </Button>
-        )}
-        {twitterBanner && (
-          <Button
-            color="inherit"
-            component="div"
-            className={styles.twitterBanner}
-            variant="outlined"
-            sx={{
-              borderRadius: (theme) => theme.shape.borderRadius,
-              textTransform: "none",
-            }}
-          >
-            <div className={styles.closeBannerBtn}>
-              <IconButton
-                aria-label="close"
-                onClick={() => {
-                  setTwitterBanner(false);
-                }}
-              >
-                <CloseIcon
-                  sx={{
-                    color: "#000000",
-                  }}
-                />
-              </IconButton>
-            </div>
-            <div className={styles.twitterBannerBody}>
-              <Typography id={styles.h6} variant="h6">
-                Link Twitter
-              </Typography>
-              <Typography id={styles.body1} variant="body1">
-                To get the most of your Web3 adventure, connect with frens on
-                Twitter
-              </Typography>
-            </div>
-            <div className={styles.twitterBannerLogo}>
-              <TwitterIcon
-                sx={{ fontSize: "4rem", color: "rgb(29, 161, 242)" }}
-              />
-            </div>
-          </Button>
-        )}
-      </Stack>
-      {user && (
-        <>
-          <Modal
-            BackdropComponent={Backdrop}
-            BackdropProps={{
-              timeout: 500,
-            }}
-            closeAfterTransition
-            onClose={modalClose}
-            open={signupFlow}
-            aria-labelledby="transition-modal-title"
-            aria-describedby="transition-modal-description"
-          >
-            <Fade in={signupFlow}>
-              <Box sx={modalStyle}>
-                <div className={styles.modal_box}>
+                <div className={styles.closeBannerBtn}>
                   <IconButton
                     aria-label="close"
-                    onClick={modalClose}
-                    className={styles.close_button}
+                    onClick={() => {
+                      setBuyBanner(false);
+                    }}
                   >
                     <CloseIcon
                       sx={{
@@ -250,51 +288,123 @@ function Dashboard() {
                       }}
                     />
                   </IconButton>
-                  {/* Welcome modal */}
-                  {welcomeModal && (
-                    <div className={styles.modal_body}>
-                      <Typography id={styles.h5} variant="h5">
-                        Welcome to Impish
-                      </Typography>
-                      <Typography variant="h6">
-                        {"Let's"} get started!
-                      </Typography>
-                      <Box>
-                        <Button
-                          id={styles.continueButtons}
-                          onClick={continueToMoonPayModal}
-                          type="submit"
-                          color="primary"
-                          size="large"
-                          variant="outlined"
-                          endIcon={<ArrowRightIcon />}
-                        >
-                          Continue
-                        </Button>
-                      </Box>
-                    </div>
-                  )}
-                  {/* MoonPay modal */}
-                  {moonPayModal && (
-                    <div
-                      className={styles.modal_body}
-                      style={{ height: "60vh" }}
+                </div>
+                <Box
+                  onClick={() => {
+                    setMoonpayModalForBanner(true);
+                  }}
+                >
+                  <div className={styles.buyBannerBody}>
+                    <Typography id={styles.h6} variant="h6">
+                      Purchase MATIC
+                    </Typography>
+                    <Typography id={styles.body1} variant="body1">
+                      Buy crypto with Fiat
+                    </Typography>
+                  </div>
+                  <div className={styles.buyBannerLogo}>
+                    <Image
+                      src="/icons/matic.svg"
+                      alt="Matic"
+                      width={50}
+                      height={50}
+                      priority
+                    />
+                  </div>
+                </Box>
+              </Button>
+            </Tooltip>
+          )}
+          {twitterBanner && (
+            <Tooltip title="Link Twitter">
+              <Button
+                color="inherit"
+                component="div"
+                className={styles.twitterBanner}
+                variant="outlined"
+                sx={{
+                  borderRadius: (theme) => theme.shape.borderRadius,
+                  textTransform: "none",
+                }}
+              >
+                <div className={styles.closeBannerBtn}>
+                  <IconButton
+                    aria-label="close"
+                    onClick={() => {
+                      setTwitterBanner(false);
+                    }}
+                  >
+                    <CloseIcon
+                      sx={{
+                        color: "#000000",
+                      }}
+                    />
+                  </IconButton>
+                </div>
+                <Box
+                  onClick={() => {
+                    setTwitterModalForBanner(true);
+                  }}
+                >
+                  <div className={styles.twitterBannerBody}>
+                    <Typography id={styles.h6} variant="h6">
+                      Link Twitter
+                    </Typography>
+                    <Typography id={styles.body1} variant="body1">
+                      To get the most of your Web3 adventure, connect with frens
+                      on Twitter
+                    </Typography>
+                  </div>
+                  <div className={styles.twitterBannerLogo}>
+                    <TwitterIcon
+                      sx={{ fontSize: "4rem", color: "rgb(29, 161, 242)" }}
+                    />
+                  </div>
+                </Box>
+              </Button>
+            </Tooltip>
+          )}
+        </Stack>
+        {user && signupFlow && (
+          <>
+            <Modal
+              BackdropComponent={Backdrop}
+              BackdropProps={{
+                timeout: 500,
+              }}
+              closeAfterTransition
+              onClose={modalClose}
+              open={signupFlow}
+              aria-labelledby="transition-modal-title"
+              aria-describedby="transition-modal-description"
+            >
+              <Fade in={signupFlow}>
+                <Box sx={modalStyle}>
+                  <div className={styles.modal_box}>
+                    <IconButton
+                      aria-label="close"
+                      onClick={modalClose}
+                      className={styles.close_button}
                     >
-                      <iframe
-                        allow="accelerometer; autoplay; camera; gyroscope; payment"
-                        frameBorder="0"
-                        height="100%"
-                        id="moonPayFrame"
-                        src={moonPaySrc(user.walletAddress, user.email)}
-                        width="100%"
-                      >
-                        <p>Your browser does not support iframes.</p>
-                      </iframe>
-                      {twitterButton && (
+                      <CloseIcon
+                        sx={{
+                          color: "#000000",
+                        }}
+                      />
+                    </IconButton>
+                    {/* Welcome modal */}
+                    {welcomeModal && (
+                      <div className={styles.modal_body}>
+                        <Typography id={styles.h5} variant="h5">
+                          Welcome to Impish
+                        </Typography>
+                        <Typography variant="h6">
+                          {"Let's"} get started!
+                        </Typography>
                         <Box>
                           <Button
                             id={styles.continueButtons}
-                            onClick={continueToTwitter}
+                            onClick={continueToMoonPayModal}
                             type="submit"
                             color="primary"
                             size="large"
@@ -304,42 +414,75 @@ function Dashboard() {
                             Continue
                           </Button>
                         </Box>
-                      )}
-                    </div>
-                  )}
-                  {/* Twitter modal */}
-                  {twitterModal && (
-                    <div className={styles.modal_body}>
-                      <Typography id={styles.h5} variant="h5">
-                        Find frens you follow on Twitter
-                      </Typography>
-                      <Typography id={styles.body1} variant="body1">
-                        To get the most of your Web3 adventure, connect with
-                        frens on Twitter.
-                      </Typography>
-                      <Box className={styles.linkSocialButtons}>
-                        <Button
-                          onClick={() =>
-                            signIn("twitter", { callbackUrl: "/twitter" })
-                          }
-                          id={styles.twtButton}
-                          type="submit"
-                          size="large"
-                          variant="outlined"
-                          startIcon={<TwitterIcon />}
+                      </div>
+                    )}
+                    {/* MoonPay modal */}
+                    {moonPayModal && (
+                      <div
+                        className={styles.modal_body}
+                        style={{ height: "60vh" }}
+                      >
+                        <iframe
+                          allow="accelerometer; autoplay; camera; gyroscope; payment"
+                          frameBorder="0"
+                          height="100%"
+                          id="moonPayFrame"
+                          src={moonPaySrc(user.walletAddress, user.email)}
+                          width="100%"
                         >
-                          Find frens I follow
-                        </Button>
-                      </Box>
-                    </div>
-                  )}
-                </div>
-              </Box>
-            </Fade>
-          </Modal>
-        </>
-      )}
-    </Layout>
+                          <p>Your browser does not support iframes.</p>
+                        </iframe>
+                        {twitterButton && (
+                          <Box>
+                            <Button
+                              id={styles.continueButtons}
+                              onClick={continueToTwitter}
+                              type="submit"
+                              color="primary"
+                              size="large"
+                              variant="outlined"
+                              endIcon={<ArrowRightIcon />}
+                            >
+                              Continue
+                            </Button>
+                          </Box>
+                        )}
+                      </div>
+                    )}
+                    {/* Twitter modal */}
+                    {twitterModal && (
+                      <div className={styles.modal_body}>
+                        <Typography id={styles.h5} variant="h5">
+                          Find frens you follow on Twitter
+                        </Typography>
+                        <Typography id={styles.body1} variant="body1">
+                          To get the most of your Web3 adventure, connect with
+                          frens on Twitter.
+                        </Typography>
+                        <Box className={styles.linkSocialButtons}>
+                          <Button
+                            onClick={() =>
+                              signIn("twitter", { callbackUrl: "/twitter" })
+                            }
+                            id={styles.twtButton}
+                            type="submit"
+                            size="large"
+                            variant="outlined"
+                            startIcon={<TwitterIcon />}
+                          >
+                            Find frens I follow
+                          </Button>
+                        </Box>
+                      </div>
+                    )}
+                  </div>
+                </Box>
+              </Fade>
+            </Modal>
+          </>
+        )}
+      </Layout>
+    </>
   );
 }
 

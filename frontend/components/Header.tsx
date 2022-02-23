@@ -16,6 +16,7 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import ListSubheader from "@mui/material/ListSubheader";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -38,30 +39,31 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { signIn, signOut, useSession } from "next-auth/react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styles from "styles/components/Header.module.scss";
 
 // mock data for notifications
 
-const notData: string[] = [
-  "this is the first notification available",
-  "this is the second notification available",
-  "this is the third notification available but longer so i can test responsiveness",
+const notData: { read: boolean; notification: string }[] = [
+  { read: true, notification: "this is the first notification available" },
+  { read: true, notification: "this is the second notification available" },
+  {
+    read: false,
+    notification:
+      "this is the third notification available but longer so i can test responsiveness",
+  },
+  { read: false, notification: "this is the fourth notification available" },
+  { read: false, notification: "this is the fifth notification available" },
 ];
 
 export default function Header() {
   const isMobile = useMediaQuery("(max-width:599px)");
   const router = useRouter();
   const [notificationCount, setNotificationCount] = useState(true);
-  const [notifications, setNotifications] = useState<string[]>([]);
+  const [notifications, setNotifications] =
+    useState<{ read: boolean; notification: string }[]>(notData);
+  const totalUnRead = notifications.filter((item) => item.read === true).length;
 
-  useEffect(() => {
-    loadNotifications();
-  }, []);
-
-  const loadNotifications = () => {
-    setNotifications(notData);
-  };
   const { data: session }: any = useSession();
 
   const drawerWidth = 240;
@@ -110,7 +112,12 @@ export default function Header() {
   };
   const markNotifictionAsRead = () => {
     setNotificationCount(false);
-    setNotifications([]);
+    setNotifications(
+      notifications.map((notification) => ({
+        ...notification,
+        read: false,
+      }))
+    );
   };
   const drawer = user && (
     <>
@@ -420,7 +427,7 @@ export default function Header() {
                     onClick={handleOpenNotification}
                   >
                     <Badge
-                      badgeContent={notifications.length}
+                      badgeContent={totalUnRead}
                       invisible={!notificationCount}
                       color="error"
                     >
@@ -499,7 +506,20 @@ export default function Header() {
                       justifyContent="space-between"
                       alignItems="center"
                     >
-                      <Typography>Notifications</Typography>
+                      <Box sx={{ flexGrow: 1 }}>
+                        <Typography
+                          variant="subtitle1"
+                          sx={{ fontWeight: 600, margin: 0 }}
+                        >
+                          Notifications
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "text.secondary" }}
+                        >
+                          You have {totalUnRead} unread messages
+                        </Typography>
+                      </Box>
                       {notificationCount && (
                         <Tooltip title="Mark all as read">
                           <IconButton
@@ -517,19 +537,78 @@ export default function Header() {
                         </Tooltip>
                       )}
                     </Grid>
-                    <Typography color="text.secondary" variant="subtitle2">
-                      You have {notifications.length} unread messages
-                    </Typography>
                   </Box>
                   <Divider />
-                  <MenuList>
-                    {notifications.map((data, i) => (
-                      <MenuItem key={i}>
-                        <ListItemText>{shortenText(data)}</ListItemText>
-                      </MenuItem>
-                    ))}
-                    <Divider />
-                  </MenuList>
+                  <List
+                    disablePadding
+                    subheader={
+                      <ListSubheader
+                        disableSticky
+                        sx={{
+                          py: 1,
+                          px: 2.5,
+                          typography: "overline",
+                          fontWeight: 600,
+                        }}
+                      >
+                        New
+                      </ListSubheader>
+                    }
+                  >
+                    <MenuList>
+                      {notifications.slice(0, 2).map((data, i) => (
+                        <MenuItem
+                          sx={{
+                            py: 1.5,
+                            px: 2.5,
+                            mt: "1px",
+                            ...(notificationCount && {
+                              bgcolor: "action.selected",
+                            }),
+                          }}
+                          key={i}
+                        >
+                          <ListItemText>
+                            {shortenText(data?.notification)}
+                          </ListItemText>
+                        </MenuItem>
+                      ))}
+                    </MenuList>
+                  </List>
+                  <List
+                    disablePadding
+                    subheader={
+                      <ListSubheader
+                        disableSticky
+                        sx={{
+                          py: 1,
+                          px: 2.5,
+                          typography: "overline",
+                          fontWeight: 600,
+                        }}
+                      >
+                        BEFORE THAT
+                      </ListSubheader>
+                    }
+                  >
+                    <MenuList>
+                      {notifications.slice(2, 5).map((data, i) => (
+                        <MenuItem
+                          sx={{
+                            py: 1.5,
+                            px: 2.5,
+                            mt: "1px",
+                          }}
+                          key={i}
+                        >
+                          <ListItemText>
+                            {shortenText(data?.notification)}
+                          </ListItemText>
+                        </MenuItem>
+                      ))}
+                    </MenuList>
+                  </List>
+                  <Divider />
                 </Popover>
                 {selectedMenu === "" ? (
                   <Menu
