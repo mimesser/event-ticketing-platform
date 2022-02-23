@@ -105,10 +105,22 @@
     }
   }
 
+  .twitter {
+    margin-top: -2px;
+    margin-left: 10px;
+    position: relative;
+    flex-direction: row;
+    width: fit-content;
+    align-items: center;
+    color: rgb(29, 161, 242);
+  }
+
   .active {
+    display: flex;
     margin-top: 25px;
     padding-left: 20px;
     color: grey;
+
     .since {
       margin-left: 10px;
       color: black;

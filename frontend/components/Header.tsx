@@ -76,6 +76,7 @@ const notData: { read: boolean; notification: string; createdAt: Date }[] = [
 ];
 
 export default function Header() {
+  const user = useUser({});
   const isMobile = useMediaQuery("(max-width:599px)");
   const router = useRouter();
   const [notificationCount, setNotificationCount] = useState(true);
@@ -88,8 +89,6 @@ export default function Header() {
   const { data: session }: any = useSession();
 
   const drawerWidth = 240;
-
-  const user = useUser({});
 
   const [anchorElNotification, setAnchorElNotification] =
     React.useState<HTMLButtonElement | null>(null);
@@ -208,6 +207,25 @@ export default function Header() {
     boxShadow: 24,
     p: 4,
   };
+
+  async function unlinkUser() {
+    if (session && user) {
+      const email = user.email;
+
+      try {
+        await fetch("/api/twitter/unlink-user", {
+          method: "POST",
+          body: JSON.stringify({
+            email,
+          }),
+        });
+      } catch (error) {
+        console.log(error);
+      }
+
+      signOut();
+    }
+  }
 
   return (
     <>
@@ -379,7 +397,7 @@ export default function Header() {
                 <Box>
                   <Button
                     sx={{ textTransform: "none", marginTop: "20px" }}
-                    onClick={() => signOut()}
+                    onClick={() => unlinkUser()}
                     type="submit"
                     color="primary"
                     size="large"
@@ -755,8 +773,9 @@ export default function Header() {
                       </ListItemIcon>
 
                       <div>
-                        {!session && "Link Twitter"}
-                        {session && (
+                        {!user.twitterUsername ? (
+                          "Link Twitter"
+                        ) : (
                           <div style={{ color: "red" }}>Unlink Twitter</div>
                         )}
                       </div>
