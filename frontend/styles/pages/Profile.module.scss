@@ -1,3 +1,10 @@
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 150px;
+}
+
 .profile_page {
   display: flex;
   flex-direction: column;
@@ -14,6 +21,11 @@
       background-color: white;
     }
   }
+  .nobanner {
+    width: 100%;
+    height: 150px;
+    background-color: #D0D8DF;
+  }
 
   .avatar {
     position: absolute;
@@ -24,6 +36,15 @@
     border-radius: 50%;
     overflow: hidden;
     cursor: pointer;
+  }
+  .noavatar {
+    position: absolute;
+    left: 20px;
+    top: 110px;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #F8F9FA;
   }
 
   .menu {
@@ -74,6 +95,21 @@
     .since {
       margin-left: 10px;
       color: black;
+    }
+  }
+
+  .nouser {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    .noexist {
+      font-weight: bolder;
+      font-size: 18px;
+    }
+    .trysearch {
+      font-size: 12px;
+      margin-top: 10px;
     }
   }
 }
