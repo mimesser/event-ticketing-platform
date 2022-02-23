@@ -4,6 +4,7 @@ import CameraEnhanceIcon from "@mui/icons-material/CameraEnhance";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Menu from "@mui/material/Menu";
@@ -31,15 +32,18 @@ import React from "react";
 import styles from "styles/pages/Profile.module.scss";
 
 function Profile() {
+  const [loading, finishLoading] = React.useState(true);
+
   const router = useRouter();
   const { username } = router.query;
   const [user, setUser] = React.useState<any>(null);
 
   React.useEffect(() => {
     if (username) {
-      fetchPublicUser(username as string).then((fetchedUser) =>
-        setUser(fetchedUser)
-      );
+      fetchPublicUser(username as string).then((fetchedUser) => {
+        setUser(fetchedUser);
+        finishLoading(false);
+      });
     }
   }, [username]);
 
@@ -217,11 +221,21 @@ function Profile() {
     setNewBanner("");
   };
 
+  if(loading) {
+    return (
+      <Layout>
+        <div className={styles.loading}>
+          <CircularProgress size={120} />
+        </div>
+      </Layout>
+    )
+  }
+
   return (
     <Layout>
-      {user && (
-        <>
-          <div className={styles.profile_page}>
+      <div className={styles.profile_page}>
+        {
+          user ?
             <div
               className={styles.banner}
               onClick={() => updatePhoto("banner")}
@@ -235,7 +249,12 @@ function Profile() {
                 />
               )}
             </div>
+          :
+            <div className={styles.nobanner}></div>
+        }
 
+        {
+          user ?
             <div
               className={styles.avatar}
               onClick={() => updatePhoto("avatar")}
@@ -262,55 +281,60 @@ function Profile() {
                 />
               )}
             </div>
+          :
+            <div className={styles.noavatar}></div>
+        }
 
-            <div
-              className={styles.menu}
-              style={{ display: user.authenticated ? "flex" : "none" }}
+        <div
+          className={styles.menu}
+          style={{ display: user?.authenticated ? "flex" : "none" }}
+        >
+          <Tooltip title="Edit Profile">
+            <Button
+              color="inherit"
+              sx={(theme) => ({
+                borderRadius: theme.shape.borderRadius,
+                margin: theme.spacing(1),
+              })}
+              variant="outlined"
+              onClick={editProfile}
             >
-              <Tooltip title="Edit Profile">
-                <Button
-                  color="inherit"
-                  sx={(theme) => ({
-                    borderRadius: theme.shape.borderRadius,
-                    margin: theme.spacing(1),
-                  })}
-                  variant="outlined"
-                  onClick={editProfile}
-                >
-                  <Typography
-                    sx={{
-                      fontFamily: "sans-serif",
-                      fontSize: "16px",
-                      fontWeight: 550,
-                      textTransform: "none",
-                    }}
-                    variant="body1"
-                  >
-                    Edit profile
-                  </Typography>
-                </Button>
-              </Tooltip>
+              <Typography
+                sx={{
+                  fontFamily: "sans-serif",
+                  fontSize: "16px",
+                  fontWeight: 550,
+                  textTransform: "none",
+                }}
+                variant="body1"
+              >
+                Edit profile
+              </Typography>
+            </Button>
+          </Tooltip>
 
-              <Tooltip title="Share Profile">
-                <Button
-                  color="inherit"
-                  variant="outlined"
-                  sx={(theme) => ({
-                    borderRadius: theme.shape.borderRadius,
-                    margin: theme.spacing(1),
-                    [theme.breakpoints.down("md")]: {
-                      maxWidth: "30px",
-                    },
-                  })}
-                  onClick={handleOpenShareMenu}
-                >
-                  <ReplyIcon />
-                </Button>
-              </Tooltip>
-            </div>
+          <Tooltip title="Share Profile">
+            <Button
+              color="inherit"
+              variant="outlined"
+              sx={(theme) => ({
+                borderRadius: theme.shape.borderRadius,
+                margin: theme.spacing(1),
+                [theme.breakpoints.down("md")]: {
+                  maxWidth: "30px",
+                },
+              })}
+              onClick={handleOpenShareMenu}
+            >
+              <ReplyIcon />
+            </Button>
+          </Tooltip>
+        </div>
 
-            <div className={styles.address}>
-              {shortenAddress(user.walletAddress)}
+        <div className={styles.address}>
+          {shortenAddress(user?.walletAddress || username)}
+          {
+            user && <>
               {snackShow ? (
                 <CheckIcon />
               ) : (
@@ -321,49 +345,63 @@ function Profile() {
                   />
                 </Tooltip>
               )}
-            </div>
+            </>
+          }
+        </div>
 
+        {
+          user ?
             <div className={styles.active}>
               Joined
               <span className={styles.since}>
                 {moment(user.createdAt).format("MMMM YYYY")}
               </span>
             </div>
-          </div>
+          :
+            <div className={styles.nouser}>
+              <div>
+                <div className={styles.noexist}>This account doesn&apos;t exist</div>
+                <div className={styles.trysearch}>Try searching for another.</div>
+              </div>
+            </div>
+        }
+      </div>
 
-          <Snackbar
-            open={snackShow}
-            autoHideDuration={1000}
-            onClose={() => openSnackBar(false)}
-            message="Copied to clipboard"
-          />
+      <Snackbar
+        open={snackShow}
+        autoHideDuration={1000}
+        onClose={() => openSnackBar(false)}
+        message="Copied to clipboard"
+      />
 
-          <Menu
-            sx={{ mt: "45px" }}
-            anchorEl={anchorElShare}
-            anchorOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
-            open={Boolean(anchorElShare)}
-            onClose={handleCloseShareMenu}
-            PaperProps={{
-              sx: { borderRadius: (theme) => theme.shape.borderRadius },
-            }}
-          >
-            <MenuItem onClick={copyShareLink}>
-              <ListItemIcon>
-                {linkCopied ? <CheckIcon /> : <ContentCopyIcon />}
-              </ListItemIcon>
-              {linkCopied ? "Link Copied" : "Copy Link"}
-            </MenuItem>
-          </Menu>
+      <Menu
+        sx={{ mt: "45px" }}
+        anchorEl={anchorElShare}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        open={Boolean(anchorElShare)}
+        onClose={handleCloseShareMenu}
+        PaperProps={{
+          sx: { borderRadius: (theme) => theme.shape.borderRadius },
+        }}
+      >
+        <MenuItem onClick={copyShareLink}>
+          <ListItemIcon>
+            {linkCopied ? <CheckIcon /> : <ContentCopyIcon />}
+          </ListItemIcon>
+          {linkCopied ? "Link Copied" : "Copy Link"}
+        </MenuItem>
+      </Menu>
 
+      {
+        user &&
           <Backdrop
             sx={{
               background: "rgba(61, 64, 51, 0.9)",
@@ -424,140 +462,139 @@ function Profile() {
               </div>
             </div>
           </Backdrop>
+      }
 
-          <Modal
-            BackdropProps={{
-              timeout: 500,
-            }}
-            closeAfterTransition
-            onClose={editModalClose}
-            open={profileModal}
-          >
-            <div className={styles.profile_modal}>
-              <div className={styles.header}>
-                <div className={styles.header_title}>
-                  <CloseIcon onClick={editModalClose} />
-                  <span>Edit Profile</span>
-                </div>
-                <div className={styles.save_btn} onClick={saveProfile}>
-                  Save
-                </div>
-              </div>
+      <Modal
+        BackdropProps={{
+          timeout: 500,
+        }}
+        closeAfterTransition
+        onClose={editModalClose}
+        open={profileModal}
+      >
+        <div className={styles.profile_modal}>
+          <div className={styles.header}>
+            <div className={styles.header_title}>
+              <CloseIcon onClick={editModalClose} />
+              <span>Edit Profile</span>
+            </div>
+            <div className={styles.save_btn} onClick={saveProfile}>
+              Save
+            </div>
+          </div>
 
-              <div className={styles.banner}>
-                {newBanner && (
-                  <Image
-                    src={newBanner}
-                    layout="fill"
-                    objectFit="cover"
-                    alt="Banner"
-                  />
-                )}
-                <div className={styles.dim} />
-                <div className={styles.icon_set}>
-                  <CameraEnhanceIcon
-                    className={styles.icon}
-                    onClick={uploadBanner}
-                  />
-                  {newBanner && (
-                    <CloseIcon className={styles.icon} onClick={removeBanner} />
-                  )}
-                  <input
-                    ref={(input) => setBannerRef(input)}
-                    onChange={uploadPhoto}
-                    type="file"
-                    accept="image/png, image/jpeg"
-                    style={{ display: "none" }}
-                  />
-                </div>
-
-                <div className={styles.avatar}>
-                  {newAvatar ? (
-                    <Image
-                      src={newAvatar}
-                      width={80}
-                      height={80}
-                      alt="Avatar"
-                    />
-                  ) : (
-                    <Avatar
-                      size={80}
-                      name={user.walletAddress}
-                      variant="pixel"
-                      colors={[
-                        "#ffad08",
-                        "#edd75a",
-                        "#73b06f",
-                        "#0c8f8f",
-                        "#405059",
-                      ]}
-                    />
-                  )}
-                  <div className={styles.dim} />
-                  <div className={styles.icon_set}>
-                    <CameraEnhanceIcon
-                      className={styles.icon}
-                      onClick={uploadAvatar}
-                    />
-                    <input
-                      ref={(input) => setAvatarRef(input)}
-                      onChange={uploadPhoto}
-                      type="file"
-                      accept="image/png, image/jpeg"
-                      style={{ display: "none" }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <TextField
-                label="Name"
-                variant="outlined"
-                className={styles.name}
-                value={newName}
-                onChange={nameUpdated}
+          <div className={styles.banner}>
+            {newBanner && (
+              <Image
+                src={newBanner}
+                layout="fill"
+                objectFit="cover"
+                alt="Banner"
               />
-
-              <TextField
-                label="Username"
-                error={invalidUsername}
-                helperText={
-                  invalidUsername
-                    ? "That username has been taken. Please choose another."
-                    : ""
-                }
-                variant="outlined"
-                className={styles.username}
-                value={newUsername}
-                onChange={usernameUpdated}
-                onBlur={checkUsername}
+            )}
+            <div className={styles.dim} />
+            <div className={styles.icon_set}>
+              <CameraEnhanceIcon
+                className={styles.icon}
+                onClick={uploadBanner}
+              />
+              {newBanner && (
+                <CloseIcon className={styles.icon} onClick={removeBanner} />
+              )}
+              <input
+                ref={(input) => setBannerRef(input)}
+                onChange={uploadPhoto}
+                type="file"
+                accept="image/png, image/jpeg"
+                style={{ display: "none" }}
               />
             </div>
-          </Modal>
 
-          <Modal
-            BackdropProps={{
-              timeout: 500,
-            }}
-            closeAfterTransition
-            onClose={discardModalClose}
-            open={discardModal}
-          >
-            <div className={styles.discard_modal}>
-              <span className={styles.title}>Discard changes?</span>
-              <span className={styles.content}>
-                This can&apos;t be undone and you&apos;ll lose your changes.
-              </span>
-              <span className={styles.discard} onClick={discard}>
-                Discard
-              </span>
-              <span className={styles.cancel} onClick={discardModalClose}>
-                Cancel
-              </span>
+            <div className={styles.avatar}>
+              {newAvatar ? (
+                <Image
+                  src={newAvatar}
+                  width={80}
+                  height={80}
+                  alt="Avatar"
+                />
+              ) : (
+                <Avatar
+                  size={80}
+                  name={user?.walletAddress}
+                  variant="pixel"
+                  colors={[
+                    "#ffad08",
+                    "#edd75a",
+                    "#73b06f",
+                    "#0c8f8f",
+                    "#405059",
+                  ]}
+                />
+              )}
+              <div className={styles.dim} />
+              <div className={styles.icon_set}>
+                <CameraEnhanceIcon
+                  className={styles.icon}
+                  onClick={uploadAvatar}
+                />
+                <input
+                  ref={(input) => setAvatarRef(input)}
+                  onChange={uploadPhoto}
+                  type="file"
+                  accept="image/png, image/jpeg"
+                  style={{ display: "none" }}
+                />
+              </div>
             </div>
-          </Modal>
-        </>
-      )}
+          </div>
+
+          <TextField
+            label="Name"
+            variant="outlined"
+            className={styles.name}
+            value={newName}
+            onChange={nameUpdated}
+          />
+
+          <TextField
+            label="Username"
+            error={invalidUsername}
+            helperText={
+              invalidUsername
+                ? "That username has been taken. Please choose another."
+                : ""
+            }
+            variant="outlined"
+            className={styles.username}
+            value={newUsername}
+            onChange={usernameUpdated}
+            onBlur={checkUsername}
+          />
+        </div>
+      </Modal>
+
+      <Modal
+        BackdropProps={{
+          timeout: 500,
+        }}
+        closeAfterTransition
+        onClose={discardModalClose}
+        open={discardModal}
+      >
+        <div className={styles.discard_modal}>
+          <span className={styles.title}>Discard changes?</span>
+          <span className={styles.content}>
+            This can&apos;t be undone and you&apos;ll lose your changes.
+          </span>
+          <span className={styles.discard} onClick={discard}>
+            Discard
+          </span>
+          <span className={styles.cancel} onClick={discardModalClose}>
+            Cancel
+          </span>
+        </div>
+      </Modal>
     </Layout>
   );
 }
