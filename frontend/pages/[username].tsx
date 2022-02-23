@@ -316,23 +316,24 @@ function Profile() {
             </Button>
           </Tooltip>
         </div>
-
-        <div className={styles.address}>
-          {shortenAddress(user?.walletAddress || username)}
-          {user && (
-            <>
-              {snackShow ? (
-                <CheckIcon />
-              ) : (
-                <Tooltip title="Copy Address">
-                  <ContentCopyIcon
-                    className={styles.copy}
-                    onClick={copyAddress}
-                  />
-                </Tooltip>
-              )}
-            </>
-          )}
+        <div className={styles.user_details}>
+          <div className={styles.address}>
+            {shortenAddress(user?.walletAddress || username)}
+            {user && (
+              <>
+                {snackShow ? (
+                  <CheckIcon />
+                ) : (
+                  <Tooltip title="Copy Address">
+                    <ContentCopyIcon
+                      className={styles.copy}
+                      onClick={copyAddress}
+                    />
+                  </Tooltip>
+                )}
+              </>
+            )}
+          </div>
         </div>
 
         {user ? (
