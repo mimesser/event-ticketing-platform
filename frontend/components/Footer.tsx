@@ -1,19 +1,21 @@
-// import Image from "next/image"; // Images
+import Button from '@mui/material/Button';
+import { useUser } from "lib/hooks";
+import { useRouter } from "next/router";
 import styles from "styles/components/Footer.module.scss"; // Component styles
 
-/**
- * Links to render in footer
- * @dev Does not render any links where url is undefined, allowing conditional rendering
- */
-// const footerLinks: { icon: string; url: string | undefined }[] = [
-//   // Discord
-//   { icon: "/icons/discord.svg", url: process.env.NEXT_PUBLIC_DISCORD },
-//   // Twitter
-//   { icon: "/icons/twitter.svg", url: process.env.NEXT_PUBLIC_TWITTER },
-//   // Github
-//   { icon: "/icons/github.svg", url: process.env.NEXT_PUBLIC_GITHUB },
-// ];
-
 export default function Footer() {
-  return <div className={styles.footer}></div>;
+  const user = useUser({});
+  const router = useRouter();
+
+  return !user ? <div className={styles.footer}>
+    <div className={styles.title}>Connect on Impish</div>
+    <Button
+      color="primary"
+      size="large"
+      variant="contained"
+      onClick={() => router.push("/")}
+    >
+      Log in / Sign up
+    </Button>
+  </div> : null;
 }

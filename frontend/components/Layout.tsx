@@ -3,6 +3,7 @@ import Toolbar from "@mui/material/Toolbar";
 import React, { ReactElement } from "react";
 import Meta from "components/Meta"; // Components: Meta
 import Header from "components/Header"; // Components: Header
+import Footer from "components/Footer"; // Components: Footer
 
 export default function Layout({
   onboarding,
@@ -32,6 +33,8 @@ export default function Layout({
         <Toolbar />
         {children}
       </Box>
+
+      <Footer />
     </div>
   );
 }
