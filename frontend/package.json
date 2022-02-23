@@ -23,6 +23,7 @@
     "boring-avatars": "^1.6.1",
     "cookie": "^0.4.1",
     "create-hmac": "^1.1.7",
+    "date-fns": "^2.28.0",
     "ethereumjs-abi": "^0.6.8",
     "ethers": "^5.5.2",
     "keccak256": "^1.0.6",
