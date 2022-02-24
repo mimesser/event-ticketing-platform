@@ -332,7 +332,7 @@ function Profile() {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <TwitterIcon sx={{ marginRight: "5px" }} />
+                    <TwitterIcon />
                   </a>
                 </Tooltip>
               )}
@@ -444,7 +444,13 @@ function Profile() {
             <div className={styles.profile_modal}>
               <div className={styles.header}>
                 <div className={styles.header_title}>
-                  <CloseIcon onClick={editModalClose} />
+                  <IconButton aria-label="close" onClick={editModalClose}>
+                    <CloseIcon
+                      sx={{
+                        color: "#000000",
+                      }}
+                    />
+                  </IconButton>
                   <span>Edit Profile</span>
                 </div>
                 <div className={styles.save_btn} onClick={saveProfile}>
