@@ -14,6 +14,7 @@ import ReplyIcon from "@mui/icons-material/Reply";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
+import TwitterIcon from "@mui/icons-material/Twitter";
 import Typography from "@mui/material/Typography";
 import Avatar from "boring-avatars";
 import Layout from "components/Layout";
@@ -317,6 +318,16 @@ function Profile() {
           </Tooltip>
         </div>
         <div className={styles.user_details}>
+          {user && (
+            <>
+              {user.name && <div className={styles.name}>{user.name}</div>}
+
+              {user.username && (
+                <div className={styles.username}>{`@${user.username}`}</div>
+              )}
+            </>
+          )}
+
           <div className={styles.address}>
             {shortenAddress(user?.walletAddress || username)}
             {user && (
@@ -342,6 +353,18 @@ function Profile() {
             <span className={styles.since}>
               {moment(user.createdAt).format("MMMM YYYY")}
             </span>
+            {user.twitterUsername && (
+              <Tooltip title={`@${user.twitterUsername}`}>
+                <a
+                  className={styles.twitter}
+                  href={`https://twitter.com/${user.twitterUsername}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <TwitterIcon />
+                </a>
+              </Tooltip>
+            )}
           </div>
         ) : (
           <div className={styles.nouser}>
@@ -462,7 +485,13 @@ function Profile() {
         <div className={styles.profile_modal}>
           <div className={styles.header}>
             <div className={styles.header_title}>
-              <CloseIcon onClick={editModalClose} />
+              <IconButton aria-label="close" onClick={editModalClose}>
+                <CloseIcon
+                  sx={{
+                    color: "#000000",
+                  }}
+                />
+              </IconButton>
               <span>Edit Profile</span>
             </div>
             <div className={styles.save_btn} onClick={saveProfile}>
