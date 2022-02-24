@@ -62,6 +62,16 @@ function Profile() {
     }, 500);
   };
 
+  const [addressCopied, copyWalletAddress] = React.useState(false);
+  const copyShareAddress = () => {
+    copy(user.walletAddress);
+    copyWalletAddress(true);
+    setTimeout(() => {
+      handleCloseShareMenu();
+      copyWalletAddress(false);
+    }, 500);
+  };
+
   const [photo, setPhoto] = React.useState("");
   const [photoModal, showPhotoModal] = React.useState(false);
   const updatePhoto = (item: string) => {
@@ -304,19 +314,21 @@ function Profile() {
                 <div className={styles.username}>{`@${user.username}`}</div>
               )}
 
-              <div className={styles.address}>
-                {shortenAddress(user.walletAddress)}
-                {snackShow ? (
-                  <CheckIcon />
-                ) : (
-                  <Tooltip title="Copy Address">
-                    <ContentCopyIcon
-                      className={styles.copy}
-                      onClick={copyAddress}
-                    />
-                  </Tooltip>
-                )}
-              </div>
+              {!user.username && (
+                <div className={styles.address}>
+                  {shortenAddress(user.walletAddress)}
+                  {snackShow ? (
+                    <CheckIcon />
+                  ) : (
+                    <Tooltip title="Copy Address">
+                      <ContentCopyIcon
+                        className={styles.copy}
+                        onClick={copyAddress}
+                      />
+                    </Tooltip>
+                  )}
+                </div>
+              )}
             </div>
 
             <div className={styles.active}>
@@ -369,6 +381,12 @@ function Profile() {
                 {linkCopied ? <CheckIcon /> : <ContentCopyIcon />}
               </ListItemIcon>
               {linkCopied ? "Link Copied" : "Copy Link"}
+            </MenuItem>
+            <MenuItem onClick={copyShareAddress}>
+              <ListItemIcon>
+                {addressCopied ? <CheckIcon /> : <ContentCopyIcon />}
+              </ListItemIcon>
+              {addressCopied ? "Address Copied" : "Copy Address"}
             </MenuItem>
           </Menu>
 
