@@ -661,7 +661,10 @@ export default function Header() {
                                 <WatchLater
                                   sx={{ mr: 0.5, width: 16, height: 16 }}
                                 />
-                                {formatDistanceToNow(new Date(data?.createdAt))}
+                                {formatDistanceToNow(
+                                  new Date(data?.createdAt),
+                                  { addSuffix: true }
+                                )}
                               </Typography>
                             }
                           />
@@ -710,7 +713,10 @@ export default function Header() {
                                 <WatchLater
                                   sx={{ mr: 0.5, width: 16, height: 16 }}
                                 />
-                                {formatDistanceToNow(new Date(data?.createdAt))}
+                                {formatDistanceToNow(
+                                  new Date(data?.createdAt),
+                                  { addSuffix: true }
+                                )}
                               </Typography>
                             }
                           />
