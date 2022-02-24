@@ -1,3 +1,4 @@
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import AppBar from "@mui/material/AppBar";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -33,7 +34,6 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import WatchLater from "@mui/icons-material/WatchLater";
 import Avatar from "boring-avatars";
 import { formatDistanceToNow, set, sub } from "date-fns";
 import { useUser } from "lib/hooks";
@@ -658,7 +658,7 @@ export default function Header() {
                                   color: "text.disabled",
                                 }}
                               >
-                                <WatchLater
+                                <AccessTimeIcon
                                   sx={{ mr: 0.5, width: 16, height: 16 }}
                                 />
                                 {formatDistanceToNow(
@@ -710,7 +710,7 @@ export default function Header() {
                                   color: "text.disabled",
                                 }}
                               >
-                                <WatchLater
+                                <AccessTimeIcon
                                   sx={{ mr: 0.5, width: 16, height: 16 }}
                                 />
                                 {formatDistanceToNow(
