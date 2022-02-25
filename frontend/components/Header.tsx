@@ -168,7 +168,7 @@ export default function Header() {
             alignItems: "center",
             padding: "12px",
           }}
-          selected={router.pathname === "/profile"}
+          selected={router.pathname === "/[username]"}
         >
           <div className={styles.account}>
             {user.avatarImage ? (
@@ -187,7 +187,10 @@ export default function Header() {
               />
             )}
           </div>
-          <Link href="/profile" passHref>
+          <Link
+            href={`/${encodeURIComponent(user.username || user.walletAddress)}`}
+            passHref
+          >
             <ListItemText
               disableTypography
               style={{ height: 16, marginLeft: 15 }}
