@@ -283,16 +283,14 @@ function Profile() {
           <div className={styles.noavatar}></div>
         )}
 
-        <div
-          className={styles.menu}
-          style={{ display: user?.authenticated ? "flex" : "none" }}
-        >
+        <div className={styles.menu}>
           <Tooltip title="Edit Profile">
             <Button
               color="inherit"
               sx={(theme) => ({
                 borderRadius: theme.shape.borderRadius,
                 margin: theme.spacing(1),
+                display: user?.authenticated ? "flex" : "none",
               })}
               variant="outlined"
               onClick={editProfile}
@@ -423,12 +421,14 @@ function Profile() {
           </ListItemIcon>
           {linkCopied ? "Link Copied" : "Copy Link"}
         </MenuItem>
-        <MenuItem onClick={copyShareAddress}>
-          <ListItemIcon>
-            {addressCopied ? <CheckIcon /> : <ContentCopyIcon />}
-          </ListItemIcon>
-          {addressCopied ? "Address Copied" : "Copy Address"}
-        </MenuItem>
+        {user?.authenticated && (
+          <MenuItem onClick={copyShareAddress}>
+            <ListItemIcon>
+              {addressCopied ? <CheckIcon /> : <ContentCopyIcon />}
+            </ListItemIcon>
+            {addressCopied ? "Address Copied" : "Copy Address"}
+          </MenuItem>
+        )}
       </Menu>
 
       {user && (
