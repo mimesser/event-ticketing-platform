@@ -174,6 +174,7 @@ function Profile() {
     if (!e.target.files) return;
 
     const file = e.target?.files[0];
+    if (!file) return;
 
     const filename = encodeURIComponent(file.name);
     const res = await fetch(`/api/upload-image?file=${filename}`);
