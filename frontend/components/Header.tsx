@@ -36,7 +36,7 @@ import TwitterIcon from "@mui/icons-material/Twitter";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Avatar from "boring-avatars";
 import { formatDistanceToNow, set, sub } from "date-fns";
-import { useUser } from "lib/hooks";
+import { useUserInfo } from "lib/user-context";
 import { moonPaySrc } from "lib/moon-pay";
 import { magic } from "lib/magic";
 import { shortenAddress, shortenText } from "lib/utils";
@@ -80,7 +80,7 @@ const notData: { read: boolean; notification: string; createdAt: Date }[] = [
 ];
 
 export default function Header() {
-  const user = useUser({});
+  const { user } = useUserInfo();
   const isMobile = useMediaQuery("(max-width:599px)");
   const router = useRouter();
   const [notificationCount, setNotificationCount] = useState(true);

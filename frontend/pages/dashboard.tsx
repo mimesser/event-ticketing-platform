@@ -26,7 +26,7 @@ function Dashboard() {
   const { status, data: session }: any = useSession();
   const { query } = useRouter();
   const firstTimeUser = query.userExists === "false";
-  const user = useUser({
+  const { user } = useUser({
     redirectTo: firstTimeUser ? false : "/dashboard",
     redirectIfFound: true,
   });

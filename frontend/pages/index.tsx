@@ -1,3 +1,4 @@
+import CircularProgress from "@mui/material/CircularProgress";
 import LoadingButton from "@mui/lab/LoadingButton";
 import TextField from "@mui/material/TextField";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -5,7 +6,7 @@ import { useUser } from "lib/hooks";
 import { magic } from "lib/magic";
 import Image from "next/image";
 import Router from "next/router";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import styles from "styles/pages/Home.module.scss";
 
@@ -15,14 +16,9 @@ const description: string =
 
 export default function Home() {
   const isMobile = useMediaQuery("(max-width:599px)");
-  const user = useUser({ redirectTo: "/dashboard", redirectIfFound: true });
+  const { user, loading } = useUser({ redirectTo: "/dashboard", redirectIfFound: true });
 
-  const [loading, setLoading] = useState(true);
   const [signingIn, setSigningIn] = useState(false);
-
-  useCallback(() => {
-    if (user !== undefined) setLoading(false);
-  }, [user]);
 
   const {
     register,
@@ -75,9 +71,25 @@ export default function Home() {
     }
   };
 
+  if(loading) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          width: '100vw',
+          height: '100vh',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <CircularProgress size={120} />
+      </div>
+    )
+  }
+
   return (
     <>
-      {(loading === false || user === null) && (
+      {(user === null) && (
         <div className={styles.login_page}>
           <div className={styles.info}>
             <Image

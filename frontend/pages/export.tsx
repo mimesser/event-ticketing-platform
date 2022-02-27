@@ -10,7 +10,7 @@ import React from "react";
 import styles from "styles/pages/Export.module.scss";
 
 function ExportPage() {
-  const user = useUser({
+  const { user } = useUser({
     redirectTo: "/export",
     redirectIfFound: true,
   });
