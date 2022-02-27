@@ -18,7 +18,7 @@ import styles from "styles/pages/Twitter.module.scss";
 export default function Twitter() {
   const { data: session, status }: any = useSession();
   const [data, setData] = useState<any>();
-  const user = useUser({ redirectTo: "/" });
+  const { user } = useUser({ redirectTo: "/" });
 
   useEffect(() => {
     async function linkUser() {

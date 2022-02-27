@@ -1,22 +1,13 @@
 import { useEffect } from "react";
 import Router from "next/router";
-import useSWR from "swr";
-
-const fetcher = (url: any) =>
-  fetch(url)
-    .then((r) => r.json())
-    .then((data) => {
-      return { user: data?.user || null };
-    });
+import { useUserInfo } from "./user-context";
 
 export function useUser({ redirectTo, redirectIfFound }: any = {}) {
-  const { data, error } = useSWR("/api/user", fetcher);
-  const user = data?.user;
-  const finished = Boolean(data);
+  const { user, loading } = useUserInfo();
   const hasUser = Boolean(user);
 
   useEffect(() => {
-    if (!redirectTo || !finished) return;
+    if (!redirectTo && !loading) return;
 
     if (!hasUser) {
       Router.push("/");
@@ -30,9 +21,9 @@ export function useUser({ redirectTo, redirectIfFound }: any = {}) {
     ) {
       Router.push(redirectTo, "/");
     }
-  }, [redirectTo, redirectIfFound, finished, hasUser, user]);
+  }, [redirectTo, redirectIfFound, loading, hasUser, user]);
 
-  return error ? null : user;
+  return { user, loading };
 }
 
 export async function fetchPublicUser(username: string) {

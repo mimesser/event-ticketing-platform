@@ -1,10 +1,10 @@
 import Button from "@mui/material/Button";
-import { useUser } from "lib/hooks";
+import { useUserInfo } from "lib/user-context";
 import { useRouter } from "next/router";
 import styles from "styles/components/Footer.module.scss"; // Component styles
 
 export default function Footer() {
-  const user = useUser({});
+  const { user } = useUserInfo();
   const router = useRouter();
 
   return !user ? (
