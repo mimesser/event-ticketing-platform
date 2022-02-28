@@ -16,7 +16,10 @@ const description: string =
 
 export default function Home() {
   const isMobile = useMediaQuery("(max-width:599px)");
-  const { user, loading } = useUser({ redirectTo: "/dashboard", redirectIfFound: true });
+  const { user, loading } = useUser({
+    redirectTo: "/dashboard",
+    redirectIfFound: true,
+  });
 
   const [signingIn, setSigningIn] = useState(false);
 
@@ -71,25 +74,25 @@ export default function Home() {
     }
   };
 
-  if(loading) {
+  if (loading) {
     return (
       <div
         style={{
-          display: 'flex',
-          width: '100vw',
-          height: '100vh',
-          alignItems: 'center',
-          justifyContent: 'center',
+          display: "flex",
+          width: "100vw",
+          height: "100vh",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         <CircularProgress size={120} />
       </div>
-    )
+    );
   }
 
   return (
     <>
-      {(user === null) && (
+      {user === null && (
         <div className={styles.login_page}>
           <div className={styles.info}>
             <Image
