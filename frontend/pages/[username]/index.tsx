@@ -321,6 +321,7 @@ function Profile() {
                 [theme.breakpoints.down("md")]: {
                   maxWidth: "30px",
                 },
+                display: user ? "flex" : "none",
               })}
               onClick={handleOpenShareMenu}
             >
