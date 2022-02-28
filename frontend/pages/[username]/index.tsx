@@ -36,7 +36,6 @@ import styles from "styles/pages/Profile.module.scss";
 
 function Profile() {
   const [loading, finishLoading] = React.useState(true);
-
   const router = useRouter();
   const { username } = router.query;
   const [user, setUser] = React.useState<any>(null);
@@ -49,7 +48,6 @@ function Profile() {
       });
     }
   }, [username]);
-
   const [snackShow, openSnackBar] = React.useState(false);
   const copyAddress = async () => {
     copy(user.walletAddress);
@@ -66,7 +64,17 @@ function Profile() {
     setAnchorElShare(null);
   };
 
+  const [hover, setHover] = React.useState(false);
+  const [following, setFollowing] = React.useState(false);
   const [linkCopied, copyLink] = React.useState(false);
+  const [unfollowModal, setUnFollowModal] = React.useState(false);
+
+  const unfollowUser = () => {
+    setHover(false);
+    setFollowing(false);
+    setUnFollowModal(false);
+  };
+
   const copyShareLink = () => {
     let username = user.walletAddress;
     if (user.username) username = user.username;
@@ -235,6 +243,18 @@ function Profile() {
     setNewBanner("");
   };
 
+  const modalStyle = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 320,
+    bgcolor: "white",
+    borderRadius: "25px",
+    boxShadow: 24,
+    p: 4,
+  };
+
   if (loading) {
     return (
       <Layout>
@@ -328,6 +348,82 @@ function Profile() {
               <ReplyIcon />
             </Button>
           </Tooltip>
+          {user && (
+            <Button
+              color="inherit"
+              sx={(theme) => ({
+                ":hover": {
+                  backgroundColor: following ? "inherit" : "black",
+                },
+                backgroundColor: following ? "white" : "black",
+                borderColor: hover ? "red" : "black",
+                borderRadius: theme.shape.borderRadius,
+                margin: theme.spacing(1),
+                display: !user?.authenticated ? "flex" : "none",
+              })}
+              variant={following ? "outlined" : "contained"}
+            >
+              {following ? (
+                <Typography
+                  onClick={() => {
+                    setUnFollowModal(true);
+                  }}
+                  onMouseOver={() => setHover(true)}
+                  onMouseOut={() => setHover(false)}
+                  sx={{
+                    fontFamily: "sans-serif",
+                    fontSize: "16px",
+                    fontWeight: 550,
+                    textTransform: "none",
+                  }}
+                  variant="body1"
+                >
+                  {hover ? (
+                    <Typography
+                      sx={{
+                        fontFamily: "sans-serif",
+                        fontSize: "16px",
+                        fontWeight: 550,
+                        textTransform: "none",
+                      }}
+                      color="red"
+                      component={"span"}
+                      variant="body1"
+                    >
+                      Unfollow
+                    </Typography>
+                  ) : (
+                    <Typography
+                      sx={{
+                        fontFamily: "sans-serif",
+                        fontSize: "16px",
+                        fontWeight: 550,
+                        textTransform: "none",
+                      }}
+                      component={"span"}
+                      variant="body1"
+                    >
+                      Following
+                    </Typography>
+                  )}
+                </Typography>
+              ) : (
+                <Typography
+                  onClick={() => setFollowing(true)}
+                  sx={{
+                    color: "white",
+                    fontFamily: "sans-serif",
+                    fontSize: "16px",
+                    fontWeight: 550,
+                    textTransform: "none",
+                  }}
+                  variant="body1"
+                >
+                  Follow
+                </Typography>
+              )}
+            </Button>
+          )}
         </div>
 
         <div className={styles.user_details}>
@@ -707,6 +803,99 @@ function Profile() {
           </span>
         </div>
       </Modal>
+
+      {/* unfollow Modal */}
+      {user && (
+        <Modal
+          BackdropProps={{
+            timeout: 500,
+          }}
+          closeAfterTransition
+          onClose={() => {
+            setUnFollowModal(false);
+          }}
+          open={unfollowModal}
+        >
+          <Box sx={modalStyle}>
+            <Grid container direction="column">
+              <Typography
+                gutterBottom
+                sx={{
+                  color: "black",
+                  fontFamily: "sans-serif",
+                  fontSize: "18px",
+                  fontWeight: 550,
+                  textTransform: "none",
+                }}
+                variant="body1"
+              >
+                Unfollow
+                {`@${user.username}`}?
+              </Typography>
+              <Typography
+                sx={{ marginBottom: "12px" }}
+                variant="body1"
+                color="text.secondary"
+              >
+                Their activities will no longer show up in your home timeline.
+                You can still view their profile.
+              </Typography>
+
+              <Button
+                onClick={unfollowUser}
+                size="large"
+                color="inherit"
+                variant="contained"
+                sx={(theme) => ({
+                  ":hover": {
+                    backgroundColor: "black",
+                  },
+
+                  backgroundColor: "black",
+                  borderRadius: theme.shape.borderRadius,
+                  margin: theme.spacing(1),
+                })}
+              >
+                <Typography
+                  sx={{
+                    color: "white",
+                    fontFamily: "sans-serif",
+                    fontSize: "16px",
+                    fontWeight: 550,
+                    textTransform: "none",
+                  }}
+                >
+                  Unfollow
+                </Typography>
+              </Button>
+              <Button
+                size="large"
+                variant="outlined"
+                onClick={() => {
+                  setUnFollowModal(false);
+                }}
+                sx={(theme) => ({
+                  borderRadius: theme.shape.borderRadius,
+                  margin: theme.spacing(1),
+                })}
+                color="inherit"
+              >
+                <Typography
+                  sx={{
+                    color: "black",
+                    fontFamily: "sans-serif",
+                    fontSize: "16px",
+                    fontWeight: 550,
+                    textTransform: "none",
+                  }}
+                >
+                  Cancel
+                </Typography>
+              </Button>
+            </Grid>
+          </Box>
+        </Modal>
+      )}
     </Layout>
   );
 }
