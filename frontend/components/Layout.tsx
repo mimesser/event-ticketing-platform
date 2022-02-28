@@ -18,20 +18,19 @@ export default function Layout({
 
   return (
     <>
-    {
-      loading ?
+      {loading ? (
         <div
           style={{
-            display: 'flex',
-            width: '100vw',
-            height: '100vh',
-            alignItems: 'center',
-            justifyContent: 'center',
+            display: "flex",
+            width: "100vw",
+            height: "100vh",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
           <CircularProgress size={120} />
         </div>
-      :
+      ) : (
         <div
           style={{
             filter: onboarding ? "blur(2px)" : "none",
@@ -55,7 +54,7 @@ export default function Layout({
 
           <Footer />
         </div>
-    }
+      )}
     </>
   );
 }
