@@ -1,10 +1,12 @@
 import Backdrop from "@mui/material/Backdrop";
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CameraEnhanceIcon from "@mui/icons-material/CameraEnhance";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CircularProgress from "@mui/material/CircularProgress";
+import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Menu from "@mui/material/Menu";
@@ -389,6 +391,82 @@ function Profile() {
           </div>
         )}
       </div>
+      {user && (
+        <Box sx={{ flexGrow: 1, px: 1 }}>
+          <Grid
+            container
+            direction="row"
+            justifyContent="start"
+            alignItems="center"
+          >
+            <Button
+              href={`/${encodeURIComponent(
+                user.username || user.walletAddress
+              )}/following`}
+              color="inherit"
+              sx={{
+                ":hover": {
+                  textDecoration: "underline",
+                  backgroundColor: "transparent",
+                },
+                margin: "3px",
+              }}
+            >
+              <Typography
+                sx={{
+                  fontFamily: "sans-serif",
+                  fontSize: "16px",
+                  fontWeight: 550,
+                  textTransform: "none",
+                }}
+                variant="body1"
+              >
+                0
+                <Typography
+                  component="span"
+                  variant="body1"
+                  sx={{ color: "text.secondary" }}
+                >
+                  &nbsp; Following
+                </Typography>
+              </Typography>
+            </Button>
+
+            <Button
+              href={`/${encodeURIComponent(
+                user.username || user.walletAddress
+              )}/followers`}
+              color="inherit"
+              sx={{
+                ":hover": {
+                  textDecoration: "underline",
+                  backgroundColor: "transparent",
+                },
+                margin: "3px",
+              }}
+            >
+              <Typography
+                sx={{
+                  fontFamily: "sans-serif",
+                  fontSize: "16px",
+                  fontWeight: 550,
+                  textTransform: "none",
+                }}
+                variant="body1"
+              >
+                0
+                <Typography
+                  component="span"
+                  variant="body1"
+                  sx={{ color: "text.secondary" }}
+                >
+                  &nbsp; Followers
+                </Typography>
+              </Typography>
+            </Button>
+          </Grid>
+        </Box>
+      )}
 
       <Snackbar
         open={snackShow}

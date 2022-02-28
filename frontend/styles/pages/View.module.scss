@@ -1,0 +1,30 @@
+.user_details {
+  padding-left: 20px;
+
+  .name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: rgb(77, 77, 77);
+  }
+
+  .username {
+    margin-top: 5px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: rgb(130, 130, 130);
+  }
+
+  .address {
+    margin-top: 20px;
+    font-size: 20px;
+
+    .copy {
+      cursor: pointer;
+    }
+
+    & > svg {
+      margin-left: 10px;
+      margin-bottom: -5px;
+    }
+  }
+}
