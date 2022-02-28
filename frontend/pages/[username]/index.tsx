@@ -500,13 +500,15 @@ function Profile() {
           </ListItemIcon>
           {linkCopied ? "Link Copied" : "Copy Link"}
         </MenuItem>
-        {user?.authenticated && (
+        {user?.authenticated || user?.showWalletAddress ? (
           <MenuItem onClick={copyShareAddress}>
             <ListItemIcon>
               {addressCopied ? <CheckIcon /> : <ContentCopyIcon />}
             </ListItemIcon>
             {addressCopied ? "Address Copied" : "Copy Address"}
           </MenuItem>
+        ) : (
+          ""
         )}
       </Menu>
 
