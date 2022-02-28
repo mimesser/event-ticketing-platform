@@ -38,6 +38,7 @@ export default async function publicUser(
         walletAddress: true,
         name: true,
         twitterUsername: true,
+        showWalletAddress: true,
         avatarImage: true,
         bannerImage: true,
         createdAt: true,

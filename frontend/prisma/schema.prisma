@@ -20,10 +20,11 @@ model User {
   issuer             String?  @unique
   name               String?
   username           String?  @unique
-  twitterUsername    String?  @unique
+  twitterUsername    String?
   avatarImage        String?
   bannerImage        String?
   nativeAssetBalance String?
+  showWalletAddress  Boolean  @default(false)
 
   @@map("users")
 }

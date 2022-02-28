@@ -39,7 +39,7 @@ function Dashboard() {
   const [twitterButton, setTwitterButton] = useState(false);
 
   const [twitterBanner, setTwitterBanner] = useState(
-    status === "unauthenticated" ? true : false
+    user?.twitterUsername === null ? true : false
   );
   const [buyBanner, setBuyBanner] = useState(
     user?.nativeAssetBalance === "0" || user?.nativeAssetBalance === null

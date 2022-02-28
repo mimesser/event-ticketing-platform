@@ -1,6 +1,7 @@
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import AppBar from "@mui/material/AppBar";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
@@ -11,6 +12,8 @@ import CreditCardIcon from "@mui/icons-material/CreditCard";
 import Divider from "@mui/material/Divider";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import Drawer from "@mui/material/Drawer";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
@@ -19,15 +22,19 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import ListSubheader from "@mui/material/ListSubheader";
 import LoadingButton from "@mui/lab/LoadingButton";
+import LockIcon from "@mui/icons-material/Lock";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 import Modal from "@mui/material/Modal";
+import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Popover from "@mui/material/Popover";
 import SettingsIcon from "@mui/icons-material/Settings";
+import Snackbar from "@mui/material/Snackbar";
+import Switch from "@mui/material/Switch";
 import TextField from "@mui/material/TextField";
 import Toolbar from "@mui/material/Toolbar";
 import Tooltip from "@mui/material/Tooltip";
@@ -79,6 +86,13 @@ const notData: { read: boolean; notification: string; createdAt: Date }[] = [
   },
 ];
 
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+  props,
+  ref
+) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 export default function Header() {
   const { user } = useUserInfo();
   const isMobile = useMediaQuery("(max-width:599px)");
@@ -123,7 +137,57 @@ export default function Header() {
   };
 
   const [logoutModal, setLogoutModal] = useState(false);
-  const [twitterModal, setTwitterModal] = React.useState(false);
+  const [twitterModal, setTwitterModal] = useState(false);
+  const [privacyModal, setPrivacyModal] = useState(false);
+  const [showWalletAddress, setShowWalletAddress] = useState(
+    user?.showWalletAddress
+  );
+
+  const [successSnackShow, setSuccessSnackShow] = useState(false);
+  const [errorSnackShow, setErrorSnackShow] = useState(false);
+
+  async function handleShowWalletAddress() {
+    if (showWalletAddress) {
+      setShowWalletAddress(false);
+      try {
+        const res = await fetch("/api/show-wallet", {
+          method: "POST",
+          body: JSON.stringify({
+            email: user.email,
+            showWalletAddress: false,
+          }),
+        });
+        if (res.status === 200) {
+          setSuccessSnackShow(true);
+        } else {
+          setErrorSnackShow(true);
+        }
+      } catch (error) {
+        setErrorSnackShow(true);
+        console.log(error);
+      }
+    }
+    if (!showWalletAddress) {
+      setShowWalletAddress(true);
+      try {
+        const res = await fetch("/api/show-wallet", {
+          method: "POST",
+          body: JSON.stringify({
+            email: user.email,
+            showWalletAddress: true,
+          }),
+        });
+        if (res.status === 200) {
+          setSuccessSnackShow(true);
+        } else {
+          setErrorSnackShow(true);
+        }
+      } catch (error) {
+        setErrorSnackShow(true);
+        console.log(error);
+      }
+    }
+  }
 
   const buyModal = () => {
     setBuyOpen(true);
@@ -134,7 +198,7 @@ export default function Header() {
     setBuyOpen(false);
     setMoonPayModal(false);
   };
-  const markNotifictionAsRead = () => {
+  const markNotificationAsRead = () => {
     setNotificationCount(false);
     setNotifications(
       notifications.map((notification) => ({
@@ -216,7 +280,7 @@ export default function Header() {
   };
 
   async function unlinkUser() {
-    if (session && user) {
+    if (user) {
       const email = user.email;
 
       try {
@@ -403,7 +467,7 @@ export default function Header() {
                 }}
               />
             </IconButton>
-            {!session && (
+            {!user?.twitterUsername && (
               <div className={styles.modal_body}>
                 <Typography id={styles.h5} variant="h5">
                   Find frens you follow on Twitter
@@ -428,7 +492,7 @@ export default function Header() {
                 </Box>
               </div>
             )}
-            {session && (
+            {user?.twitterUsername && (
               <div className={styles.modal_body}>
                 <Typography id={styles.h5} variant="h5">
                   Unlink Twitter
@@ -453,6 +517,77 @@ export default function Header() {
           </div>
         </Box>
       </Modal>
+      {/* Privacy modal */}
+      <Modal
+        BackdropProps={{
+          timeout: 500,
+        }}
+        closeAfterTransition
+        onClose={() => {
+          setPrivacyModal(false);
+        }}
+        open={privacyModal}
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+      >
+        <Box sx={modalStyle}>
+          <div className={styles.modal_box}>
+            <IconButton
+              aria-label="close"
+              onClick={() => {
+                setPrivacyModal(false);
+              }}
+              className={styles.close_button}
+            >
+              <CloseIcon
+                sx={{
+                  color: "#000000",
+                }}
+              />
+            </IconButton>
+            <div className={styles.modal_body}>
+              <Typography id={styles.h5} variant="h5">
+                Privacy
+              </Typography>
+              <Box className={styles.linkSocialButtons}>
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={showWalletAddress}
+                        onChange={() => {
+                          handleShowWalletAddress();
+                        }}
+                      />
+                    }
+                    label="Show Wallet Address"
+                  />
+                </FormGroup>
+              </Box>
+            </div>
+          </div>
+        </Box>
+      </Modal>
+
+      <Snackbar
+        open={successSnackShow}
+        autoHideDuration={1000}
+        onClose={() => setSuccessSnackShow(false)}
+      >
+        <Alert severity="success" sx={{ width: "100%" }}>
+          Privacy settings updated!
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={errorSnackShow}
+        autoHideDuration={1000}
+        onClose={() => setErrorSnackShow(false)}
+      >
+        <Alert severity="error" sx={{ width: "100%" }}>
+          Error updating privacy settings!
+        </Alert>
+      </Snackbar>
+
       <AppBar
         position="fixed"
         sx={{
@@ -605,7 +740,7 @@ export default function Header() {
                         <Tooltip title="Mark all as read">
                           <IconButton
                             color="primary"
-                            onClick={markNotifictionAsRead}
+                            onClick={markNotificationAsRead}
                             size="large"
                           >
                             <DoneAllIcon
@@ -766,8 +901,10 @@ export default function Header() {
                       <ListItemIcon>
                         <SettingsIcon sx={{ color: "black" }} />
                       </ListItemIcon>
-                      <span style={{ color: "black" }}>Settings</span>
-                      <ArrowForwardIosIcon style={{ marginLeft: "47%" }} />
+                      <span
+                        style={{ color: "black" }}
+                      >{`Settings & privacy`}</span>
+                      <ArrowForwardIosIcon style={{ marginLeft: "15%" }} />
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
@@ -803,11 +940,43 @@ export default function Header() {
                       },
                     }}
                   >
+                    <Typography
+                      sx={{
+                        fontWeight: "bold",
+                        fontSize: "20px",
+                        marginBottom: "5px",
+                      }}
+                    >
+                      <IconButton
+                        onClick={() => {
+                          setSelectedMenu("");
+                        }}
+                        sx={{
+                          color: "#000000",
+                          marginLeft: "5px",
+                          alignContent: "center",
+                        }}
+                      >
+                        <ArrowBackIosIcon sx={{ marginLeft: "5px" }} />
+                      </IconButton>
+                      {`Settings & privacy`}
+                    </Typography>
                     <MenuItem onClick={handleCloseUserMenu}>
                       <ListItemIcon>
                         <SettingsIcon sx={{ color: "black" }} />
                       </ListItemIcon>
                       <Link href="/export">Export Private Key</Link>
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        handleCloseUserMenu();
+                        setPrivacyModal(true);
+                      }}
+                    >
+                      <ListItemIcon>
+                        <LockIcon sx={{ color: "black" }} />
+                      </ListItemIcon>
+                      Privacy
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
