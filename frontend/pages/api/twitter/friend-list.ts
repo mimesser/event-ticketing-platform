@@ -28,11 +28,12 @@ export default async function linkUser(
       max_results: 1000,
     });
 
-    while (!data.done) {
-      const followingList = await data.fetchNext(1000);
+    let latestFollowingList = data;
+    let matchedFrenz: any[] = [];
 
-      if (followingList) {
-        const followingListUsernames = followingList.data.data.map(
+    do {
+      if (latestFollowingList) {
+        const followingListUsernames = latestFollowingList.data.data.map(
           (m: any) => m.username
         );
 
@@ -56,16 +57,23 @@ export default async function linkUser(
           });
         }
 
-        const matchedFrenz = matchedFriendDetails.map((m) => ({
-          id: m.id,
-          name: m.name,
-          screen_name: m.screen_name,
-          profile_image_url: m.profile_image_url_https,
-        }));
+        matchedFrenz.push(
+          ...matchedFriendDetails.map((m) => ({
+            id: m.id,
+            name: m.name,
+            screen_name: m.screen_name,
+            profile_image_url: m.profile_image_url_https,
+          }))
+        );
 
-        res.status(200).json({ matchedFrenz });
+        latestFollowingList = await data.fetchNext(1000);
+        continue;
       }
-    }
+
+      res.status(502);
+    } while (!data.done);
+
+    res.status(200).json({ matchedFrenz });
   } else {
     res.status(401);
   }
