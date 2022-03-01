@@ -55,7 +55,7 @@ import { shortenAddress, shortenText } from "lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn, signOut } from "next-auth/react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import styles from "styles/components/Header.module.scss";
@@ -108,8 +108,6 @@ export default function Header() {
       notData
     );
   const totalUnRead = notifications.filter((item) => item.read === true).length;
-
-  const { data: session }: any = useSession();
 
   const drawerWidth = 240;
 
