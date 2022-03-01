@@ -92,8 +92,9 @@ export default function Twitter() {
         closeAfterTransition
         onClose={modalClose}
         open={handleTwitterModal}
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
+        aria-labelledby="twitter-modal-title"
+        aria-describedby="twitter-modal-description"
+        style={{ overflow: "auto" }}
       >
         <Box sx={modalStyle}>
           <div className={styles.modal_box}>
@@ -155,7 +156,8 @@ export default function Twitter() {
                   >
                     {followBtnText}
                   </Button>
-                  {data ? (
+                  {!data && <CircularProgress />}
+                  {data?.matchedFrenz.length > 0 && (
                     <div className={styles.matchedFrenz}>
                       {data.matchedFrenz.map(
                         ({ id, name, screen_name, profile_image_url }: any) => {
@@ -186,9 +188,8 @@ export default function Twitter() {
                         }
                       )}
                     </div>
-                  ) : (
-                    ""
                   )}
+                  {data?.matchedFrenz.length === 0 && "No one to follow"}
                   <Button
                     id={styles.continueButtons}
                     onClick={modalClose}
