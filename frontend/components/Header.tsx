@@ -12,10 +12,13 @@ import CreditCardIcon from "@mui/icons-material/CreditCard";
 import Divider from "@mui/material/Divider";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import Drawer from "@mui/material/Drawer";
-import FormGroup from "@mui/material/FormGroup";
+import FormControl from '@mui/material/FormControl';
 import FormControlLabel from "@mui/material/FormControlLabel";
+import FormGroup from "@mui/material/FormGroup";
+import FormLabel from '@mui/material/FormLabel';
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -30,8 +33,11 @@ import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 import Modal from "@mui/material/Modal";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
+import NightlightIcon from '@mui/icons-material/Nightlight';
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Popover from "@mui/material/Popover";
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
 import SettingsIcon from "@mui/icons-material/Settings";
 import Snackbar from "@mui/material/Snackbar";
 import Switch from "@mui/material/Switch";
@@ -340,6 +346,11 @@ export default function Header() {
       setSigningIn(false);
     }
   };
+  
+  const [darkMode, setDarkMode] = React.useState("system");
+  const changeDarkMode = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDarkMode(event.target.value);
+  }
 
   return (
     <>
@@ -914,6 +925,13 @@ export default function Header() {
                       >{`Settings & privacy`}</span>
                       <ArrowForwardIosIcon style={{ marginLeft: "15%" }} />
                     </MenuItem>
+                    <MenuItem onClick={() => setSelectedMenu("display")}>
+                      <ListItemIcon>
+                        <NightlightIcon sx={{ color: "black" }} />
+                      </ListItemIcon>
+                      <span style={{ color: "black" }}>Display</span>
+                      <ArrowForwardIosIcon style={{ marginLeft: "49%" }} />
+                    </MenuItem>
                     <MenuItem
                       onClick={() => {
                         handleCloseUserMenu();
@@ -1005,6 +1023,60 @@ export default function Header() {
                         )}
                       </div>
                     </MenuItem>
+                  </Menu>
+                ) : selectedMenu === "display" ? (
+                  <Menu
+                    sx={{ mt: "45px" }}
+                    anchorEl={anchorElUser}
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    open={Boolean(anchorElUser)}
+                    onClose={handleCloseUserMenu}
+                    PaperProps={{
+                      sx: {
+                        borderRadius: (theme) => theme.shape.borderRadius,
+                        width: 250,
+                      },
+                    }}
+                  >
+                    <MenuItem onClick={() => setSelectedMenu("")}>
+                      <ListItemIcon>
+                        <KeyboardBackspaceIcon sx={{ color: "black" }} />
+                      </ListItemIcon>
+                      <Typography variant="h6" style={{fontWeight: 'bold'}}>Display</Typography>
+                    </MenuItem>
+                    <FormControl style={{padding: '6px 16px'}}>
+                      <FormLabel
+                        id="dark-mode-group"
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          color: 'black',
+                        }}
+                      >
+                        <NightlightIcon />
+                        <Typography style={{marginLeft: 7, fontWeight: 'bold'}}>Dark Mode</Typography>
+                      </FormLabel>
+                      <RadioGroup
+                        aria-labelledby="dark-mode-group"
+                        name="darkMode"
+                        value={darkMode}
+                        onChange={changeDarkMode}
+                        style={{marginTop: 10, marginLeft: 10}}
+                      >
+                        <FormControlLabel value="system" control={<Radio style={{padding: 3}} />} label="System" />
+                        <FormControlLabel value="off" control={<Radio style={{padding: 3}} />} label="Off" />
+                        <FormControlLabel value="on" control={<Radio style={{padding: 3}} />} label="On" />
+                      </RadioGroup>
+                    </FormControl>
                   </Menu>
                 ) : null}
               </Box>
