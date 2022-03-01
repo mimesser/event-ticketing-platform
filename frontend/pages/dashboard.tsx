@@ -16,14 +16,13 @@ import Layout from "components/Layout";
 import { ethers } from "ethers";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { signIn, getSession, useSession, signOut } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
 
 import styles from "styles/pages/Dashboard.module.scss";
 import { Tooltip } from "@mui/material";
 
 function Dashboard() {
-  const { status, data: session }: any = useSession();
   const { query } = useRouter();
   const firstTimeUser = query.userExists === "false";
   const { user } = useUser({
@@ -201,53 +200,27 @@ function Dashboard() {
                 }}
               />
             </IconButton>
-            {!session && (
-              <div className={styles.modal_body}>
-                <Typography id={styles.h5} variant="h5">
-                  Find frens you follow on Twitter
-                </Typography>
-                <Typography id={styles.body1} variant="body1">
-                  To get the most of your Web3 adventure, connect with frens on
-                  Twitter.
-                </Typography>
-                <Box className={styles.linkSocialButtons}>
-                  <Button
-                    onClick={() =>
-                      signIn("twitter", { callbackUrl: "/twitter" })
-                    }
-                    id={styles.twtButton}
-                    type="submit"
-                    size="large"
-                    variant="outlined"
-                    startIcon={<TwitterIcon />}
-                  >
-                    Find frens I follow
-                  </Button>
-                </Box>
-              </div>
-            )}
-            {session && (
-              <div className={styles.modal_body}>
-                <Typography id={styles.h5} variant="h5">
-                  Unlink Twitter
-                </Typography>
-                <Typography id={styles.body1} variant="body1">
-                  Are you sure you want to unlink Twitter from Impish?
-                </Typography>
-                <Box>
-                  <Button
-                    sx={{ textTransform: "none", marginTop: "20px" }}
-                    onClick={() => signOut()}
-                    type="submit"
-                    color="primary"
-                    size="large"
-                    variant="outlined"
-                  >
-                    Unlink
-                  </Button>
-                </Box>
-              </div>
-            )}
+            <div className={styles.modal_body}>
+              <Typography id={styles.h5} variant="h5">
+                Find frens you follow on Twitter
+              </Typography>
+              <Typography id={styles.body1} variant="body1">
+                To get the most of your Web3 adventure, connect with frens on
+                Twitter.
+              </Typography>
+              <Box className={styles.linkSocialButtons}>
+                <Button
+                  onClick={() => signIn("twitter", { callbackUrl: "/twitter" })}
+                  id={styles.twtButton}
+                  type="submit"
+                  size="large"
+                  variant="outlined"
+                  startIcon={<TwitterIcon />}
+                >
+                  Find frens I follow
+                </Button>
+              </Box>
+            </div>
           </div>
         </Box>
       </Modal>
