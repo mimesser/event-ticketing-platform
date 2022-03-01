@@ -9,6 +9,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
+import LoadingButton from "@mui/lab/LoadingButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Modal from "@mui/material/Modal";
@@ -18,23 +19,29 @@ import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import Typography from "@mui/material/Typography";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import Avatar from "boring-avatars";
 import Layout from "components/Layout";
 import copy from "copy-to-clipboard";
 import { fetchPublicUser } from "lib/hooks";
+import { useUserInfo } from "lib/user-context";
 import {
   checkUsernameEqual,
   isProduction,
   shortenAddress,
   stopPropagation,
 } from "lib/utils";
+import { magic } from "lib/magic";
 import moment from "moment";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { useForm } from "react-hook-form";
 import React from "react";
 import styles from "styles/pages/Profile.module.scss";
 
 function Profile() {
+  const currentUser = useUserInfo();
+  const isMobile = useMediaQuery("(max-width:599px)");
   const [loading, finishLoading] = React.useState(true);
   const router = useRouter();
   const { username } = router.query;
@@ -68,11 +75,55 @@ function Profile() {
   const [following, setFollowing] = React.useState(false);
   const [linkCopied, copyLink] = React.useState(false);
   const [unfollowModal, setUnFollowModal] = React.useState(false);
+  const [signInfollowModal, setSignInFollowModal] = React.useState(false);
 
   const unfollowUser = () => {
     setHover(false);
     setFollowing(false);
     setUnFollowModal(false);
+  };
+
+  const checkStatusBeforeFollowing = () => {
+    if (currentUser.user !== null) {
+      setFollowing(true);
+    } else {
+      setSignInFollowModal(true);
+    }
+  };
+
+  const [signingIn, setSigningIn] = React.useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit: any = async ({ email }: { email: any }) => {
+    setSigningIn(true);
+
+    try {
+      const didToken = await magic?.auth.loginWithMagicLink({ email });
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + didToken,
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (res.status === 200) {
+        // redirect
+        router.reload();
+        setSigningIn(false);
+      } else {
+        // display an error
+        setSigningIn(false);
+      }
+    } catch (error) {
+      setSigningIn(false);
+    }
   };
 
   const copyShareLink = () => {
@@ -409,7 +460,7 @@ function Profile() {
                 </Typography>
               ) : (
                 <Typography
-                  onClick={() => setFollowing(true)}
+                  onClick={checkStatusBeforeFollowing}
                   sx={{
                     color: "white",
                     fontFamily: "sans-serif",
@@ -891,6 +942,85 @@ function Profile() {
                   Cancel
                 </Typography>
               </Button>
+            </Grid>
+          </Box>
+        </Modal>
+      )}
+
+      {/* signInModal */}
+      {user && (
+        <Modal
+          BackdropProps={{
+            timeout: 500,
+          }}
+          closeAfterTransition
+          onClose={() => {
+            setSignInFollowModal(false);
+          }}
+          open={signInfollowModal}
+        >
+          <Box sx={modalStyle}>
+            <Grid container justifyContent="center" direction="column">
+              <div className={styles.modal_img}>
+                <Image
+                  src="/logo.png"
+                  width={isMobile ? 45 : 90}
+                  height={isMobile ? 45 : 90}
+                  alt={`Impish icon`}
+                />
+              </div>
+
+              <Typography
+                gutterBottom
+                sx={{
+                  marginBottom: "13px",
+                  color: "black",
+                  fontFamily: "sans-serif",
+                  fontSize: "18px",
+                  fontWeight: 550,
+                  textAlign: "center",
+                  textTransform: "none",
+                }}
+                variant="body1"
+              >
+                Follow {`${user.name || shortenAddress(user.walletAddress)}`} to
+                see their activity on Impish.
+              </Typography>
+
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className={styles.login_items}
+              >
+                <TextField
+                  fullWidth
+                  label="Email address"
+                  variant="outlined"
+                  autoComplete="email"
+                  autoFocus
+                  {...register("email", {
+                    required: "Required field",
+                    pattern: {
+                      value:
+                        /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+                      message: "Invalid email address",
+                    },
+                  })}
+                  error={!!errors?.email}
+                  helperText={errors?.email ? errors.email.message : null}
+                  size="small"
+                />
+                <LoadingButton
+                  sx={{ marginTop: "13px" }}
+                  fullWidth
+                  loading={signingIn}
+                  type="submit"
+                  color="primary"
+                  size="large"
+                  variant="outlined"
+                >
+                  Log in / Sign up
+                </LoadingButton>
+              </form>
             </Grid>
           </Box>
         </Modal>

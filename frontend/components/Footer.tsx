@@ -1,23 +1,159 @@
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import LoadingButton from "@mui/lab/LoadingButton";
+import Modal from "@mui/material/Modal";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import Image from "next/image";
+import { magic } from "lib/magic";
 import { useUserInfo } from "lib/user-context";
 import { useRouter } from "next/router";
+import { useForm } from "react-hook-form";
+import { useState } from "react";
 import styles from "styles/components/Footer.module.scss"; // Component styles
 
 export default function Footer() {
+  const isMobile = useMediaQuery("(max-width:599px)");
+
   const { user } = useUserInfo();
   const router = useRouter();
 
+  const [signInfollowModal, setSignInFollowModal] = useState(false);
+  const [signingIn, setSigningIn] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit: any = async ({ email }: { email: any }) => {
+    setSigningIn(true);
+
+    try {
+      const didToken = await magic?.auth.loginWithMagicLink({ email });
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + didToken,
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (res.status === 200) {
+        // redirect
+        router.reload();
+        setSigningIn(false);
+      } else {
+        // display an error
+        setSigningIn(false);
+      }
+    } catch (error) {
+      setSigningIn(false);
+    }
+  };
+
+  const modalStyle = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 320,
+    bgcolor: "white",
+    borderRadius: "25px",
+    boxShadow: 24,
+    p: 4,
+  };
+
   return !user ? (
-    <div className={styles.footer}>
-      <div className={styles.title}>Connect on Impish</div>
-      <Button
-        color="primary"
-        size="large"
-        variant="contained"
-        onClick={() => router.push("/")}
+    <>
+      {/* signInModal */}
+      <Modal
+        BackdropProps={{
+          timeout: 500,
+        }}
+        closeAfterTransition
+        onClose={() => {
+          setSignInFollowModal(false);
+        }}
+        open={signInfollowModal}
       >
-        Log in / Sign up
-      </Button>
-    </div>
+        <Box sx={modalStyle}>
+          <Grid container justifyContent="center" direction="column">
+            <div className={styles.modal_img}>
+              <Image
+                src="/logo.png"
+                width={isMobile ? 45 : 90}
+                height={isMobile ? 45 : 90}
+                alt={`Impish icon`}
+              />
+            </div>
+            <Typography
+              gutterBottom
+              sx={{
+                textAlign: "center",
+                marginBottom: "13px",
+                color: "black",
+                fontFamily: "sans-serif",
+                fontSize: "18px",
+                fontWeight: 550,
+                textTransform: "none",
+              }}
+              variant="body1"
+            >
+              Connect on Impish
+            </Typography>
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className={styles.login_items}
+            >
+              <TextField
+                fullWidth
+                label="Email address"
+                variant="outlined"
+                autoComplete="email"
+                autoFocus
+                {...register("email", {
+                  required: "Required field",
+                  pattern: {
+                    value:
+                      /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+                    message: "Invalid email address",
+                  },
+                })}
+                error={!!errors?.email}
+                helperText={errors?.email ? errors.email.message : null}
+                size="small"
+              />
+              <LoadingButton
+                sx={{ marginTop: "13px" }}
+                fullWidth
+                loading={signingIn}
+                type="submit"
+                color="primary"
+                size="large"
+                variant="outlined"
+              >
+                Log in / Sign up
+              </LoadingButton>
+            </form>
+          </Grid>
+        </Box>
+      </Modal>
+      <div className={styles.footer}>
+        <div className={styles.title}>Connect on Impish</div>
+        <Button
+          color="primary"
+          size="large"
+          variant="contained"
+          onClick={() => setSignInFollowModal(true)}
+        >
+          Log in / Sign up
+        </Button>
+      </div>
+    </>
   ) : null;
 }
