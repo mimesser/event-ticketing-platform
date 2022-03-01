@@ -829,8 +829,7 @@ function Profile() {
                 }}
                 variant="body1"
               >
-                Unfollow
-                {`@${user.username}`}?
+                Unfollow {`@${user.username}`}?
               </Typography>
               <Typography
                 sx={{ marginBottom: "12px" }}
