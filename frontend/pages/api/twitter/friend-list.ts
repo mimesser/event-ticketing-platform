@@ -25,10 +25,11 @@ export default async function linkUser(
 
     const data = await userClient.v2.following(twitterID, {
       asPaginator: true,
+      max_results: 1000,
     });
 
     while (!data.done) {
-      const followingList = await data.fetchNext();
+      const followingList = await data.fetchNext(1000);
 
       if (followingList) {
         const followingListUsernames = followingList.data.data.map(
