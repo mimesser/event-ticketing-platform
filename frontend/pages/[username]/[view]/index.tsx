@@ -21,13 +21,13 @@ function View() {
   React.useEffect(() => {
     if (username) {
       fetchPublicUser(username as string).then((fetchedUser) => {
-        if(fetchedUser !== null){
+        if (fetchedUser !== null) {
           setUser(fetchedUser);
-        }else{
+        } else {
           router.push({
-            pathname: '/[username]',
+            pathname: "/[username]",
             query: { username: username },
-          })
+          });
         }
       });
     }
