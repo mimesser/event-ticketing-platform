@@ -18,7 +18,6 @@ import FormGroup from "@mui/material/FormGroup";
 import FormLabel from "@mui/material/FormLabel";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -1046,14 +1045,27 @@ export default function Header() {
                       },
                     }}
                   >
-                    <MenuItem onClick={() => setSelectedMenu("")}>
-                      <ListItemIcon>
-                        <KeyboardBackspaceIcon sx={{ color: "black" }} />
-                      </ListItemIcon>
-                      <Typography variant="h6" style={{ fontWeight: "bold" }}>
-                        Display
-                      </Typography>
-                    </MenuItem>
+                    <Typography
+                      sx={{
+                        fontWeight: "bold",
+                        fontSize: "20px",
+                        marginBottom: "5px",
+                      }}
+                    >
+                      <IconButton
+                        onClick={() => {
+                          setSelectedMenu("");
+                        }}
+                        sx={{
+                          color: "#000000",
+                          marginLeft: "5px",
+                          alignContent: "center",
+                        }}
+                      >
+                        <ArrowBackIosIcon sx={{ marginLeft: "5px" }} />
+                      </IconButton>
+                      Display
+                    </Typography>
                     <FormControl style={{ padding: "6px 16px" }}>
                       <FormLabel
                         id="dark-mode-group"
