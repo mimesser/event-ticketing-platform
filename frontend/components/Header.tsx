@@ -257,9 +257,17 @@ export default function Header() {
           >
             <ListItemText
               disableTypography
-              style={{ height: 16, marginLeft: 15 }}
+              style={{
+                height: 16,
+                marginLeft: "1%",
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+                textAlign: "center",
+                textOverflow: "ellipsis",
+                width: 16,
+              }}
             >
-              {shortenAddress(user.walletAddress)}
+              {user.name || shortenAddress(user.walletAddress)}
             </ListItemText>
           </Link>
         </ListItem>
