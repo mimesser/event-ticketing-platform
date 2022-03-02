@@ -10,7 +10,15 @@ body {
   font-family: "Inter", sans-serif;
 
   // Background
-  background-color: rgb(247, 248, 250);
+  background: #ffffff;
+  // Text
+  color: #000000;
+}
+
+[data-theme="dark"],
+[data-theme="dark"] body {
+  background: #1e1e1e;
+  color: #ffffff;
 }
 
 // Override default link styles
@@ -26,4 +34,11 @@ input {
   text-rendering: optimizeLegibility;
   font-family: "Inter", sans-serif;
   cursor: pointer;
+}
+
+[data-theme="dark"] .bg-primary {
+  background: #1e1e1e;
+}
+[data-theme="dark"] .text-primary {
+  color: #ffffff;
 }

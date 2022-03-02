@@ -48,6 +48,7 @@ import TwitterIcon from "@mui/icons-material/Twitter";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Avatar from "boring-avatars";
 import { formatDistanceToNow, set, sub } from "date-fns";
+import Colors from "lib/colors";
 import { useUserInfo } from "lib/user-context";
 import { moonPaySrc } from "lib/moon-pay";
 import { magic } from "lib/magic";
@@ -56,6 +57,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { signIn, signOut } from "next-auth/react";
+import { useTheme } from "next-themes";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import styles from "styles/components/Header.module.scss";
@@ -99,6 +101,8 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 });
 
 export default function Header() {
+  const { theme, resolvedTheme, setTheme } = useTheme();
+
   const { user } = useUserInfo();
   const isMobile = useMediaQuery("(max-width:599px)");
   const router = useRouter();
@@ -268,6 +272,7 @@ export default function Header() {
                 textAlign: "center",
                 textOverflow: "ellipsis",
                 width: 16,
+                color: Colors[resolvedTheme].primary,
               }}
             >
               {user.name || shortenAddress(user.walletAddress)}
@@ -344,9 +349,11 @@ export default function Header() {
     }
   };
 
-  const [darkMode, setDarkMode] = React.useState("system");
+  const [darkMode, setDarkMode] = React.useState(theme);
   const changeDarkMode = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDarkMode(event.target.value);
+    const mode = event.target.value;
+    setDarkMode(mode);
+    setTheme(mode);
   };
 
   return (
@@ -607,7 +614,7 @@ export default function Header() {
       <AppBar
         position="fixed"
         sx={{
-          bgcolor: "#FFFFFF",
+          bgcolor: Colors[resolvedTheme].header_bg,
           boxShadow: "1px 1px 5px rgba(0, 0, 0, 0.2)",
           zIndex: (theme) => theme.zIndex.drawer + 1,
         }}
@@ -653,24 +660,17 @@ export default function Header() {
                 <Tooltip title="Notifications">
                   <IconButton
                     size="large"
-                    sx={{
-                      color: "black",
-                    }}
                     onClick={handleOpenNotification}
+                    sx={{
+                      color: Colors[resolvedTheme].primary,
+                    }}
                   >
                     <Badge
                       badgeContent={totalUnRead}
                       invisible={totalUnRead == 0}
                       color="error"
                     >
-                      <NotificationsIcon
-                        sx={{
-                          color: (theme) =>
-                            anchorElNotification
-                              ? theme.palette.primary.dark
-                              : "black",
-                        }}
-                      />
+                      <NotificationsIcon />
                     </Badge>
                   </IconButton>
                 </Tooltip>
@@ -679,32 +679,22 @@ export default function Header() {
                   <IconButton
                     size="large"
                     sx={{
-                      color: "black",
+                      color: Colors[resolvedTheme].primary,
                     }}
                     onClick={buyModal}
                   >
-                    <CreditCardIcon
-                      sx={{
-                        color: (theme) =>
-                          buyOpen ? theme.palette.primary.dark : "black",
-                      }}
-                    />
+                    <CreditCardIcon />
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="Account">
                   <IconButton
                     size="large"
                     sx={{
-                      color: "black",
+                      color: Colors[resolvedTheme].primary,
                     }}
                     onClick={handleOpenUserMenu}
                   >
-                    <AccountCircleIcon
-                      sx={{
-                        color: (theme) =>
-                          anchorElUser ? theme.palette.primary.dark : "black",
-                      }}
-                    />
+                    <AccountCircleIcon />
                   </IconButton>
                 </Tooltip>
 
@@ -1086,22 +1076,37 @@ export default function Header() {
                         name="darkMode"
                         value={darkMode}
                         onChange={changeDarkMode}
-                        style={{ marginTop: 10, marginLeft: 10 }}
+                        style={{ marginTop: 10, marginLeft: 10, width: 180 }}
                       >
                         <FormControlLabel
                           value="system"
                           control={<Radio style={{ padding: 3 }} />}
                           label="System"
+                          labelPlacement="start"
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                          }}
                         />
                         <FormControlLabel
-                          value="off"
+                          value="light"
                           control={<Radio style={{ padding: 3 }} />}
                           label="Off"
+                          labelPlacement="start"
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                          }}
                         />
                         <FormControlLabel
-                          value="on"
+                          value="dark"
                           control={<Radio style={{ padding: 3 }} />}
                           label="On"
+                          labelPlacement="start"
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                          }}
                         />
                       </RadioGroup>
                     </FormControl>
@@ -1162,7 +1167,7 @@ export default function Header() {
           sx={{
             display: { xs: "flex", md: "none" },
             "& .MuiDrawer-paper": {
-              backgroundColor: "#f7f8fa",
+              backgroundColor: Colors[resolvedTheme].drawer_bg,
               boxSizing: "border-box",
               width: drawerWidth,
             },
@@ -1175,7 +1180,7 @@ export default function Header() {
           sx={{
             display: { xs: "none", md: "flex" },
             "& .MuiDrawer-paper": {
-              backgroundColor: "#f7f8fa",
+              backgroundColor: Colors[resolvedTheme].drawer_bg,
               boxSizing: "border-box",
               width: drawerWidth,
             },
