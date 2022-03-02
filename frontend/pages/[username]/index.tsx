@@ -76,6 +76,7 @@ function Profile() {
   const [linkCopied, copyLink] = React.useState(false);
   const [unfollowModal, setUnFollowModal] = React.useState(false);
   const [signInfollowModal, setSignInFollowModal] = React.useState(false);
+  const [signInConnectModal, setsignInConnectModal] = React.useState(false);
 
   const unfollowUser = () => {
     setHover(false);
@@ -204,6 +205,27 @@ function Profile() {
     }
     if (response.error) {
       invalidateUsername(true);
+    }
+  };
+  const goToFollowing = () => {
+    if (currentUser.user !== null) {
+      router.push({
+        pathname: "/[username]/following",
+        query: { username: user.username || user.walletAddress },
+      });
+    } else {
+      setsignInConnectModal(true);
+    }
+  };
+
+  const goToFollowers = () => {
+    if (currentUser.user !== null) {
+      router.push({
+        pathname: "/[username]/followers",
+        query: { username: user.username || user.walletAddress },
+      });
+    } else {
+      setsignInConnectModal(true);
     }
   };
 
@@ -548,9 +570,7 @@ function Profile() {
             alignItems="center"
           >
             <Button
-              href={`/${encodeURIComponent(
-                user.username || user.walletAddress
-              )}/following`}
+              onClick={goToFollowing}
               color="inherit"
               sx={{
                 ":hover": {
@@ -581,9 +601,7 @@ function Profile() {
             </Button>
 
             <Button
-              href={`/${encodeURIComponent(
-                user.username || user.walletAddress
-              )}/followers`}
+              onClick={goToFollowers}
               color="inherit"
               sx={{
                 ":hover": {
@@ -1025,6 +1043,80 @@ function Profile() {
           </Box>
         </Modal>
       )}
+
+      {/* connect impish modal */}
+      <Modal
+        BackdropProps={{
+          timeout: 500,
+        }}
+        closeAfterTransition
+        onClose={() => {
+          setsignInConnectModal(false);
+        }}
+        open={signInConnectModal}
+      >
+        <Box sx={modalStyle}>
+          <Grid container justifyContent="center" direction="column">
+            <div className={styles.modal_img}>
+              <Image
+                src="/logo.png"
+                width={isMobile ? 45 : 90}
+                height={isMobile ? 45 : 90}
+                alt={`Impish icon`}
+              />
+            </div>
+            <Typography
+              gutterBottom
+              sx={{
+                textAlign: "center",
+                marginBottom: "13px",
+                color: "black",
+                fontFamily: "sans-serif",
+                fontSize: "18px",
+                fontWeight: 550,
+                textTransform: "none",
+              }}
+              variant="body1"
+            >
+              Connect on Impish
+            </Typography>
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className={styles.login_items}
+            >
+              <TextField
+                fullWidth
+                label="Email address"
+                variant="outlined"
+                autoComplete="email"
+                autoFocus
+                {...register("email", {
+                  required: "Required field",
+                  pattern: {
+                    value:
+                      /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+                    message: "Invalid email address",
+                  },
+                })}
+                error={!!errors?.email}
+                helperText={errors?.email ? errors.email.message : null}
+                size="small"
+              />
+              <LoadingButton
+                sx={{ marginTop: "13px" }}
+                fullWidth
+                loading={signingIn}
+                type="submit"
+                color="primary"
+                size="large"
+                variant="outlined"
+              >
+                Log in / Sign up
+              </LoadingButton>
+            </form>
+          </Grid>
+        </Box>
+      </Modal>
     </Layout>
   );
 }

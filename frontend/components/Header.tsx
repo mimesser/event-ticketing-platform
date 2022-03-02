@@ -978,7 +978,11 @@ export default function Header() {
                       <ListItemIcon>
                         <SettingsIcon sx={{ color: "black" }} />
                       </ListItemIcon>
-                      <Link href="/export">Export Private Key</Link>
+                      <Link href="https://reveal.magic.link/impish">
+                        <a target="_blank" rel="noreferrer">
+                          Export Private Key
+                        </a>
+                      </Link>
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
