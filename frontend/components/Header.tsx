@@ -1136,9 +1136,26 @@ export default function Header() {
                       error={!!errors?.email}
                       helperText={errors?.email ? errors.email.message : null}
                       size="small"
+                      sx={(theme) => ({
+                        "&& .MuiFormHelperText-root": {
+                          fontSize: "0.60rem",
+                          position: "absolute",
+                          marginTop: "38px",
+                          [theme.breakpoints.down("md")]: {
+                            marginTop: "36px",
+                          },
+                        },
+                      })}
                     />
                     <LoadingButton
                       loading={signingIn}
+                      sx={(theme) => ({
+                        [theme.breakpoints.down("md")]: {
+                          height: "36px",
+                          fontSize: "10px",
+                          padding: "8px 5px",
+                        },
+                      })}
                       type="submit"
                       color="primary"
                       size="large"
