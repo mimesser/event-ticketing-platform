@@ -2,6 +2,7 @@ import "styles/global.scss"; // Global styles
 import StateProvider from "state"; // Global state provider
 import type { AppProps } from "next/app"; // Types
 import { SessionProvider } from "next-auth/react"; // Session provider from NextAuth
+import { ThemeProvider } from "next-themes";
 import UserProvider from "lib/user-context";
 
 // Export application‚
@@ -15,7 +16,9 @@ export default function MerkleAirdropStarter({
       {/* Wrap application in global state provider */}
       <StateProvider>
         <UserProvider>
-          <Component {...pageProps} />
+          <ThemeProvider>
+            <Component {...pageProps} />
+          </ThemeProvider>
         </UserProvider>
       </StateProvider>
     </SessionProvider>
