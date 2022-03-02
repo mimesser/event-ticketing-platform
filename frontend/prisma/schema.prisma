@@ -25,8 +25,8 @@ model User {
   bannerImage        String?
   nativeAssetBalance String?
   showWalletAddress  Boolean  @default(false)
-  followers          Int[]
-  following          Int[]
+  followers          User[] @relation("UserFollows", references: [id])
+  following          User[] @relation("UserFollows", references: [id])
 
   @@map("users")
 }

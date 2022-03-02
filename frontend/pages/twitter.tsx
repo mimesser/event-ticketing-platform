@@ -1,6 +1,7 @@
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
 import CloseIcon from "@mui/icons-material/Close";
 import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
@@ -8,6 +9,9 @@ import Modal from "@mui/material/Modal";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import Typography from "@mui/material/Typography";
 import Layout from "components/Layout";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
 import { useUser } from "lib/hooks";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
@@ -19,10 +23,14 @@ export default function Twitter() {
   const { data: session, status }: any = useSession();
   const [data, setData] = useState<any>();
   const { user } = useUser({ redirectTo: "/twitter", redirectIfFound: true });
+  const [handleTwitterModal, setHandleTwitterModal] = useState(true);
+  const [selectedFrenz, setSelectedFrenz] = useState([] as any);
+  const [followBtnText, setFollowBtnText] = useState("Follow all");
+  const [followBtnStyle, setFollowBtnStyle] = useState(true);
 
   useEffect(() => {
     async function linkUser() {
-      if (session && user) {
+      if (session && user && !data) {
         const email = user.email;
         const twitterUsername = session.twitterProfile.screen_name;
 
@@ -50,12 +58,17 @@ export default function Twitter() {
       }
     }
 
-    linkUser();
-  }, [session, user]);
+    if (data?.matchedFrenz.length === selectedFrenz.length) {
+      setFollowBtnText("Unfollow all");
+      setFollowBtnStyle(false);
+    } else {
+      setFollowBtnText("Follow all");
+      setFollowBtnStyle(true);
+    }
 
-  const [followBtnText, setFollowBtnText] = useState("Follow all");
-  const [followBtnStyle, setFollowBtnStyle] = useState(true);
-  const [handleTwitterModal, setHandleTwitterModal] = useState(true);
+    linkUser();
+  }, [session, user, data, selectedFrenz]);
+
   const modalStyle = {
     position: "absolute",
     top: "50%",
@@ -68,19 +81,56 @@ export default function Twitter() {
     p: 4,
   };
 
+  const continueButton = async () => {
+    if (selectedFrenz.length === 0) {
+      modalClose();
+    } else {
+      const email = user.email;
+
+      try {
+        await fetch("/api/twitter/follows-friend", {
+          method: "POST",
+          body: JSON.stringify({
+            email,
+            selectedFrenz,
+          }),
+        });
+      } catch (error) {
+        console.log(error);
+      }
+      modalClose();
+    }
+  };
+
   const modalClose = () => {
     setHandleTwitterModal(false);
     Router.push("/", undefined, { shallow: true });
   };
 
+  // Twitter modal, Select frenz function
+  const selectFrenz = (value: any) => () => {
+    const currentIndex = selectedFrenz.indexOf(value);
+    const newChecked = [...selectedFrenz];
+
+    if (currentIndex === -1) {
+      newChecked.push(value);
+    } else {
+      newChecked.splice(currentIndex, 1);
+    }
+
+    setSelectedFrenz(newChecked);
+  };
+
   // Twitter modal, Follow all button function
   const followAll = () => {
-    if (followBtnText === "Follow all") {
-      setFollowBtnText("Unfollow all");
-      setFollowBtnStyle(false);
+    if (followBtnStyle) {
+      setSelectedFrenz(
+        data.matchedFrenz.map(({ id }: any) => {
+          return id;
+        })
+      );
     } else {
-      setFollowBtnText("Follow all");
-      setFollowBtnStyle(true);
+      setSelectedFrenz([]);
     }
   };
   return (
@@ -142,57 +192,74 @@ export default function Twitter() {
                   Follow their Web3 journey on Impish
                 </Typography>
                 <Box className={styles.linkSocialButtons}>
-                  <Button
-                    id={
-                      followBtnStyle
-                        ? styles.followAllBtn
-                        : styles.unfollowAllBtn
-                    }
-                    onClick={followAll}
-                    type="submit"
-                    color="primary"
-                    size="large"
-                    variant="outlined"
-                  >
-                    {followBtnText}
-                  </Button>
                   {!data && <CircularProgress />}
                   {data?.matchedFrenz.length > 0 && (
-                    <div className={styles.matchedFrenz}>
-                      {data.matchedFrenz.map(
-                        ({ id, name, screen_name, profile_image_url }: any) => {
-                          return (
-                            <div id={styles.frenz} key={id}>
-                              <div id={styles.profilePhoto}>
-                                <Image
-                                  id={styles.profilePhoto}
-                                  src={profile_image_url}
-                                  alt={screen_name}
-                                  width={50}
-                                  height={50}
-                                />
-                              </div>
-
-                              <div className={styles.frenzBody}>
-                                <p>{name}</p>
-                                <a
-                                  href={`https://twitter.com/${screen_name}`}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                >
-                                  {"@" + screen_name}
-                                </a>
-                              </div>
-                            </div>
-                          );
+                    <>
+                      <Button
+                        id={
+                          followBtnStyle
+                            ? styles.followAllBtn
+                            : styles.unfollowAllBtn
                         }
-                      )}
-                    </div>
+                        onClick={followAll}
+                        type="submit"
+                        color="primary"
+                        size="large"
+                        variant="outlined"
+                      >
+                        {followBtnText}
+                      </Button>
+                      <List className={styles.matchedFrenz}>
+                        {data.matchedFrenz.map(
+                          ({
+                            id,
+                            name,
+                            screen_name,
+                            profile_image_url,
+                          }: any) => {
+                            return (
+                              <ListItem
+                                id={styles.frenz}
+                                key={id}
+                                secondaryAction={
+                                  <Checkbox
+                                    edge="end"
+                                    onChange={selectFrenz(id)}
+                                    checked={selectedFrenz.indexOf(id) !== -1}
+                                  />
+                                }
+                                disablePadding
+                              >
+                                <ListItemButton
+                                  role={undefined}
+                                  onClick={selectFrenz(id)}
+                                >
+                                  <div id={styles.profilePhoto}>
+                                    <Image
+                                      id={styles.profilePhoto}
+                                      src={profile_image_url}
+                                      alt={screen_name}
+                                      width={50}
+                                      height={50}
+                                    />
+                                  </div>
+
+                                  <div className={styles.frenzBody}>
+                                    <p>{name}</p>
+                                    <a>{"@" + screen_name}</a>
+                                  </div>
+                                </ListItemButton>
+                              </ListItem>
+                            );
+                          }
+                        )}
+                      </List>
+                    </>
                   )}
                   {data?.matchedFrenz.length === 0 && "No one to follow"}
                   <Button
                     id={styles.continueButtons}
-                    onClick={modalClose}
+                    onClick={continueButton}
                     type="submit"
                     color="primary"
                     size="large"

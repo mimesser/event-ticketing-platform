@@ -45,25 +45,33 @@ export default async function linkUser(
           },
         });
 
-        const matchedTwtUsernames = matchedFriendList.map(
-          (m: any) => m.twitterUsername
+        const matchedTwtUserDetails = matchedFriendList.map(
+          ({ twitterUsername, id }: any) => ({
+            id,
+            screen_name: twitterUsername,
+          })
         );
 
         let matchedFriendDetails: any[] = [];
 
-        if (matchedTwtUsernames.length > 0) {
+        if (matchedTwtUserDetails.length > 0) {
           matchedFriendDetails = await userClient.v1.users({
-            screen_name: matchedTwtUsernames,
+            screen_name: matchedTwtUserDetails.map((m) => m.screen_name),
           });
         }
 
         matchedFrenz.push(
-          ...matchedFriendDetails.map((m) => ({
-            id: m.id,
-            name: m.name,
-            screen_name: m.screen_name,
-            profile_image_url: m.profile_image_url_https,
-          }))
+          ...matchedFriendDetails.map((m) => {
+            const data = matchedTwtUserDetails.find(
+              (dbRecord) => dbRecord.screen_name === m.screen_name
+            );
+            return {
+              id: data!.id,
+              name: m.name,
+              screen_name: m.screen_name,
+              profile_image_url: m.profile_image_url_https,
+            };
+          })
         );
 
         latestFollowingList = await data.fetchNext(1000);
