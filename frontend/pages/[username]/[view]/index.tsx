@@ -31,7 +31,7 @@ function View() {
         }
       });
     }
-  }, [username]);
+  }, [username, router]);
 
   const view = router.query.view;
   const [value, setValue] = React.useState(view === "followers" ? 0 : 1);
