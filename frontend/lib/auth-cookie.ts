@@ -2,7 +2,7 @@ import { CookieSerializeOptions, serialize, parse } from "cookie";
 import { isProduction } from "lib/utils";
 import { NextApiResponse } from "next";
 
-export const MAX_AGE = 60 * 60 * 8;
+export const MAX_AGE = 60 * 60 * 24 * 6;
 const TOKEN_NAME = "token";
 
 export const setTokenCookie = (res: NextApiResponse, token: string) => {
