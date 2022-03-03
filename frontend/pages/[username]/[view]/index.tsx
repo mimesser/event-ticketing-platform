@@ -8,6 +8,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import Layout from "components/Layout";
 import { useRouter } from "next/router";
+import { getLoginSession } from "lib/auth";
 import { fetchPublicUser } from "lib/hooks";
 import { shortenAddress } from "lib/utils";
 import React from "react";
@@ -227,10 +228,20 @@ function View() {
 
 export async function getServerSideProps(context: any) {
   const query = context.query;
+  const session = await getLoginSession(context.req);
   if (query.view === "followers" || query.view === "following") {
-    return {
-      props: {},
-    };
+    if (session) {
+      return {
+        props: {},
+      };
+    } else {
+      return {
+        redirect: {
+          permanent: false,
+          destination: `/${query.username}`,
+        },
+      };
+    }
   } else {
     return {
       notFound: true,
