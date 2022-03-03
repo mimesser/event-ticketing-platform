@@ -84,7 +84,8 @@
   #frenz {
     display: flex;
     flex-direction: row;
-    border-bottom: 1px solid gray;
+    margin-bottom: 1px;
+    margin-top: 1px;
     align-items: center;
 
     #profilePhoto {
