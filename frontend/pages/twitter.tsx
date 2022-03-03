@@ -1,9 +1,9 @@
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Checkbox from "@mui/material/Checkbox";
 import CloseIcon from "@mui/icons-material/Close";
 import CircularProgress from "@mui/material/CircularProgress";
+import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import Modal from "@mui/material/Modal";
 import TwitterIcon from "@mui/icons-material/Twitter";
@@ -218,38 +218,39 @@ export default function Twitter() {
                             profile_image_url,
                           }: any) => {
                             return (
-                              <ListItem
-                                id={styles.frenz}
-                                key={id}
-                                secondaryAction={
-                                  <Checkbox
-                                    edge="end"
-                                    onChange={selectFrenz(id)}
-                                    checked={selectedFrenz.indexOf(id) !== -1}
-                                  />
-                                }
-                                disablePadding
-                              >
-                                <ListItemButton
-                                  role={undefined}
-                                  onClick={selectFrenz(id)}
+                              <>
+                                <ListItem
+                                  id={styles.frenz}
+                                  key={id}
+                                  sx={{
+                                    ...(selectedFrenz.indexOf(id) !== -1 && {
+                                      bgcolor: "action.selected",
+                                    }),
+                                  }}
+                                  disablePadding
                                 >
-                                  <div id={styles.profilePhoto}>
-                                    <Image
-                                      id={styles.profilePhoto}
-                                      src={profile_image_url}
-                                      alt={screen_name}
-                                      width={50}
-                                      height={50}
-                                    />
-                                  </div>
+                                  <ListItemButton
+                                    role={undefined}
+                                    onClick={selectFrenz(id)}
+                                  >
+                                    <div id={styles.profilePhoto}>
+                                      <Image
+                                        id={styles.profilePhoto}
+                                        src={profile_image_url}
+                                        alt={screen_name}
+                                        width={50}
+                                        height={50}
+                                      />
+                                    </div>
 
-                                  <div className={styles.frenzBody}>
-                                    <p>{name}</p>
-                                    <a>{"@" + screen_name}</a>
-                                  </div>
-                                </ListItemButton>
-                              </ListItem>
+                                    <div className={styles.frenzBody}>
+                                      <p>{name}</p>
+                                      <a>{"@" + screen_name}</a>
+                                    </div>
+                                  </ListItemButton>
+                                </ListItem>
+                                <Divider />
+                              </>
                             );
                           }
                         )}
