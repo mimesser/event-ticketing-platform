@@ -297,20 +297,17 @@ export default function Header() {
 
   async function unlinkUser() {
     if (user) {
-      const email = user.email;
-
       try {
-        await fetch("/api/twitter/unlink-user", {
-          method: "POST",
-          body: JSON.stringify({
-            email,
-          }),
+        const res = await fetch("/api/twitter/link-user", {
+          method: "DELETE",
         });
+
+        if (res.status === 200) {
+          signOut();
+        }
       } catch (error) {
         console.log(error);
       }
-
-      signOut();
     }
   }
 

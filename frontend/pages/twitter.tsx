@@ -31,15 +31,11 @@ export default function Twitter() {
   useEffect(() => {
     async function linkUser() {
       if (session && user && !data) {
-        const email = user.email;
-        const twitterUsername = session.twitterProfile.screen_name;
-
         try {
           await fetch("/api/twitter/link-user", {
             method: "POST",
             body: JSON.stringify({
-              email,
-              twitterUsername,
+              twitterUsername: session.twitterProfile.screen_name,
             }),
           });
         } catch (error) {
@@ -85,14 +81,11 @@ export default function Twitter() {
     if (selectedFrenz.length === 0) {
       modalClose();
     } else {
-      const email = user.email;
-
       try {
-        await fetch("/api/twitter/follows-friend", {
+        await fetch("/api/twitter/follow", {
           method: "POST",
           body: JSON.stringify({
-            email,
-            selectedFrenz,
+            follow: selectedFrenz,
           }),
         });
       } catch (error) {

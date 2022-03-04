@@ -55,6 +55,19 @@ function Profile() {
       });
     }
   }, [username]);
+
+  React.useEffect(() => {
+    if (user && !currentUser.loading) {
+      if (
+        currentUser.user?.following
+          .map((m: any) => m.id)
+          .find((x: any) => x === user.id)
+      ) {
+        setFollowing(true);
+      }
+    }
+  }, [user, currentUser.loading, currentUser.user?.following]);
+
   const [snackShow, openSnackBar] = React.useState(false);
   const copyAddress = async () => {
     copy(user.walletAddress);
@@ -78,15 +91,43 @@ function Profile() {
   const [signInfollowModal, setSignInFollowModal] = React.useState(false);
   const [signInConnectModal, setsignInConnectModal] = React.useState(false);
 
-  const unfollowUser = () => {
-    setHover(false);
-    setFollowing(false);
-    setUnFollowModal(false);
+  const unfollowUser = async () => {
+    try {
+      const res = await fetch("/api/twitter/follow", {
+        method: "DELETE",
+        body: JSON.stringify({
+          email: currentUser.user.email,
+          follow: [user.id],
+        }),
+      });
+
+      if (res.status === 200) {
+        setHover(false);
+        setFollowing(false);
+        setUnFollowModal(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const checkStatusBeforeFollowing = () => {
+  const followUser = async () => {
     if (currentUser.user !== null) {
-      setFollowing(true);
+      try {
+        const res = await fetch("/api/twitter/follow", {
+          method: "POST",
+          body: JSON.stringify({
+            email: currentUser.user.email,
+            follow: [user.id],
+          }),
+        });
+
+        if (res.status === 200) {
+          setFollowing(true);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     } else {
       setSignInFollowModal(true);
     }
@@ -484,7 +525,7 @@ function Profile() {
                 </Typography>
               ) : (
                 <Typography
-                  onClick={checkStatusBeforeFollowing}
+                  onClick={followUser}
                   sx={{
                     color: "white",
                     fontFamily: "sans-serif",
@@ -900,7 +941,11 @@ function Profile() {
                 }}
                 variant="body1"
               >
-                Unfollow {`@${user.username}`}?
+                Unfollow
+                {user.username
+                  ? ` @${user.username}`
+                  : ` ${shortenAddress(user.walletAddress)}`}
+                ?
               </Typography>
               <Typography
                 sx={{ marginBottom: "12px" }}
