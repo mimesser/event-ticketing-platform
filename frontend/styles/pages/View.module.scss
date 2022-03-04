@@ -28,3 +28,42 @@
     }
   }
 }
+
+.followList {
+  display: flex;
+  flex-direction: column;
+
+  #followItem {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 1px;
+    margin-top: 1px;
+    align-items: center;
+
+    #profilePhoto {
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .followItemDetails {
+      align-items: center;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      p {
+        margin-top: 5px;
+        margin-bottom: 5px;
+      }
+      a {
+        color: gray;
+      }
+    }
+
+    .follow_button {
+      margin-left: auto;
+    }
+  }
+}

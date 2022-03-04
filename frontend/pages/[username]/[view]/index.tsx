@@ -1,15 +1,23 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Avatar from "boring-avatars";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
+import Image from "next/image";
 import Layout from "components/Layout";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
 import { useRouter } from "next/router";
 import { getLoginSession } from "lib/auth";
 import { fetchPublicUser } from "lib/hooks";
+import { useUserInfo } from "lib/user-context";
 import { shortenAddress } from "lib/utils";
 import React from "react";
 import styles from "styles/pages/View.module.scss";
@@ -17,6 +25,7 @@ import styles from "styles/pages/View.module.scss";
 function View() {
   const router = useRouter();
   const { username } = router.query;
+  const currentUser = useUserInfo();
   const [user, setUser] = React.useState<any>(null);
 
   React.useEffect(() => {
@@ -40,8 +49,6 @@ function View() {
   const handleChange = (event: any, newValue: React.SetStateAction<number>) => {
     setValue(newValue);
   };
-  const [followers, setFollowers] = React.useState(false);
-  const [following, setFollowing] = React.useState(false);
 
   function TabPanel(props: {
     [x: string]: any;
@@ -156,7 +163,7 @@ function View() {
           </Box>
           <Box>
             <TabPanel value={value} index={0}>
-              {!followers && (
+              {user.followers.length === 0 && (
                 <Box sx={{ p: 4 }}>
                   <Grid
                     container
@@ -186,9 +193,150 @@ function View() {
                   </Grid>
                 </Box>
               )}
+              {user.followers.length !== 0 && (
+                <Box sx={{ p: 4, pt: 0 }}>
+                  <List className={styles.followList}>
+                    {user.followers.map(
+                      ({
+                        id,
+                        avatarImage,
+                        name,
+                        username,
+                        walletAddress,
+                      }: any) => {
+                        return (
+                          <div key={id}>
+                            <ListItem id={styles.followItem} disablePadding>
+                              <ListItemButton
+                                onClick={() =>
+                                  router.push(
+                                    `/${username ? username : walletAddress}`
+                                  )
+                                }
+                              >
+                                <div id={styles.profilePhoto}>
+                                  {avatarImage ? (
+                                    <Image
+                                      id={styles.profilePhoto}
+                                      src={avatarImage}
+                                      alt={avatarImage}
+                                      width={50}
+                                      height={50}
+                                    />
+                                  ) : (
+                                    <Avatar
+                                      size={50}
+                                      name={user.walletAddress}
+                                      variant="pixel"
+                                      colors={[
+                                        "#ffad08",
+                                        "#edd75a",
+                                        "#73b06f",
+                                        "#0c8f8f",
+                                        "#405059",
+                                      ]}
+                                    />
+                                  )}
+                                </div>
+                                <div className={styles.followItemDetails}>
+                                  {name && <p>{name}</p>}
+                                  {name && username && <a>{` @${username}`}</a>}
+                                  {!name && username && (
+                                    <p>{` @${username}`}</p>
+                                  )}
+                                  {!username && (
+                                    <p>{shortenAddress(walletAddress)}</p>
+                                  )}
+                                </div>
+                                <div className={styles.follow_button}>
+                                  <Button
+                                    color="inherit"
+                                    sx={(theme) => ({
+                                      ":hover": {
+                                        backgroundColor: false
+                                          ? "inherit"
+                                          : "black",
+                                      },
+                                      backgroundColor: false
+                                        ? "white"
+                                        : "black",
+                                      borderColor: false ? "red" : "black",
+                                      borderRadius: theme.shape.borderRadius,
+                                      margin: theme.spacing(1),
+                                    })}
+                                    variant={false ? "outlined" : "contained"}
+                                    onClick={() => {
+                                      console.log("test");
+                                    }}
+                                  >
+                                    {false ? (
+                                      <Typography
+                                        sx={{
+                                          fontFamily: "sans-serif",
+                                          fontSize: "16px",
+                                          fontWeight: 550,
+                                          textTransform: "none",
+                                        }}
+                                        variant="body1"
+                                      >
+                                        {false ? (
+                                          <Typography
+                                            sx={{
+                                              fontFamily: "sans-serif",
+                                              fontSize: "16px",
+                                              fontWeight: 550,
+                                              textTransform: "none",
+                                            }}
+                                            color="red"
+                                            component={"span"}
+                                            variant="body1"
+                                          >
+                                            Unfollow
+                                          </Typography>
+                                        ) : (
+                                          <Typography
+                                            sx={{
+                                              fontFamily: "sans-serif",
+                                              fontSize: "16px",
+                                              fontWeight: 550,
+                                              textTransform: "none",
+                                            }}
+                                            component={"span"}
+                                            variant="body1"
+                                          >
+                                            Following
+                                          </Typography>
+                                        )}
+                                      </Typography>
+                                    ) : (
+                                      <Typography
+                                        sx={{
+                                          color: "white",
+                                          fontFamily: "sans-serif",
+                                          fontSize: "16px",
+                                          fontWeight: 550,
+                                          textTransform: "none",
+                                        }}
+                                        variant="body1"
+                                      >
+                                        Follow
+                                      </Typography>
+                                    )}
+                                  </Button>
+                                </div>
+                              </ListItemButton>
+                            </ListItem>
+                            <Divider />
+                          </div>
+                        );
+                      }
+                    )}
+                  </List>
+                </Box>
+              )}
             </TabPanel>
             <TabPanel value={value} index={1}>
-              {!following && (
+              {user.following.length === 0 && (
                 <Box sx={{ p: 4 }}>
                   <Grid
                     container
@@ -216,6 +364,144 @@ function View() {
                       When they do, they’ll be listed here.
                     </Typography>
                   </Grid>
+                </Box>
+              )}
+              {user.following.length !== 0 && (
+                <Box sx={{ p: 4, pt: 0 }}>
+                  <List className={styles.followList}>
+                    {user.following.map(
+                      ({
+                        id,
+                        avatarImage,
+                        name,
+                        username,
+                        walletAddress,
+                      }: any) => {
+                        return (
+                          <div key={id}>
+                            <ListItem id={styles.followItem} disablePadding>
+                              <ListItemButton
+                                onClick={() =>
+                                  router.push(
+                                    `/${username ? username : walletAddress}`
+                                  )
+                                }
+                              >
+                                <div id={styles.profilePhoto}>
+                                  {avatarImage ? (
+                                    <Image
+                                      id={styles.profilePhoto}
+                                      src={avatarImage}
+                                      alt={avatarImage}
+                                      width={50}
+                                      height={50}
+                                    />
+                                  ) : (
+                                    <Avatar
+                                      size={50}
+                                      name={user.walletAddress}
+                                      variant="pixel"
+                                      colors={[
+                                        "#ffad08",
+                                        "#edd75a",
+                                        "#73b06f",
+                                        "#0c8f8f",
+                                        "#405059",
+                                      ]}
+                                    />
+                                  )}
+                                </div>
+                                <div className={styles.followItemDetails}>
+                                  {name && <p>{name}</p>}
+                                  {name && username && <a>{` @${username}`}</a>}
+                                  {!name && username && (
+                                    <p>{` @${username}`}</p>
+                                  )}
+                                  {!username && (
+                                    <p>{shortenAddress(walletAddress)}</p>
+                                  )}
+                                </div>
+                                <div className={styles.follow_button}>
+                                  <Button
+                                    color="inherit"
+                                    sx={(theme) => ({
+                                      ":hover": {
+                                        backgroundColor: false
+                                          ? "inherit"
+                                          : "black",
+                                      },
+                                      backgroundColor: false
+                                        ? "white"
+                                        : "black",
+                                      borderColor: false ? "red" : "black",
+                                      borderRadius: theme.shape.borderRadius,
+                                      margin: theme.spacing(1),
+                                    })}
+                                    variant={false ? "outlined" : "contained"}
+                                  >
+                                    {false ? (
+                                      <Typography
+                                        sx={{
+                                          fontFamily: "sans-serif",
+                                          fontSize: "16px",
+                                          fontWeight: 550,
+                                          textTransform: "none",
+                                        }}
+                                        variant="body1"
+                                      >
+                                        {false ? (
+                                          <Typography
+                                            sx={{
+                                              fontFamily: "sans-serif",
+                                              fontSize: "16px",
+                                              fontWeight: 550,
+                                              textTransform: "none",
+                                            }}
+                                            color="red"
+                                            component={"span"}
+                                            variant="body1"
+                                          >
+                                            Unfollow
+                                          </Typography>
+                                        ) : (
+                                          <Typography
+                                            sx={{
+                                              fontFamily: "sans-serif",
+                                              fontSize: "16px",
+                                              fontWeight: 550,
+                                              textTransform: "none",
+                                            }}
+                                            component={"span"}
+                                            variant="body1"
+                                          >
+                                            Following
+                                          </Typography>
+                                        )}
+                                      </Typography>
+                                    ) : (
+                                      <Typography
+                                        sx={{
+                                          color: "white",
+                                          fontFamily: "sans-serif",
+                                          fontSize: "16px",
+                                          fontWeight: 550,
+                                          textTransform: "none",
+                                        }}
+                                        variant="body1"
+                                      >
+                                        Follow
+                                      </Typography>
+                                    )}
+                                  </Button>
+                                </div>
+                              </ListItemButton>
+                            </ListItem>
+                            <Divider />
+                          </div>
+                        );
+                      }
+                    )}
+                  </List>
                 </Box>
               )}
             </TabPanel>
