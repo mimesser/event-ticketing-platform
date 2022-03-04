@@ -44,9 +44,13 @@ export default function Layout({
           {/* Injected child content */}
           <Box
             component="main"
-            sx={{
+            sx={(theme) => ({
+              [theme.breakpoints.down("sm")]: {
+                margin: "auto",
+              },
+              margin: "0 10%",
               flexGrow: 1,
-            }}
+            })}
           >
             <Toolbar />
             {children}
