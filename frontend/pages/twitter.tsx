@@ -211,10 +211,9 @@ export default function Twitter() {
                             profile_image_url,
                           }: any) => {
                             return (
-                              <>
+                              <div key={id}>
                                 <ListItem
                                   id={styles.frenz}
-                                  key={id}
                                   sx={{
                                     ...(selectedFrenz.indexOf(id) !== -1 && {
                                       bgcolor: "action.selected",
@@ -243,7 +242,7 @@ export default function Twitter() {
                                   </ListItemButton>
                                 </ListItem>
                                 <Divider />
-                              </>
+                              </div>
                             );
                           }
                         )}
