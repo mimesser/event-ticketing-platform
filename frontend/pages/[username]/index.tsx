@@ -105,6 +105,9 @@ function Profile() {
         setHover(false);
         setFollowing(false);
         setUnFollowModal(false);
+        fetchPublicUser(username as string).then((fetchedUser) => {
+          setUser(fetchedUser);
+        });
       }
     } catch (error) {
       console.log(error);
@@ -124,6 +127,9 @@ function Profile() {
 
         if (res.status === 200) {
           setFollowing(true);
+          fetchPublicUser(username as string).then((fetchedUser) => {
+            setUser(fetchedUser);
+          });
         }
       } catch (error) {
         console.log(error);
@@ -632,7 +638,7 @@ function Profile() {
                 }}
                 variant="body1"
               >
-                0
+                {user.following.length}
                 <Typography
                   component="span"
                   variant="body1"
@@ -663,7 +669,7 @@ function Profile() {
                 }}
                 variant="body1"
               >
-                0
+                {user.followers.length}
                 <Typography
                   component="span"
                   variant="body1"
