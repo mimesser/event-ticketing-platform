@@ -1,26 +1,49 @@
-import { User } from "@prisma/client";
+import { getLoginSession } from "../../../lib/auth";
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "lib/prisma";
+import { User } from "@prisma/client";
 
 export default async function linkUser(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { email, twitterUsername }: User = JSON.parse(req.body);
+  const session = await getLoginSession(req);
 
-  if (!email) {
-    res.status(400).json({ error: "Missing email" });
+  if (!session) {
+    res.status(400).json({ error: "Missing session" });
     return;
   }
 
-  try {
-    await prisma.user.update({
-      where: { email: email },
-      data: { twitterUsername: twitterUsername },
-    });
+  if (req.method === "POST") {
+    const { twitterUsername }: User = JSON.parse(req.body);
 
-    res.status(200).json({ status: "update success" });
-  } catch (e) {
-    res.status(500).json({ e });
+    if (!twitterUsername) {
+      res.status(400).json({ error: "Missing twitterUsername" });
+      return;
+    }
+
+    try {
+      await prisma.user.update({
+        where: { email: session.email },
+        data: { twitterUsername: twitterUsername },
+      });
+
+      res.status(200).json({ status: "Link Twitter success" });
+    } catch (e) {
+      res.status(500).json({ e });
+    }
+  }
+
+  if (req.method === "DELETE") {
+    try {
+      await prisma.user.update({
+        where: { email: session.email },
+        data: { twitterUsername: null },
+      });
+
+      res.status(200).json({ status: "Unlink Twitter success" });
+    } catch (e) {
+      res.status(500).json({ e });
+    }
   }
 }

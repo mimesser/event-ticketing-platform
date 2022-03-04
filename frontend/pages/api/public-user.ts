@@ -33,6 +33,7 @@ export default async function publicUser(
     const users = await prisma.user.findMany({
       where: whereCondition,
       select: {
+        id: true,
         email: true,
         username: true,
         walletAddress: true,
@@ -42,6 +43,8 @@ export default async function publicUser(
         avatarImage: true,
         bannerImage: true,
         createdAt: true,
+        followers: true,
+        following: true,
       },
     });
 
