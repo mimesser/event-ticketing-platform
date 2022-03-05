@@ -716,6 +716,8 @@ export default function Header() {
                     sx: {
                       borderRadius: (theme) => theme.shape.borderRadius,
                       width: 330,
+                      bgcolor: Colors[resolvedTheme].header_bg,
+                      color: Colors[resolvedTheme].primary,
                     },
                   }}
                   transformOrigin={{
@@ -739,7 +741,7 @@ export default function Header() {
                         </Typography>
                         <Typography
                           variant="body2"
-                          sx={{ color: "text.secondary" }}
+                          sx={{ color: Colors[resolvedTheme].primary }}
                         >
                           You have {totalUnRead} unread messages
                         </Typography>
@@ -773,6 +775,7 @@ export default function Header() {
                           px: 2.5,
                           typography: "overline",
                           fontWeight: 600,
+                          color: Colors[resolvedTheme].primary,
                         }}
                       >
                         New
@@ -801,7 +804,7 @@ export default function Header() {
                                   mt: 0.5,
                                   display: "flex",
                                   alignItems: "center",
-                                  color: "text.disabled",
+                                  color: Colors[resolvedTheme].primary,
                                 }}
                               >
                                 <AccessTimeIcon
@@ -828,6 +831,7 @@ export default function Header() {
                           px: 2.5,
                           typography: "overline",
                           fontWeight: 600,
+                          color: Colors[resolvedTheme].primary,
                         }}
                       >
                         BEFORE THAT
@@ -853,7 +857,7 @@ export default function Header() {
                                   mt: 0.5,
                                   display: "flex",
                                   alignItems: "center",
-                                  color: "text.disabled",
+                                  color: Colors[resolvedTheme].primary,
                                 }}
                               >
                                 <AccessTimeIcon
@@ -902,23 +906,23 @@ export default function Header() {
                       sx: {
                         borderRadius: (theme) => theme.shape.borderRadius,
                         width: 250,
+                        bgcolor: Colors[resolvedTheme].header_bg,
+                        color: Colors[resolvedTheme].primary,
                       },
                     }}
                   >
                     <MenuItem onClick={() => setSelectedMenu("settings")}>
                       <ListItemIcon>
-                        <SettingsIcon sx={{ color: "black" }} />
+                        <SettingsIcon sx={{ color: Colors[resolvedTheme].primary }} />
                       </ListItemIcon>
-                      <span
-                        style={{ color: "black" }}
-                      >{`Settings & privacy`}</span>
+                      <span>{`Settings & privacy`}</span>
                       <ArrowForwardIosIcon style={{ marginLeft: "15%" }} />
                     </MenuItem>
                     <MenuItem onClick={() => setSelectedMenu("display")}>
                       <ListItemIcon>
-                        <NightlightIcon sx={{ color: "black" }} />
+                        <NightlightIcon sx={{ color: Colors[resolvedTheme].primary }} />
                       </ListItemIcon>
-                      <span style={{ color: "black" }}>Display</span>
+                      <span>Display</span>
                       <ArrowForwardIosIcon style={{ marginLeft: "49%" }} />
                     </MenuItem>
                     <MenuItem
@@ -928,7 +932,7 @@ export default function Header() {
                       }}
                     >
                       <ListItemIcon>
-                        <LogoutIcon sx={{ color: "black" }} />
+                        <LogoutIcon sx={{ color: Colors[resolvedTheme].primary }} />
                       </ListItemIcon>
                       <div>Log Out</div>
                     </MenuItem>
@@ -952,6 +956,8 @@ export default function Header() {
                       sx: {
                         borderRadius: (theme) => theme.shape.borderRadius,
                         width: 250,
+                        bgcolor: Colors[resolvedTheme].header_bg,
+                        color: Colors[resolvedTheme].primary,
                       },
                     }}
                   >
@@ -967,7 +973,7 @@ export default function Header() {
                           setSelectedMenu("");
                         }}
                         sx={{
-                          color: "#000000",
+                          color: Colors[resolvedTheme].primary,
                           marginLeft: "5px",
                           alignContent: "center",
                         }}
@@ -978,7 +984,7 @@ export default function Header() {
                     </Typography>
                     <MenuItem onClick={handleCloseUserMenu}>
                       <ListItemIcon>
-                        <SettingsIcon sx={{ color: "black" }} />
+                        <SettingsIcon sx={{ color: Colors[resolvedTheme].primary }} />
                       </ListItemIcon>
                       <Link href="https://reveal.magic.link/impish">
                         <a target="_blank" rel="noreferrer">
@@ -993,7 +999,7 @@ export default function Header() {
                       }}
                     >
                       <ListItemIcon>
-                        <LockIcon sx={{ color: "black" }} />
+                        <LockIcon sx={{ color: Colors[resolvedTheme].primary }} />
                       </ListItemIcon>
                       Privacy
                     </MenuItem>
@@ -1036,6 +1042,8 @@ export default function Header() {
                       sx: {
                         borderRadius: (theme) => theme.shape.borderRadius,
                         width: 250,
+                        bgcolor: Colors[resolvedTheme].header_bg,
+                        color: Colors[resolvedTheme].primary,
                       },
                     }}
                   >
@@ -1051,7 +1059,7 @@ export default function Header() {
                           setSelectedMenu("");
                         }}
                         sx={{
-                          color: "#000000",
+                          color: Colors[resolvedTheme].primary,
                           marginLeft: "5px",
                           alignContent: "center",
                         }}
@@ -1067,7 +1075,7 @@ export default function Header() {
                           display: "flex",
                           flexDirection: "row",
                           alignItems: "center",
-                          color: "black",
+                          color: Colors[resolvedTheme].primary,
                         }}
                       >
                         <NightlightIcon />

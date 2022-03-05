@@ -6,8 +6,10 @@ import { useUser } from "lib/hooks";
 import { magic } from "lib/magic";
 import Image from "next/image";
 import Router from "next/router";
+import { useTheme } from "next-themes";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import Colors from "lib/colors";
 import styles from "styles/pages/Home.module.scss";
 
 // Setup project details
@@ -15,6 +17,7 @@ const description: string =
   process.env.NEXT_PUBLIC_DESCRIPTION ?? "Some description";
 
 export default function Home() {
+  const { resolvedTheme } = useTheme();
   const isMobile = useMediaQuery("(max-width:599px)");
   const { user, loading } = useUser({
     redirectTo: "/dashboard",
@@ -124,6 +127,10 @@ export default function Home() {
                   variant="standard"
                   autoComplete="email"
                   autoFocus
+                  sx={{
+                    label: { color: Colors[resolvedTheme].secondary },
+                    input: { color: Colors[resolvedTheme].primary },
+                  }}
                   {...register("email", {
                     required: "Required field",
                     pattern: {
@@ -138,7 +145,6 @@ export default function Home() {
                 <LoadingButton
                   loading={signingIn}
                   type="submit"
-                  color="primary"
                   size="large"
                   variant="outlined"
                 >
