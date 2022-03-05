@@ -151,7 +151,12 @@ function Profile() {
     setSigningIn(true);
 
     try {
-      const didToken = await magic?.auth.loginWithMagicLink({ email });
+      const userExists = true;
+      const redirectURI = `${window.location.origin}/callback${router.asPath}/${email}/${userExists}`;
+      const didToken = await magic?.auth.loginWithMagicLink({
+        email,
+        redirectURI,
+      });
       const res = await fetch("/api/login", {
         method: "POST",
         headers: {
