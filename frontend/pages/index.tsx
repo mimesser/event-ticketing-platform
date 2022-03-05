@@ -32,20 +32,25 @@ export default function Home() {
   const onSubmit: any = async ({ email }: { email: any }) => {
     setSigningIn(true);
 
-    const userExists =
-      (
-        await (
-          await fetch("/api/signup", {
-            method: "POST",
-            body: JSON.stringify({
-              email,
-            }),
-          })
-        ).json()
-      ).user ?? false;
+    const userExists = (
+      await (
+        await fetch("/api/signup", {
+          method: "POST",
+          body: JSON.stringify({
+            email,
+          }),
+        })
+      ).json()
+    ).user
+      ? true
+      : false;
 
     try {
-      const didToken = await magic?.auth.loginWithMagicLink({ email });
+      const redirectURI = `${window.location.origin}/callback/dashboard/${email}/${userExists}`;
+      const didToken = await magic?.auth.loginWithMagicLink({
+        email,
+        redirectURI,
+      });
       const res = await fetch("/api/login", {
         method: "POST",
         headers: {
