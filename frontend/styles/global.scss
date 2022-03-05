@@ -10,15 +10,15 @@ body {
   font-family: "Inter", sans-serif;
 
   // Background
-  background: #ffffff;
+  background: rgb(247, 248, 250);
   // Text
-  color: #000000;
+  color: black;
 }
 
 [data-theme="dark"],
 [data-theme="dark"] body {
-  background: #1e1e1e;
-  color: #ffffff;
+  background: black;
+  color: rgb(217, 217, 217);
 }
 
 // Override default link styles
@@ -34,11 +34,4 @@ input {
   text-rendering: optimizeLegibility;
   font-family: "Inter", sans-serif;
   cursor: pointer;
-}
-
-[data-theme="dark"] .bg-primary {
-  background: #1e1e1e;
-}
-[data-theme="dark"] .text-primary {
-  color: #ffffff;
 }
