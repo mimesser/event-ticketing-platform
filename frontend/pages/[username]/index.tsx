@@ -396,14 +396,19 @@ function Profile() {
     Object.entries({ ...fields, file }).forEach(([key, value]) => {
       formData.append(key, value as string);
     });
+    let upload;
 
-    const upload = await fetch(url, {
-      method: "POST",
-      body: formData,
-      mode: isProduction ? undefined : "no-cors",
-    });
+    try {
+      upload = await fetch(url, {
+        method: "POST",
+        body: formData,
+        mode: isProduction ? undefined : "no-cors",
+      });
+    } catch (e) {
+      console.log(e);
+    }
 
-    if (upload.ok || upload.type === "opaque") {
+    if (upload?.ok || upload?.type === "opaque") {
       console.log("Uploaded successfully!");
 
       if (selectedPhoto === "avatar") setNewAvatar(url + fields.key);
