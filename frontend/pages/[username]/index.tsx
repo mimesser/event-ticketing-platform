@@ -69,7 +69,7 @@ function Profile() {
         finishLoading(false);
       });
     }
-  }, [username]);
+  }, [username, user]);
 
   React.useEffect(() => {
     if (user && !currentUser.loading) {
