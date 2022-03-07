@@ -387,7 +387,7 @@ function Profile() {
     if (!file) return;
 
     const filename = encodeURIComponent(
-      user.walletAddress + "-" + selectedPhoto
+      user.walletAddress + "-" + selectedPhoto + "-" + Date.now()
     );
     const res = await fetch(`/api/upload-image?file=${filename}`);
     const { url, fields } = await res.json();
