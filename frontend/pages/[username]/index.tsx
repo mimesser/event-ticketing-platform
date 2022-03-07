@@ -460,6 +460,7 @@ function Profile() {
           <div className={styles.banner} onClick={() => updatePhoto("banner")}>
             {user.bannerImage && (
               <Image
+                priority
                 src={user.bannerImage}
                 layout="fill"
                 objectFit="cover"
@@ -813,6 +814,7 @@ function Profile() {
               <div className={styles.banner} onClick={stopPropagation}>
                 {user.bannerImage && (
                   <Image
+                    priority
                     src={user.bannerImage}
                     layout="fill"
                     objectFit="cover"
