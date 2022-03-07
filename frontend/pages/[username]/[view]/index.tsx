@@ -10,6 +10,7 @@ import Tabs from "@mui/material/Tabs";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import Image from "next/image";
+import Modal from "@mui/material/Modal";
 import Layout from "components/Layout";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -27,6 +28,12 @@ function View() {
   const { username } = router.query;
   const currentUser = useUserInfo();
   const [user, setUser] = React.useState<any>(null);
+
+  const [unfollowModal, setUnFollowModal] = React.useState({
+    id: "false",
+    username: "",
+    walletAddress: "",
+  });
 
   React.useEffect(() => {
     if (username) {
@@ -84,6 +91,59 @@ function View() {
       />
     );
   }
+
+  async function unfollowUser(id: string) {
+    try {
+      const res = await fetch("/api/twitter/follow", {
+        method: "DELETE",
+        body: JSON.stringify({
+          email: currentUser.user.email,
+          follow: [id],
+        }),
+      });
+
+      if (res.status === 200) {
+        const removeIndex = currentUser.user.following.findIndex(
+          (m: any) => m.id === id
+        );
+        currentUser.user.following.splice(removeIndex, 1);
+        setUnFollowModal({ id: "false", username: "", walletAddress: "" });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function followUser(id: string) {
+    try {
+      const res = await fetch("/api/twitter/follow", {
+        method: "POST",
+        body: JSON.stringify({
+          email: currentUser.user.email,
+          follow: [id],
+        }),
+      });
+
+      if (res.status === 200) {
+        currentUser.user.following.push({ id: id });
+        setUnFollowModal({ id: "false", username: "", walletAddress: "" });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const modalStyle = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 320,
+    bgcolor: "white",
+    borderRadius: "25px",
+    boxShadow: 24,
+    p: 4,
+  };
 
   return (
     <Layout>
@@ -249,80 +309,78 @@ function View() {
                                   )}
                                 </div>
                                 <div className={styles.follow_button}>
-                                  <Button
-                                    color="inherit"
-                                    sx={(theme) => ({
-                                      ":hover": {
-                                        backgroundColor: false
-                                          ? "inherit"
-                                          : "black",
-                                      },
-                                      backgroundColor: false
-                                        ? "white"
-                                        : "black",
-                                      borderColor: false ? "red" : "black",
-                                      borderRadius: theme.shape.borderRadius,
-                                      margin: theme.spacing(1),
-                                    })}
-                                    variant={false ? "outlined" : "contained"}
-                                    onClick={() => {
-                                      console.log("test");
-                                    }}
-                                  >
-                                    {false ? (
-                                      <Typography
-                                        sx={{
-                                          fontFamily: "sans-serif",
-                                          fontSize: "16px",
-                                          fontWeight: 550,
-                                          textTransform: "none",
-                                        }}
-                                        variant="body1"
-                                      >
-                                        {false ? (
-                                          <Typography
-                                            sx={{
-                                              fontFamily: "sans-serif",
-                                              fontSize: "16px",
-                                              fontWeight: 550,
-                                              textTransform: "none",
-                                            }}
-                                            color="red"
-                                            component={"span"}
-                                            variant="body1"
-                                          >
-                                            Unfollow
-                                          </Typography>
-                                        ) : (
-                                          <Typography
-                                            sx={{
-                                              fontFamily: "sans-serif",
-                                              fontSize: "16px",
-                                              fontWeight: 550,
-                                              textTransform: "none",
-                                            }}
-                                            component={"span"}
-                                            variant="body1"
-                                          >
-                                            Following
-                                          </Typography>
-                                        )}
-                                      </Typography>
-                                    ) : (
-                                      <Typography
-                                        sx={{
-                                          color: "white",
-                                          fontFamily: "sans-serif",
-                                          fontSize: "16px",
-                                          fontWeight: 550,
-                                          textTransform: "none",
-                                        }}
-                                        variant="body1"
-                                      >
-                                        Follow
-                                      </Typography>
-                                    )}
-                                  </Button>
+                                  {id !== currentUser.user?.id && (
+                                    <>
+                                      {!currentUser.user?.following
+                                        .map((m: any) => m.id)
+                                        .find((x: any) => x === id) && (
+                                        <Button
+                                          onClick={() => {
+                                            followUser(id);
+                                          }}
+                                          variant={"contained"}
+                                          sx={(theme) => ({
+                                            ":hover": {
+                                              backgroundColor: "black",
+                                            },
+                                            backgroundColor: "black",
+                                            borderColor: "black",
+                                            borderRadius:
+                                              theme.shape.borderRadius,
+                                            margin: theme.spacing(1),
+                                            fontFamily: "sans-serif",
+                                            fontSize: "16px",
+                                            fontWeight: 550,
+                                            textTransform: "none",
+                                          })}
+                                        >
+                                          Follow
+                                        </Button>
+                                      )}
+
+                                      {currentUser.user?.following
+                                        .map((m: any) => m.id)
+                                        .find((x: any) => x === id) && (
+                                        <Button
+                                          onClick={() => {
+                                            setUnFollowModal({
+                                              id: id,
+                                              username: username,
+                                              walletAddress: walletAddress,
+                                            });
+                                          }}
+                                          variant={"outlined"}
+                                          sx={(theme) => ({
+                                            width: "6.5em",
+                                            color: "black",
+                                            backgroundColor: "inherit",
+                                            borderColor: "black",
+                                            borderRadius:
+                                              theme.shape.borderRadius,
+                                            margin: theme.spacing(1),
+                                            fontFamily: "sans-serif",
+                                            fontSize: "16px",
+                                            fontWeight: 550,
+                                            textTransform: "none",
+                                            ":hover": {
+                                              borderColor: "red",
+                                              color: "red",
+                                            },
+                                            ":hover span": {
+                                              display: "none",
+                                            },
+                                            ":hover:before": {
+                                              borderColor: "red",
+                                              color: "red",
+                                              content: "'Unfollow'",
+                                            },
+                                          })}
+                                        >
+                                          <span>Following</span>
+                                        </Button>
+                                      )}
+                                    </>
+                                  )}
                                 </div>
                               </ListItemButton>
                             </ListItem>
@@ -422,77 +480,80 @@ function View() {
                                   )}
                                 </div>
                                 <div className={styles.follow_button}>
-                                  <Button
-                                    color="inherit"
-                                    sx={(theme) => ({
-                                      ":hover": {
-                                        backgroundColor: false
-                                          ? "inherit"
-                                          : "black",
-                                      },
-                                      backgroundColor: false
-                                        ? "white"
-                                        : "black",
-                                      borderColor: false ? "red" : "black",
-                                      borderRadius: theme.shape.borderRadius,
-                                      margin: theme.spacing(1),
-                                    })}
-                                    variant={false ? "outlined" : "contained"}
-                                  >
-                                    {false ? (
-                                      <Typography
-                                        sx={{
-                                          fontFamily: "sans-serif",
-                                          fontSize: "16px",
-                                          fontWeight: 550,
-                                          textTransform: "none",
-                                        }}
-                                        variant="body1"
-                                      >
-                                        {false ? (
-                                          <Typography
-                                            sx={{
-                                              fontFamily: "sans-serif",
-                                              fontSize: "16px",
-                                              fontWeight: 550,
-                                              textTransform: "none",
-                                            }}
-                                            color="red"
-                                            component={"span"}
-                                            variant="body1"
-                                          >
-                                            Unfollow
-                                          </Typography>
-                                        ) : (
-                                          <Typography
-                                            sx={{
-                                              fontFamily: "sans-serif",
-                                              fontSize: "16px",
-                                              fontWeight: 550,
-                                              textTransform: "none",
-                                            }}
-                                            component={"span"}
-                                            variant="body1"
-                                          >
-                                            Following
-                                          </Typography>
-                                        )}
-                                      </Typography>
-                                    ) : (
-                                      <Typography
-                                        sx={{
-                                          color: "white",
-                                          fontFamily: "sans-serif",
-                                          fontSize: "16px",
-                                          fontWeight: 550,
-                                          textTransform: "none",
-                                        }}
-                                        variant="body1"
-                                      >
-                                        Follow
-                                      </Typography>
-                                    )}
-                                  </Button>
+                                  {id !== currentUser.user?.id && (
+                                    <>
+                                      {!currentUser.user?.following
+                                        .map((m: any) => m.id)
+                                        .find((x: any) => x === id) && (
+                                        <Button
+                                          onClick={(e) => {
+                                            followUser(id);
+                                            e.stopPropagation();
+                                          }}
+                                          variant={"contained"}
+                                          sx={(theme) => ({
+                                            ":hover": {
+                                              backgroundColor: "black",
+                                            },
+                                            backgroundColor: "black",
+                                            borderColor: "black",
+                                            borderRadius:
+                                              theme.shape.borderRadius,
+                                            margin: theme.spacing(1),
+                                            fontFamily: "sans-serif",
+                                            fontSize: "16px",
+                                            fontWeight: 550,
+                                            textTransform: "none",
+                                          })}
+                                        >
+                                          Follow
+                                        </Button>
+                                      )}
+
+                                      {currentUser.user?.following
+                                        .map((m: any) => m.id)
+                                        .find((x: any) => x === id) && (
+                                        <Button
+                                          onClick={(e) => {
+                                            setUnFollowModal({
+                                              id: id,
+                                              username: username,
+                                              walletAddress: walletAddress,
+                                            });
+                                            e.stopPropagation();
+                                          }}
+                                          variant={"outlined"}
+                                          sx={(theme) => ({
+                                            width: "6.5em",
+                                            color: "black",
+                                            backgroundColor: "inherit",
+                                            borderColor: "black",
+                                            borderRadius:
+                                              theme.shape.borderRadius,
+                                            margin: theme.spacing(1),
+                                            fontFamily: "sans-serif",
+                                            fontSize: "16px",
+                                            fontWeight: 550,
+                                            textTransform: "none",
+                                            ":hover": {
+                                              borderColor: "red",
+                                              color: "red",
+                                            },
+                                            ":hover span": {
+                                              display: "none",
+                                            },
+                                            ":hover:before": {
+                                              borderColor: "red",
+                                              color: "red",
+                                              content: "'Unfollow'",
+                                            },
+                                          })}
+                                        >
+                                          <span>Following</span>
+                                        </Button>
+                                      )}
+                                    </>
+                                  )}
                                 </div>
                               </ListItemButton>
                             </ListItem>
@@ -506,6 +567,110 @@ function View() {
               )}
             </TabPanel>
           </Box>
+
+          {/* unfollow Modal */}
+          <Modal
+            BackdropProps={{
+              timeout: 500,
+            }}
+            closeAfterTransition
+            onClose={() => {
+              setUnFollowModal({
+                id: "false",
+                username: "",
+                walletAddress: "",
+              });
+            }}
+            open={unfollowModal.id !== "false" ? true : false}
+          >
+            <Box sx={modalStyle}>
+              <Grid container direction="column">
+                <Typography
+                  gutterBottom
+                  sx={{
+                    color: "black",
+                    fontFamily: "sans-serif",
+                    fontSize: "18px",
+                    fontWeight: 550,
+                    textTransform: "none",
+                  }}
+                  variant="body1"
+                >
+                  Unfollow
+                  {unfollowModal.username
+                    ? ` @${unfollowModal.username}`
+                    : ` ${shortenAddress(unfollowModal.walletAddress)}`}
+                  ?
+                </Typography>
+                <Typography
+                  sx={{ marginBottom: "12px" }}
+                  variant="body1"
+                  color="text.secondary"
+                >
+                  Their activities will no longer show up in your home timeline.
+                  You can still view their profile.
+                </Typography>
+
+                <Button
+                  onClick={() => {
+                    unfollowUser(unfollowModal.id);
+                  }}
+                  size="large"
+                  color="inherit"
+                  variant="contained"
+                  sx={(theme) => ({
+                    ":hover": {
+                      backgroundColor: "black",
+                    },
+
+                    backgroundColor: "black",
+                    borderRadius: theme.shape.borderRadius,
+                    margin: theme.spacing(1),
+                  })}
+                >
+                  <Typography
+                    sx={{
+                      color: "white",
+                      fontFamily: "sans-serif",
+                      fontSize: "16px",
+                      fontWeight: 550,
+                      textTransform: "none",
+                    }}
+                  >
+                    Unfollow
+                  </Typography>
+                </Button>
+                <Button
+                  size="large"
+                  variant="outlined"
+                  onClick={() => {
+                    setUnFollowModal({
+                      id: "false",
+                      username: "",
+                      walletAddress: "",
+                    });
+                  }}
+                  sx={(theme) => ({
+                    borderRadius: theme.shape.borderRadius,
+                    margin: theme.spacing(1),
+                  })}
+                  color="inherit"
+                >
+                  <Typography
+                    sx={{
+                      color: "black",
+                      fontFamily: "sans-serif",
+                      fontSize: "16px",
+                      fontWeight: 550,
+                      textTransform: "none",
+                    }}
+                  >
+                    Cancel
+                  </Typography>
+                </Button>
+              </Grid>
+            </Box>
+          </Modal>
         </Box>
       )}
     </Layout>

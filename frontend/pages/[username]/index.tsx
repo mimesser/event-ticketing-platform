@@ -99,7 +99,6 @@ function Profile() {
     setAnchorElShare(null);
   };
 
-  const [hover, setHover] = React.useState(false);
   const [following, setFollowing] = React.useState(false);
   const [linkCopied, copyLink] = React.useState(false);
   const [unfollowModal, setUnFollowModal] = React.useState(false);
@@ -117,12 +116,9 @@ function Profile() {
       });
 
       if (res.status === 200) {
-        setHover(false);
+        user.followers.length === user.followers.length-- - 1;
         setFollowing(false);
         setUnFollowModal(false);
-        fetchPublicUser(username as string).then((fetchedUser) => {
-          setUser(fetchedUser);
-        });
       }
     } catch (error) {
       console.log(error);
@@ -141,10 +137,8 @@ function Profile() {
         });
 
         if (res.status === 200) {
+          user.followers.length === user.followers.length++ + 1;
           setFollowing(true);
-          fetchPublicUser(username as string).then((fetchedUser) => {
-            setUser(fetchedUser);
-          });
         }
       } catch (error) {
         console.log(error);
@@ -542,80 +536,63 @@ function Profile() {
               <ReplyIcon />
             </Button>
           </Tooltip>
-          {user && (
+
+          {!following && (
             <Button
-              color="inherit"
+              onClick={followUser}
+              variant={"contained"}
               sx={(theme) => ({
+                display: !user?.authenticated ? "flex" : "none",
                 ":hover": {
-                  backgroundColor: following ? "inherit" : "black",
+                  backgroundColor: "black",
                 },
-                backgroundColor: following ? "white" : "black",
-                borderColor: hover ? "red" : "black",
+                backgroundColor: "black",
+                borderColor: "black",
                 borderRadius: theme.shape.borderRadius,
                 margin: theme.spacing(1),
-                display: !user?.authenticated ? "flex" : "none",
+                fontFamily: "sans-serif",
+                fontSize: "16px",
+                fontWeight: 550,
+                textTransform: "none",
               })}
-              variant={following ? "outlined" : "contained"}
             >
-              {following ? (
-                <Typography
-                  onClick={() => {
-                    setUnFollowModal(true);
-                  }}
-                  onMouseOver={() => setHover(true)}
-                  onMouseOut={() => setHover(false)}
-                  sx={{
-                    fontFamily: "sans-serif",
-                    fontSize: "16px",
-                    fontWeight: 550,
-                    textTransform: "none",
-                  }}
-                  variant="body1"
-                >
-                  {hover ? (
-                    <Typography
-                      sx={{
-                        fontFamily: "sans-serif",
-                        fontSize: "16px",
-                        fontWeight: 550,
-                        textTransform: "none",
-                      }}
-                      color="red"
-                      component={"span"}
-                      variant="body1"
-                    >
-                      Unfollow
-                    </Typography>
-                  ) : (
-                    <Typography
-                      sx={{
-                        fontFamily: "sans-serif",
-                        fontSize: "16px",
-                        fontWeight: 550,
-                        textTransform: "none",
-                      }}
-                      component={"span"}
-                      variant="body1"
-                    >
-                      Following
-                    </Typography>
-                  )}
-                </Typography>
-              ) : (
-                <Typography
-                  onClick={followUser}
-                  sx={{
-                    color: "white",
-                    fontFamily: "sans-serif",
-                    fontSize: "16px",
-                    fontWeight: 550,
-                    textTransform: "none",
-                  }}
-                  variant="body1"
-                >
-                  Follow
-                </Typography>
-              )}
+              Follow
+            </Button>
+          )}
+
+          {following && (
+            <Button
+              onClick={() => {
+                setUnFollowModal(true);
+              }}
+              variant={"outlined"}
+              sx={(theme) => ({
+                display: !user?.authenticated ? "flex" : "none",
+                width: "6.5em",
+                color: "black",
+                backgroundColor: "inherit",
+                borderColor: "black",
+                borderRadius: theme.shape.borderRadius,
+                margin: theme.spacing(1),
+                fontFamily: "sans-serif",
+                fontSize: "16px",
+                fontWeight: 550,
+                textTransform: "none",
+                ":hover": {
+                  borderColor: "red",
+                  color: "red",
+                },
+                ":hover span": {
+                  display: "none",
+                },
+                ":hover:before": {
+                  borderColor: "red",
+                  color: "red",
+                  content: "'Unfollow'",
+                },
+              })}
+            >
+              <span>Following</span>
             </Button>
           )}
         </div>
