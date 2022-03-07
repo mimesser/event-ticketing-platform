@@ -450,7 +450,13 @@ export default function Header() {
                 <Typography id={styles.body1} variant="body1">
                   You can always log back in at any time.
                 </Typography>
-                <Link href="/api/logout" passHref>
+                <Link
+                  href={{
+                    pathname: "/api/logout",
+                    query: { route: router.asPath },
+                  }}
+                  passHref
+                >
                   <Button
                     id={styles.logoutButton}
                     type="submit"
