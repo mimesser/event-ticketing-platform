@@ -16,7 +16,7 @@ import Layout from "components/Layout";
 import { ethers } from "ethers";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { signIn, getSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import React, { useState, useEffect } from "react";
 
 import styles from "styles/pages/Dashboard.module.scss";
@@ -460,10 +460,10 @@ function Dashboard() {
 }
 
 export async function getServerSideProps(context: any) {
-  const session = await getSession(context);
+  const query = context.query;
   return {
     props: {
-      session,
+      query,
     },
   };
 }

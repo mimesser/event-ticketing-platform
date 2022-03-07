@@ -323,12 +323,26 @@ export default function Header() {
     setSigningIn(true);
 
     try {
-      const userExists = true;
-      const redirectURI = `${window.location.origin}/callback{router.asPath}/${email}/${userExists}`;
+      const userExists = (
+        await (
+          await fetch("/api/signup", {
+            method: "POST",
+            body: JSON.stringify({
+              email,
+            }),
+          })
+        ).json()
+      ).user
+        ? true
+        : false;
+
+      const redirectURI = `${window.location.origin}/callback${router.asPath}/${email}/${userExists}`;
+
       const didToken = await magic?.auth.loginWithMagicLink({
         email,
         redirectURI,
       });
+
       const res = await fetch("/api/login", {
         method: "POST",
         headers: {
@@ -913,14 +927,18 @@ export default function Header() {
                   >
                     <MenuItem onClick={() => setSelectedMenu("settings")}>
                       <ListItemIcon>
-                        <SettingsIcon sx={{ color: Colors[resolvedTheme].primary }} />
+                        <SettingsIcon
+                          sx={{ color: Colors[resolvedTheme].primary }}
+                        />
                       </ListItemIcon>
                       <span>{`Settings & privacy`}</span>
                       <ArrowForwardIosIcon style={{ marginLeft: "15%" }} />
                     </MenuItem>
                     <MenuItem onClick={() => setSelectedMenu("display")}>
                       <ListItemIcon>
-                        <NightlightIcon sx={{ color: Colors[resolvedTheme].primary }} />
+                        <NightlightIcon
+                          sx={{ color: Colors[resolvedTheme].primary }}
+                        />
                       </ListItemIcon>
                       <span>Display</span>
                       <ArrowForwardIosIcon style={{ marginLeft: "49%" }} />
@@ -932,7 +950,9 @@ export default function Header() {
                       }}
                     >
                       <ListItemIcon>
-                        <LogoutIcon sx={{ color: Colors[resolvedTheme].primary }} />
+                        <LogoutIcon
+                          sx={{ color: Colors[resolvedTheme].primary }}
+                        />
                       </ListItemIcon>
                       <div>Log Out</div>
                     </MenuItem>
@@ -984,7 +1004,9 @@ export default function Header() {
                     </Typography>
                     <MenuItem onClick={handleCloseUserMenu}>
                       <ListItemIcon>
-                        <SettingsIcon sx={{ color: Colors[resolvedTheme].primary }} />
+                        <SettingsIcon
+                          sx={{ color: Colors[resolvedTheme].primary }}
+                        />
                       </ListItemIcon>
                       <Link href="https://reveal.magic.link/impish">
                         <a target="_blank" rel="noreferrer">
@@ -999,7 +1021,9 @@ export default function Header() {
                       }}
                     >
                       <ListItemIcon>
-                        <LockIcon sx={{ color: Colors[resolvedTheme].primary }} />
+                        <LockIcon
+                          sx={{ color: Colors[resolvedTheme].primary }}
+                        />
                       </ListItemIcon>
                       Privacy
                     </MenuItem>

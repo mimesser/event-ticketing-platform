@@ -33,12 +33,26 @@ export default function Footer() {
     setSigningIn(true);
 
     try {
-      const userExists = true;
+      const userExists = (
+        await (
+          await fetch("/api/signup", {
+            method: "POST",
+            body: JSON.stringify({
+              email,
+            }),
+          })
+        ).json()
+      ).user
+        ? true
+        : false;
+
       const redirectURI = `${window.location.origin}/callback${router.asPath}/${email}/${userExists}`;
+
       const didToken = await magic?.auth.loginWithMagicLink({
         email,
         redirectURI,
       });
+
       const res = await fetch("/api/login", {
         method: "POST",
         headers: {

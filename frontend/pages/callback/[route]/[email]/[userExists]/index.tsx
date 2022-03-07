@@ -32,14 +32,17 @@ function Callback() {
               Router.push(
                 {
                   pathname: `/${route}`,
-                  query: { userExists: JSON.stringify(userExists) },
+                  query: { userExists: userExists },
                 },
                 "/"
               );
             } else {
               Router.push({
                 pathname: "/[username]",
-                query: { username: route },
+                query: {
+                  username: route,
+                  userExists: userExists,
+                },
               });
             }
           }
