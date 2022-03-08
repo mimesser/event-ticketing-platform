@@ -304,8 +304,11 @@ function View() {
                                   {!name && username && (
                                     <p>{` @${username}`}</p>
                                   )}
-                                  {!username && (
+                                  {!username && !name && (
                                     <p>{shortenAddress(walletAddress)}</p>
+                                  )}
+                                  {!username && name && (
+                                    <a>{shortenAddress(walletAddress)}</a>
                                   )}
                                 </div>
                                 <div className={styles.follow_button}>
@@ -315,8 +318,9 @@ function View() {
                                         .map((m: any) => m.id)
                                         .find((x: any) => x === id) && (
                                         <Button
-                                          onClick={() => {
+                                          onClick={(e) => {
                                             followUser(id);
+                                            e.stopPropagation();
                                           }}
                                           variant={"contained"}
                                           sx={(theme) => ({
@@ -342,12 +346,13 @@ function View() {
                                         .map((m: any) => m.id)
                                         .find((x: any) => x === id) && (
                                         <Button
-                                          onClick={() => {
+                                          onClick={(e) => {
                                             setUnFollowModal({
                                               id: id,
                                               username: username,
                                               walletAddress: walletAddress,
                                             });
+                                            e.stopPropagation();
                                           }}
                                           variant={"outlined"}
                                           sx={(theme) => ({
@@ -475,8 +480,11 @@ function View() {
                                   {!name && username && (
                                     <p>{` @${username}`}</p>
                                   )}
-                                  {!username && (
+                                  {!username && !name && (
                                     <p>{shortenAddress(walletAddress)}</p>
+                                  )}
+                                  {!username && name && (
+                                    <a>{shortenAddress(walletAddress)}</a>
                                   )}
                                 </div>
                                 <div className={styles.follow_button}>
