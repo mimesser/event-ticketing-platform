@@ -69,7 +69,7 @@ function Profile() {
         finishLoading(false);
       });
     }
-  }, [username, user]);
+  }, [router.asPath, username, user]);
 
   React.useEffect(() => {
     if (user && !currentUser.loading) {
@@ -314,7 +314,17 @@ function Profile() {
     ).json();
     if (response.user) {
       showEditProfile(false);
-      router.reload();
+      if (response.user.username) {
+        router.push({
+          pathname: "/[username]",
+          query: { username: response.user.username },
+        });
+      } else {
+        router.push({
+          pathname: "/[username]",
+          query: { username: response.user.walletAddress },
+        });
+      }
     }
     if (response.error) {
       invalidateUsername(true);
