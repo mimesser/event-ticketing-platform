@@ -266,10 +266,10 @@ export default function Header() {
               disableTypography
               style={{
                 height: 16,
-                marginLeft: "1%",
+                marginLeft: "6%",
                 overflow: "hidden",
                 whiteSpace: "nowrap",
-                textAlign: "center",
+                textAlign: "left",
                 textOverflow: "ellipsis",
                 width: 16,
                 color: Colors[resolvedTheme].primary,
