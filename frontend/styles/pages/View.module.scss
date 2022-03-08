@@ -45,6 +45,14 @@
       margin-bottom: 0.5rem;
       border-radius: 50%;
       margin-right: 10px;
+      filter: brightness(100%);
+      -webkit-filter: brightness(100%);
+      transition: all 0.2s ease;
+    }
+    #profilePhoto:hover {
+      filter: brightness(100%);
+      -webkit-filter: brightness(80%);
+      transition: all 0.2s ease;
     }
 
     .followItemDetails {
@@ -53,12 +61,19 @@
       display: flex;
       flex-direction: column;
       align-items: flex-start;
+
       p {
         margin-top: 5px;
         margin-bottom: 5px;
       }
+
       a {
         color: gray;
+      }
+    }
+    .followItemDetails:hover {
+      p {
+        text-decoration: underline;
       }
     }
 
