@@ -1,3 +1,4 @@
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import AppBar from "@mui/material/AppBar";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -6,12 +7,17 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import CalendarViewMonth from "@mui/icons-material/CalendarViewMonth";
 import CloseIcon from "@mui/icons-material/Close";
 import Container from "@mui/material/Container";
+import Collapse from "@mui/material/Collapse";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import Divider from "@mui/material/Divider";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import Drawer from "@mui/material/Drawer";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormGroup from "@mui/material/FormGroup";
@@ -20,6 +26,7 @@ import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import ListSubheader from "@mui/material/ListSubheader";
@@ -77,6 +84,7 @@ export default function Header() {
   const { user } = useUserInfo();
   const isMobile = useMediaQuery("(max-width:599px)");
   const router = useRouter();
+  const [events] = useState(router.asPath.includes("/events") ? true : false);
 
   const totalUnread = user?.notifications.filter(
     (item: any) => !item.isRead
@@ -94,6 +102,7 @@ export default function Header() {
   };
   const [buyOpen, setBuyOpen] = useState(false);
   const [moonPayModal, setMoonPayModal] = useState(false);
+  const [open, setOpen] = React.useState(false);
 
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
@@ -107,6 +116,9 @@ export default function Header() {
     setAnchorElUser(null);
   };
 
+  const handleClick = () => {
+    setOpen(!open);
+  };
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -196,69 +208,276 @@ export default function Header() {
   const drawer = user && (
     <>
       <Toolbar />
-      <List
-        sx={{
-          "&& .Mui-selected": {
-            "&, & .MuiListItemText-root": {
-              color: (theme) => theme.palette.primary.main,
-            },
-          },
-          px: 2,
-        }}
-      >
-        <ListItem
-          button
+      {!events ? (
+        <List
           sx={{
-            borderRadius: (theme) => theme.shape.borderRadius,
+            "&& .Mui-selected": {
+              "&, & .MuiListItemText-root": {
+                color: (theme) => theme.palette.primary.main,
+              },
+            },
+            px: 2,
           }}
-          style={{
-            margin: "10px 0",
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            padding: "12px",
-          }}
-          selected={router.pathname === "/[username]"}
         >
-          <div className={styles.account}>
-            {user.avatarImage ? (
-              <Image
-                src={user.avatarImage}
-                width={32}
-                height={32}
-                alt="Avatar"
-              />
-            ) : (
-              <Avatar
-                size={32}
-                name={user.walletAddress}
-                variant="pixel"
-                colors={["#ffad08", "#edd75a", "#73b06f", "#0c8f8f", "#405059"]}
-              />
-            )}
-          </div>
-          <Link
-            href={`/${encodeURIComponent(user.username || user.walletAddress)}`}
-            passHref
+          <ListItem
+            button
+            sx={{
+              borderRadius: (theme) => theme.shape.borderRadius,
+            }}
+            style={{
+              margin: "0px 0",
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              padding: "12px",
+            }}
+            selected={router.pathname === "/[username]"}
           >
-            <ListItemText
-              disableTypography
-              style={{
-                height: 16,
-                marginLeft: "6%",
-                overflow: "hidden",
-                whiteSpace: "nowrap",
-                textAlign: "left",
-                textOverflow: "ellipsis",
-                width: 16,
-                color: Colors[resolvedTheme].primary,
-              }}
+            <div className={styles.account}>
+              {user.avatarImage ? (
+                <Image
+                  src={user.avatarImage}
+                  width={32}
+                  height={32}
+                  alt="Avatar"
+                />
+              ) : (
+                <Avatar
+                  size={32}
+                  name={user.walletAddress}
+                  variant="pixel"
+                  colors={[
+                    "#ffad08",
+                    "#edd75a",
+                    "#73b06f",
+                    "#0c8f8f",
+                    "#405059",
+                  ]}
+                />
+              )}
+            </div>
+            <Link
+              href={`/${encodeURIComponent(
+                user.username || user.walletAddress
+              )}`}
+              passHref
             >
-              {user.name || shortenAddress(user.walletAddress)}
-            </ListItemText>
+              <ListItemText
+                disableTypography
+                style={{
+                  height: 16,
+                  marginLeft: "6%",
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                  textAlign: "left",
+                  textOverflow: "ellipsis",
+                  width: 16,
+                  color: Colors[resolvedTheme].primary,
+                }}
+              >
+                {user.name || shortenAddress(user.walletAddress)}
+              </ListItemText>
+            </Link>
+          </ListItem>
+          <Link href="/events" passHref>
+            <ListItem
+              button
+              sx={{
+                borderRadius: (theme) => theme.shape.borderRadius,
+              }}
+              style={{
+                margin: "0px 0",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                padding: "12px",
+              }}
+              selected={router.pathname === "/events"}
+            >
+              <ListItemIcon sx={{ minWidth: "auto" }}>
+                <CalendarMonthIcon
+                  fontSize="large"
+                  sx={{
+                    color: Colors[resolvedTheme].primary,
+                    width: 32,
+                    height: 32,
+                  }}
+                />
+              </ListItemIcon>
+
+              <ListItemText
+                disableTypography
+                style={{
+                  height: 16,
+                  marginLeft: "6%",
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                  textAlign: "left",
+                  textOverflow: "ellipsis",
+                  width: 16,
+                  color: Colors[resolvedTheme].primary,
+                }}
+              >
+                Events
+              </ListItemText>
+            </ListItem>
           </Link>
-        </ListItem>
-      </List>
+        </List>
+      ) : (
+        // Events drawer menu
+        <>
+          <Typography
+            sx={{
+              paddingLeft: "16px",
+              fontSize: "1.8rem",
+              marginTop: "12px",
+              fontWeight: 900,
+            }}
+            variant="h6"
+          >
+            Events
+          </Typography>
+
+          <List
+            sx={{
+              "&& .Mui-selected": {
+                "&, & .MuiListItemIcon-root": {
+                  color: (theme) => theme.palette.primary.main,
+                },
+                "&, & .MuiListItemText-root": {
+                  color: (theme) => theme.palette.primary.main,
+                },
+              },
+              "&& .Mui-selected:hover": {
+                backgroundColor: "rgba(0, 0, 0, 0.04)",
+              },
+              px: 2,
+            }}
+          >
+            <Link href="/events" passHref>
+              <ListItemButton
+                sx={{
+                  borderRadius: (theme) => theme.shape.borderRadius,
+                }}
+                style={{
+                  margin: "0px 0",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  padding: "12px",
+                }}
+                selected={router.pathname === "/events"}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: "auto",
+                  }}
+                >
+                  <CalendarViewMonth
+                    fontSize="large"
+                    sx={{
+                      color: (theme) =>
+                        router.pathname === "/events"
+                          ? theme.palette.primary.main
+                          : Colors[resolvedTheme].primary,
+                    }}
+                  />
+                </ListItemIcon>
+                <ListItemText
+                  disableTypography
+                  style={{
+                    height: 16,
+                    marginLeft: "6%",
+                    overflow: "hidden",
+                    whiteSpace: "nowrap",
+                    textAlign: "left",
+                    textOverflow: "ellipsis",
+                    width: 16,
+                    color: Colors[resolvedTheme].primary,
+                  }}
+                >
+                  Home
+                </ListItemText>
+              </ListItemButton>
+            </Link>
+            <Link
+              href={{
+                pathname: `/events/[username]`,
+                query: { username: user.username || user.walletAddress },
+              }}
+              passHref
+            >
+              <ListItemButton
+                onClick={handleClick}
+                sx={{
+                  borderRadius: (theme) => theme.shape.borderRadius,
+                }}
+                style={{
+                  margin: "0px 0",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  padding: "12px",
+                }}
+                selected={router.pathname === "/events/[username]"}
+              >
+                <ListItemIcon sx={{ minWidth: "auto" }}>
+                  <AccountCircleIcon
+                    fontSize="large"
+                    sx={{
+                      color: (theme) =>
+                        router.pathname === "/events/[username]"
+                          ? theme.palette.primary.main
+                          : Colors[resolvedTheme].primary,
+                    }}
+                  />
+                </ListItemIcon>
+                <ListItemText
+                  disableTypography
+                  style={{
+                    height: 16,
+                    marginLeft: "6%",
+                    overflow: "hidden",
+                    whiteSpace: "nowrap",
+                    textAlign: "left",
+                    textOverflow: "ellipsis",
+                    width: 16,
+                    color: Colors[resolvedTheme].primary,
+                  }}
+                >
+                  Your Events
+                </ListItemText>
+                {open ? <ExpandLess /> : <ExpandMore />}
+              </ListItemButton>
+            </Link>
+
+            <Collapse in={open} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                <ListItemButton sx={{ pl: 4 }}>
+                  <ListItemText>No events</ListItemText>
+                </ListItemButton>
+              </List>
+            </Collapse>
+
+            <Box sx={{ marginTop: "12px " }}>
+              <Button
+                fullWidth
+                sx={{
+                  textTransform: "none",
+                  color: Colors[resolvedTheme].primary.main,
+                }}
+                type="submit"
+                size="medium"
+                variant="contained"
+                startIcon={<AddOutlinedIcon />}
+              >
+                Create new event
+              </Button>
+            </Box>
+            <Divider sx={{ marginTop: "12px" }} />
+          </List>
+        </>
+      )}
     </>
   );
 
@@ -616,7 +835,7 @@ export default function Header() {
         position="fixed"
         sx={{
           bgcolor: Colors[resolvedTheme].header_bg,
-          boxShadow: "1px 1px 5px rgba(0, 0, 0, 0.2)",
+          boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
           zIndex: (theme) => theme.zIndex.drawer + 1,
         }}
       >
@@ -628,7 +847,9 @@ export default function Header() {
                 whiteSpace: "nowrap",
                 mr: 2,
                 variant: "h6",
-                display: { xs: "none", md: "flex" },
+                display: !events
+                  ? { xs: "none", md: "flex" }
+                  : { xs: "none", md: "flex", sm: "flex" },
               }}
             >
               <IconButton edge="start" size="small">
@@ -644,7 +865,14 @@ export default function Header() {
                 </Link>
               </IconButton>
             </Box>
-            <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+            <Box
+              sx={{
+                flexGrow: 1,
+                display: !events
+                  ? { xs: "flex", md: "none" }
+                  : { xs: "flex", md: "none", sm: "none" },
+              }}
+            >
               <IconButton
                 size="large"
                 onClick={handleDrawerToggle}
@@ -656,7 +884,12 @@ export default function Header() {
               </IconButton>
             </Box>
             <Box
-              sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
+              sx={{
+                flexGrow: 1,
+                display: !events
+                  ? { xs: "none", md: "flex" }
+                  : { xs: "none", md: "flex", sm: "flex" },
+              }}
             ></Box>
             {user ? (
               <Box sx={{ flexGrow: 0 }}>
@@ -1314,10 +1547,15 @@ export default function Header() {
             keepMounted: true,
           }}
           sx={{
-            display: { xs: "flex", md: "none" },
+            display: !events
+              ? { xs: "flex", md: "none" }
+              : { xs: "flex", md: "none", sm: "none" },
             "& .MuiDrawer-paper": {
-              backgroundColor: Colors[resolvedTheme].drawer_bg,
+              backgroundColor: !events
+                ? Colors[resolvedTheme].drawer_bg
+                : Colors[resolvedTheme].event_drawer_bg,
               boxSizing: "border-box",
+              boxShadow: !events ? "none" : "0px 0px 5px rgb(0 0 0 / 20%)",
               width: drawerWidth,
             },
           }}
@@ -1327,10 +1565,15 @@ export default function Header() {
         <Drawer
           variant="permanent"
           sx={{
-            display: { xs: "none", md: "flex" },
+            display: !events
+              ? { xs: "none", md: "flex" }
+              : { xs: "none", md: "flex", sm: "flex" },
             "& .MuiDrawer-paper": {
-              backgroundColor: Colors[resolvedTheme].drawer_bg,
+              backgroundColor: !events
+                ? Colors[resolvedTheme].drawer_bg
+                : Colors[resolvedTheme].event_drawer_bg,
               boxSizing: "border-box",
+              boxShadow: !events ? "none" : "0px 0px 5px rgb(0 0 0 / 20%)",
               border: "none",
               width: drawerWidth,
             },
