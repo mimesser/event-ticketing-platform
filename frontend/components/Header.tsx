@@ -948,6 +948,11 @@ export default function Header() {
                           "/" + (user.username || user.walletAddress)
                         );
                       }}
+                      sx={{
+                        margin: "10px",
+                        padding: "5px",
+                        borderRadius: "10px",
+                      }}
                       className={styles.profile_item}
                     >
                       <ListItemIcon
