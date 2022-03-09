@@ -630,7 +630,7 @@ export default function Header() {
           <div className={styles.modal_box}>
             <div className={styles.modal_body}>
               <Image
-                src="/logo.png"
+                src={"/logo-" + resolvedTheme + ".png"}
                 width={isMobile ? 45 : 90}
                 height={isMobile ? 45 : 90}
                 alt={`Impish icon`}
@@ -1522,9 +1522,8 @@ export default function Header() {
                         },
                       })}
                       type="submit"
-                      color="primary"
                       size="large"
-                      variant="outlined"
+                      variant="contained"
                     >
                       Log in / Sign up
                     </LoadingButton>

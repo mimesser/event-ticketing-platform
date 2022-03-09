@@ -25,6 +25,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import Avatar from "boring-avatars";
 import Layout from "components/Layout";
 import copy from "copy-to-clipboard";
+import { ethers } from "ethers";
 import { fetchPublicUser } from "lib/hooks";
 import { useUserInfo } from "lib/user-context";
 import {
@@ -36,12 +37,12 @@ import {
 import { magic } from "lib/magic";
 import { moonPaySrc } from "lib/moon-pay";
 import moment from "moment";
-import { ethers } from "ethers";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useForm } from "react-hook-form";
 import { signIn } from "next-auth/react";
+import { useTheme } from "next-themes";
 import React from "react";
+import { useForm } from "react-hook-form";
 import styles from "styles/pages/Profile.module.scss";
 
 function Profile() {
@@ -50,6 +51,7 @@ function Profile() {
   const { username, userExists } = router.query;
   const firstTimeUser = userExists === "false";
   const isMobile = useMediaQuery("(max-width:599px)");
+  const { resolvedTheme } = useTheme();
 
   const [loading, finishLoading] = React.useState(true);
   const [signupFlow, setSignupFlow] = React.useState(
@@ -1110,7 +1112,7 @@ function Profile() {
             <Grid container justifyContent="center" direction="column">
               <div className={styles.modal_img}>
                 <Image
-                  src="/logo.png"
+                  src={"/logo-" + resolvedTheme + ".png"}
                   width={isMobile ? 45 : 90}
                   height={isMobile ? 45 : 90}
                   alt={`Impish icon`}
@@ -1161,9 +1163,8 @@ function Profile() {
                   fullWidth
                   loading={signingIn}
                   type="submit"
-                  color="primary"
                   size="large"
-                  variant="outlined"
+                  variant="contained"
                 >
                   Log in / Sign up
                 </LoadingButton>
@@ -1188,7 +1189,7 @@ function Profile() {
           <Grid container justifyContent="center" direction="column">
             <div className={styles.modal_img}>
               <Image
-                src="/logo.png"
+                src={"/logo-" + resolvedTheme + ".png"}
                 width={isMobile ? 45 : 90}
                 height={isMobile ? 45 : 90}
                 alt={`Impish icon`}
@@ -1236,9 +1237,8 @@ function Profile() {
                 fullWidth
                 loading={signingIn}
                 type="submit"
-                color="primary"
                 size="large"
-                variant="outlined"
+                variant="contained"
               >
                 Log in / Sign up
               </LoadingButton>
