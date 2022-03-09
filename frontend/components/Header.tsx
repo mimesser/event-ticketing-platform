@@ -652,16 +652,18 @@ export default function Header() {
                 display: { xs: "none", md: "flex" },
               }}
             >
-              <Link href="/">
-                <a>
-                  <Image
-                    src="/logo.png"
-                    width={45}
-                    height={45}
-                    alt={`Impish icon`}
-                  />
-                </a>
-              </Link>
+              <IconButton edge="start" size="small">
+                <Link href="/">
+                  <a>
+                    <Image
+                      src={"/icons/impish-" + resolvedTheme + ".svg"}
+                      width={45}
+                      height={32}
+                      alt={`Impish icon`}
+                    />
+                  </a>
+                </Link>
+              </IconButton>
             </Box>
             <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
               <IconButton
@@ -684,7 +686,10 @@ export default function Header() {
                     size="large"
                     onClick={handleOpenNotification}
                     sx={{
-                      color: Colors[resolvedTheme].primary,
+                      color: (theme) =>
+                        anchorElNotification
+                          ? theme.palette.primary.main
+                          : Colors[resolvedTheme].primary,
                     }}
                   >
                     <Badge
@@ -701,7 +706,10 @@ export default function Header() {
                   <IconButton
                     size="large"
                     sx={{
-                      color: Colors[resolvedTheme].primary,
+                      color: (theme) =>
+                        buyOpen
+                          ? theme.palette.primary.main
+                          : Colors[resolvedTheme].primary,
                     }}
                     onClick={buyModal}
                   >
@@ -712,7 +720,10 @@ export default function Header() {
                   <IconButton
                     size="large"
                     sx={{
-                      color: Colors[resolvedTheme].primary,
+                      color: (theme) =>
+                        anchorElUser
+                          ? theme.palette.primary.main
+                          : Colors[resolvedTheme].primary,
                     }}
                     onClick={handleOpenUserMenu}
                   >
@@ -761,7 +772,7 @@ export default function Header() {
                         </Typography>
                         <Typography
                           variant="body2"
-                          sx={{ color: Colors[resolvedTheme].primary }}
+                          sx={{ color: Colors[resolvedTheme].secondary }}
                         >
                           You have {totalUnRead} unread messages
                         </Typography>
@@ -824,7 +835,7 @@ export default function Header() {
                                   mt: 0.5,
                                   display: "flex",
                                   alignItems: "center",
-                                  color: Colors[resolvedTheme].primary,
+                                  color: Colors[resolvedTheme].secondary,
                                 }}
                               >
                                 <AccessTimeIcon
@@ -877,7 +888,7 @@ export default function Header() {
                                   mt: 0.5,
                                   display: "flex",
                                   alignItems: "center",
-                                  color: Colors[resolvedTheme].primary,
+                                  color: Colors[resolvedTheme].secondary,
                                 }}
                               >
                                 <AccessTimeIcon
@@ -931,6 +942,45 @@ export default function Header() {
                       },
                     }}
                   >
+                    <MenuItem
+                      onClick={() => {
+                        router.push(
+                          "/" + (user.username || user.walletAddress)
+                        );
+                      }}
+                      className={styles.profile_item}
+                    >
+                      <ListItemIcon
+                        style={{ borderRadius: "50%", overflow: "hidden" }}
+                      >
+                        {user.avatarImage ? (
+                          <Image
+                            src={user.avatarImage}
+                            width={48}
+                            height={48}
+                            alt="Avatar"
+                          />
+                        ) : (
+                          <Avatar
+                            size={48}
+                            name={user.walletAddress}
+                            variant="pixel"
+                            colors={[
+                              "#ffad08",
+                              "#edd75a",
+                              "#73b06f",
+                              "#0c8f8f",
+                              "#405059",
+                            ]}
+                          />
+                        )}
+                      </ListItemIcon>
+                      <div style={{ marginLeft: "15px" }}>
+                        <div style={{ color: Colors[resolvedTheme].primary }}>{shortenText(user.name, 18) || shortenAddress(user.walletAddress)}</div>
+                        <div style={{ color: Colors[resolvedTheme].secondary }}>{`See your profile`}</div>
+                      </div>
+                    </MenuItem>
+                    <MenuItem className={styles.divider}></MenuItem>
                     <MenuItem onClick={() => setSelectedMenu("settings")}>
                       <ListItemIcon>
                         <SettingsIcon

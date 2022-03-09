@@ -8,11 +8,11 @@ export const shortenAddress = (address: string) => {
   return address.slice(0, 4) + "..." + address.slice(-4);
 };
 
-export const shortenText = (text: string) => {
+export const shortenText = (text: string, length: number = 45) => {
   if (!text) return "";
 
-  if (text.length > 45) {
-    return text.slice(0, 38) + "...";
+  if (length > 7 && text.length > length) {
+    return text.slice(0, length - 7) + "...";
   } else {
     return text;
   }

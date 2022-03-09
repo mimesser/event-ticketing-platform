@@ -150,3 +150,23 @@
     margin-left: 15px;
   }
 }
+
+.profile_item {
+  margin: 10px;
+  padding: 5px;
+  border-radius: 10px;
+
+  &:hover {
+    background: #f2f2f2;
+  }
+
+  [data-theme="dark"] &:hover {
+    background: #161616;
+  }
+}
+
+.divider {
+  border-bottom: 1px solid grey;
+  padding: 0px;
+  margin: 5px 16px;
+}
