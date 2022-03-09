@@ -314,17 +314,30 @@ function Profile() {
     ).json();
     if (response.user) {
       showEditProfile(false);
-      if (response.user.username) {
-        router.push({
-          pathname: "/[username]",
-          query: { username: response.user.username },
-        });
-      } else {
-        router.push({
-          pathname: "/[username]",
-          query: { username: response.user.walletAddress },
-        });
+      if (response.user.username !== user.username) {
+        finishLoading(true);
+        if (response.user.username) {
+          return router.push(
+            {
+              pathname: "/[username]",
+              query: { username: response.user.username },
+            },
+            undefined,
+            { shallow: true }
+          );
+        } else {
+          return router.push(
+            {
+              pathname: "/[username]",
+              query: { username: response.user.walletAddress },
+            },
+            undefined,
+            { shallow: true }
+          );
+        }
       }
+
+      router.reload();
     }
     if (response.error) {
       invalidateUsername(true);
@@ -470,6 +483,11 @@ function Profile() {
 
   return (
     <Layout>
+      {loading && (
+        <div className={styles.loading}>
+          <CircularProgress size={120} />
+        </div>
+      )}
       <div className={styles.profile_page}>
         {user ? (
           <div className={styles.banner} onClick={() => updatePhoto("banner")}>
