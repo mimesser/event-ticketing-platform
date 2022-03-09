@@ -47,7 +47,7 @@ import Typography from "@mui/material/Typography";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Avatar from "boring-avatars";
-import { formatDistanceToNow, set, sub } from "date-fns";
+import { formatDistanceToNow, differenceInCalendarDays } from "date-fns";
 import Colors from "lib/colors";
 import { useUserInfo } from "lib/user-context";
 import { moonPaySrc } from "lib/moon-pay";
@@ -58,40 +58,9 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { signIn, signOut } from "next-auth/react";
 import { useTheme } from "next-themes";
-import React, { useState } from "react";
+import React, { useState, useReducer } from "react";
 import { useForm } from "react-hook-form";
 import styles from "styles/components/Header.module.scss";
-
-// mock data for notifications
-
-const notData: { read: boolean; notification: string; createdAt: Date }[] = [
-  {
-    read: true,
-    notification: "this is the first notification available",
-    createdAt: set(new Date(), { hours: 1, minutes: 30 }),
-  },
-  {
-    read: true,
-    notification: "this is the second notification available",
-    createdAt: sub(new Date(), { hours: 4, minutes: 30 }),
-  },
-  {
-    read: false,
-    notification:
-      "this is the third notification available but longer so i can test responsiveness",
-    createdAt: sub(new Date(), { hours: 5, minutes: 30 }),
-  },
-  {
-    read: false,
-    notification: "this is the fourth notification available",
-    createdAt: sub(new Date(), { days: 1, hours: 3, minutes: 30 }),
-  },
-  {
-    read: false,
-    notification: "this is the fifth notification available",
-    createdAt: sub(new Date(), { days: 2, hours: 3, minutes: 30 }),
-  },
-];
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
@@ -101,17 +70,17 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 });
 
 export default function Header() {
+  const [, forceUpdate] = useReducer((x) => x + 1, 0);
+
   const { theme, resolvedTheme, setTheme } = useTheme();
 
   const { user } = useUserInfo();
   const isMobile = useMediaQuery("(max-width:599px)");
   const router = useRouter();
-  const [notificationCount, setNotificationCount] = useState(true);
-  const [notifications, setNotifications] =
-    useState<{ read: boolean; notification: string; createdAt: Date }[]>(
-      notData
-    );
-  const totalUnRead = notifications.filter((item) => item.read === true).length;
+
+  const totalUnread = user?.notifications.filter(
+    (item: any) => !item.isRead
+  ).length;
 
   const drawerWidth = 240;
 
@@ -205,15 +174,25 @@ export default function Header() {
     setBuyOpen(false);
     setMoonPayModal(false);
   };
-  const markNotificationAsRead = () => {
-    setNotificationCount(false);
-    setNotifications(
-      notifications.map((notification) => ({
-        ...notification,
-        read: false,
-      }))
-    );
+
+  const markNotificationAsRead = async () => {
+    const ids = user.notifications
+      .filter((m: any) => !m.isRead)
+      .map((m: any) => m.id);
+
+    const res = await fetch("/api/notifications", {
+      method: "DELETE",
+      body: JSON.stringify({
+        id: ids,
+      }),
+    });
+
+    if (res.status === 200) {
+      user.notifications.map((m: any) => (m.isRead = true));
+      forceUpdate();
+    }
   };
+
   const drawer = user && (
     <>
       <Toolbar />
@@ -693,8 +672,8 @@ export default function Header() {
                     }}
                   >
                     <Badge
-                      badgeContent={totalUnRead}
-                      invisible={totalUnRead == 0}
+                      badgeContent={totalUnread}
+                      invisible={totalUnread == 0}
                       color="error"
                     >
                       <NotificationsIcon />
@@ -774,10 +753,10 @@ export default function Header() {
                           variant="body2"
                           sx={{ color: Colors[resolvedTheme].secondary }}
                         >
-                          You have {totalUnRead} unread messages
+                          You have {totalUnread} unread messages
                         </Typography>
                       </Box>
-                      {totalUnRead > 0 && (
+                      {totalUnread > 0 && (
                         <Tooltip title="Mark all as read">
                           <IconButton
                             color="primary"
@@ -814,42 +793,66 @@ export default function Header() {
                     }
                   >
                     <MenuList>
-                      {notifications.slice(0, 2).map((data, i) => (
-                        <MenuItem
-                          sx={{
-                            py: 1.5,
-                            px: 2.5,
-                            mt: "1px",
-                            ...(notificationCount && {
-                              bgcolor: "action.selected",
-                            }),
-                          }}
-                          key={i}
-                        >
-                          <ListItemText
-                            primary={shortenText(data?.notification)}
-                            secondary={
-                              <Typography
-                                variant="caption"
+                      {user.notifications.map(
+                        ({
+                          id,
+                          title,
+                          description,
+                          isRead,
+                          createdAt,
+                          avatarImage,
+                          notificationType,
+                        }: any) => {
+                          if (
+                            differenceInCalendarDays(
+                              new Date(),
+                              new Date(createdAt)
+                            ) <= 1
+                          ) {
+                            return (
+                              <MenuItem
                                 sx={{
-                                  mt: 0.5,
+                                  ...(!isRead && {
+                                    bgcolor: "action.selected",
+                                  }),
+                                  py: 1.5,
+                                  px: 2.5,
+                                  mt: "1px",
                                   display: "flex",
                                   alignItems: "center",
                                   color: Colors[resolvedTheme].secondary,
                                 }}
+                                key={id}
                               >
-                                <AccessTimeIcon
-                                  sx={{ mr: 0.5, width: 16, height: 16 }}
+                                <ListItemText
+                                  primary={shortenText(description)}
+                                  secondary={
+                                    <Typography
+                                      variant="caption"
+                                      sx={{
+                                        mt: 0.5,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        color: Colors[resolvedTheme].primary,
+                                      }}
+                                    >
+                                      <AccessTimeIcon
+                                        sx={{ mr: 0.5, width: 16, height: 16 }}
+                                      />
+                                      {formatDistanceToNow(
+                                        new Date(createdAt),
+                                        {
+                                          addSuffix: true,
+                                        }
+                                      )}
+                                    </Typography>
+                                  }
                                 />
-                                {formatDistanceToNow(
-                                  new Date(data?.createdAt),
-                                  { addSuffix: true }
-                                )}
-                              </Typography>
-                            }
-                          />
-                        </MenuItem>
-                      ))}
+                              </MenuItem>
+                            );
+                          }
+                        }
+                      )}
                     </MenuList>
                   </List>
                   <List
@@ -865,45 +868,64 @@ export default function Header() {
                           color: Colors[resolvedTheme].primary,
                         }}
                       >
-                        BEFORE THAT
+                        EARLIER
                       </ListSubheader>
                     }
                   >
-                    <MenuList>
-                      {notifications.slice(2, 5).map((data, i) => (
-                        <MenuItem
-                          sx={{
-                            py: 1.5,
-                            px: 2.5,
-                            mt: "1px",
-                          }}
-                          key={i}
-                        >
-                          <ListItemText
-                            primary={shortenText(data?.notification)}
-                            secondary={
-                              <Typography
-                                variant="caption"
-                                sx={{
-                                  mt: 0.5,
-                                  display: "flex",
-                                  alignItems: "center",
-                                  color: Colors[resolvedTheme].secondary,
-                                }}
-                              >
-                                <AccessTimeIcon
-                                  sx={{ mr: 0.5, width: 16, height: 16 }}
-                                />
-                                {formatDistanceToNow(
-                                  new Date(data?.createdAt),
-                                  { addSuffix: true }
-                                )}
-                              </Typography>
-                            }
-                          />
-                        </MenuItem>
-                      ))}
-                    </MenuList>
+                    {user.notifications.map(
+                      ({
+                        id,
+                        title,
+                        description,
+                        isRead,
+                        createdAt,
+                        avatarImage,
+                        notificationType,
+                      }: any) => {
+                        if (
+                          differenceInCalendarDays(
+                            new Date(),
+                            new Date(createdAt)
+                          ) > 1
+                        ) {
+                          return (
+                            <MenuItem
+                              sx={{
+                                py: 1.5,
+                                px: 2.5,
+                                mt: "1px",
+                                ...(!isRead && {
+                                  bgcolor: "action.selected",
+                                }),
+                              }}
+                              key={id}
+                            >
+                              <ListItemText
+                                primary={shortenText(description)}
+                                secondary={
+                                  <Typography
+                                    variant="caption"
+                                    sx={{
+                                      mt: 0.5,
+                                      display: "flex",
+                                      alignItems: "center",
+                                      color: Colors[resolvedTheme].primary,
+                                    }}
+                                  >
+                                    <AccessTimeIcon
+                                      sx={{ mr: 0.5, width: 16, height: 16 }}
+                                    />
+                                    {formatDistanceToNow(new Date(createdAt), {
+                                      addSuffix: true,
+                                    })}
+                                  </Typography>
+                                }
+                              />
+                            </MenuItem>
+                          );
+                        }
+                      }
+                    )}
                   </List>
                   <Divider />
                   <Box sx={{ p: 1 }}>

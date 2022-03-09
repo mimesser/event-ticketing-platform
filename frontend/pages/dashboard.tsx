@@ -247,12 +247,17 @@ function Dashboard() {
                   borderRadius: (theme) => theme.shape.borderRadius,
                   textTransform: "none",
                 }}
+                onClick={(e: any) => {
+                  setMoonpayModalForBanner(true);
+                  e.stopPropagation();
+                }}
               >
                 <div className={styles.closeBannerBtn}>
                   <IconButton
                     aria-label="close"
-                    onClick={() => {
+                    onClick={(e: any) => {
                       setBuyBanner(false);
+                      e.stopPropagation();
                     }}
                   >
                     <CloseIcon
@@ -262,11 +267,7 @@ function Dashboard() {
                     />
                   </IconButton>
                 </div>
-                <Box
-                  onClick={() => {
-                    setMoonpayModalForBanner(true);
-                  }}
-                >
+                <Box>
                   <div className={styles.buyBannerBody}>
                     <Typography id={styles.h6} variant="h6">
                       Purchase MATIC
@@ -299,12 +300,17 @@ function Dashboard() {
                   borderRadius: (theme) => theme.shape.borderRadius,
                   textTransform: "none",
                 }}
+                onClick={(e: any) => {
+                  setTwitterModalForBanner(true);
+                  e.stopPropagation();
+                }}
               >
                 <div className={styles.closeBannerBtn}>
                   <IconButton
                     aria-label="close"
-                    onClick={() => {
+                    onClick={(e: any) => {
                       setTwitterBanner(false);
+                      e.stopPropagation();
                     }}
                   >
                     <CloseIcon
@@ -314,11 +320,7 @@ function Dashboard() {
                     />
                   </IconButton>
                 </div>
-                <Box
-                  onClick={() => {
-                    setTwitterModalForBanner(true);
-                  }}
-                >
+                <Box>
                   <div className={styles.twitterBannerBody}>
                     <Typography id={styles.h6} variant="h6">
                       Link Twitter
