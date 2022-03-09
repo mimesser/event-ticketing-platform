@@ -1304,6 +1304,7 @@ export default function Header() {
             "& .MuiDrawer-paper": {
               backgroundColor: Colors[resolvedTheme].drawer_bg,
               boxSizing: "border-box",
+              border: "none",
               width: drawerWidth,
             },
           }}
