@@ -29,6 +29,7 @@ export default async function user(req: NextApiRequest, res: NextApiResponse) {
         nativeAssetBalance: true,
         createdAt: true,
         updatedAt: true,
+        notifications: true,
         followers: true,
         following: true,
       },
