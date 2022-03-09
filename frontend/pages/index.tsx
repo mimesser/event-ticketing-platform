@@ -104,7 +104,7 @@ export default function Home() {
         <div className={styles.login_page}>
           <div className={styles.info}>
             <Image
-              src={"/icons/impish-" + resolvedTheme + ".svg"}
+              src="/icons/impish-light.svg"
               width={isMobile ? 125 : 250}
               height={isMobile ? 50 : 100}
               alt={`Impish icon`}
@@ -146,7 +146,7 @@ export default function Home() {
                   loading={signingIn}
                   type="submit"
                   size="large"
-                  variant="outlined"
+                  variant="contained"
                 >
                   Log in / Sign up
                 </LoadingButton>
