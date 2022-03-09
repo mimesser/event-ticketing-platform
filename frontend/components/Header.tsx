@@ -976,11 +976,22 @@ export default function Header() {
                         )}
                       </ListItemIcon>
                       <div style={{ marginLeft: "15px" }}>
-                        <div style={{ color: Colors[resolvedTheme].primary }}>{shortenText(user.name, 18) || shortenAddress(user.walletAddress)}</div>
-                        <div style={{ color: Colors[resolvedTheme].secondary }}>{`See your profile`}</div>
+                        <div style={{ color: Colors[resolvedTheme].primary }}>
+                          {shortenText(user.name, 18) ||
+                            shortenAddress(user.walletAddress)}
+                        </div>
+                        <div
+                          style={{ color: Colors[resolvedTheme].secondary }}
+                        >{`See your profile`}</div>
                       </div>
                     </MenuItem>
-                    <MenuItem className={styles.divider}></MenuItem>
+                    <MenuItem
+                      divider
+                      sx={{
+                        padding: "0px",
+                        margin: "5px 16px",
+                      }}
+                    ></MenuItem>
                     <MenuItem onClick={() => setSelectedMenu("settings")}>
                       <ListItemIcon>
                         <SettingsIcon
