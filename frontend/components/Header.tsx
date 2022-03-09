@@ -635,7 +635,7 @@ export default function Header() {
                 <Link href="/">
                   <a>
                     <Image
-                      src={"/icons/impish-" + resolvedTheme + ".svg"}
+                      src={"/icons/impish.svg"}
                       width={45}
                       height={32}
                       alt={`Impish icon`}
