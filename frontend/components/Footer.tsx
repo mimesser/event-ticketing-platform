@@ -10,12 +10,14 @@ import Image from "next/image";
 import { magic } from "lib/magic";
 import { useUserInfo } from "lib/user-context";
 import { useRouter } from "next/router";
+import { useTheme } from "next-themes";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import styles from "styles/components/Footer.module.scss"; // Component styles
 
 export default function Footer() {
   const isMobile = useMediaQuery("(max-width:599px)");
+  const { resolvedTheme } = useTheme();
 
   const { user } = useUserInfo();
   const router = useRouter();
@@ -104,7 +106,7 @@ export default function Footer() {
           <Grid container justifyContent="center" direction="column">
             <div className={styles.modal_img}>
               <Image
-                src="/logo.png"
+                src={"/logo-" + resolvedTheme + ".png"}
                 width={isMobile ? 45 : 90}
                 height={isMobile ? 45 : 90}
                 alt={`Impish icon`}
@@ -152,9 +154,8 @@ export default function Footer() {
                 fullWidth
                 loading={signingIn}
                 type="submit"
-                color="primary"
                 size="large"
-                variant="outlined"
+                variant="contained"
               >
                 Log in / Sign up
               </LoadingButton>
@@ -165,7 +166,6 @@ export default function Footer() {
       <div className={styles.footer}>
         <div className={styles.title}>Connect on Impish</div>
         <Button
-          color="primary"
           size="large"
           variant="contained"
           onClick={() => setSignInFollowModal(true)}
