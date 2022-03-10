@@ -89,6 +89,16 @@ export default function Header() {
   const totalUnread = user?.notifications.filter(
     (item: any) => !item.isRead
   ).length;
+  const newNotificationsLength = user?.notifications.filter(
+    (m: any) =>
+      differenceInCalendarDays(new Date(), new Date(m.createdAt)) <= 1 &&
+      !m.isRead
+  ).length;
+  const earlierNotificationsLength = user?.notifications.filter(
+    (m: any) =>
+      differenceInCalendarDays(new Date(), new Date(m.createdAt)) > 1 ||
+      m.isRead
+  ).length;
 
   const drawerWidth = 240;
 
@@ -1018,24 +1028,113 @@ export default function Header() {
                     </Grid>
                   </Box>
                   <Divider />
-                  <List
-                    disablePadding
-                    subheader={
-                      <ListSubheader
-                        disableSticky
-                        sx={{
-                          py: 1,
-                          px: 2.5,
-                          typography: "overline",
-                          fontWeight: 600,
-                          color: Colors[resolvedTheme].primary,
-                        }}
-                      >
-                        New
-                      </ListSubheader>
-                    }
-                  >
-                    <MenuList>
+                  {newNotificationsLength !== 0 && (
+                    <List
+                      disablePadding
+                      subheader={
+                        <ListSubheader
+                          disableSticky
+                          sx={{
+                            py: 1,
+                            px: 2.5,
+                            typography: "overline",
+                            fontWeight: 600,
+                            color: Colors[resolvedTheme].primary,
+                          }}
+                        >
+                          New
+                        </ListSubheader>
+                      }
+                    >
+                      <MenuList>
+                        {user.notifications.map(
+                          ({
+                            id,
+                            title,
+                            description,
+                            isRead,
+                            createdAt,
+                            avatarImage,
+                            notificationType,
+                          }: any) => {
+                            if (
+                              differenceInCalendarDays(
+                                new Date(),
+                                new Date(createdAt)
+                              ) <= 1 &&
+                              !isRead
+                            ) {
+                              return (
+                                <MenuItem
+                                  sx={{
+                                    ...(!isRead && {
+                                      bgcolor: "action.selected",
+                                    }),
+                                    py: 1.5,
+                                    px: 2.5,
+                                    mt: "1px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    color: Colors[resolvedTheme].primary,
+                                  }}
+                                  key={id}
+                                >
+                                  <ListItemText
+                                    primary={shortenText(description)}
+                                    secondary={
+                                      <Typography
+                                        variant="caption"
+                                        sx={{
+                                          fontWeight: 550,
+                                          mt: 0.5,
+                                          display: "flex",
+                                          alignItems: "center",
+                                          color: (theme) =>
+                                            theme.palette.primary.main,
+                                        }}
+                                      >
+                                        <AccessTimeIcon
+                                          sx={{
+                                            mr: 0.5,
+                                            width: 16,
+                                            height: 16,
+                                          }}
+                                        />
+                                        {formatDistanceToNow(
+                                          new Date(createdAt),
+                                          {
+                                            addSuffix: true,
+                                          }
+                                        )}
+                                      </Typography>
+                                    }
+                                  />
+                                </MenuItem>
+                              );
+                            }
+                          }
+                        )}
+                      </MenuList>
+                    </List>
+                  )}
+                  {earlierNotificationsLength !== 0 && (
+                    <List
+                      disablePadding
+                      subheader={
+                        <ListSubheader
+                          disableSticky
+                          sx={{
+                            py: 1,
+                            px: 2.5,
+                            typography: "overline",
+                            fontWeight: 600,
+                            color: Colors[resolvedTheme].primary,
+                          }}
+                        >
+                          EARLIER
+                        </ListSubheader>
+                      }
+                    >
                       {user.notifications.map(
                         ({
                           id,
@@ -1050,20 +1149,20 @@ export default function Header() {
                             differenceInCalendarDays(
                               new Date(),
                               new Date(createdAt)
-                            ) <= 1
+                            ) > 1 ||
+                            isRead
                           ) {
                             return (
                               <MenuItem
                                 sx={{
-                                  ...(!isRead && {
-                                    bgcolor: "action.selected",
-                                  }),
+                                  color: Colors[resolvedTheme].primary,
                                   py: 1.5,
                                   px: 2.5,
                                   mt: "1px",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  color: Colors[resolvedTheme].secondary,
+                                  ...(!isRead && {
+                                    bgcolor: "action.selected",
+                                    color: Colors[resolvedTheme].primary,
+                                  }),
                                 }}
                                 key={id}
                               >
@@ -1073,10 +1172,12 @@ export default function Header() {
                                     <Typography
                                       variant="caption"
                                       sx={{
+                                        fontWeight: 550,
                                         mt: 0.5,
                                         display: "flex",
                                         alignItems: "center",
-                                        color: Colors[resolvedTheme].primary,
+                                        color: (theme) =>
+                                          theme.palette.primary.main,
                                       }}
                                     >
                                       <AccessTimeIcon
@@ -1096,80 +1197,8 @@ export default function Header() {
                           }
                         }
                       )}
-                    </MenuList>
-                  </List>
-                  <List
-                    disablePadding
-                    subheader={
-                      <ListSubheader
-                        disableSticky
-                        sx={{
-                          py: 1,
-                          px: 2.5,
-                          typography: "overline",
-                          fontWeight: 600,
-                          color: Colors[resolvedTheme].primary,
-                        }}
-                      >
-                        EARLIER
-                      </ListSubheader>
-                    }
-                  >
-                    {user.notifications.map(
-                      ({
-                        id,
-                        title,
-                        description,
-                        isRead,
-                        createdAt,
-                        avatarImage,
-                        notificationType,
-                      }: any) => {
-                        if (
-                          differenceInCalendarDays(
-                            new Date(),
-                            new Date(createdAt)
-                          ) > 1
-                        ) {
-                          return (
-                            <MenuItem
-                              sx={{
-                                py: 1.5,
-                                px: 2.5,
-                                mt: "1px",
-                                ...(!isRead && {
-                                  bgcolor: "action.selected",
-                                }),
-                              }}
-                              key={id}
-                            >
-                              <ListItemText
-                                primary={shortenText(description)}
-                                secondary={
-                                  <Typography
-                                    variant="caption"
-                                    sx={{
-                                      mt: 0.5,
-                                      display: "flex",
-                                      alignItems: "center",
-                                      color: Colors[resolvedTheme].primary,
-                                    }}
-                                  >
-                                    <AccessTimeIcon
-                                      sx={{ mr: 0.5, width: 16, height: 16 }}
-                                    />
-                                    {formatDistanceToNow(new Date(createdAt), {
-                                      addSuffix: true,
-                                    })}
-                                  </Typography>
-                                }
-                              />
-                            </MenuItem>
-                          );
-                        }
-                      }
-                    )}
-                  </List>
+                    </List>
+                  )}
                   <Divider />
                   <Box sx={{ p: 1 }}>
                     <Button
