@@ -21,7 +21,6 @@ export default function Footer() {
 
   const { user } = useUserInfo();
   const router = useRouter();
-
   const [signInfollowModal, setSignInFollowModal] = useState(false);
   const [signingIn, setSigningIn] = useState(false);
 

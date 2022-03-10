@@ -5,7 +5,9 @@ import React, { ReactElement } from "react";
 import Meta from "components/Meta"; // Components: Meta
 import Header from "components/Header"; // Components: Header
 import Footer from "components/Footer"; // Components: Footer
+import { useRouter } from "next/router";
 import { useUserInfo } from "lib/user-context";
+import { useState } from "react";
 
 export default function Layout({
   onboarding,
@@ -15,6 +17,10 @@ export default function Layout({
   children: ReactElement | ReactElement[];
 }) {
   const { loading } = useUserInfo();
+  const router = useRouter();
+  const [eventFooter] = useState(
+    router.asPath.includes("/events") ? true : false
+  );
 
   return (
     <>
@@ -55,8 +61,11 @@ export default function Layout({
             <Toolbar />
             {children}
           </Box>
-
-          <Footer />
+          {!eventFooter && (
+            <>
+              <Footer />
+            </>
+          )}
         </div>
       )}
     </>
