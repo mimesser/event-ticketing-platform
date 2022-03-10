@@ -112,7 +112,9 @@ export default function Header() {
   };
   const [buyOpen, setBuyOpen] = useState(false);
   const [moonPayModal, setMoonPayModal] = useState(false);
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(
+    router.pathname === "/events/[username]" ? true : false
+  );
 
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
@@ -127,6 +129,10 @@ export default function Header() {
   };
 
   const handleClick = () => {
+    router.push({
+      pathname: "/events/[username]",
+      query: { username: user.username || user.walletAddress },
+    });
     setOpen(!open);
   };
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -215,7 +221,7 @@ export default function Header() {
     }
   };
 
-  const drawer = user && (
+  const drawer = (user || events) && (
     <>
       <Toolbar />
       {!events ? (
@@ -342,6 +348,7 @@ export default function Header() {
               fontSize: "1.8rem",
               marginTop: "12px",
               fontWeight: 900,
+              color: Colors[resolvedTheme].primary,
             }}
             variant="h6"
           >
@@ -350,16 +357,17 @@ export default function Header() {
 
           <List
             sx={{
+              "&& .MuiListItemButton-root:hover": {
+                backgroundColor: Colors[resolvedTheme].selected_event_menu,
+              },
               "&& .Mui-selected": {
+                backgroundColor: Colors[resolvedTheme].selected_event_menu,
                 "&, & .MuiListItemIcon-root": {
-                  color: (theme) => theme.palette.primary.main,
-                },
-                "&, & .MuiListItemText-root": {
                   color: (theme) => theme.palette.primary.main,
                 },
               },
               "&& .Mui-selected:hover": {
-                backgroundColor: "rgba(0, 0, 0, 0.04)",
+                backgroundColor: Colors[resolvedTheme].selected_event_menu,
               },
               px: 2,
             }}
@@ -395,7 +403,7 @@ export default function Header() {
                 </ListItemIcon>
                 <ListItemText
                   disableTypography
-                  style={{
+                  sx={{
                     height: 16,
                     marginLeft: "6%",
                     overflow: "hidden",
@@ -410,81 +418,95 @@ export default function Header() {
                 </ListItemText>
               </ListItemButton>
             </Link>
-            <Link
-              href={{
-                pathname: `/events/[username]`,
-                query: { username: user.username || user.walletAddress },
-              }}
-              passHref
-            >
-              <ListItemButton
-                onClick={handleClick}
-                sx={{
-                  borderRadius: (theme) => theme.shape.borderRadius,
-                }}
-                style={{
-                  margin: "0px 0",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  padding: "12px",
-                }}
-                selected={router.pathname === "/events/[username]"}
-              >
-                <ListItemIcon sx={{ minWidth: "auto" }}>
-                  <AccountCircleIcon
-                    fontSize="large"
-                    sx={{
-                      color: (theme) =>
-                        router.pathname === "/events/[username]"
-                          ? theme.palette.primary.main
-                          : Colors[resolvedTheme].primary,
-                    }}
-                  />
-                </ListItemIcon>
-                <ListItemText
-                  disableTypography
-                  style={{
-                    height: 16,
-                    marginLeft: "6%",
-                    overflow: "hidden",
-                    whiteSpace: "nowrap",
-                    textAlign: "left",
-                    textOverflow: "ellipsis",
-                    width: 16,
-                    color: Colors[resolvedTheme].primary,
+            {user && (
+              <>
+                <ListItemButton
+                  onClick={handleClick}
+                  sx={{
+                    borderRadius: (theme) => theme.shape.borderRadius,
                   }}
+                  style={{
+                    margin: "0px 0",
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    padding: "12px",
+                  }}
+                  selected={router.pathname === "/events/[username]"}
                 >
-                  Your Events
-                </ListItemText>
-                {open ? <ExpandLess /> : <ExpandMore />}
-              </ListItemButton>
-            </Link>
-
-            <Collapse in={open} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
-                <ListItemButton sx={{ pl: 4 }}>
-                  <ListItemText>No events</ListItemText>
+                  <ListItemIcon sx={{ minWidth: "auto" }}>
+                    <AccountCircleIcon
+                      fontSize="large"
+                      sx={{
+                        color: (theme) =>
+                          router.pathname === "/events/[username]"
+                            ? theme.palette.primary.main
+                            : Colors[resolvedTheme].primary,
+                      }}
+                    />
+                  </ListItemIcon>
+                  <ListItemText
+                    disableTypography
+                    sx={{
+                      height: 16,
+                      marginLeft: "6%",
+                      overflow: "hidden",
+                      whiteSpace: "nowrap",
+                      textAlign: "left",
+                      textOverflow: "ellipsis",
+                      width: 16,
+                      color: Colors[resolvedTheme].primary,
+                    }}
+                  >
+                    Your Events
+                  </ListItemText>
+                  {open ? (
+                    <ExpandLess
+                      sx={{
+                        color: Colors[resolvedTheme].primary,
+                      }}
+                    />
+                  ) : (
+                    <ExpandMore
+                      sx={{
+                        color: Colors[resolvedTheme].primary,
+                      }}
+                    />
+                  )}
                 </ListItemButton>
-              </List>
-            </Collapse>
 
-            <Box sx={{ marginTop: "12px " }}>
-              <Button
-                fullWidth
-                sx={{
-                  textTransform: "none",
-                  color: Colors[resolvedTheme].primary.main,
-                }}
-                type="submit"
-                size="medium"
-                variant="contained"
-                startIcon={<AddOutlinedIcon />}
-              >
-                Create new event
-              </Button>
-            </Box>
-            <Divider sx={{ marginTop: "12px" }} />
+                <Collapse in={open} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding>
+                    <ListItemButton sx={{ pl: 4 }}>
+                      <ListItemText>No events</ListItemText>
+                    </ListItemButton>
+                  </List>
+                </Collapse>
+
+                <Box sx={{ marginTop: "12px " }}>
+                  <Button
+                    fullWidth
+                    sx={{
+                      textTransform: "none",
+                      color: Colors[resolvedTheme].primary.main,
+                    }}
+                    type="submit"
+                    size="medium"
+                    variant="contained"
+                    startIcon={<AddOutlinedIcon />}
+                  >
+                    Create new event
+                  </Button>
+                </Box>
+              </>
+            )}
+
+            <Divider
+              sx={{
+                borderColor: Colors[resolvedTheme].event_divider,
+                marginTop: "12px",
+              }}
+            />
           </List>
         </>
       )}
@@ -865,11 +887,11 @@ export default function Header() {
               component="div"
               sx={{
                 whiteSpace: "nowrap",
-                mr: 2,
+                mr: !events ? 2 : 0,
                 variant: "h6",
                 display: !events
                   ? { xs: "none", md: "flex" }
-                  : { xs: "none", md: "flex", sm: "flex" },
+                  : { xs: "flex", md: "flex", sm: "flex" },
               }}
             >
               <IconButton edge="start" size="small">
@@ -1612,7 +1634,9 @@ export default function Header() {
                 : Colors[resolvedTheme].event_drawer_bg,
               boxSizing: "border-box",
               boxShadow: !events ? "none" : "0px 0px 5px rgb(0 0 0 / 20%)",
-              border: "none",
+              borderRight: !events
+                ? "none"
+                : Colors[resolvedTheme].event_border,
               width: drawerWidth,
             },
           }}
