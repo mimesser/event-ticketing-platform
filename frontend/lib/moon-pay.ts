@@ -17,5 +17,5 @@ export const moonPaySrc = (walletAddress: any, email: string) => {
     signature
   )}`;
 
-  return urlWithSignature;
+  return originalUrl;
 };
