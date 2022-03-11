@@ -221,7 +221,7 @@ export default function Header() {
     }
   };
 
-  const drawer = (user || events) && (
+  const drawer = (
     <>
       <Toolbar />
       {!events ? (
@@ -236,69 +236,72 @@ export default function Header() {
             px: 2,
           }}
         >
-          <ListItem
-            button
-            sx={{
-              borderRadius: (theme) => theme.shape.borderRadius,
-              ":hover": {
-                backgroundColor: Colors[resolvedTheme].hover,
-              },
-            }}
-            style={{
-              margin: "0px 0",
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              padding: "12px",
-            }}
-            selected={router.pathname === "/[username]"}
-          >
-            <div className={styles.account}>
-              {user.avatarImage ? (
-                <Image
-                  src={user.avatarImage}
-                  width={32}
-                  height={32}
-                  alt="Avatar"
-                />
-              ) : (
-                <Avatar
-                  size={32}
-                  name={user.walletAddress}
-                  variant="pixel"
-                  colors={[
-                    "#ffad08",
-                    "#edd75a",
-                    "#73b06f",
-                    "#0c8f8f",
-                    "#405059",
-                  ]}
-                />
-              )}
-            </div>
-            <Link
-              href={`/${encodeURIComponent(
-                user.username || user.walletAddress
-              )}`}
-              passHref
+          {user && (
+            <ListItem
+              button
+              sx={{
+                borderRadius: (theme) => theme.shape.borderRadius,
+                ":hover": {
+                  backgroundColor: Colors[resolvedTheme].hover,
+                },
+              }}
+              style={{
+                margin: "0px 0",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                padding: "12px",
+              }}
+              selected={router.pathname === "/[username]"}
             >
-              <ListItemText
-                disableTypography
-                style={{
-                  height: 16,
-                  marginLeft: "6%",
-                  overflow: "hidden",
-                  whiteSpace: "nowrap",
-                  textAlign: "left",
-                  textOverflow: "ellipsis",
-                  width: 16,
-                  color: Colors[resolvedTheme].primary,
-                }}
+              <div className={styles.account}>
+                {user.avatarImage ? (
+                  <Image
+                    src={user.avatarImage}
+                    width={32}
+                    height={32}
+                    alt="Avatar"
+                  />
+                ) : (
+                  <Avatar
+                    size={32}
+                    name={user.walletAddress}
+                    variant="pixel"
+                    colors={[
+                      "#ffad08",
+                      "#edd75a",
+                      "#73b06f",
+                      "#0c8f8f",
+                      "#405059",
+                    ]}
+                  />
+                )}
+              </div>
+              <Link
+                href={`/${encodeURIComponent(
+                  user.username || user.walletAddress
+                )}`}
+                passHref
               >
-                {user.name || shortenAddress(user.walletAddress)}
-              </ListItemText>
-            </Link>
-          </ListItem>
+                <ListItemText
+                  disableTypography
+                  style={{
+                    height: 16,
+                    marginLeft: "6%",
+                    overflow: "hidden",
+                    whiteSpace: "nowrap",
+                    textAlign: "left",
+                    textOverflow: "ellipsis",
+                    width: 16,
+                    color: Colors[resolvedTheme].primary,
+                  }}
+                >
+                  {user.name || shortenAddress(user.walletAddress)}
+                </ListItemText>
+              </Link>
+            </ListItem>
+          )}
+
           <Link href="/events" passHref>
             <ListItem
               button
