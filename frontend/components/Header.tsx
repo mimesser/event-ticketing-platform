@@ -534,7 +534,7 @@ export default function Header() {
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: 320,
-    bgcolor: "background.paper",
+    bgcolor: Colors[resolvedTheme].header_bg,
     borderRadius: "25px",
     boxShadow: 24,
     p: 4,
@@ -784,7 +784,7 @@ export default function Header() {
             >
               <CloseIcon
                 sx={{
-                  color: "#000000",
+                  color: Colors[resolvedTheme].primary,
                 }}
               />
             </IconButton>
@@ -850,7 +850,6 @@ export default function Header() {
                   <Button
                     id={styles.logoutButton}
                     type="submit"
-                    color="primary"
                     size="large"
                     variant="outlined"
                   >
@@ -866,6 +865,10 @@ export default function Header() {
                   color="primary"
                   size="large"
                   variant="outlined"
+                  sx={{
+                    color: Colors[resolvedTheme].primary,
+                    borderColor: Colors[resolvedTheme].cancel_border,
+                  }}
                 >
                   Cancel
                 </Button>
@@ -895,10 +898,15 @@ export default function Header() {
                 setTwitterModal(false);
               }}
               className={styles.close_button}
+              sx={{
+                ":hover": {
+                  backgroundColor: Colors[resolvedTheme].hover,
+                },
+              }}
             >
               <CloseIcon
                 sx={{
-                  color: "#000000",
+                  color: Colors[resolvedTheme].primary,
                 }}
               />
             </IconButton>
@@ -940,9 +948,8 @@ export default function Header() {
                     sx={{ textTransform: "none", marginTop: "20px" }}
                     onClick={() => unlinkUser()}
                     type="submit"
-                    color="primary"
                     size="large"
-                    variant="outlined"
+                    variant="contained"
                   >
                     Unlink
                   </Button>
@@ -973,10 +980,15 @@ export default function Header() {
                 setPrivacyModal(false);
               }}
               className={styles.close_button}
+              sx={{
+                ":hover": {
+                  backgroundColor: Colors[resolvedTheme].hover,
+                },
+              }}
             >
               <CloseIcon
                 sx={{
-                  color: "#000000",
+                  color: Colors[resolvedTheme].primary,
                 }}
               />
             </IconButton>
@@ -992,6 +1004,11 @@ export default function Header() {
                         checked={showWalletAddress}
                         onChange={() => {
                           handleShowWalletAddress();
+                        }}
+                        sx={{
+                          "&& .MuiSwitch-switchBase:hover": {
+                            backgroundColor: Colors[resolvedTheme].hover,
+                          },
                         }}
                       />
                     }
@@ -1443,8 +1460,10 @@ export default function Header() {
                         margin: "10px",
                         padding: "5px",
                         borderRadius: "10px",
+                        ":hover": {
+                          backgroundColor: Colors[resolvedTheme].hover,
+                        },
                       }}
-                      className={styles.profile_item}
                     >
                       <ListItemIcon
                         style={{ borderRadius: "50%", overflow: "hidden" }}
@@ -1489,16 +1508,32 @@ export default function Header() {
                         borderBottom: Colors[resolvedTheme].border,
                       }}
                     ></MenuItem>
-                    <MenuItem onClick={() => setSelectedMenu("settings")}>
+                    <MenuItem
+                      onClick={() => setSelectedMenu("settings")}
+                      className={styles.menu_items}
+                      sx={{
+                        ":hover": {
+                          backgroundColor: Colors[resolvedTheme].hover,
+                        },
+                      }}
+                    >
                       <ListItemIcon>
                         <SettingsIcon
                           sx={{ color: Colors[resolvedTheme].primary }}
                         />
                       </ListItemIcon>
                       <span>{`Settings & privacy`}</span>
-                      <ArrowForwardIosIcon style={{ marginLeft: "15%" }} />
+                      <ArrowForwardIosIcon style={{ marginLeft: "12%" }} />
                     </MenuItem>
-                    <MenuItem onClick={() => setSelectedMenu("display")}>
+                    <MenuItem
+                      onClick={() => setSelectedMenu("display")}
+                      className={styles.menu_items}
+                      sx={{
+                        ":hover": {
+                          backgroundColor: Colors[resolvedTheme].hover,
+                        },
+                      }}
+                    >
                       <ListItemIcon>
                         <NightlightIcon
                           sx={{ color: Colors[resolvedTheme].primary }}
@@ -1511,6 +1546,12 @@ export default function Header() {
                       onClick={() => {
                         handleCloseUserMenu();
                         setLogoutModal(true);
+                      }}
+                      className={styles.menu_items}
+                      sx={{
+                        ":hover": {
+                          backgroundColor: Colors[resolvedTheme].hover,
+                        },
                       }}
                     >
                       <ListItemIcon>
@@ -1559,15 +1600,26 @@ export default function Header() {
                         }}
                         sx={{
                           color: Colors[resolvedTheme].primary,
-                          marginLeft: "5px",
+                          margin: "0 5px",
                           alignContent: "center",
+                          ":hover": {
+                            backgroundColor: Colors[resolvedTheme].hover,
+                          },
                         }}
                       >
                         <ArrowBackIosIcon sx={{ marginLeft: "5px" }} />
                       </IconButton>
                       {`Settings & privacy`}
                     </Typography>
-                    <MenuItem onClick={handleCloseUserMenu}>
+                    <MenuItem
+                      onClick={handleCloseUserMenu}
+                      className={styles.menu_items}
+                      sx={{
+                        ":hover": {
+                          backgroundColor: Colors[resolvedTheme].hover,
+                        },
+                      }}
+                    >
                       <ListItemIcon>
                         <SettingsIcon
                           sx={{ color: Colors[resolvedTheme].primary }}
@@ -1584,6 +1636,12 @@ export default function Header() {
                         handleCloseUserMenu();
                         setPrivacyModal(true);
                       }}
+                      className={styles.menu_items}
+                      sx={{
+                        ":hover": {
+                          backgroundColor: Colors[resolvedTheme].hover,
+                        },
+                      }}
                     >
                       <ListItemIcon>
                         <LockIcon
@@ -1597,7 +1655,13 @@ export default function Header() {
                         handleCloseUserMenu();
                         setTwitterModal(true);
                       }}
-                      sx={{ color: "rgb(29, 161, 242)" }}
+                      className={styles.menu_items}
+                      sx={{
+                        color: "rgb(29, 161, 242)",
+                        ":hover": {
+                          backgroundColor: Colors[resolvedTheme].hover,
+                        },
+                      }}
                     >
                       <ListItemIcon sx={{ color: "inherit" }}>
                         <TwitterIcon style={{ marginRight: "5px" }} />
@@ -1650,8 +1714,11 @@ export default function Header() {
                         }}
                         sx={{
                           color: Colors[resolvedTheme].primary,
-                          marginLeft: "5px",
+                          margin: "0 5px",
                           alignContent: "center",
+                          ":hover": {
+                            backgroundColor: Colors[resolvedTheme].hover,
+                          },
                         }}
                       >
                         <ArrowBackIosIcon sx={{ marginLeft: "5px" }} />
@@ -1684,7 +1751,14 @@ export default function Header() {
                       >
                         <FormControlLabel
                           value="system"
-                          control={<Radio style={{ padding: 3 }} />}
+                          control={
+                            <Radio
+                              style={{ padding: 3 }}
+                              sx={{
+                                "&": { color: Colors[resolvedTheme].primary },
+                              }}
+                            />
+                          }
                           label="System"
                           labelPlacement="start"
                           style={{
@@ -1694,7 +1768,14 @@ export default function Header() {
                         />
                         <FormControlLabel
                           value="light"
-                          control={<Radio style={{ padding: 3 }} />}
+                          control={
+                            <Radio
+                              style={{ padding: 3 }}
+                              sx={{
+                                "&": { color: Colors[resolvedTheme].primary },
+                              }}
+                            />
+                          }
                           label="Off"
                           labelPlacement="start"
                           style={{
@@ -1704,7 +1785,14 @@ export default function Header() {
                         />
                         <FormControlLabel
                           value="dark"
-                          control={<Radio style={{ padding: 3 }} />}
+                          control={
+                            <Radio
+                              style={{ padding: 3 }}
+                              sx={{
+                                "&": { color: Colors[resolvedTheme].primary },
+                              }}
+                            />
+                          }
                           label="On"
                           labelPlacement="start"
                           style={{
