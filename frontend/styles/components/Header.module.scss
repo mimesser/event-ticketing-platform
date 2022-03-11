@@ -103,11 +103,14 @@
       margin-bottom: 0.5rem;
       margin-top: 2rem;
       width: 15rem;
+      border: none;
+    }
+
+    #logoutButton:hover {
+      background-color: rgb(39, 44, 48);
     }
 
     #cancelButton {
-      background-color: white;
-      color: black;
       text-transform: none;
       width: 15rem;
     }
@@ -164,12 +167,9 @@
   align-items: center;
   margin: 5px 0;
 }
-.profile_item {
-  &:hover {
-    background: #f2f2f2;
-  }
 
-  [data-theme="dark"] &:hover {
-    background: #161616;
-  }
+.menu_items {
+  margin: 0 10px;
+  border-radius: 10px;
+  padding-left: 10px;
 }
