@@ -139,7 +139,7 @@ export default function Header() {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-
+  const [signInEventsModal, setSignInEventsModal] = useState(false);
   const [logoutModal, setLogoutModal] = useState(false);
   const [twitterModal, setTwitterModal] = useState(false);
   const [privacyModal, setPrivacyModal] = useState(false);
@@ -192,7 +192,12 @@ export default function Header() {
       }
     }
   }
-
+  const createEvent = () => {
+    if (user) {
+    } else {
+      setSignInEventsModal(true);
+    }
+  };
   const buyModal = () => {
     setBuyOpen(true);
     setMoonPayModal(true);
@@ -492,24 +497,24 @@ export default function Header() {
                     </ListItemButton>
                   </List>
                 </Collapse>
-
-                <Box sx={{ marginTop: "12px " }}>
-                  <Button
-                    fullWidth
-                    sx={{
-                      textTransform: "none",
-                      color: Colors[resolvedTheme].primary.main,
-                    }}
-                    type="submit"
-                    size="medium"
-                    variant="contained"
-                    startIcon={<AddOutlinedIcon />}
-                  >
-                    Create new event
-                  </Button>
-                </Box>
               </>
             )}
+            <Box sx={{ marginTop: "12px " }}>
+              <Button
+                fullWidth
+                onClick={createEvent}
+                sx={{
+                  textTransform: "none",
+                  color: Colors[resolvedTheme].primary.main,
+                }}
+                type="submit"
+                size="medium"
+                variant="contained"
+                startIcon={<AddOutlinedIcon />}
+              >
+                Create new event
+              </Button>
+            </Box>
 
             <Divider
               sx={{
@@ -552,11 +557,18 @@ export default function Header() {
   }
 
   const [signingIn, setSigningIn] = useState(false);
+  const [signingInEvents, setSigningInEvents] = useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+  } = useForm();
+
+  const {
+    register: register2,
+    handleSubmit: handleSubmit2,
+    formState: { errors: errors2 },
   } = useForm();
 
   const onSubmit: any = async ({ email }: { email: any }) => {
@@ -615,6 +627,62 @@ export default function Header() {
     }
   };
 
+  const onSubmitEvents: any = async ({ email }: { email: any }) => {
+    setSigningInEvents(true);
+
+    try {
+      const userExists = (
+        await (
+          await fetch("/api/signup", {
+            method: "POST",
+            body: JSON.stringify({
+              email,
+            }),
+          })
+        ).json()
+      ).user
+        ? true
+        : false;
+
+      const redirectURI = `${window.location.origin}/callback${router.asPath}/${email}/${userExists}`;
+
+      const didToken = await magic?.auth.loginWithMagicLink({
+        email,
+        redirectURI,
+      });
+
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + didToken,
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (res.status === 200) {
+        // Create user signup notifications
+        if (!userExists) {
+          await fetch("/api/signup-notifications", {
+            method: "POST",
+            body: JSON.stringify({
+              email,
+            }),
+          });
+        }
+
+        // redirect
+        router.reload();
+        setSigningInEvents(false);
+      } else {
+        // display an error
+        setSigningInEvents(false);
+      }
+    } catch (error) {
+      setSigningInEvents(false);
+    }
+  };
+
   const [darkMode, setDarkMode] = React.useState(theme);
   const changeDarkMode = (event: React.ChangeEvent<HTMLInputElement>) => {
     const mode = event.target.value;
@@ -624,6 +692,78 @@ export default function Header() {
 
   return (
     <>
+      {/*  Events signIn Modal */}
+      <Modal
+        BackdropProps={{
+          timeout: 500,
+        }}
+        closeAfterTransition
+        onClose={() => {
+          setSignInEventsModal(false);
+        }}
+        open={signInEventsModal}
+      >
+        <Box sx={modalStyle}>
+          <Grid container justifyContent="center" direction="column">
+            <div className={styles.modal_img}>
+              <Image
+                src={"/logo-" + resolvedTheme + ".png"}
+                width={isMobile ? 45 : 90}
+                height={isMobile ? 45 : 90}
+                alt={`Impish icon`}
+              />
+            </div>
+            <Typography
+              gutterBottom
+              sx={{
+                textAlign: "center",
+                marginBottom: "13px",
+                color: "black",
+                fontFamily: "sans-serif",
+                fontSize: "18px",
+                fontWeight: 550,
+                textTransform: "none",
+              }}
+              variant="body1"
+            >
+              Create events on Impish
+            </Typography>
+            <form
+              onSubmit={handleSubmit2(onSubmitEvents)}
+              className={styles.login_items_events}
+            >
+              <TextField
+                fullWidth
+                label="Email address"
+                variant="outlined"
+                autoComplete="email"
+                autoFocus
+                {...register2("email", {
+                  required: "Required field",
+                  pattern: {
+                    value:
+                      /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+                    message: "Invalid email address",
+                  },
+                })}
+                error={!!errors2?.email}
+                helperText={errors2?.email ? errors2.email.message : null}
+                size="small"
+              />
+              <LoadingButton
+                sx={{ marginTop: "13px" }}
+                fullWidth
+                loading={signingInEvents}
+                type="submit"
+                size="large"
+                variant="contained"
+              >
+                Log in / Sign up
+              </LoadingButton>
+            </form>
+          </Grid>
+        </Box>
+      </Modal>
       {/* Buy crypto modal */}
       <Modal
         BackdropProps={{
