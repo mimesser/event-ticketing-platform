@@ -4,6 +4,13 @@
     background-color: rgb(157 197 237);
   }
 }
+.modal_img {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 13px;
+}
 
 .account {
   border-radius: 50%;
@@ -151,6 +158,12 @@
   }
 }
 
+.login_items_events {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 5px 0;
+}
 .profile_item {
   &:hover {
     background: #f2f2f2;
