@@ -7,6 +7,7 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Image from "next/image";
+import Colors from "lib/colors";
 import { magic } from "lib/magic";
 import { useUserInfo } from "lib/user-context";
 import { useRouter } from "next/router";
@@ -172,7 +173,15 @@ export default function Footer() {
           </Grid>
         </Box>
       </Modal>
-      <div className={styles.footer}>
+      <div
+        className={styles.footer}
+        style={{
+          backgroundColor: Colors[resolvedTheme].header_bg,
+          borderTop:
+            resolvedTheme === "light" ? Colors[resolvedTheme].border : "none",
+          boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
+        }}
+      >
         <div className={styles.title}>Connect on Impish</div>
         <Button
           size="large"

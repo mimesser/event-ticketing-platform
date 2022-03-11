@@ -575,7 +575,7 @@ function Profile() {
             </Button>
           </Tooltip>
 
-          {!following && (
+          {!following && user && (
             <Button
               onClick={followUser}
               variant={"contained"}

@@ -231,6 +231,7 @@ export default function Header() {
               "&, & .MuiListItemText-root": {
                 color: (theme) => theme.palette.primary.main,
               },
+              backgroundColor: Colors[resolvedTheme].selected_drawer_menu,
             },
             px: 2,
           }}
@@ -239,6 +240,9 @@ export default function Header() {
             button
             sx={{
               borderRadius: (theme) => theme.shape.borderRadius,
+              ":hover": {
+                backgroundColor: Colors[resolvedTheme].hover,
+              },
             }}
             style={{
               margin: "0px 0",
@@ -300,6 +304,9 @@ export default function Header() {
               button
               sx={{
                 borderRadius: (theme) => theme.shape.borderRadius,
+                ":hover": {
+                  backgroundColor: Colors[resolvedTheme].hover,
+                },
               }}
               style={{
                 margin: "0px 0",
@@ -503,7 +510,7 @@ export default function Header() {
 
             <Divider
               sx={{
-                borderColor: Colors[resolvedTheme].event_divider,
+                borderColor: Colors[resolvedTheme].divider,
                 marginTop: "12px",
               }}
             />
@@ -877,6 +884,7 @@ export default function Header() {
         position="fixed"
         sx={{
           bgcolor: Colors[resolvedTheme].header_bg,
+          borderBottom: Colors[resolvedTheme].border,
           boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
           zIndex: (theme) => theme.zIndex.drawer + 1,
         }}
@@ -892,6 +900,10 @@ export default function Header() {
                 display: !events
                   ? { xs: "none", md: "flex" }
                   : { xs: "flex", md: "flex", sm: "flex" },
+                ":hover": {
+                  borderRadius: (theme) => Number(theme.shape.borderRadius) * 2,
+                  background: Colors[resolvedTheme].hover,
+                },
               }}
             >
               <IconButton edge="start" size="small">
@@ -919,7 +931,13 @@ export default function Header() {
                 size="large"
                 onClick={handleDrawerToggle}
                 sx={{
-                  color: "#000000",
+                  color: (theme) =>
+                    mobileOpen
+                      ? theme.palette.primary.main
+                      : Colors[resolvedTheme].primary,
+                  ":hover": {
+                    backgroundColor: Colors[resolvedTheme].hover,
+                  },
                 }}
               >
                 <MenuIcon />
@@ -944,6 +962,9 @@ export default function Header() {
                         anchorElNotification
                           ? theme.palette.primary.main
                           : Colors[resolvedTheme].primary,
+                      ":hover": {
+                        backgroundColor: Colors[resolvedTheme].hover,
+                      },
                     }}
                   >
                     <Badge
@@ -964,6 +985,9 @@ export default function Header() {
                         buyOpen
                           ? theme.palette.primary.main
                           : Colors[resolvedTheme].primary,
+                      ":hover": {
+                        backgroundColor: Colors[resolvedTheme].hover,
+                      },
                     }}
                     onClick={buyModal}
                   >
@@ -978,6 +1002,9 @@ export default function Header() {
                         anchorElUser
                           ? theme.palette.primary.main
                           : Colors[resolvedTheme].primary,
+                      ":hover": {
+                        backgroundColor: Colors[resolvedTheme].hover,
+                      },
                     }}
                     onClick={handleOpenUserMenu}
                   >
@@ -1049,7 +1076,9 @@ export default function Header() {
                       )}
                     </Grid>
                   </Box>
-                  <Divider />
+                  <Divider
+                    sx={{ borderBottom: Colors[resolvedTheme].border }}
+                  />
                   {newNotificationsLength !== 0 && (
                     <List
                       disablePadding
@@ -1221,7 +1250,9 @@ export default function Header() {
                       )}
                     </List>
                   )}
-                  <Divider />
+                  <Divider
+                    sx={{ borderBottom: Colors[resolvedTheme].border }}
+                  />
                   <Box sx={{ p: 1 }}>
                     <Button
                       sx={{
@@ -1255,6 +1286,7 @@ export default function Header() {
                         width: 250,
                         bgcolor: Colors[resolvedTheme].header_bg,
                         color: Colors[resolvedTheme].primary,
+                        boxShadow: Colors[resolvedTheme].account_menu_shadow,
                       },
                     }}
                   >
@@ -1311,6 +1343,7 @@ export default function Header() {
                       sx={{
                         padding: "0px",
                         margin: "5px 16px",
+                        borderBottom: Colors[resolvedTheme].border,
                       }}
                     ></MenuItem>
                     <MenuItem onClick={() => setSelectedMenu("settings")}>
@@ -1366,6 +1399,7 @@ export default function Header() {
                         width: 250,
                         bgcolor: Colors[resolvedTheme].header_bg,
                         color: Colors[resolvedTheme].primary,
+                        boxShadow: Colors[resolvedTheme].account_menu_shadow,
                       },
                     }}
                   >
@@ -1456,6 +1490,7 @@ export default function Header() {
                         width: 250,
                         bgcolor: Colors[resolvedTheme].header_bg,
                         color: Colors[resolvedTheme].primary,
+                        boxShadow: Colors[resolvedTheme].account_menu_shadow,
                       },
                     }}
                   >
@@ -1634,9 +1669,7 @@ export default function Header() {
                 : Colors[resolvedTheme].event_drawer_bg,
               boxSizing: "border-box",
               boxShadow: !events ? "none" : "0px 0px 5px rgb(0 0 0 / 20%)",
-              borderRight: !events
-                ? "none"
-                : Colors[resolvedTheme].event_border,
+              borderRight: !events ? "none" : Colors[resolvedTheme].border,
               width: drawerWidth,
             },
           }}
