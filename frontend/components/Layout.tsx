@@ -50,13 +50,12 @@ export default function Layout({
           {/* Injected child content */}
           <Box
             component="main"
-            sx={(theme) => ({
-              [theme.breakpoints.down("sm")]: {
-                margin: "auto",
-              },
-              margin: "0 10%",
+            sx={{
+              margin: eventFooter
+                ? { xs: "0 10%", md: "auto", sm: "0 0 0 240px" }
+                : { xs: "0 10%", md: "auto", sm: "auto" },
               flexGrow: 1,
-            })}
+            }}
           >
             <Toolbar />
             {children}
