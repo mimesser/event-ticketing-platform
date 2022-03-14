@@ -28,6 +28,7 @@ function View() {
   const { username } = router.query;
   const currentUser = useUserInfo();
   const [user, setUser] = React.useState<any>(null);
+  const [data, setData] = React.useState<any>();
 
   const [unfollowModal, setUnFollowModal] = React.useState({
     id: "false",
@@ -49,6 +50,28 @@ function View() {
       });
     }
   }, [username, router]);
+
+  React.useEffect(() => {
+    async function getViewList() {
+      if (user) {
+        try {
+          await fetch("/api/twitter/view-list", {
+            method: "POST",
+            body: JSON.stringify({
+              id: user.id,
+            }),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              setData(data);
+            });
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+    getViewList();
+  }, [user]);
 
   const view = router.query.view;
   const [value, setValue] = React.useState(view === "followers" ? 0 : 1);
@@ -104,7 +127,7 @@ function View() {
 
       if (res.status === 200) {
         const removeIndex = currentUser.user.following.findIndex(
-          (m: any) => m.id === id
+          (m: any) => m.followersId === id
         );
         currentUser.user.following.splice(removeIndex, 1);
         setUnFollowModal({ id: "false", username: "", walletAddress: "" });
@@ -125,7 +148,10 @@ function View() {
       });
 
       if (res.status === 200) {
-        currentUser.user.following.push({ id: id });
+        currentUser.user.following.push({
+          followersId: id,
+          followingId: currentUser.user.id,
+        });
         setUnFollowModal({ id: "false", username: "", walletAddress: "" });
       }
     } catch (error) {
@@ -223,7 +249,7 @@ function View() {
           </Box>
           <Box>
             <TabPanel value={value} index={0}>
-              {user.followers.length === 0 && (
+              {data?.followers.length === 0 && (
                 <Box sx={{ p: 4 }}>
                   <Grid
                     container
@@ -253,10 +279,10 @@ function View() {
                   </Grid>
                 </Box>
               )}
-              {user.followers.length !== 0 && (
+              {data?.followers.length !== 0 && (
                 <Box sx={{ p: 4, pt: 0 }}>
                   <List className={styles.followList}>
-                    {user.followers.map(
+                    {data?.followers.map(
                       ({
                         id,
                         avatarImage,
@@ -315,7 +341,7 @@ function View() {
                                   {id !== currentUser.user?.id && (
                                     <>
                                       {!currentUser.user?.following
-                                        .map((m: any) => m.id)
+                                        .map((m: any) => m.followersId)
                                         .find((x: any) => x === id) && (
                                         <Button
                                           onClick={(e) => {
@@ -343,7 +369,7 @@ function View() {
                                       )}
 
                                       {currentUser.user?.following
-                                        .map((m: any) => m.id)
+                                        .map((m: any) => m.followersId)
                                         .find((x: any) => x === id) && (
                                         <Button
                                           onClick={(e) => {
@@ -399,7 +425,7 @@ function View() {
               )}
             </TabPanel>
             <TabPanel value={value} index={1}>
-              {user.following.length === 0 && (
+              {data?.following.length === 0 && (
                 <Box sx={{ p: 4 }}>
                   <Grid
                     container
@@ -429,10 +455,10 @@ function View() {
                   </Grid>
                 </Box>
               )}
-              {user.following.length !== 0 && (
+              {data?.following.length !== 0 && (
                 <Box sx={{ p: 4, pt: 0 }}>
                   <List className={styles.followList}>
-                    {user.following.map(
+                    {data?.following.map(
                       ({
                         id,
                         avatarImage,
@@ -491,7 +517,7 @@ function View() {
                                   {id !== currentUser.user?.id && (
                                     <>
                                       {!currentUser.user?.following
-                                        .map((m: any) => m.id)
+                                        .map((m: any) => m.followersId)
                                         .find((x: any) => x === id) && (
                                         <Button
                                           onClick={(e) => {
@@ -519,7 +545,7 @@ function View() {
                                       )}
 
                                       {currentUser.user?.following
-                                        .map((m: any) => m.id)
+                                        .map((m: any) => m.followersId)
                                         .find((x: any) => x === id) && (
                                         <Button
                                           onClick={(e) => {

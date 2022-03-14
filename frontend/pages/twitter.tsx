@@ -22,7 +22,10 @@ import styles from "styles/pages/Twitter.module.scss";
 export default function Twitter() {
   const { data: session, status }: any = useSession();
   const [data, setData] = useState<any>();
-  const { user } = useUser({ redirectTo: "/twitter", redirectIfFound: true });
+  const { user, loading } = useUser({
+    redirectTo: "/",
+    redirectIfFound: false,
+  });
   const [handleTwitterModal, setHandleTwitterModal] = useState(true);
   const [selectedFrenz, setSelectedFrenz] = useState([] as any);
   const [followBtnText, setFollowBtnText] = useState("Follow all");

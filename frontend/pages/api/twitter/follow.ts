@@ -24,33 +24,47 @@ export default async function follow(
     return;
   }
 
-  if (req.method === "POST") {
-    try {
-      await prisma.user.update({
-        where: { email: session.email },
-        data: {
-          following: { connect: follow.map((id: any) => ({ id })) },
-        },
-      });
+  try {
+    const userId = await prisma.user.findUnique({
+      where: { email: session.email },
+      select: { id: true },
+    });
 
-      res.status(200).json({ status: "follow success" });
-    } catch (e) {
-      res.status(500).json({ e });
+    if (req.method === "POST") {
+      try {
+        var data = follow.map((m) => ({
+          followingId: userId!.id,
+          followersId: m,
+        }));
+
+        await prisma.follows.createMany({
+          data,
+          skipDuplicates: true,
+        });
+
+        res.status(200).json({ status: "follow success" });
+      } catch (e) {
+        res.status(500).json({ e });
+      }
     }
-  }
 
-  if (req.method === "DELETE") {
-    try {
-      await prisma.user.update({
-        where: { email: session.email },
-        data: {
-          following: { disconnect: follow.map((id: any) => ({ id })) },
-        },
-      });
+    if (req.method === "DELETE") {
+      try {
+        await prisma.follows.delete({
+          where: {
+            followersId_followingId: {
+              followersId: follow[0],
+              followingId: userId!.id,
+            },
+          },
+        });
 
-      res.status(200).json({ status: "unfollow success" });
-    } catch (e) {
-      res.status(500).json({ e });
+        res.status(200).json({ status: "unfollow success" });
+      } catch (e) {
+        res.status(500).json({ e });
+      }
     }
+  } catch (error) {
+    res.status(500).json({ error });
   }
 }

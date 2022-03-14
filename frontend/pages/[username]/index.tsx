@@ -77,8 +77,8 @@ function Profile() {
     if (user && !currentUser.loading) {
       if (
         currentUser.user?.following
-          .map((m: any) => m.id)
-          .find((x: any) => x === user.id)
+          .map((m: any) => m.followersId)
+          .find((x: any) => x === user?.id)
       ) {
         setFollowing(true);
       }
