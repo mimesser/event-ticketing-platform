@@ -6,6 +6,7 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
+import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Button from "@mui/material/Button";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import CalendarViewMonth from "@mui/icons-material/CalendarViewMonth";
@@ -23,7 +24,9 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormGroup from "@mui/material/FormGroup";
 import FormLabel from "@mui/material/FormLabel";
 import Grid from "@mui/material/Grid";
+import GroupSharpIcon from "@mui/icons-material/GroupSharp";
 import IconButton from "@mui/material/IconButton";
+import BreadcrumLink from "@mui/material/Link";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -39,6 +42,7 @@ import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 import Modal from "@mui/material/Modal";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NightlightIcon from "@mui/icons-material/Nightlight";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Popover from "@mui/material/Popover";
@@ -85,6 +89,9 @@ export default function Header() {
   const isMobile = useMediaQuery("(max-width:599px)");
   const router = useRouter();
   const [events] = useState(router.asPath.includes("/events") ? true : false);
+  const [showCreateEvent, setShowCreateEvent] = React.useState(
+    router.pathname === "/events/create" ? true : false
+  );
 
   const totalUnread = user?.notifications.filter(
     (item: any) => !item.isRead
@@ -194,6 +201,9 @@ export default function Header() {
   }
   const createEvent = () => {
     if (user) {
+      router.push({
+        pathname: "/events/create",
+      });
     } else {
       setSignInEventsModal(true);
     }
@@ -225,10 +235,32 @@ export default function Header() {
       forceUpdate();
     }
   };
+  const breadcrumbs = [
+    <Link key="1" href="/events" passHref>
+      <BreadcrumLink
+        sx={{
+          fontSize: "0.8rem",
+          color: Colors[resolvedTheme].secondary,
+        }}
+        underline="hover"
+      >
+        Event
+      </BreadcrumLink>
+    </Link>,
+    <Link key="2" href="/events/create" passHref>
+      <BreadcrumLink
+        sx={{ color: Colors[resolvedTheme].secondary, fontSize: "0.8rem" }}
+        underline="hover"
+        href="/events/create"
+      >
+        Create Event
+      </BreadcrumLink>
+    </Link>,
+  ];
 
   const drawer = (
     <>
-      <Toolbar />
+      <Toolbar sx={{ display: showCreateEvent ? "none" : "flex" }} />
       {!events ? (
         <List
           sx={{
@@ -356,89 +388,288 @@ export default function Header() {
         </List>
       ) : (
         // Events drawer menu
-        <>
-          <Typography
-            sx={{
-              paddingLeft: "16px",
-              fontSize: "1.8rem",
-              marginTop: "12px",
-              fontWeight: 900,
-              color: Colors[resolvedTheme].primary,
-            }}
-            variant="h6"
-          >
-            Events
-          </Typography>
 
-          <List
-            sx={{
-              "&& .MuiListItemButton-root:hover": {
-                backgroundColor: Colors[resolvedTheme].selected_event_menu,
-              },
-              "&& .Mui-selected": {
-                backgroundColor: Colors[resolvedTheme].selected_event_menu,
-                "&, & .MuiListItemIcon-root": {
-                  color: (theme) => theme.palette.primary.main,
-                },
-              },
-              "&& .Mui-selected:hover": {
-                backgroundColor: Colors[resolvedTheme].selected_event_menu,
-              },
-              px: 2,
-            }}
-          >
-            <Link href="/events" passHref>
-              <ListItemButton
+        <>
+          {!showCreateEvent ? (
+            <>
+              <Typography
                 sx={{
-                  borderRadius: (theme) => theme.shape.borderRadius,
+                  paddingLeft: "16px",
+                  fontSize: "1.8rem",
+                  marginTop: "12px",
+                  fontWeight: 900,
+                  color: Colors[resolvedTheme].primary,
                 }}
-                style={{
-                  margin: "0px 0",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  padding: "12px",
-                }}
-                selected={router.pathname === "/events"}
+                variant="h6"
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: "auto",
-                  }}
-                >
-                  <CalendarViewMonth
-                    fontSize="large"
+                Events
+              </Typography>
+
+              <List
+                sx={{
+                  "&& .MuiListItemButton-root:hover": {
+                    backgroundColor: Colors[resolvedTheme].selected_event_menu,
+                  },
+                  "&& .Mui-selected": {
+                    backgroundColor: Colors[resolvedTheme].selected_event_menu,
+                    "&, & .MuiListItemIcon-root": {
+                      color: (theme) => theme.palette.primary.main,
+                    },
+                  },
+                  "&& .Mui-selected:hover": {
+                    backgroundColor: Colors[resolvedTheme].selected_event_menu,
+                  },
+                  px: 2,
+                }}
+              >
+                <Link href="/events" passHref>
+                  <ListItemButton
                     sx={{
-                      color: (theme) =>
-                        router.pathname === "/events"
-                          ? theme.palette.primary.main
-                          : Colors[resolvedTheme].primary,
+                      borderRadius: (theme) => theme.shape.borderRadius,
                     }}
-                  />
-                </ListItemIcon>
-                <ListItemText
-                  disableTypography
+                    style={{
+                      margin: "0px 0",
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      padding: "12px",
+                    }}
+                    selected={router.pathname === "/events"}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: "auto",
+                      }}
+                    >
+                      <CalendarViewMonth
+                        fontSize="large"
+                        sx={{
+                          color: (theme) =>
+                            router.pathname === "/events"
+                              ? theme.palette.primary.main
+                              : Colors[resolvedTheme].primary,
+                        }}
+                      />
+                    </ListItemIcon>
+                    <ListItemText
+                      disableTypography
+                      sx={{
+                        height: 16,
+                        marginLeft: "6%",
+                        overflow: "hidden",
+                        whiteSpace: "nowrap",
+                        textAlign: "left",
+                        textOverflow: "ellipsis",
+                        width: 16,
+                        color: Colors[resolvedTheme].primary,
+                      }}
+                    >
+                      Home
+                    </ListItemText>
+                  </ListItemButton>
+                </Link>
+                {user && (
+                  <>
+                    <ListItemButton
+                      onClick={handleClick}
+                      sx={{
+                        borderRadius: (theme) => theme.shape.borderRadius,
+                      }}
+                      style={{
+                        margin: "0px 0",
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        padding: "12px",
+                      }}
+                      selected={router.pathname === "/events/[username]"}
+                    >
+                      <ListItemIcon sx={{ minWidth: "auto" }}>
+                        <AccountCircleIcon
+                          fontSize="large"
+                          sx={{
+                            color: (theme) =>
+                              router.pathname === "/events/[username]"
+                                ? theme.palette.primary.main
+                                : Colors[resolvedTheme].primary,
+                          }}
+                        />
+                      </ListItemIcon>
+                      <ListItemText
+                        disableTypography
+                        sx={{
+                          height: 16,
+                          marginLeft: "6%",
+                          overflow: "hidden",
+                          whiteSpace: "nowrap",
+                          textAlign: "left",
+                          textOverflow: "ellipsis",
+                          width: 16,
+                          color: Colors[resolvedTheme].primary,
+                        }}
+                      >
+                        Your Events
+                      </ListItemText>
+                      {open ? (
+                        <ExpandLess
+                          sx={{
+                            color: Colors[resolvedTheme].primary,
+                          }}
+                        />
+                      ) : (
+                        <ExpandMore
+                          sx={{
+                            color: Colors[resolvedTheme].primary,
+                          }}
+                        />
+                      )}
+                    </ListItemButton>
+
+                    <Collapse in={open} timeout="auto" unmountOnExit>
+                      <List component="div" disablePadding>
+                        <ListItemButton sx={{ pl: 4 }}>
+                          <ListItemText>No events</ListItemText>
+                        </ListItemButton>
+                      </List>
+                    </Collapse>
+                  </>
+                )}
+                <Box sx={{ marginTop: "12px " }}>
+                  <Button
+                    fullWidth
+                    onClick={createEvent}
+                    sx={{
+                      textTransform: "none",
+                      color: Colors[resolvedTheme].primary.main,
+                    }}
+                    type="submit"
+                    size="medium"
+                    variant="contained"
+                    startIcon={<AddOutlinedIcon />}
+                  >
+                    Create new event
+                  </Button>
+                </Box>
+
+                <Divider
                   sx={{
-                    height: 16,
-                    marginLeft: "6%",
-                    overflow: "hidden",
-                    whiteSpace: "nowrap",
-                    textAlign: "left",
-                    textOverflow: "ellipsis",
-                    width: 16,
-                    color: Colors[resolvedTheme].primary,
+                    borderColor: Colors[resolvedTheme].divider,
+                    marginTop: "12px",
                   }}
+                />
+              </List>
+            </>
+          ) : (
+            <>
+              <Box
+                component="nav"
+                sx={{
+                  px: 2,
+                  py: 1,
+                  boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
+                  borderBottom: Colors[resolvedTheme].border,
+                }}
+              >
+                <Grid
+                  container
+                  direction="row"
+                  justifyContent="start"
+                  alignItems="center"
                 >
-                  Home
-                </ListItemText>
-              </ListItemButton>
-            </Link>
-            {user && (
-              <>
+                  <Link href="/events" passHref>
+                    <Tooltip title="close">
+                      <IconButton
+                        sx={{
+                          backgroundColor: Colors[resolvedTheme].icon_bg,
+                          marginRight: "8px",
+                          ":hover": {
+                            background: Colors[resolvedTheme].close_hover,
+                          },
+                        }}
+                      >
+                        <CloseIcon
+                          sx={{ color: Colors[resolvedTheme].secondary }}
+                        />
+                      </IconButton>
+                    </Tooltip>
+                  </Link>
+
+                  <Box
+                    component="div"
+                    sx={{
+                      whiteSpace: "nowrap",
+                      mr: !events ? 2 : 0,
+                      variant: "h6",
+                      display: !events
+                        ? { xs: "none", md: "flex" }
+                        : { xs: "flex", md: "flex", sm: "flex" },
+                      ":hover": {
+                        borderRadius: (theme) =>
+                          Number(theme.shape.borderRadius) * 2,
+                        background: Colors[resolvedTheme].hover,
+                      },
+                    }}
+                  >
+                    <IconButton edge="start" size="small">
+                      <Link href="/">
+                        <a>
+                          <Image
+                            src={"/icons/impish.svg"}
+                            width={45}
+                            height={32}
+                            alt={`Impish icon`}
+                          />
+                        </a>
+                      </Link>
+                    </IconButton>
+                  </Box>
+                </Grid>
+              </Box>
+
+              <Breadcrumbs
+                sx={{ px: 2, marginTop: "12px" }}
+                separator={
+                  <NavigateNextIcon
+                    sx={{ color: Colors[resolvedTheme].secondary }}
+                    fontSize="small"
+                  />
+                }
+                aria-label="breadcrumb"
+              >
+                {breadcrumbs}
+              </Breadcrumbs>
+              <Typography
+                sx={{
+                  paddingLeft: "16px",
+                  fontSize: "1.6rem",
+                  fontWeight: 900,
+                  color: Colors[resolvedTheme].primary,
+                }}
+                variant="h6"
+              >
+                Create Event
+              </Typography>
+              <List
+                sx={{
+                  "&& .Mui-selected": {
+                    backgroundColor: Colors[resolvedTheme].selected_event_menu,
+                    "&, & .MuiListItemIcon-root": {
+                      color: (theme) => theme.palette.primary.main,
+                    },
+                  },
+                  "&& .Mui-selected:hover": {
+                    backgroundColor: Colors[resolvedTheme].selected_event_menu,
+                  },
+                  px: 2,
+                }}
+              >
                 <ListItemButton
-                  onClick={handleClick}
+                  disableRipple
                   sx={{
                     borderRadius: (theme) => theme.shape.borderRadius,
+                    ":hover": {
+                      backgroundColor: "transparent",
+                    },
                   }}
                   style={{
                     margin: "0px 0",
@@ -446,15 +677,89 @@ export default function Header() {
                     flexDirection: "row",
                     alignItems: "center",
                     padding: "12px",
+                    cursor: "default",
                   }}
-                  selected={router.pathname === "/events/[username]"}
+                >
+                  <div className={styles.account}>
+                    {user.avatarImage ? (
+                      <Image
+                        src={user.avatarImage}
+                        width={32}
+                        height={32}
+                        alt="Avatar"
+                      />
+                    ) : (
+                      <Avatar
+                        size={32}
+                        name={user.walletAddress}
+                        variant="pixel"
+                        colors={[
+                          "#ffad08",
+                          "#edd75a",
+                          "#73b06f",
+                          "#0c8f8f",
+                          "#405059",
+                        ]}
+                      />
+                    )}
+                  </div>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "start",
+                    }}
+                  >
+                    <ListItemText
+                      disableTypography
+                      style={{
+                        height: 16,
+                        marginLeft: "6%",
+                        overflow: "hidden",
+                        whiteSpace: "nowrap",
+                        textAlign: "left",
+                        textOverflow: "ellipsis",
+                        width: "130px",
+                        color: Colors[resolvedTheme].primary,
+                      }}
+                    >
+                      {user.name || shortenAddress(user.walletAddress)}
+                    </ListItemText>
+                    <Typography
+                      variant="subtitle1"
+                      component="span"
+                      sx={{
+                        fontSize: "0.6rem",
+                        marginLeft: "6%",
+                        color: Colors[resolvedTheme].secondary,
+                      }}
+                    >
+                      Host - Your Profile
+                    </Typography>
+                  </Box>
+                </ListItemButton>
+
+                <ListItemButton
+                  sx={{
+                    borderRadius: (theme) => theme.shape.borderRadius,
+                  }}
+                  disableRipple
+                  style={{
+                    margin: "0px 0",
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    padding: "12px",
+                    cursor: "default",
+                  }}
+                  selected={router.pathname === "/events/create"}
                 >
                   <ListItemIcon sx={{ minWidth: "auto" }}>
-                    <AccountCircleIcon
+                    <GroupSharpIcon
                       fontSize="large"
                       sx={{
                         color: (theme) =>
-                          router.pathname === "/events/[username]"
+                          router.pathname === "/events/create"
                             ? theme.palette.primary.main
                             : Colors[resolvedTheme].primary,
                       }}
@@ -473,56 +778,12 @@ export default function Header() {
                       color: Colors[resolvedTheme].primary,
                     }}
                   >
-                    Your Events
+                    Create Events
                   </ListItemText>
-                  {open ? (
-                    <ExpandLess
-                      sx={{
-                        color: Colors[resolvedTheme].primary,
-                      }}
-                    />
-                  ) : (
-                    <ExpandMore
-                      sx={{
-                        color: Colors[resolvedTheme].primary,
-                      }}
-                    />
-                  )}
                 </ListItemButton>
-
-                <Collapse in={open} timeout="auto" unmountOnExit>
-                  <List component="div" disablePadding>
-                    <ListItemButton sx={{ pl: 4 }}>
-                      <ListItemText>No events</ListItemText>
-                    </ListItemButton>
-                  </List>
-                </Collapse>
-              </>
-            )}
-            <Box sx={{ marginTop: "12px " }}>
-              <Button
-                fullWidth
-                onClick={createEvent}
-                sx={{
-                  textTransform: "none",
-                  color: Colors[resolvedTheme].primary.main,
-                }}
-                type="submit"
-                size="medium"
-                variant="contained"
-                startIcon={<AddOutlinedIcon />}
-              >
-                Create new event
-              </Button>
-            </Box>
-
-            <Divider
-              sx={{
-                borderColor: Colors[resolvedTheme].divider,
-                marginTop: "12px",
-              }}
-            />
-          </List>
+              </List>
+            </>
+          )}
         </>
       )}
     </>
@@ -1039,225 +1300,314 @@ export default function Header() {
           Error updating privacy settings!
         </Alert>
       </Snackbar>
-
-      <AppBar
-        position="fixed"
-        sx={{
-          bgcolor: Colors[resolvedTheme].header_bg,
-          borderBottom: Colors[resolvedTheme].border,
-          boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
-          zIndex: (theme) => theme.zIndex.drawer + 1,
-        }}
-      >
-        <Container maxWidth={false}>
-          <Toolbar disableGutters>
-            <Box
-              component="div"
-              sx={{
-                whiteSpace: "nowrap",
-                mr: !events ? 2 : 0,
-                variant: "h6",
-                display: !events
-                  ? { xs: "none", md: "flex" }
-                  : { xs: "flex", md: "flex", sm: "flex" },
-                ":hover": {
-                  borderRadius: (theme) => Number(theme.shape.borderRadius) * 2,
-                  background: Colors[resolvedTheme].hover,
-                },
-              }}
-            >
-              <IconButton edge="start" size="small">
-                <Link href="/">
-                  <a>
-                    <Image
-                      src={"/icons/impish.svg"}
-                      width={45}
-                      height={32}
-                      alt={`Impish icon`}
-                    />
-                  </a>
-                </Link>
-              </IconButton>
-            </Box>
-            <Box
-              sx={{
-                flexGrow: 1,
-                display: !events
-                  ? { xs: "flex", md: "none" }
-                  : { xs: "flex", md: "none", sm: "none" },
-              }}
-            >
-              <IconButton
-                size="large"
-                onClick={handleDrawerToggle}
+      {!showCreateEvent ? (
+        <AppBar
+          position="fixed"
+          sx={{
+            bgcolor: Colors[resolvedTheme].header_bg,
+            borderBottom: Colors[resolvedTheme].border,
+            boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+          }}
+        >
+          <Container maxWidth={false}>
+            <Toolbar disableGutters>
+              <Box
+                component="div"
                 sx={{
-                  color: (theme) =>
-                    mobileOpen
-                      ? theme.palette.primary.main
-                      : Colors[resolvedTheme].primary,
+                  whiteSpace: "nowrap",
+                  mr: !events ? 2 : 0,
+                  variant: "h6",
+                  display: !events
+                    ? { xs: "none", md: "flex" }
+                    : { xs: "flex", md: "flex", sm: "flex" },
                   ":hover": {
-                    backgroundColor: Colors[resolvedTheme].hover,
+                    borderRadius: (theme) =>
+                      Number(theme.shape.borderRadius) * 2,
+                    background: Colors[resolvedTheme].hover,
                   },
                 }}
               >
-                <MenuIcon />
-              </IconButton>
-            </Box>
-            <Box
-              sx={{
-                flexGrow: 1,
-                display: !events
-                  ? { xs: "none", md: "flex" }
-                  : { xs: "none", md: "flex", sm: "flex" },
-              }}
-            ></Box>
-            {user ? (
-              <Box sx={{ flexGrow: 0 }}>
-                <Tooltip title="Notifications">
-                  <IconButton
-                    size="large"
-                    onClick={handleOpenNotification}
-                    sx={{
-                      color: (theme) =>
-                        anchorElNotification
-                          ? theme.palette.primary.main
-                          : Colors[resolvedTheme].primary,
-                      ":hover": {
-                        backgroundColor: Colors[resolvedTheme].hover,
-                      },
-                    }}
-                  >
-                    <Badge
-                      badgeContent={totalUnread}
-                      invisible={totalUnread == 0}
-                      color="error"
-                    >
-                      <NotificationsIcon />
-                    </Badge>
-                  </IconButton>
-                </Tooltip>
-
-                <Tooltip title="Buy Crypto">
-                  <IconButton
-                    size="large"
-                    sx={{
-                      color: (theme) =>
-                        buyOpen
-                          ? theme.palette.primary.main
-                          : Colors[resolvedTheme].primary,
-                      ":hover": {
-                        backgroundColor: Colors[resolvedTheme].hover,
-                      },
-                    }}
-                    onClick={buyModal}
-                  >
-                    <CreditCardIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Account">
-                  <IconButton
-                    size="large"
-                    sx={{
-                      color: (theme) =>
-                        anchorElUser
-                          ? theme.palette.primary.main
-                          : Colors[resolvedTheme].primary,
-                      ":hover": {
-                        backgroundColor: Colors[resolvedTheme].hover,
-                      },
-                    }}
-                    onClick={handleOpenUserMenu}
-                  >
-                    <AccountCircleIcon />
-                  </IconButton>
-                </Tooltip>
-
-                <Popover
-                  open={Boolean(anchorElNotification)}
-                  anchorEl={anchorElNotification}
-                  onClose={handleCloseNotification}
+                <IconButton edge="start" size="small">
+                  <Link href="/">
+                    <a>
+                      <Image
+                        src={"/icons/impish.svg"}
+                        width={45}
+                        height={32}
+                        alt={`Impish icon`}
+                      />
+                    </a>
+                  </Link>
+                </IconButton>
+              </Box>
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  display: !events
+                    ? { xs: "flex", md: "none" }
+                    : { xs: "flex", md: "none", sm: "none" },
+                }}
+              >
+                <IconButton
+                  size="large"
+                  onClick={handleDrawerToggle}
                   sx={{
-                    mt: "45px",
-                  }}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  keepMounted
-                  PaperProps={{
-                    sx: {
-                      borderRadius: (theme) => theme.shape.borderRadius,
-                      width: 330,
-                      bgcolor: Colors[resolvedTheme].header_bg,
-                      color: Colors[resolvedTheme].primary,
+                    color: (theme) =>
+                      mobileOpen
+                        ? theme.palette.primary.main
+                        : Colors[resolvedTheme].primary,
+                    ":hover": {
+                      backgroundColor: Colors[resolvedTheme].hover,
                     },
                   }}
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
                 >
-                  <Box sx={{ flexGrow: 1, p: 3 }}>
-                    <Grid
-                      container
-                      direction="row"
-                      justifyContent="space-between"
-                      alignItems="center"
+                  <MenuIcon />
+                </IconButton>
+              </Box>
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  display: !events
+                    ? { xs: "none", md: "flex" }
+                    : { xs: "none", md: "flex", sm: "flex" },
+                }}
+              ></Box>
+              {user ? (
+                <Box sx={{ flexGrow: 0 }}>
+                  <Tooltip title="Notifications">
+                    <IconButton
+                      size="large"
+                      onClick={handleOpenNotification}
+                      sx={{
+                        color: (theme) =>
+                          anchorElNotification
+                            ? theme.palette.primary.main
+                            : Colors[resolvedTheme].primary,
+                        ":hover": {
+                          backgroundColor: Colors[resolvedTheme].hover,
+                        },
+                      }}
                     >
-                      <Box sx={{ flexGrow: 1 }}>
-                        <Typography
-                          variant="subtitle1"
-                          sx={{ fontWeight: 600, margin: 0 }}
-                        >
-                          Notifications
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: Colors[resolvedTheme].secondary }}
-                        >
-                          You have {totalUnread} unread messages
-                        </Typography>
-                      </Box>
-                      {totalUnread > 0 && (
-                        <Tooltip title="Mark all as read">
-                          <IconButton
-                            color="primary"
-                            onClick={markNotificationAsRead}
-                            size="large"
+                      <Badge
+                        badgeContent={totalUnread}
+                        invisible={totalUnread == 0}
+                        color="error"
+                      >
+                        <NotificationsIcon />
+                      </Badge>
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip title="Buy Crypto">
+                    <IconButton
+                      size="large"
+                      sx={{
+                        color: (theme) =>
+                          buyOpen
+                            ? theme.palette.primary.main
+                            : Colors[resolvedTheme].primary,
+                        ":hover": {
+                          backgroundColor: Colors[resolvedTheme].hover,
+                        },
+                      }}
+                      onClick={buyModal}
+                    >
+                      <CreditCardIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Account">
+                    <IconButton
+                      size="large"
+                      sx={{
+                        color: (theme) =>
+                          anchorElUser
+                            ? theme.palette.primary.main
+                            : Colors[resolvedTheme].primary,
+                        ":hover": {
+                          backgroundColor: Colors[resolvedTheme].hover,
+                        },
+                      }}
+                      onClick={handleOpenUserMenu}
+                    >
+                      <AccountCircleIcon />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Popover
+                    open={Boolean(anchorElNotification)}
+                    anchorEl={anchorElNotification}
+                    onClose={handleCloseNotification}
+                    sx={{
+                      mt: "45px",
+                    }}
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    keepMounted
+                    PaperProps={{
+                      sx: {
+                        borderRadius: (theme) => theme.shape.borderRadius,
+                        width: 330,
+                        bgcolor: Colors[resolvedTheme].header_bg,
+                        color: Colors[resolvedTheme].primary,
+                      },
+                    }}
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                  >
+                    <Box sx={{ flexGrow: 1, p: 3 }}>
+                      <Grid
+                        container
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                      >
+                        <Box sx={{ flexGrow: 1 }}>
+                          <Typography
+                            variant="subtitle1"
+                            sx={{ fontWeight: 600, margin: 0 }}
                           >
-                            <DoneAllIcon
+                            Notifications
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: Colors[resolvedTheme].secondary }}
+                          >
+                            You have {totalUnread} unread messages
+                          </Typography>
+                        </Box>
+                        {totalUnread > 0 && (
+                          <Tooltip title="Mark all as read">
+                            <IconButton
                               color="primary"
-                              sx={{
-                                fontSize: 18,
-                              }}
-                            />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </Grid>
-                  </Box>
-                  <Divider
-                    sx={{ borderBottom: Colors[resolvedTheme].border }}
-                  />
-                  {newNotificationsLength !== 0 && (
-                    <List
-                      disablePadding
-                      subheader={
-                        <ListSubheader
-                          disableSticky
-                          sx={{
-                            py: 1,
-                            px: 2.5,
-                            typography: "overline",
-                            fontWeight: 600,
-                            color: Colors[resolvedTheme].primary,
-                          }}
-                        >
-                          New
-                        </ListSubheader>
-                      }
-                    >
-                      <MenuList>
+                              onClick={markNotificationAsRead}
+                              size="large"
+                            >
+                              <DoneAllIcon
+                                color="primary"
+                                sx={{
+                                  fontSize: 18,
+                                }}
+                              />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      </Grid>
+                    </Box>
+                    <Divider
+                      sx={{ borderBottom: Colors[resolvedTheme].border }}
+                    />
+                    {newNotificationsLength !== 0 && (
+                      <List
+                        disablePadding
+                        subheader={
+                          <ListSubheader
+                            disableSticky
+                            sx={{
+                              py: 1,
+                              px: 2.5,
+                              typography: "overline",
+                              fontWeight: 600,
+                              color: Colors[resolvedTheme].primary,
+                            }}
+                          >
+                            New
+                          </ListSubheader>
+                        }
+                      >
+                        <MenuList>
+                          {user.notifications.map(
+                            ({
+                              id,
+                              title,
+                              description,
+                              isRead,
+                              createdAt,
+                              avatarImage,
+                              notificationType,
+                            }: any) => {
+                              if (
+                                differenceInCalendarDays(
+                                  new Date(),
+                                  new Date(createdAt)
+                                ) <= 1 &&
+                                !isRead
+                              ) {
+                                return (
+                                  <MenuItem
+                                    sx={{
+                                      ...(!isRead && {
+                                        bgcolor: "action.selected",
+                                      }),
+                                      py: 1.5,
+                                      px: 2.5,
+                                      mt: "1px",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      color: Colors[resolvedTheme].primary,
+                                    }}
+                                    key={id}
+                                  >
+                                    <ListItemText
+                                      primary={shortenText(description)}
+                                      secondary={
+                                        <Typography
+                                          variant="caption"
+                                          sx={{
+                                            fontWeight: 550,
+                                            mt: 0.5,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            color: (theme) =>
+                                              theme.palette.primary.main,
+                                          }}
+                                        >
+                                          <AccessTimeIcon
+                                            sx={{
+                                              mr: 0.5,
+                                              width: 16,
+                                              height: 16,
+                                            }}
+                                          />
+                                          {formatDistanceToNow(
+                                            new Date(createdAt),
+                                            {
+                                              addSuffix: true,
+                                            }
+                                          )}
+                                        </Typography>
+                                      }
+                                    />
+                                  </MenuItem>
+                                );
+                              }
+                            }
+                          )}
+                        </MenuList>
+                      </List>
+                    )}
+                    {earlierNotificationsLength !== 0 && (
+                      <List
+                        disablePadding
+                        subheader={
+                          <ListSubheader
+                            disableSticky
+                            sx={{
+                              py: 1,
+                              px: 2.5,
+                              typography: "overline",
+                              fontWeight: 600,
+                              color: Colors[resolvedTheme].primary,
+                            }}
+                          >
+                            EARLIER
+                          </ListSubheader>
+                        }
+                      >
                         {user.notifications.map(
                           ({
                             id,
@@ -1272,21 +1622,20 @@ export default function Header() {
                               differenceInCalendarDays(
                                 new Date(),
                                 new Date(createdAt)
-                              ) <= 1 &&
-                              !isRead
+                              ) > 1 ||
+                              isRead
                             ) {
                               return (
                                 <MenuItem
                                   sx={{
-                                    ...(!isRead && {
-                                      bgcolor: "action.selected",
-                                    }),
+                                    color: Colors[resolvedTheme].primary,
                                     py: 1.5,
                                     px: 2.5,
                                     mt: "1px",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    color: Colors[resolvedTheme].primary,
+                                    ...(!isRead && {
+                                      bgcolor: "action.selected",
+                                      color: Colors[resolvedTheme].primary,
+                                    }),
                                   }}
                                   key={id}
                                 >
@@ -1325,542 +1674,1286 @@ export default function Header() {
                             }
                           }
                         )}
-                      </MenuList>
-                    </List>
-                  )}
-                  {earlierNotificationsLength !== 0 && (
-                    <List
-                      disablePadding
-                      subheader={
-                        <ListSubheader
-                          disableSticky
+                      </List>
+                    )}
+                    <Divider
+                      sx={{ borderBottom: Colors[resolvedTheme].border }}
+                    />
+                    <Box sx={{ p: 1 }}>
+                      <Button
+                        sx={{
+                          borderRadius: (theme) => theme.shape.borderRadius,
+                          textTransform: "none",
+                        }}
+                        fullWidth
+                      >
+                        View All
+                      </Button>
+                    </Box>
+                  </Popover>
+                  {selectedMenu === "" ? (
+                    <Menu
+                      sx={{ mt: "45px" }}
+                      anchorEl={anchorElUser}
+                      anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
+                      keepMounted
+                      transformOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
+                      open={Boolean(anchorElUser)}
+                      onClose={handleCloseUserMenu}
+                      PaperProps={{
+                        sx: {
+                          borderRadius: (theme) => theme.shape.borderRadius,
+                          width: 250,
+                          bgcolor: Colors[resolvedTheme].header_bg,
+                          color: Colors[resolvedTheme].primary,
+                          boxShadow: Colors[resolvedTheme].account_menu_shadow,
+                        },
+                      }}
+                    >
+                      <MenuItem
+                        onClick={() => {
+                          router.push(
+                            "/" + (user.username || user.walletAddress)
+                          );
+                        }}
+                        sx={{
+                          margin: "10px",
+                          padding: "5px",
+                          borderRadius: "10px",
+                          ":hover": {
+                            backgroundColor: Colors[resolvedTheme].hover,
+                          },
+                        }}
+                      >
+                        <ListItemIcon
+                          style={{ borderRadius: "50%", overflow: "hidden" }}
+                        >
+                          {user.avatarImage ? (
+                            <Image
+                              src={user.avatarImage}
+                              width={48}
+                              height={48}
+                              alt="Avatar"
+                            />
+                          ) : (
+                            <Avatar
+                              size={48}
+                              name={user.walletAddress}
+                              variant="pixel"
+                              colors={[
+                                "#ffad08",
+                                "#edd75a",
+                                "#73b06f",
+                                "#0c8f8f",
+                                "#405059",
+                              ]}
+                            />
+                          )}
+                        </ListItemIcon>
+                        <div style={{ marginLeft: "15px" }}>
+                          <div style={{ color: Colors[resolvedTheme].primary }}>
+                            {shortenText(user.name, 18) ||
+                              shortenAddress(user.walletAddress)}
+                          </div>
+                          <div
+                            style={{ color: Colors[resolvedTheme].secondary }}
+                          >{`See your profile`}</div>
+                        </div>
+                      </MenuItem>
+                      <MenuItem
+                        divider
+                        sx={{
+                          padding: "0px",
+                          margin: "5px 16px",
+                          borderBottom: Colors[resolvedTheme].border,
+                        }}
+                      ></MenuItem>
+                      <MenuItem
+                        onClick={() => setSelectedMenu("settings")}
+                        className={styles.menu_items}
+                        sx={{
+                          ":hover": {
+                            backgroundColor: Colors[resolvedTheme].hover,
+                          },
+                        }}
+                      >
+                        <ListItemIcon>
+                          <SettingsIcon
+                            sx={{ color: Colors[resolvedTheme].primary }}
+                          />
+                        </ListItemIcon>
+                        <span>{`Settings & privacy`}</span>
+                        <ArrowForwardIosIcon style={{ marginLeft: "12%" }} />
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => setSelectedMenu("display")}
+                        className={styles.menu_items}
+                        sx={{
+                          ":hover": {
+                            backgroundColor: Colors[resolvedTheme].hover,
+                          },
+                        }}
+                      >
+                        <ListItemIcon>
+                          <NightlightIcon
+                            sx={{ color: Colors[resolvedTheme].primary }}
+                          />
+                        </ListItemIcon>
+                        <span>Display</span>
+                        <ArrowForwardIosIcon style={{ marginLeft: "49%" }} />
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          handleCloseUserMenu();
+                          setLogoutModal(true);
+                        }}
+                        className={styles.menu_items}
+                        sx={{
+                          ":hover": {
+                            backgroundColor: Colors[resolvedTheme].hover,
+                          },
+                        }}
+                      >
+                        <ListItemIcon>
+                          <LogoutIcon
+                            sx={{ color: Colors[resolvedTheme].primary }}
+                          />
+                        </ListItemIcon>
+                        <div>Log Out</div>
+                      </MenuItem>
+                    </Menu>
+                  ) : selectedMenu === "settings" ? (
+                    <Menu
+                      sx={{ mt: "45px" }}
+                      anchorEl={anchorElUser}
+                      anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
+                      keepMounted
+                      transformOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
+                      open={Boolean(anchorElUser)}
+                      onClose={handleCloseUserMenu}
+                      PaperProps={{
+                        sx: {
+                          borderRadius: (theme) => theme.shape.borderRadius,
+                          width: 250,
+                          bgcolor: Colors[resolvedTheme].header_bg,
+                          color: Colors[resolvedTheme].primary,
+                          boxShadow: Colors[resolvedTheme].account_menu_shadow,
+                        },
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontWeight: "bold",
+                          fontSize: "20px",
+                          marginBottom: "5px",
+                        }}
+                      >
+                        <IconButton
+                          onClick={() => {
+                            setSelectedMenu("");
+                          }}
                           sx={{
-                            py: 1,
-                            px: 2.5,
-                            typography: "overline",
-                            fontWeight: 600,
+                            color: Colors[resolvedTheme].primary,
+                            margin: "0 5px",
+                            alignContent: "center",
+                            ":hover": {
+                              backgroundColor: Colors[resolvedTheme].hover,
+                            },
+                          }}
+                        >
+                          <ArrowBackIosIcon sx={{ marginLeft: "5px" }} />
+                        </IconButton>
+                        {`Settings & privacy`}
+                      </Typography>
+                      <MenuItem
+                        onClick={handleCloseUserMenu}
+                        className={styles.menu_items}
+                        sx={{
+                          ":hover": {
+                            backgroundColor: Colors[resolvedTheme].hover,
+                          },
+                        }}
+                      >
+                        <ListItemIcon>
+                          <SettingsIcon
+                            sx={{ color: Colors[resolvedTheme].primary }}
+                          />
+                        </ListItemIcon>
+                        <Link href="https://reveal.magic.link/impish">
+                          <a target="_blank" rel="noreferrer">
+                            Export Private Key
+                          </a>
+                        </Link>
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          handleCloseUserMenu();
+                          setPrivacyModal(true);
+                        }}
+                        className={styles.menu_items}
+                        sx={{
+                          ":hover": {
+                            backgroundColor: Colors[resolvedTheme].hover,
+                          },
+                        }}
+                      >
+                        <ListItemIcon>
+                          <LockIcon
+                            sx={{ color: Colors[resolvedTheme].primary }}
+                          />
+                        </ListItemIcon>
+                        Privacy
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          handleCloseUserMenu();
+                          setTwitterModal(true);
+                        }}
+                        className={styles.menu_items}
+                        sx={{
+                          color: "rgb(29, 161, 242)",
+                          ":hover": {
+                            backgroundColor: Colors[resolvedTheme].hover,
+                          },
+                        }}
+                      >
+                        <ListItemIcon sx={{ color: "inherit" }}>
+                          <TwitterIcon style={{ marginRight: "5px" }} />
+                        </ListItemIcon>
+
+                        <div>
+                          {!user.twitterUsername ? (
+                            "Link Twitter"
+                          ) : (
+                            <div style={{ color: "red" }}>Unlink Twitter</div>
+                          )}
+                        </div>
+                      </MenuItem>
+                    </Menu>
+                  ) : selectedMenu === "display" ? (
+                    <Menu
+                      sx={{ mt: "45px" }}
+                      anchorEl={anchorElUser}
+                      anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
+                      keepMounted
+                      transformOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
+                      open={Boolean(anchorElUser)}
+                      onClose={handleCloseUserMenu}
+                      PaperProps={{
+                        sx: {
+                          borderRadius: (theme) => theme.shape.borderRadius,
+                          width: 250,
+                          bgcolor: Colors[resolvedTheme].header_bg,
+                          color: Colors[resolvedTheme].primary,
+                          boxShadow: Colors[resolvedTheme].account_menu_shadow,
+                        },
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontWeight: "bold",
+                          fontSize: "20px",
+                          marginBottom: "5px",
+                        }}
+                      >
+                        <IconButton
+                          onClick={() => {
+                            setSelectedMenu("");
+                          }}
+                          sx={{
+                            color: Colors[resolvedTheme].primary,
+                            margin: "0 5px",
+                            alignContent: "center",
+                            ":hover": {
+                              backgroundColor: Colors[resolvedTheme].hover,
+                            },
+                          }}
+                        >
+                          <ArrowBackIosIcon sx={{ marginLeft: "5px" }} />
+                        </IconButton>
+                        Display
+                      </Typography>
+                      <FormControl style={{ padding: "6px 16px" }}>
+                        <FormLabel
+                          id="dark-mode-group"
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
                             color: Colors[resolvedTheme].primary,
                           }}
                         >
-                          EARLIER
-                        </ListSubheader>
-                      }
-                    >
-                      {user.notifications.map(
-                        ({
-                          id,
-                          title,
-                          description,
-                          isRead,
-                          createdAt,
-                          avatarImage,
-                          notificationType,
-                        }: any) => {
-                          if (
-                            differenceInCalendarDays(
-                              new Date(),
-                              new Date(createdAt)
-                            ) > 1 ||
-                            isRead
-                          ) {
-                            return (
-                              <MenuItem
-                                sx={{
-                                  color: Colors[resolvedTheme].primary,
-                                  py: 1.5,
-                                  px: 2.5,
-                                  mt: "1px",
-                                  ...(!isRead && {
-                                    bgcolor: "action.selected",
-                                    color: Colors[resolvedTheme].primary,
-                                  }),
-                                }}
-                                key={id}
-                              >
-                                <ListItemText
-                                  primary={shortenText(description)}
-                                  secondary={
-                                    <Typography
-                                      variant="caption"
-                                      sx={{
-                                        fontWeight: 550,
-                                        mt: 0.5,
-                                        display: "flex",
-                                        alignItems: "center",
-                                        color: (theme) =>
-                                          theme.palette.primary.main,
-                                      }}
-                                    >
-                                      <AccessTimeIcon
-                                        sx={{ mr: 0.5, width: 16, height: 16 }}
-                                      />
-                                      {formatDistanceToNow(
-                                        new Date(createdAt),
-                                        {
-                                          addSuffix: true,
-                                        }
-                                      )}
-                                    </Typography>
-                                  }
-                                />
-                              </MenuItem>
-                            );
-                          }
-                        }
-                      )}
-                    </List>
-                  )}
-                  <Divider
-                    sx={{ borderBottom: Colors[resolvedTheme].border }}
-                  />
-                  <Box sx={{ p: 1 }}>
-                    <Button
-                      sx={{
-                        borderRadius: (theme) => theme.shape.borderRadius,
-                        textTransform: "none",
-                      }}
-                      fullWidth
-                    >
-                      View All
-                    </Button>
-                  </Box>
-                </Popover>
-                {selectedMenu === "" ? (
-                  <Menu
-                    sx={{ mt: "45px" }}
-                    anchorEl={anchorElUser}
-                    anchorOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
-                    }}
-                    keepMounted
-                    transformOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
-                    }}
-                    open={Boolean(anchorElUser)}
-                    onClose={handleCloseUserMenu}
-                    PaperProps={{
-                      sx: {
-                        borderRadius: (theme) => theme.shape.borderRadius,
-                        width: 250,
-                        bgcolor: Colors[resolvedTheme].header_bg,
-                        color: Colors[resolvedTheme].primary,
-                        boxShadow: Colors[resolvedTheme].account_menu_shadow,
-                      },
-                    }}
-                  >
-                    <MenuItem
-                      onClick={() => {
-                        router.push(
-                          "/" + (user.username || user.walletAddress)
-                        );
-                      }}
-                      sx={{
-                        margin: "10px",
-                        padding: "5px",
-                        borderRadius: "10px",
-                        ":hover": {
-                          backgroundColor: Colors[resolvedTheme].hover,
-                        },
-                      }}
-                    >
-                      <ListItemIcon
-                        style={{ borderRadius: "50%", overflow: "hidden" }}
-                      >
-                        {user.avatarImage ? (
-                          <Image
-                            src={user.avatarImage}
-                            width={48}
-                            height={48}
-                            alt="Avatar"
-                          />
-                        ) : (
-                          <Avatar
-                            size={48}
-                            name={user.walletAddress}
-                            variant="pixel"
-                            colors={[
-                              "#ffad08",
-                              "#edd75a",
-                              "#73b06f",
-                              "#0c8f8f",
-                              "#405059",
-                            ]}
-                          />
-                        )}
-                      </ListItemIcon>
-                      <div style={{ marginLeft: "15px" }}>
-                        <div style={{ color: Colors[resolvedTheme].primary }}>
-                          {shortenText(user.name, 18) ||
-                            shortenAddress(user.walletAddress)}
-                        </div>
-                        <div
-                          style={{ color: Colors[resolvedTheme].secondary }}
-                        >{`See your profile`}</div>
-                      </div>
-                    </MenuItem>
-                    <MenuItem
-                      divider
-                      sx={{
-                        padding: "0px",
-                        margin: "5px 16px",
-                        borderBottom: Colors[resolvedTheme].border,
-                      }}
-                    ></MenuItem>
-                    <MenuItem
-                      onClick={() => setSelectedMenu("settings")}
-                      className={styles.menu_items}
-                      sx={{
-                        ":hover": {
-                          backgroundColor: Colors[resolvedTheme].hover,
-                        },
-                      }}
-                    >
-                      <ListItemIcon>
-                        <SettingsIcon
-                          sx={{ color: Colors[resolvedTheme].primary }}
-                        />
-                      </ListItemIcon>
-                      <span>{`Settings & privacy`}</span>
-                      <ArrowForwardIosIcon style={{ marginLeft: "12%" }} />
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() => setSelectedMenu("display")}
-                      className={styles.menu_items}
-                      sx={{
-                        ":hover": {
-                          backgroundColor: Colors[resolvedTheme].hover,
-                        },
-                      }}
-                    >
-                      <ListItemIcon>
-                        <NightlightIcon
-                          sx={{ color: Colors[resolvedTheme].primary }}
-                        />
-                      </ListItemIcon>
-                      <span>Display</span>
-                      <ArrowForwardIosIcon style={{ marginLeft: "49%" }} />
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() => {
-                        handleCloseUserMenu();
-                        setLogoutModal(true);
-                      }}
-                      className={styles.menu_items}
-                      sx={{
-                        ":hover": {
-                          backgroundColor: Colors[resolvedTheme].hover,
-                        },
-                      }}
-                    >
-                      <ListItemIcon>
-                        <LogoutIcon
-                          sx={{ color: Colors[resolvedTheme].primary }}
-                        />
-                      </ListItemIcon>
-                      <div>Log Out</div>
-                    </MenuItem>
-                  </Menu>
-                ) : selectedMenu === "settings" ? (
-                  <Menu
-                    sx={{ mt: "45px" }}
-                    anchorEl={anchorElUser}
-                    anchorOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
-                    }}
-                    keepMounted
-                    transformOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
-                    }}
-                    open={Boolean(anchorElUser)}
-                    onClose={handleCloseUserMenu}
-                    PaperProps={{
-                      sx: {
-                        borderRadius: (theme) => theme.shape.borderRadius,
-                        width: 250,
-                        bgcolor: Colors[resolvedTheme].header_bg,
-                        color: Colors[resolvedTheme].primary,
-                        boxShadow: Colors[resolvedTheme].account_menu_shadow,
-                      },
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontWeight: "bold",
-                        fontSize: "20px",
-                        marginBottom: "5px",
-                      }}
-                    >
-                      <IconButton
-                        onClick={() => {
-                          setSelectedMenu("");
-                        }}
-                        sx={{
-                          color: Colors[resolvedTheme].primary,
-                          margin: "0 5px",
-                          alignContent: "center",
-                          ":hover": {
-                            backgroundColor: Colors[resolvedTheme].hover,
-                          },
-                        }}
-                      >
-                        <ArrowBackIosIcon sx={{ marginLeft: "5px" }} />
-                      </IconButton>
-                      {`Settings & privacy`}
-                    </Typography>
-                    <MenuItem
-                      onClick={handleCloseUserMenu}
-                      className={styles.menu_items}
-                      sx={{
-                        ":hover": {
-                          backgroundColor: Colors[resolvedTheme].hover,
-                        },
-                      }}
-                    >
-                      <ListItemIcon>
-                        <SettingsIcon
-                          sx={{ color: Colors[resolvedTheme].primary }}
-                        />
-                      </ListItemIcon>
-                      <Link href="https://reveal.magic.link/impish">
-                        <a target="_blank" rel="noreferrer">
-                          Export Private Key
-                        </a>
-                      </Link>
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() => {
-                        handleCloseUserMenu();
-                        setPrivacyModal(true);
-                      }}
-                      className={styles.menu_items}
-                      sx={{
-                        ":hover": {
-                          backgroundColor: Colors[resolvedTheme].hover,
-                        },
-                      }}
-                    >
-                      <ListItemIcon>
-                        <LockIcon
-                          sx={{ color: Colors[resolvedTheme].primary }}
-                        />
-                      </ListItemIcon>
-                      Privacy
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() => {
-                        handleCloseUserMenu();
-                        setTwitterModal(true);
-                      }}
-                      className={styles.menu_items}
-                      sx={{
-                        color: "rgb(29, 161, 242)",
-                        ":hover": {
-                          backgroundColor: Colors[resolvedTheme].hover,
-                        },
-                      }}
-                    >
-                      <ListItemIcon sx={{ color: "inherit" }}>
-                        <TwitterIcon style={{ marginRight: "5px" }} />
-                      </ListItemIcon>
-
-                      <div>
-                        {!user.twitterUsername ? (
-                          "Link Twitter"
-                        ) : (
-                          <div style={{ color: "red" }}>Unlink Twitter</div>
-                        )}
-                      </div>
-                    </MenuItem>
-                  </Menu>
-                ) : selectedMenu === "display" ? (
-                  <Menu
-                    sx={{ mt: "45px" }}
-                    anchorEl={anchorElUser}
-                    anchorOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
-                    }}
-                    keepMounted
-                    transformOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
-                    }}
-                    open={Boolean(anchorElUser)}
-                    onClose={handleCloseUserMenu}
-                    PaperProps={{
-                      sx: {
-                        borderRadius: (theme) => theme.shape.borderRadius,
-                        width: 250,
-                        bgcolor: Colors[resolvedTheme].header_bg,
-                        color: Colors[resolvedTheme].primary,
-                        boxShadow: Colors[resolvedTheme].account_menu_shadow,
-                      },
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontWeight: "bold",
-                        fontSize: "20px",
-                        marginBottom: "5px",
-                      }}
-                    >
-                      <IconButton
-                        onClick={() => {
-                          setSelectedMenu("");
-                        }}
-                        sx={{
-                          color: Colors[resolvedTheme].primary,
-                          margin: "0 5px",
-                          alignContent: "center",
-                          ":hover": {
-                            backgroundColor: Colors[resolvedTheme].hover,
-                          },
-                        }}
-                      >
-                        <ArrowBackIosIcon sx={{ marginLeft: "5px" }} />
-                      </IconButton>
-                      Display
-                    </Typography>
-                    <FormControl style={{ padding: "6px 16px" }}>
-                      <FormLabel
-                        id="dark-mode-group"
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          alignItems: "center",
-                          color: Colors[resolvedTheme].primary,
-                        }}
-                      >
-                        <NightlightIcon />
-                        <Typography
-                          style={{ marginLeft: 7, fontWeight: "bold" }}
+                          <NightlightIcon />
+                          <Typography
+                            style={{ marginLeft: 7, fontWeight: "bold" }}
+                          >
+                            Dark Mode
+                          </Typography>
+                        </FormLabel>
+                        <RadioGroup
+                          aria-labelledby="dark-mode-group"
+                          name="darkMode"
+                          value={darkMode}
+                          onChange={changeDarkMode}
+                          style={{ marginTop: 10, marginLeft: 10, width: 180 }}
                         >
-                          Dark Mode
-                        </Typography>
-                      </FormLabel>
-                      <RadioGroup
-                        aria-labelledby="dark-mode-group"
-                        name="darkMode"
-                        value={darkMode}
-                        onChange={changeDarkMode}
-                        style={{ marginTop: 10, marginLeft: 10, width: 180 }}
-                      >
-                        <FormControlLabel
-                          value="system"
-                          control={
-                            <Radio
-                              style={{ padding: 3 }}
-                              sx={{
-                                "&": { color: Colors[resolvedTheme].primary },
-                              }}
-                            />
-                          }
-                          label="System"
-                          labelPlacement="start"
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                          }}
-                        />
-                        <FormControlLabel
-                          value="light"
-                          control={
-                            <Radio
-                              style={{ padding: 3 }}
-                              sx={{
-                                "&": { color: Colors[resolvedTheme].primary },
-                              }}
-                            />
-                          }
-                          label="Off"
-                          labelPlacement="start"
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                          }}
-                        />
-                        <FormControlLabel
-                          value="dark"
-                          control={
-                            <Radio
-                              style={{ padding: 3 }}
-                              sx={{
-                                "&": { color: Colors[resolvedTheme].primary },
-                              }}
-                            />
-                          }
-                          label="On"
-                          labelPlacement="start"
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                          }}
-                        />
-                      </RadioGroup>
-                    </FormControl>
-                  </Menu>
-                ) : null}
-              </Box>
-            ) : (
-              <Box sx={{ flexGrow: 0 }}>
-                <div>
-                  <form
-                    onSubmit={handleSubmit(onSubmit)}
-                    className={styles.login_items}
-                  >
-                    <TextField
-                      label="Email address"
-                      variant="outlined"
-                      autoComplete="email"
-                      autoFocus
-                      {...register("email", {
-                        required: "Required field",
-                        pattern: {
-                          value:
-                            /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
-                          message: "Invalid email address",
-                        },
-                      })}
-                      error={!!errors?.email}
-                      helperText={errors?.email ? errors.email.message : null}
-                      size="small"
-                      sx={(theme) => ({
-                        "&& .MuiFormHelperText-root": {
-                          fontSize: "0.60rem",
-                          position: "absolute",
-                          marginTop: "38px",
-                          [theme.breakpoints.down("md")]: {
-                            marginTop: "36px",
-                          },
-                        },
-                      })}
-                    />
-                    <LoadingButton
-                      loading={signingIn}
-                      sx={(theme) => ({
-                        [theme.breakpoints.down("md")]: {
-                          height: "36px",
-                          fontSize: "10px",
-                          padding: "8px 5px",
-                        },
-                      })}
-                      type="submit"
-                      size="large"
-                      variant="contained"
+                          <FormControlLabel
+                            value="system"
+                            control={
+                              <Radio
+                                style={{ padding: 3 }}
+                                sx={{
+                                  "&": { color: Colors[resolvedTheme].primary },
+                                }}
+                              />
+                            }
+                            label="System"
+                            labelPlacement="start"
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                            }}
+                          />
+                          <FormControlLabel
+                            value="light"
+                            control={
+                              <Radio
+                                style={{ padding: 3 }}
+                                sx={{
+                                  "&": { color: Colors[resolvedTheme].primary },
+                                }}
+                              />
+                            }
+                            label="Off"
+                            labelPlacement="start"
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                            }}
+                          />
+                          <FormControlLabel
+                            value="dark"
+                            control={
+                              <Radio
+                                style={{ padding: 3 }}
+                                sx={{
+                                  "&": { color: Colors[resolvedTheme].primary },
+                                }}
+                              />
+                            }
+                            label="On"
+                            labelPlacement="start"
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                            }}
+                          />
+                        </RadioGroup>
+                      </FormControl>
+                    </Menu>
+                  ) : null}
+                </Box>
+              ) : (
+                <Box sx={{ flexGrow: 0 }}>
+                  <div>
+                    <form
+                      onSubmit={handleSubmit(onSubmit)}
+                      className={styles.login_items}
                     >
-                      Log in / Sign up
-                    </LoadingButton>
-                  </form>
-                </div>
+                      <TextField
+                        label="Email address"
+                        variant="outlined"
+                        autoComplete="email"
+                        autoFocus
+                        {...register("email", {
+                          required: "Required field",
+                          pattern: {
+                            value:
+                              /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+                            message: "Invalid email address",
+                          },
+                        })}
+                        error={!!errors?.email}
+                        helperText={errors?.email ? errors.email.message : null}
+                        size="small"
+                        sx={(theme) => ({
+                          "&& .MuiFormHelperText-root": {
+                            fontSize: "0.60rem",
+                            position: "absolute",
+                            marginTop: "38px",
+                            [theme.breakpoints.down("md")]: {
+                              marginTop: "36px",
+                            },
+                          },
+                        })}
+                      />
+                      <LoadingButton
+                        loading={signingIn}
+                        sx={(theme) => ({
+                          [theme.breakpoints.down("md")]: {
+                            height: "36px",
+                            fontSize: "10px",
+                            padding: "8px 5px",
+                          },
+                        })}
+                        type="submit"
+                        size="large"
+                        variant="contained"
+                      >
+                        Log in / Sign up
+                      </LoadingButton>
+                    </form>
+                  </div>
+                </Box>
+              )}
+            </Toolbar>
+          </Container>
+        </AppBar>
+      ) : (
+        <AppBar
+          position="fixed"
+          sx={{
+            bgcolor: "transparent",
+            boxShadow: "none",
+          }}
+        >
+          <Container maxWidth={false}>
+            <Toolbar disableGutters>
+              <Box
+                component="div"
+                sx={{
+                  whiteSpace: "nowrap",
+                  mr: !events ? 2 : 0,
+                  variant: "h6",
+                  display: !events
+                    ? { xs: "none", md: "flex" }
+                    : { xs: "flex", md: "flex", sm: "flex" },
+                  ":hover": {
+                    borderRadius: (theme) =>
+                      Number(theme.shape.borderRadius) * 2,
+                    background: Colors[resolvedTheme].hover,
+                  },
+                }}
+              >
+                <IconButton edge="start" size="small">
+                  <Link href="/">
+                    <a>
+                      <Image
+                        src={"/icons/impish.svg"}
+                        width={45}
+                        height={32}
+                        alt={`Impish icon`}
+                      />
+                    </a>
+                  </Link>
+                </IconButton>
               </Box>
-            )}
-          </Toolbar>
-        </Container>
-      </AppBar>
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  display: !events
+                    ? { xs: "flex", md: "none" }
+                    : { xs: "flex", md: "none", sm: "none" },
+                }}
+              >
+                <IconButton
+                  size="large"
+                  onClick={handleDrawerToggle}
+                  sx={{
+                    color: (theme) =>
+                      mobileOpen
+                        ? theme.palette.primary.main
+                        : Colors[resolvedTheme].primary,
+                    ":hover": {
+                      backgroundColor: Colors[resolvedTheme].hover,
+                    },
+                  }}
+                >
+                  <MenuIcon />
+                </IconButton>
+              </Box>
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  display: !events
+                    ? { xs: "none", md: "flex" }
+                    : { xs: "none", md: "flex", sm: "flex" },
+                }}
+              ></Box>
+              {user ? (
+                <Box sx={{ flexGrow: 0 }}>
+                  <Tooltip title="Notifications">
+                    <IconButton
+                      size="large"
+                      onClick={handleOpenNotification}
+                      sx={{
+                        color: (theme) =>
+                          anchorElNotification
+                            ? theme.palette.primary.main
+                            : Colors[resolvedTheme].primary,
+                        ":hover": {
+                          backgroundColor: Colors[resolvedTheme].hover,
+                        },
+                      }}
+                    >
+                      <Badge
+                        badgeContent={totalUnread}
+                        invisible={totalUnread == 0}
+                        color="error"
+                      >
+                        <NotificationsIcon />
+                      </Badge>
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip title="Buy Crypto">
+                    <IconButton
+                      size="large"
+                      sx={{
+                        color: (theme) =>
+                          buyOpen
+                            ? theme.palette.primary.main
+                            : Colors[resolvedTheme].primary,
+                        ":hover": {
+                          backgroundColor: Colors[resolvedTheme].hover,
+                        },
+                      }}
+                      onClick={buyModal}
+                    >
+                      <CreditCardIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Account">
+                    <IconButton
+                      size="large"
+                      sx={{
+                        color: (theme) =>
+                          anchorElUser
+                            ? theme.palette.primary.main
+                            : Colors[resolvedTheme].primary,
+                        ":hover": {
+                          backgroundColor: Colors[resolvedTheme].hover,
+                        },
+                      }}
+                      onClick={handleOpenUserMenu}
+                    >
+                      <AccountCircleIcon />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Popover
+                    open={Boolean(anchorElNotification)}
+                    anchorEl={anchorElNotification}
+                    onClose={handleCloseNotification}
+                    sx={{
+                      mt: "45px",
+                    }}
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    keepMounted
+                    PaperProps={{
+                      sx: {
+                        borderRadius: (theme) => theme.shape.borderRadius,
+                        width: 330,
+                        bgcolor: Colors[resolvedTheme].header_bg,
+                        color: Colors[resolvedTheme].primary,
+                      },
+                    }}
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                  >
+                    <Box sx={{ flexGrow: 1, p: 3 }}>
+                      <Grid
+                        container
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                      >
+                        <Box sx={{ flexGrow: 1 }}>
+                          <Typography
+                            variant="subtitle1"
+                            sx={{ fontWeight: 600, margin: 0 }}
+                          >
+                            Notifications
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: Colors[resolvedTheme].secondary }}
+                          >
+                            You have {totalUnread} unread messages
+                          </Typography>
+                        </Box>
+                        {totalUnread > 0 && (
+                          <Tooltip title="Mark all as read">
+                            <IconButton
+                              color="primary"
+                              onClick={markNotificationAsRead}
+                              size="large"
+                            >
+                              <DoneAllIcon
+                                color="primary"
+                                sx={{
+                                  fontSize: 18,
+                                }}
+                              />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      </Grid>
+                    </Box>
+                    <Divider
+                      sx={{ borderBottom: Colors[resolvedTheme].border }}
+                    />
+                    {newNotificationsLength !== 0 && (
+                      <List
+                        disablePadding
+                        subheader={
+                          <ListSubheader
+                            disableSticky
+                            sx={{
+                              py: 1,
+                              px: 2.5,
+                              typography: "overline",
+                              fontWeight: 600,
+                              color: Colors[resolvedTheme].primary,
+                            }}
+                          >
+                            New
+                          </ListSubheader>
+                        }
+                      >
+                        <MenuList>
+                          {user.notifications.map(
+                            ({
+                              id,
+                              title,
+                              description,
+                              isRead,
+                              createdAt,
+                              avatarImage,
+                              notificationType,
+                            }: any) => {
+                              if (
+                                differenceInCalendarDays(
+                                  new Date(),
+                                  new Date(createdAt)
+                                ) <= 1 &&
+                                !isRead
+                              ) {
+                                return (
+                                  <MenuItem
+                                    sx={{
+                                      ...(!isRead && {
+                                        bgcolor: "action.selected",
+                                      }),
+                                      py: 1.5,
+                                      px: 2.5,
+                                      mt: "1px",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      color: Colors[resolvedTheme].primary,
+                                    }}
+                                    key={id}
+                                  >
+                                    <ListItemText
+                                      primary={shortenText(description)}
+                                      secondary={
+                                        <Typography
+                                          variant="caption"
+                                          sx={{
+                                            fontWeight: 550,
+                                            mt: 0.5,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            color: (theme) =>
+                                              theme.palette.primary.main,
+                                          }}
+                                        >
+                                          <AccessTimeIcon
+                                            sx={{
+                                              mr: 0.5,
+                                              width: 16,
+                                              height: 16,
+                                            }}
+                                          />
+                                          {formatDistanceToNow(
+                                            new Date(createdAt),
+                                            {
+                                              addSuffix: true,
+                                            }
+                                          )}
+                                        </Typography>
+                                      }
+                                    />
+                                  </MenuItem>
+                                );
+                              }
+                            }
+                          )}
+                        </MenuList>
+                      </List>
+                    )}
+                    {earlierNotificationsLength !== 0 && (
+                      <List
+                        disablePadding
+                        subheader={
+                          <ListSubheader
+                            disableSticky
+                            sx={{
+                              py: 1,
+                              px: 2.5,
+                              typography: "overline",
+                              fontWeight: 600,
+                              color: Colors[resolvedTheme].primary,
+                            }}
+                          >
+                            EARLIER
+                          </ListSubheader>
+                        }
+                      >
+                        {user.notifications.map(
+                          ({
+                            id,
+                            title,
+                            description,
+                            isRead,
+                            createdAt,
+                            avatarImage,
+                            notificationType,
+                          }: any) => {
+                            if (
+                              differenceInCalendarDays(
+                                new Date(),
+                                new Date(createdAt)
+                              ) > 1 ||
+                              isRead
+                            ) {
+                              return (
+                                <MenuItem
+                                  sx={{
+                                    color: Colors[resolvedTheme].primary,
+                                    py: 1.5,
+                                    px: 2.5,
+                                    mt: "1px",
+                                    ...(!isRead && {
+                                      bgcolor: "action.selected",
+                                      color: Colors[resolvedTheme].primary,
+                                    }),
+                                  }}
+                                  key={id}
+                                >
+                                  <ListItemText
+                                    primary={shortenText(description)}
+                                    secondary={
+                                      <Typography
+                                        variant="caption"
+                                        sx={{
+                                          fontWeight: 550,
+                                          mt: 0.5,
+                                          display: "flex",
+                                          alignItems: "center",
+                                          color: (theme) =>
+                                            theme.palette.primary.main,
+                                        }}
+                                      >
+                                        <AccessTimeIcon
+                                          sx={{
+                                            mr: 0.5,
+                                            width: 16,
+                                            height: 16,
+                                          }}
+                                        />
+                                        {formatDistanceToNow(
+                                          new Date(createdAt),
+                                          {
+                                            addSuffix: true,
+                                          }
+                                        )}
+                                      </Typography>
+                                    }
+                                  />
+                                </MenuItem>
+                              );
+                            }
+                          }
+                        )}
+                      </List>
+                    )}
+                    <Divider
+                      sx={{ borderBottom: Colors[resolvedTheme].border }}
+                    />
+                    <Box sx={{ p: 1 }}>
+                      <Button
+                        sx={{
+                          borderRadius: (theme) => theme.shape.borderRadius,
+                          textTransform: "none",
+                        }}
+                        fullWidth
+                      >
+                        View All
+                      </Button>
+                    </Box>
+                  </Popover>
+                  {selectedMenu === "" ? (
+                    <Menu
+                      sx={{ mt: "45px" }}
+                      anchorEl={anchorElUser}
+                      anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
+                      keepMounted
+                      transformOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
+                      open={Boolean(anchorElUser)}
+                      onClose={handleCloseUserMenu}
+                      PaperProps={{
+                        sx: {
+                          borderRadius: (theme) => theme.shape.borderRadius,
+                          width: 250,
+                          bgcolor: Colors[resolvedTheme].header_bg,
+                          color: Colors[resolvedTheme].primary,
+                          boxShadow: Colors[resolvedTheme].account_menu_shadow,
+                        },
+                      }}
+                    >
+                      <MenuItem
+                        onClick={() => {
+                          router.push(
+                            "/" + (user.username || user.walletAddress)
+                          );
+                        }}
+                        sx={{
+                          margin: "10px",
+                          padding: "5px",
+                          borderRadius: "10px",
+                          ":hover": {
+                            backgroundColor: Colors[resolvedTheme].hover,
+                          },
+                        }}
+                      >
+                        <ListItemIcon
+                          style={{ borderRadius: "50%", overflow: "hidden" }}
+                        >
+                          {user.avatarImage ? (
+                            <Image
+                              src={user.avatarImage}
+                              width={48}
+                              height={48}
+                              alt="Avatar"
+                            />
+                          ) : (
+                            <Avatar
+                              size={48}
+                              name={user.walletAddress}
+                              variant="pixel"
+                              colors={[
+                                "#ffad08",
+                                "#edd75a",
+                                "#73b06f",
+                                "#0c8f8f",
+                                "#405059",
+                              ]}
+                            />
+                          )}
+                        </ListItemIcon>
+                        <div style={{ marginLeft: "15px" }}>
+                          <div style={{ color: Colors[resolvedTheme].primary }}>
+                            {shortenText(user.name, 18) ||
+                              shortenAddress(user.walletAddress)}
+                          </div>
+                          <div
+                            style={{ color: Colors[resolvedTheme].secondary }}
+                          >{`See your profile`}</div>
+                        </div>
+                      </MenuItem>
+                      <MenuItem
+                        divider
+                        sx={{
+                          padding: "0px",
+                          margin: "5px 16px",
+                          borderBottom: Colors[resolvedTheme].border,
+                        }}
+                      ></MenuItem>
+                      <MenuItem
+                        onClick={() => setSelectedMenu("settings")}
+                        className={styles.menu_items}
+                        sx={{
+                          ":hover": {
+                            backgroundColor: Colors[resolvedTheme].hover,
+                          },
+                        }}
+                      >
+                        <ListItemIcon>
+                          <SettingsIcon
+                            sx={{ color: Colors[resolvedTheme].primary }}
+                          />
+                        </ListItemIcon>
+                        <span>{`Settings & privacy`}</span>
+                        <ArrowForwardIosIcon style={{ marginLeft: "12%" }} />
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => setSelectedMenu("display")}
+                        className={styles.menu_items}
+                        sx={{
+                          ":hover": {
+                            backgroundColor: Colors[resolvedTheme].hover,
+                          },
+                        }}
+                      >
+                        <ListItemIcon>
+                          <NightlightIcon
+                            sx={{ color: Colors[resolvedTheme].primary }}
+                          />
+                        </ListItemIcon>
+                        <span>Display</span>
+                        <ArrowForwardIosIcon style={{ marginLeft: "49%" }} />
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          handleCloseUserMenu();
+                          setLogoutModal(true);
+                        }}
+                        className={styles.menu_items}
+                        sx={{
+                          ":hover": {
+                            backgroundColor: Colors[resolvedTheme].hover,
+                          },
+                        }}
+                      >
+                        <ListItemIcon>
+                          <LogoutIcon
+                            sx={{ color: Colors[resolvedTheme].primary }}
+                          />
+                        </ListItemIcon>
+                        <div>Log Out</div>
+                      </MenuItem>
+                    </Menu>
+                  ) : selectedMenu === "settings" ? (
+                    <Menu
+                      sx={{ mt: "45px" }}
+                      anchorEl={anchorElUser}
+                      anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
+                      keepMounted
+                      transformOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
+                      open={Boolean(anchorElUser)}
+                      onClose={handleCloseUserMenu}
+                      PaperProps={{
+                        sx: {
+                          borderRadius: (theme) => theme.shape.borderRadius,
+                          width: 250,
+                          bgcolor: Colors[resolvedTheme].header_bg,
+                          color: Colors[resolvedTheme].primary,
+                          boxShadow: Colors[resolvedTheme].account_menu_shadow,
+                        },
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontWeight: "bold",
+                          fontSize: "20px",
+                          marginBottom: "5px",
+                        }}
+                      >
+                        <IconButton
+                          onClick={() => {
+                            setSelectedMenu("");
+                          }}
+                          sx={{
+                            color: Colors[resolvedTheme].primary,
+                            margin: "0 5px",
+                            alignContent: "center",
+                            ":hover": {
+                              backgroundColor: Colors[resolvedTheme].hover,
+                            },
+                          }}
+                        >
+                          <ArrowBackIosIcon sx={{ marginLeft: "5px" }} />
+                        </IconButton>
+                        {`Settings & privacy`}
+                      </Typography>
+                      <MenuItem
+                        onClick={handleCloseUserMenu}
+                        className={styles.menu_items}
+                        sx={{
+                          ":hover": {
+                            backgroundColor: Colors[resolvedTheme].hover,
+                          },
+                        }}
+                      >
+                        <ListItemIcon>
+                          <SettingsIcon
+                            sx={{ color: Colors[resolvedTheme].primary }}
+                          />
+                        </ListItemIcon>
+                        <Link href="https://reveal.magic.link/impish">
+                          <a target="_blank" rel="noreferrer">
+                            Export Private Key
+                          </a>
+                        </Link>
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          handleCloseUserMenu();
+                          setPrivacyModal(true);
+                        }}
+                        className={styles.menu_items}
+                        sx={{
+                          ":hover": {
+                            backgroundColor: Colors[resolvedTheme].hover,
+                          },
+                        }}
+                      >
+                        <ListItemIcon>
+                          <LockIcon
+                            sx={{ color: Colors[resolvedTheme].primary }}
+                          />
+                        </ListItemIcon>
+                        Privacy
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          handleCloseUserMenu();
+                          setTwitterModal(true);
+                        }}
+                        className={styles.menu_items}
+                        sx={{
+                          color: "rgb(29, 161, 242)",
+                          ":hover": {
+                            backgroundColor: Colors[resolvedTheme].hover,
+                          },
+                        }}
+                      >
+                        <ListItemIcon sx={{ color: "inherit" }}>
+                          <TwitterIcon style={{ marginRight: "5px" }} />
+                        </ListItemIcon>
+
+                        <div>
+                          {!user.twitterUsername ? (
+                            "Link Twitter"
+                          ) : (
+                            <div style={{ color: "red" }}>Unlink Twitter</div>
+                          )}
+                        </div>
+                      </MenuItem>
+                    </Menu>
+                  ) : selectedMenu === "display" ? (
+                    <Menu
+                      sx={{ mt: "45px" }}
+                      anchorEl={anchorElUser}
+                      anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
+                      keepMounted
+                      transformOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
+                      open={Boolean(anchorElUser)}
+                      onClose={handleCloseUserMenu}
+                      PaperProps={{
+                        sx: {
+                          borderRadius: (theme) => theme.shape.borderRadius,
+                          width: 250,
+                          bgcolor: Colors[resolvedTheme].header_bg,
+                          color: Colors[resolvedTheme].primary,
+                          boxShadow: Colors[resolvedTheme].account_menu_shadow,
+                        },
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontWeight: "bold",
+                          fontSize: "20px",
+                          marginBottom: "5px",
+                        }}
+                      >
+                        <IconButton
+                          onClick={() => {
+                            setSelectedMenu("");
+                          }}
+                          sx={{
+                            color: Colors[resolvedTheme].primary,
+                            margin: "0 5px",
+                            alignContent: "center",
+                            ":hover": {
+                              backgroundColor: Colors[resolvedTheme].hover,
+                            },
+                          }}
+                        >
+                          <ArrowBackIosIcon sx={{ marginLeft: "5px" }} />
+                        </IconButton>
+                        Display
+                      </Typography>
+                      <FormControl style={{ padding: "6px 16px" }}>
+                        <FormLabel
+                          id="dark-mode-group"
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            color: Colors[resolvedTheme].primary,
+                          }}
+                        >
+                          <NightlightIcon />
+                          <Typography
+                            style={{ marginLeft: 7, fontWeight: "bold" }}
+                          >
+                            Dark Mode
+                          </Typography>
+                        </FormLabel>
+                        <RadioGroup
+                          aria-labelledby="dark-mode-group"
+                          name="darkMode"
+                          value={darkMode}
+                          onChange={changeDarkMode}
+                          style={{ marginTop: 10, marginLeft: 10, width: 180 }}
+                        >
+                          <FormControlLabel
+                            value="system"
+                            control={
+                              <Radio
+                                style={{ padding: 3 }}
+                                sx={{
+                                  "&": { color: Colors[resolvedTheme].primary },
+                                }}
+                              />
+                            }
+                            label="System"
+                            labelPlacement="start"
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                            }}
+                          />
+                          <FormControlLabel
+                            value="light"
+                            control={
+                              <Radio
+                                style={{ padding: 3 }}
+                                sx={{
+                                  "&": { color: Colors[resolvedTheme].primary },
+                                }}
+                              />
+                            }
+                            label="Off"
+                            labelPlacement="start"
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                            }}
+                          />
+                          <FormControlLabel
+                            value="dark"
+                            control={
+                              <Radio
+                                style={{ padding: 3 }}
+                                sx={{
+                                  "&": { color: Colors[resolvedTheme].primary },
+                                }}
+                              />
+                            }
+                            label="On"
+                            labelPlacement="start"
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                            }}
+                          />
+                        </RadioGroup>
+                      </FormControl>
+                    </Menu>
+                  ) : null}
+                </Box>
+              ) : (
+                <Box sx={{ flexGrow: 0 }}>
+                  <div>
+                    <form
+                      onSubmit={handleSubmit(onSubmit)}
+                      className={styles.login_items}
+                    >
+                      <TextField
+                        label="Email address"
+                        variant="outlined"
+                        autoComplete="email"
+                        autoFocus
+                        {...register("email", {
+                          required: "Required field",
+                          pattern: {
+                            value:
+                              /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+                            message: "Invalid email address",
+                          },
+                        })}
+                        error={!!errors?.email}
+                        helperText={errors?.email ? errors.email.message : null}
+                        size="small"
+                        sx={(theme) => ({
+                          "&& .MuiFormHelperText-root": {
+                            fontSize: "0.60rem",
+                            position: "absolute",
+                            marginTop: "38px",
+                            [theme.breakpoints.down("md")]: {
+                              marginTop: "36px",
+                            },
+                          },
+                        })}
+                      />
+                      <LoadingButton
+                        loading={signingIn}
+                        sx={(theme) => ({
+                          [theme.breakpoints.down("md")]: {
+                            height: "36px",
+                            fontSize: "10px",
+                            padding: "8px 5px",
+                          },
+                        })}
+                        type="submit"
+                        size="large"
+                        variant="contained"
+                      >
+                        Log in / Sign up
+                      </LoadingButton>
+                    </form>
+                  </div>
+                </Box>
+              )}
+            </Toolbar>
+          </Container>
+        </AppBar>
+      )}
+
       <Box
         component="nav"
         sx={{ width: { md: drawerWidth }, flexShrink: { sm: 0 } }}
