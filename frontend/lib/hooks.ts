@@ -9,15 +9,15 @@ export function useUser({ redirectTo, redirectIfFound }: any = {}) {
   useEffect(() => {
     if (!redirectTo && !loading) return;
 
-    if (!hasUser) {
+    if (!hasUser && !loading) {
       Router.push("/");
     }
 
     if (
       // If redirectTo is set, redirect if the user was not found.
-      (redirectTo && !redirectIfFound && !hasUser) ||
+      (redirectTo && !redirectIfFound && !hasUser && !loading) ||
       // If redirectIfFound is also set, redirect if the user was found
-      (redirectIfFound && hasUser)
+      (redirectIfFound && hasUser && !loading)
     ) {
       Router.push(redirectTo, "/");
     }
