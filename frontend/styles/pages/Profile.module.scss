@@ -80,14 +80,12 @@
     .name {
       font-size: 1.5rem;
       font-weight: 600;
-      color: rgb(77, 77, 77);
     }
 
     .username {
       margin-top: 5px;
       font-size: 1.1rem;
       font-weight: 500;
-      color: rgb(130, 130, 130);
     }
 
     .address {
@@ -119,11 +117,9 @@
     display: flex;
     margin-top: 25px;
     padding-left: 20px;
-    color: grey;
 
     .since {
       margin-left: 10px;
-      color: black;
     }
   }
 
@@ -198,14 +194,14 @@
     #twtButton {
       color: white;
       text-transform: none;
-      background-color: rgb(29, 161, 242); //Twitter blue
+      // background-color: rgb(29, 161, 242); //Twitter blue
     }
 
     #followAllBtn {
       font-weight: bold;
       color: white;
       text-transform: none;
-      background-color: rgb(29, 161, 242); //Twitter blue
+      // background-color: rgb(29, 161, 242); //Twitter blue
       width: 130px;
     }
     #unfollowAllBtn {

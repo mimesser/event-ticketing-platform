@@ -172,6 +172,12 @@ export default function Twitter() {
                     type="submit"
                     size="large"
                     variant="outlined"
+                    sx={{
+                      backgroundColor: "rgb(29, 161, 242)",
+                      ":hover": {
+                        backgroundColor: "rgb(26, 140, 216)",
+                      },
+                    }}
                     startIcon={<TwitterIcon />}
                   >
                     Find frens I follow

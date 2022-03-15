@@ -26,6 +26,7 @@ import Avatar from "boring-avatars";
 import Layout from "components/Layout";
 import copy from "copy-to-clipboard";
 import { ethers } from "ethers";
+import Colors from "lib/colors";
 import { fetchPublicUser } from "lib/hooks";
 import { useUserInfo } from "lib/user-context";
 import {
@@ -641,7 +642,7 @@ function Profile() {
               {user.name && <div className={styles.name}>{user.name}</div>}
 
               {user.username && (
-                <div className={styles.username}>{`@${user.username}`}</div>
+                <div className={styles.username} style={{color: Colors[resolvedTheme].secondary}}>{`@${user.username}`}</div>
               )}
             </>
           )}
@@ -668,9 +669,9 @@ function Profile() {
         </div>
 
         {user ? (
-          <div className={styles.active}>
+          <div className={styles.active} style={{color: Colors[resolvedTheme].secondary}}>
             Joined
-            <span className={styles.since}>
+            <span className={styles.since} style={{color: Colors[resolvedTheme].primary}}>
               {moment(user.createdAt).format("MMMM YYYY")}
             </span>
             {user.twitterUsername && (
@@ -729,7 +730,7 @@ function Profile() {
                 <Typography
                   component="span"
                   variant="body1"
-                  sx={{ color: "text.secondary" }}
+                  sx={{ color: Colors[resolvedTheme].secondary }}
                 >
                   &nbsp; Following
                 </Typography>
@@ -760,7 +761,7 @@ function Profile() {
                 <Typography
                   component="span"
                   variant="body1"
-                  sx={{ color: "text.secondary" }}
+                  sx={{ color: Colors[resolvedTheme].secondary }}
                 >
                   &nbsp; Followers
                 </Typography>
@@ -792,21 +793,32 @@ function Profile() {
         open={Boolean(anchorElShare)}
         onClose={handleCloseShareMenu}
         PaperProps={{
-          sx: { borderRadius: (theme) => theme.shape.borderRadius },
+          sx: {
+            borderRadius: (theme) => theme.shape.borderRadius,
+            backgroundColor: Colors[resolvedTheme].header_bg,
+          },
         }}
       >
         <MenuItem onClick={copyShareLink}>
-          <ListItemIcon>
+          <ListItemIcon style={{color: Colors[resolvedTheme].secondary}}>
             {linkCopied ? <CheckIcon /> : <ContentCopyIcon />}
           </ListItemIcon>
-          {linkCopied ? "Link Copied" : "Copy Link"}
+          <span
+            style={{color: Colors[resolvedTheme].primary}}
+          >
+            {linkCopied ? "Link Copied" : "Copy Link"}
+          </span>
         </MenuItem>
         {user?.authenticated || user?.showWalletAddress ? (
           <MenuItem onClick={copyShareAddress}>
-            <ListItemIcon>
+            <ListItemIcon style={{color: Colors[resolvedTheme].secondary}}>
               {addressCopied ? <CheckIcon /> : <ContentCopyIcon />}
             </ListItemIcon>
-            {addressCopied ? "Address Copied" : "Copy Address"}
+            <span
+              style={{color: Colors[resolvedTheme].primary}}
+            >
+              {addressCopied ? "Address Copied" : "Copy Address"}
+            </span>
           </MenuItem>
         ) : (
           ""
@@ -1365,6 +1377,12 @@ function Profile() {
                           type="submit"
                           size="large"
                           variant="outlined"
+                          sx={{
+                            backgroundColor: "rgb(29, 161, 242)",
+                            ":hover": {
+                              backgroundColor: "rgb(26, 140, 216)",
+                            },
+                          }}
                           startIcon={<TwitterIcon />}
                         >
                           Find frens I follow
