@@ -37,65 +37,74 @@ function Create() {
             >
               Create Event
             </Typography>
-
-            <Card
+            <IconButton
               sx={{
-                p: 3,
-                backgroundColor: Colors[resolvedTheme]?.header_bg,
                 ":hover": {
-                  backgroundColor: Colors[resolvedTheme]?.icon_bg,
+                  borderRadius: "0",
+                  padding: "0",
                 },
+                padding: "0px",
               }}
             >
-              <Box
+              <Card
                 sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                }}
-              >
-                <IconButton
-                  sx={{
-                    margin: "auto",
-                    backgroundColor: Colors[resolvedTheme]?.icon_bg,
-                  }}
-                >
-                  <GroupSharpIcon
-                    sx={{
-                      color: Colors[resolvedTheme]?.primary,
-                    }}
-                  />
-                </IconButton>
-              </Box>
-              <IconButton
-                sx={{
-                  display: "flex",
-                  margin: "auto",
+                  p: 3,
+                  backgroundColor: Colors[resolvedTheme]?.header_bg,
                   ":hover": {
-                    backgroundColor: "transparent",
+                    backgroundColor: Colors[resolvedTheme]?.icon_bg,
                   },
                 }}
               >
-                <Typography
-                  variant="body1"
+                <Box
                   sx={{
-                    textAlign: "center",
-                    color: Colors[resolvedTheme]?.primary,
+                    display: "flex",
+                    justifyContent: "center",
                   }}
                 >
-                  In Person
-                </Typography>
-              </IconButton>
+                  <IconButton
+                    sx={{
+                      margin: "auto",
+                      backgroundColor: Colors[resolvedTheme]?.icon_bg,
+                    }}
+                  >
+                    <GroupSharpIcon
+                      sx={{
+                        color: Colors[resolvedTheme]?.primary,
+                      }}
+                    />
+                  </IconButton>
+                </Box>
+                <IconButton
+                  sx={{
+                    display: "flex",
+                    margin: "auto",
+                    ":hover": {
+                      backgroundColor: "transparent",
+                    },
+                  }}
+                >
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      textAlign: "center",
+                      color: Colors[resolvedTheme]?.primary,
+                    }}
+                  >
+                    In Person
+                  </Typography>
+                </IconButton>
 
-              <Typography
-                variant="subtitle1"
-                sx={{
-                  textAlign: "center",
-                  color: Colors[resolvedTheme]?.secondary,
-                }}
-              >
-                Get together with people at a specific location
-              </Typography>
-            </Card>
+                <Typography
+                  variant="subtitle1"
+                  sx={{
+                    textAlign: "center",
+                    color: Colors[resolvedTheme]?.secondary,
+                  }}
+                >
+                  Get together with people at a specific location
+                </Typography>
+              </Card>
+            </IconButton>
           </Grid>
         </Box>
       </>
