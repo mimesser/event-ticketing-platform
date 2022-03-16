@@ -6,11 +6,20 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Layout from "components/Layout";
 import Colors from "lib/colors";
+import { useRouter } from "next/router";
 import { getLoginSession } from "lib/auth";
 import { useTheme } from "next-themes";
 
 function Create() {
+  const router = useRouter();
   const { resolvedTheme } = useTheme();
+
+  const createEvent = () => {
+    router.push({
+      pathname: "/events/create",
+      query: { createEvent: true },
+    });
+  };
 
   return (
     <Layout>
@@ -38,6 +47,7 @@ function Create() {
               Create Event
             </Typography>
             <IconButton
+              onClick={createEvent}
               sx={{
                 ":hover": {
                   borderRadius: "0",
@@ -62,9 +72,13 @@ function Create() {
                   }}
                 >
                   <IconButton
+                    disableRipple
                     sx={{
                       margin: "auto",
                       backgroundColor: Colors[resolvedTheme]?.icon_bg,
+                      ":hover": {
+                        backgroundColor: Colors[resolvedTheme]?.icon_bg,
+                      },
                     }}
                   >
                     <GroupSharpIcon
@@ -75,12 +89,10 @@ function Create() {
                   </IconButton>
                 </Box>
                 <IconButton
+                  disableRipple
                   sx={{
                     display: "flex",
                     margin: "auto",
-                    ":hover": {
-                      backgroundColor: "transparent",
-                    },
                   }}
                 >
                   <Typography
