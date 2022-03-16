@@ -868,10 +868,10 @@ export default function Header() {
                       />
 
                       <Grid
-                        sx={{ marginBottom: "12px" }}
+                        sx={{ marginBottom: showEndDate ? "12px" : undefined }}
                         container
                         rowSpacing={1}
-                        columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+                        columnSpacing={{ xs: 1, sm: 2, md: 2 }}
                       >
                         <Grid item xs={6}>
                           <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -959,10 +959,9 @@ export default function Header() {
                       {showEndDate ? (
                         <>
                           <Grid
-                            sx={{ marginBottom: "12px" }}
                             container
                             rowSpacing={1}
-                            columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+                            columnSpacing={{ xs: 1, sm: 2, md: 2 }}
                           >
                             <Grid item xs={6}>
                               <LocalizationProvider
