@@ -1055,13 +1055,16 @@ export default function Header() {
                             }}
                             sx={{
                               ":hover": {
+                                color: (theme) => theme.palette.primary.main,
+                                textDecoration: "underline",
                                 backgroundColor: "transparent",
                               },
                             }}
                           >
                             <Typography
                               sx={{
-                                color: Colors[resolvedTheme].secondary,
+                                fontWeight: 550,
+                                color: (theme) => theme.palette.primary.main,
                                 fontSize: "0.8rem",
                               }}
                               variant="subtitle1"
@@ -1077,14 +1080,17 @@ export default function Header() {
                           }}
                           sx={{
                             ":hover": {
+                              color: (theme) => theme.palette.primary.main,
                               backgroundColor: "transparent",
+                              textDecoration: "underline",
                             },
                           }}
                         >
                           <Typography
                             sx={{
                               fontSize: "0.8rem",
-                              color: Colors[resolvedTheme].secondary,
+                              fontWeight: 550,
+                              color: (theme) => theme.palette.primary.main,
                             }}
                             variant="subtitle1"
                           >
@@ -1093,6 +1099,7 @@ export default function Header() {
                         </IconButton>
                       )}
                       <Button
+                        disableRipple
                         fullWidth
                         sx={{
                           border: "1px solid",
