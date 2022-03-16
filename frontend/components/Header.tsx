@@ -843,7 +843,7 @@ export default function Header() {
                     <form onSubmit={handleSubmit3(onSubmitCreateEvents)}>
                       <TextField
                         fullWidth
-                        label="Event Name"
+                        label="Event name"
                         variant="outlined"
                         autoComplete="event"
                         autoFocus
@@ -1327,7 +1327,7 @@ export default function Header() {
                                   color: Colors[resolvedTheme].secondary,
                                 }}
                               >
-                                Your follwers on Impish
+                                Your followers on Impish
                               </Typography>
                             </Box>
                           </Box>
