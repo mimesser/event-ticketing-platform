@@ -1,4 +1,5 @@
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import AppBar from "@mui/material/AppBar";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -14,6 +15,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Container from "@mui/material/Container";
 import Collapse from "@mui/material/Collapse";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
+import DatePicker from "@mui/lab/DatePicker";
 import Divider from "@mui/material/Divider";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import Drawer from "@mui/material/Drawer";
@@ -34,8 +36,10 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import ListSubheader from "@mui/material/ListSubheader";
 import LoadingButton from "@mui/lab/LoadingButton";
+import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import LockIcon from "@mui/icons-material/Lock";
 import LogoutIcon from "@mui/icons-material/Logout";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -46,6 +50,7 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NightlightIcon from "@mui/icons-material/Nightlight";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Popover from "@mui/material/Popover";
+import PublicRoundedIcon from "@mui/icons-material/PublicRounded";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -69,7 +74,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { signIn, signOut } from "next-auth/react";
 import { useTheme } from "next-themes";
-import React, { useState, useReducer } from "react";
+import React, { useState, useReducer, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import styles from "styles/components/Header.module.scss";
 
@@ -88,10 +93,26 @@ export default function Header() {
   const { user } = useUserInfo();
   const isMobile = useMediaQuery("(max-width:599px)");
   const router = useRouter();
+  const [privacy, setPrivacy] = React.useState("Privacy");
+  const [showEndDate, setShowEndDate] = React.useState(false);
+  const [eventDetails, setEventDetails] = React.useState(false);
+  const [startDate, setStartDate] = React.useState(null);
+  const [endDate, setEndDate] = React.useState(null);
+  const [startTime, setStartTime] = React.useState(null);
+  const [endTime, setEndTime] = React.useState(null);
   const [events] = useState(router.asPath.includes("/events") ? true : false);
-  const [showCreateEvent, setShowCreateEvent] = React.useState(
+  const [showCreateEvent] = React.useState(
     router.pathname === "/events/create" ? true : false
   );
+  const [anchorElPrivacy, setAnchorElPrivacy] = React.useState(null);
+  const openPrivacy = Boolean(anchorElPrivacy);
+
+  const handleClickEventPrivacy = (event: any) => {
+    setAnchorElPrivacy(event.currentTarget);
+  };
+  const handleCloseEventPrivacy = () => {
+    setAnchorElPrivacy(null);
+  };
 
   const totalUnread = user?.notifications.filter(
     (item: any) => !item.isRead
@@ -107,7 +128,18 @@ export default function Header() {
       m.isRead
   ).length;
 
-  const drawerWidth = 240;
+  useEffect(() => {
+    if (router.isReady) {
+      const query = router.query;
+      if (query.createEvent) {
+        if (query.createEvent === "true") {
+          setEventDetails(true);
+        }
+      }
+    }
+  }, [router.isReady, router.query]);
+
+  const drawerWidth = events ? 340 : 240;
 
   const [anchorElNotification, setAnchorElNotification] =
     React.useState<HTMLButtonElement | null>(null);
@@ -199,6 +231,10 @@ export default function Header() {
       }
     }
   }
+  const handlePrivacyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPrivacy(event.target.value);
+    handleCloseEventPrivacy();
+  };
   const createEvent = () => {
     if (user) {
       router.push({
@@ -235,6 +271,14 @@ export default function Header() {
       forceUpdate();
     }
   };
+
+  const {
+    register: register3,
+    handleSubmit: handleSubmit3,
+    formState: { errors: errors3 },
+  } = useForm();
+
+  const onSubmitCreateEvents: any = async ({ email }: { email: any }) => {};
   const breadcrumbs = [
     <Link key="1" href="/events" passHref>
       <BreadcrumLink
@@ -256,6 +300,20 @@ export default function Header() {
         Create Event
       </BreadcrumLink>
     </Link>,
+  ];
+  const privacyData = [
+    {
+      value: "Private",
+      sub: "only people who are invited",
+    },
+    {
+      value: "Public",
+      sub: "anyone on or off impish",
+    },
+    {
+      value: "Followers",
+      sub: "your followers on impish",
+    },
   ];
 
   const drawer = (
@@ -295,13 +353,13 @@ export default function Header() {
                 {user.avatarImage ? (
                   <Image
                     src={user.avatarImage}
-                    width={32}
-                    height={32}
+                    width={36}
+                    height={36}
                     alt="Avatar"
                   />
                 ) : (
                   <Avatar
-                    size={32}
+                    size={36}
                     name={user.walletAddress}
                     variant="pixel"
                     colors={[
@@ -684,13 +742,13 @@ export default function Header() {
                     {user.avatarImage ? (
                       <Image
                         src={user.avatarImage}
-                        width={32}
-                        height={32}
+                        width={36}
+                        height={36}
                         alt="Avatar"
                       />
                     ) : (
                       <Avatar
-                        size={32}
+                        size={36}
                         name={user.walletAddress}
                         variant="pixel"
                         colors={[
@@ -708,13 +766,13 @@ export default function Header() {
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "start",
+                      marginLeft: "5%",
                     }}
                   >
                     <ListItemText
                       disableTypography
                       style={{
                         height: 16,
-                        marginLeft: "6%",
                         overflow: "hidden",
                         whiteSpace: "nowrap",
                         textAlign: "left",
@@ -730,7 +788,6 @@ export default function Header() {
                       component="span"
                       sx={{
                         fontSize: "0.6rem",
-                        marginLeft: "6%",
                         color: Colors[resolvedTheme].secondary,
                       }}
                     >
@@ -738,49 +795,551 @@ export default function Header() {
                     </Typography>
                   </Box>
                 </ListItemButton>
-
-                <ListItemButton
-                  sx={{
-                    borderRadius: (theme) => theme.shape.borderRadius,
-                  }}
-                  disableRipple
-                  style={{
-                    margin: "0px 0",
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    padding: "12px",
-                    cursor: "default",
-                  }}
-                  selected={router.pathname === "/events/create"}
-                >
-                  <ListItemIcon sx={{ minWidth: "auto" }}>
-                    <GroupSharpIcon
-                      fontSize="large"
-                      sx={{
-                        color: (theme) =>
-                          router.pathname === "/events/create"
-                            ? theme.palette.primary.main
-                            : Colors[resolvedTheme].primary,
-                      }}
-                    />
-                  </ListItemIcon>
-                  <ListItemText
-                    disableTypography
+                {!eventDetails ? (
+                  <ListItemButton
                     sx={{
-                      height: 16,
-                      marginLeft: "6%",
-                      overflow: "hidden",
-                      whiteSpace: "nowrap",
-                      textAlign: "left",
-                      textOverflow: "ellipsis",
-                      width: 16,
-                      color: Colors[resolvedTheme].primary,
+                      borderRadius: (theme) => theme.shape.borderRadius,
                     }}
+                    disableRipple
+                    style={{
+                      margin: "0px 0",
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      padding: "12px",
+                      cursor: "default",
+                    }}
+                    selected={router.pathname === "/events/create"}
                   >
-                    Create Events
-                  </ListItemText>
-                </ListItemButton>
+                    <ListItemIcon sx={{ minWidth: "auto" }}>
+                      <GroupSharpIcon
+                        fontSize="large"
+                        sx={{
+                          color: (theme) =>
+                            router.pathname === "/events/create"
+                              ? theme.palette.primary.main
+                              : Colors[resolvedTheme].primary,
+                        }}
+                      />
+                    </ListItemIcon>
+                    <ListItemText
+                      disableTypography
+                      sx={{
+                        height: 16,
+                        marginLeft: "6%",
+                        overflow: "hidden",
+                        whiteSpace: "nowrap",
+                        textAlign: "left",
+                        textOverflow: "ellipsis",
+                        width: 16,
+                        color: Colors[resolvedTheme].primary,
+                      }}
+                    >
+                      Create Events
+                    </ListItemText>
+                  </ListItemButton>
+                ) : (
+                  <>
+                    <form onSubmit={handleSubmit3(onSubmitCreateEvents)}>
+                      <TextField
+                        fullWidth
+                        label="Event Name"
+                        variant="outlined"
+                        autoComplete="event"
+                        autoFocus
+                        sx={{
+                          input: { color: Colors[resolvedTheme].primary },
+                          label: { color: Colors[resolvedTheme].secondary },
+                          "& .MuiOutlinedInput-root": {
+                            "& fieldset": {
+                              borderColor: Colors[resolvedTheme].input_border,
+                            },
+                            "&:hover fieldset": {
+                              borderColor: (theme) =>
+                                theme.palette.primary.main,
+                            },
+                          },
+                          marginBottom: "12px",
+                        }}
+                        error={!!errors3?.email}
+                        helperText={
+                          errors3?.email ? errors3.email.message : null
+                        }
+                      />
+
+                      <Grid
+                        sx={{ marginBottom: "12px" }}
+                        container
+                        rowSpacing={1}
+                        columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+                      >
+                        <Grid item xs={6}>
+                          <LocalizationProvider dateAdapter={AdapterDateFns}>
+                            <DatePicker
+                              disablePast
+                              label="Start Date"
+                              views={["day"]}
+                              value={startDate || undefined}
+                              onChange={(newValue: any) => {
+                                setStartDate(newValue);
+                              }}
+                              inputFormat="MMM d, Y"
+                              InputAdornmentProps={{
+                                position: "start",
+                                color: Colors[resolvedTheme].primary,
+                              }}
+                              renderInput={(params) => (
+                                <TextField
+                                  sx={{
+                                    input: {
+                                      color: Colors[resolvedTheme].primary,
+                                    },
+                                    label: {
+                                      color: Colors[resolvedTheme].secondary,
+                                    },
+                                    "& .MuiOutlinedInput-root": {
+                                      "& fieldset": {
+                                        borderColor:
+                                          Colors[resolvedTheme].input_border,
+                                      },
+                                      "&:hover fieldset": {
+                                        borderColor: (theme) =>
+                                          theme.palette.primary.main,
+                                      },
+                                    },
+                                  }}
+                                  InputLabelProps={{ shrink: true }}
+                                  {...params}
+                                  error={!!errors3?.start_date}
+                                  helperText={null}
+                                />
+                              )}
+                            />
+                          </LocalizationProvider>
+                        </Grid>
+
+                        <Grid item xs={6}>
+                          <LocalizationProvider dateAdapter={AdapterDateFns}>
+                            <TextField
+                              label="Start Time"
+                              type="time"
+                              defaultValue="07:30"
+                              InputLabelProps={{
+                                shrink: true,
+                              }}
+                              inputProps={{
+                                step: 900, // 15 min
+                              }}
+                              sx={{
+                                width: 150,
+                                input: {
+                                  color: Colors[resolvedTheme].primary,
+                                },
+                                label: {
+                                  color: Colors[resolvedTheme].secondary,
+                                },
+                                "& .MuiOutlinedInput-root": {
+                                  "& fieldset": {
+                                    borderColor:
+                                      Colors[resolvedTheme].input_border,
+                                  },
+                                  "&:hover fieldset": {
+                                    borderColor: (theme) =>
+                                      theme.palette.primary.main,
+                                  },
+                                },
+                              }}
+                              error={!!errors3?.start_time}
+                              helperText={null}
+                            />
+                          </LocalizationProvider>
+                        </Grid>
+                      </Grid>
+
+                      {showEndDate ? (
+                        <>
+                          <Grid
+                            sx={{ marginBottom: "12px" }}
+                            container
+                            rowSpacing={1}
+                            columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+                          >
+                            <Grid item xs={6}>
+                              <LocalizationProvider
+                                dateAdapter={AdapterDateFns}
+                              >
+                                <DatePicker
+                                  disablePast
+                                  label="End Date"
+                                  views={["day"]}
+                                  value={endDate || undefined}
+                                  onChange={(newValue: any) => {
+                                    setEndDate(newValue);
+                                  }}
+                                  inputFormat="MMM d, Y"
+                                  InputAdornmentProps={{ position: "start" }}
+                                  renderInput={(params) => (
+                                    <TextField
+                                      sx={{
+                                        input: {
+                                          color: Colors[resolvedTheme].primary,
+                                        },
+                                        label: {
+                                          color:
+                                            Colors[resolvedTheme].secondary,
+                                        },
+                                        "& .MuiOutlinedInput-root": {
+                                          "& fieldset": {
+                                            borderColor:
+                                              Colors[resolvedTheme]
+                                                .input_border,
+                                          },
+                                          "&:hover fieldset": {
+                                            borderColor: (theme) =>
+                                              theme.palette.primary.main,
+                                          },
+                                        },
+                                      }}
+                                      InputLabelProps={{ shrink: true }}
+                                      {...params}
+                                      error={!!errors3?.start_date}
+                                      helperText={null}
+                                    />
+                                  )}
+                                />
+                              </LocalizationProvider>
+                            </Grid>
+
+                            <Grid item xs={6}>
+                              <LocalizationProvider
+                                dateAdapter={AdapterDateFns}
+                              >
+                                <TextField
+                                  label="End Time"
+                                  type="time"
+                                  defaultValue="08:00"
+                                  InputLabelProps={{
+                                    shrink: true,
+                                  }}
+                                  inputProps={{
+                                    step: 900, // 15 min
+                                  }}
+                                  sx={{
+                                    width: 150,
+                                    input: {
+                                      color: Colors[resolvedTheme].primary,
+                                    },
+                                    label: {
+                                      color: Colors[resolvedTheme].secondary,
+                                    },
+                                    "& .MuiOutlinedInput-root": {
+                                      "& fieldset": {
+                                        borderColor:
+                                          Colors[resolvedTheme].input_border,
+                                      },
+                                      "&:hover fieldset": {
+                                        borderColor: (theme) =>
+                                          theme.palette.primary.main,
+                                      },
+                                    },
+                                  }}
+                                  error={!!errors3?.start_time}
+                                  helperText={null}
+                                />
+                              </LocalizationProvider>
+                            </Grid>
+                          </Grid>
+                          <IconButton
+                            onClick={() => {
+                              setShowEndDate(false);
+                            }}
+                            sx={{
+                              ":hover": {
+                                backgroundColor: "transparent",
+                              },
+                            }}
+                          >
+                            <Typography
+                              sx={{
+                                color: Colors[resolvedTheme].secondary,
+                                fontSize: "0.8rem",
+                              }}
+                              variant="subtitle1"
+                            >
+                              - End Date and Time
+                            </Typography>
+                          </IconButton>
+                        </>
+                      ) : (
+                        <IconButton
+                          onClick={() => {
+                            setShowEndDate(true);
+                          }}
+                          sx={{
+                            ":hover": {
+                              backgroundColor: "transparent",
+                            },
+                          }}
+                        >
+                          <Typography
+                            sx={{
+                              fontSize: "0.8rem",
+                              color: Colors[resolvedTheme].secondary,
+                            }}
+                            variant="subtitle1"
+                          >
+                            + End Date and Time
+                          </Typography>
+                        </IconButton>
+                      )}
+                      <Button
+                        fullWidth
+                        sx={{
+                          border: "1px solid",
+                          textTransform: "none",
+                          color: Colors[resolvedTheme].primary,
+                          padding: "8.5px 14px",
+                          borderColor: Colors[resolvedTheme].secondary,
+                          justifyContent: "space-around",
+                        }}
+                        aria-controls={
+                          openPrivacy ? "demo-positioned-menu" : undefined
+                        }
+                        aria-haspopup="true"
+                        aria-expanded={openPrivacy ? "true" : undefined}
+                        onClick={handleClickEventPrivacy}
+                        startIcon={
+                          <LockIcon
+                            sx={{ color: Colors[resolvedTheme].primary }}
+                          />
+                        }
+                        endIcon={
+                          <KeyboardArrowDownIcon
+                            sx={{ color: Colors[resolvedTheme].primary }}
+                          />
+                        }
+                      >
+                        {privacy}
+                      </Button>
+                      <Menu
+                        id="demo-positioned-menu"
+                        aria-labelledby="demo-positioned-button"
+                        anchorEl={anchorElPrivacy}
+                        open={openPrivacy}
+                        onClose={handleCloseEventPrivacy}
+                        anchorOrigin={{
+                          vertical: "top",
+                          horizontal: "left",
+                        }}
+                        transformOrigin={{
+                          vertical: "top",
+                          horizontal: "left",
+                        }}
+                        PaperProps={{
+                          sx: {
+                            bgcolor: Colors[resolvedTheme].header_bg,
+                            color: Colors[resolvedTheme].primary,
+                          },
+                        }}
+                      >
+                        <MenuItem>
+                          <Typography
+                            sx={{
+                              fontSize: "0.6rem",
+                              color: Colors[resolvedTheme].secondary,
+                            }}
+                            variant="subtitle1"
+                          >
+                            Choose who can see and join this event. <br />
+                            you will be able to invite people later
+                          </Typography>
+                        </MenuItem>
+                        <MenuItem
+                          sx={{
+                            justifyContent: "space-around",
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              display: "flex",
+                            }}
+                          >
+                            <ListItemIcon
+                              sx={{
+                                minWidth: "auto",
+                              }}
+                            >
+                              <LockIcon
+                                sx={{
+                                  display: "flex",
+                                  color: Colors[resolvedTheme].secondary,
+                                }}
+                                fontSize="small"
+                              />
+                            </ListItemIcon>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "start",
+                              }}
+                            >
+                              <ListItemText
+                                disableTypography
+                                style={{
+                                  color: Colors[resolvedTheme].primary,
+                                }}
+                              >
+                                Private
+                              </ListItemText>
+                              <Typography
+                                variant="subtitle1"
+                                component="span"
+                                sx={{
+                                  fontSize: "0.6rem",
+                                  color: Colors[resolvedTheme].secondary,
+                                }}
+                              >
+                                only People Who are invited
+                              </Typography>
+                            </Box>
+                          </Box>
+
+                          <Radio
+                            sx={{
+                              "&": { color: Colors[resolvedTheme].primary },
+                            }}
+                            checked={privacy === "Private"}
+                            onChange={handlePrivacyChange}
+                            value="Private"
+                            name="radio-buttons"
+                            inputProps={{ "aria-label": "A" }}
+                          />
+                        </MenuItem>
+                        <MenuItem
+                          sx={{
+                            justifyContent: "space-around",
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              display: "flex",
+                            }}
+                          >
+                            <ListItemIcon
+                              sx={{
+                                minWidth: "auto",
+                              }}
+                            >
+                              <PublicRoundedIcon
+                                sx={{
+                                  display: "flex",
+                                  color: Colors[resolvedTheme].secondary,
+                                }}
+                                fontSize="small"
+                              />
+                            </ListItemIcon>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "start",
+                              }}
+                            >
+                              <ListItemText
+                                disableTypography
+                                style={{
+                                  color: Colors[resolvedTheme].primary,
+                                }}
+                              >
+                                Public
+                              </ListItemText>
+                              <Typography
+                                variant="subtitle1"
+                                component="span"
+                                sx={{
+                                  fontSize: "0.6rem",
+                                  color: Colors[resolvedTheme].secondary,
+                                }}
+                              >
+                                Anyone off or on Impish
+                              </Typography>
+                            </Box>
+                          </Box>
+
+                          <Radio
+                            sx={{
+                              "&": { color: Colors[resolvedTheme].primary },
+                            }}
+                            checked={privacy === "Public"}
+                            onChange={handlePrivacyChange}
+                            value="Public"
+                            name="radio-buttons"
+                            inputProps={{ "aria-label": "A" }}
+                          />
+                        </MenuItem>
+                        <MenuItem
+                          sx={{
+                            justifyContent: "space-around",
+                          }}
+                        >
+                          <Box sx={{ display: "flex" }}>
+                            <ListItemIcon
+                              sx={{
+                                minWidth: "auto",
+                              }}
+                            >
+                              <GroupSharpIcon
+                                sx={{
+                                  display: "flex",
+                                  color: Colors[resolvedTheme].secondary,
+                                }}
+                                fontSize="small"
+                              />
+                            </ListItemIcon>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "start",
+                              }}
+                            >
+                              <ListItemText
+                                disableTypography
+                                style={{
+                                  color: Colors[resolvedTheme].primary,
+                                }}
+                              >
+                                Followers
+                              </ListItemText>
+                              <Typography
+                                variant="subtitle1"
+                                component="span"
+                                sx={{
+                                  fontSize: "0.6rem",
+                                  color: Colors[resolvedTheme].secondary,
+                                }}
+                              >
+                                Your follwers on Impish
+                              </Typography>
+                            </Box>
+                          </Box>
+
+                          <Radio
+                            sx={{
+                              "&": { color: Colors[resolvedTheme].primary },
+                            }}
+                            checked={privacy === "Followers"}
+                            onChange={handlePrivacyChange}
+                            value="Followers"
+                            name="radio-buttons"
+                            inputProps={{ "aria-label": "A" }}
+                          />
+                        </MenuItem>
+                      </Menu>
+                    </form>
+                  </>
+                )}
               </List>
             </>
           )}
