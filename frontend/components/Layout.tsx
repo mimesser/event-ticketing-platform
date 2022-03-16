@@ -52,7 +52,7 @@ export default function Layout({
             component="main"
             sx={{
               margin: eventFooter
-                ? { xs: "0 10%", md: "auto", sm: "0 0 0 240px" }
+                ? { xs: "0 10%", md: "auto", sm: "0 0 0 340px" }
                 : { xs: "0 10%", md: "auto", sm: "auto" },
               flexGrow: 1,
             }}
