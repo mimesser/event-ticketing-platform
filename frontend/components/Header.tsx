@@ -886,7 +886,6 @@ export default function Header() {
                               inputFormat="MMM d, Y"
                               InputAdornmentProps={{
                                 position: "start",
-                                color: Colors[resolvedTheme].primary,
                               }}
                               renderInput={(params) => (
                                 <TextField
