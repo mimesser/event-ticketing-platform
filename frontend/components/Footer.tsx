@@ -93,7 +93,7 @@ export default function Footer() {
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: 320,
-    bgcolor: "white",
+    bgcolor: Colors[resolvedTheme]?.header_bg,
     borderRadius: "25px",
     boxShadow: 24,
     p: 4,
@@ -127,7 +127,6 @@ export default function Footer() {
               sx={{
                 textAlign: "center",
                 marginBottom: "13px",
-                color: "black",
                 fontFamily: "sans-serif",
                 fontSize: "18px",
                 fontWeight: 550,
@@ -158,6 +157,18 @@ export default function Footer() {
                 error={!!errors?.email}
                 helperText={errors?.email ? errors.email.message : null}
                 size="small"
+                sx={{
+                  input: { color: Colors[resolvedTheme].primary },
+                  label: { color: Colors[resolvedTheme].secondary },
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: Colors[resolvedTheme].input_border,
+                    },
+                    "&:hover fieldset": {
+                      borderColor: (theme) => theme.palette.primary.main,
+                    },
+                  },
+                }}
               />
               <LoadingButton
                 sx={{ marginTop: "13px" }}

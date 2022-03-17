@@ -12,14 +12,17 @@ import Layout from "components/Layout";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
+import Colors from "lib/colors";
 import { useUser } from "lib/hooks";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Router from "next/router";
 import { useEffect, useState } from "react";
 import styles from "styles/pages/Twitter.module.scss";
+import { useTheme } from "next-themes";
 
 export default function Twitter() {
+  const { resolvedTheme } = useTheme();
   const { data: session, status }: any = useSession();
   const [data, setData] = useState<any>();
   const { user, loading } = useUser({
@@ -74,7 +77,7 @@ export default function Twitter() {
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: 320,
-    bgcolor: "background.paper",
+    bgcolor: Colors[resolvedTheme]?.header_bg,
     borderRadius: "25px",
     boxShadow: 24,
     p: 4,
@@ -151,7 +154,7 @@ export default function Twitter() {
             >
               <CloseIcon
                 sx={{
-                  color: "#000000",
+                  color: Colors[resolvedTheme]?.primary,
                 }}
               />
             </IconButton>

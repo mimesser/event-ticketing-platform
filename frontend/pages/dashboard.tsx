@@ -9,6 +9,7 @@ import Modal from "@mui/material/Modal";
 import Stack from "@mui/material/Stack";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import Typography from "@mui/material/Typography";
+import Colors from "lib/colors";
 import { useUser } from "lib/hooks";
 import { magic } from "lib/magic";
 import { moonPaySrc } from "lib/moon-pay";
@@ -18,11 +19,12 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
 import React, { useState, useEffect } from "react";
-
 import styles from "styles/pages/Dashboard.module.scss";
 import { Tooltip } from "@mui/material";
+import { useTheme } from "next-themes";
 
 function Dashboard() {
+  const { resolvedTheme } = useTheme();
   const { query } = useRouter();
   const firstTimeUser = query.userExists === "false";
   const { user } = useUser({
@@ -119,7 +121,7 @@ function Dashboard() {
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: 320,
-    bgcolor: "background.paper",
+    bgcolor: Colors[resolvedTheme]?.header_bg,
     borderRadius: "25px",
     boxShadow: 24,
     p: 4,
@@ -151,7 +153,7 @@ function Dashboard() {
             >
               <CloseIcon
                 sx={{
-                  color: "#000000",
+                  color: Colors[resolvedTheme].primary,
                 }}
               />
             </IconButton>
@@ -196,7 +198,7 @@ function Dashboard() {
             >
               <CloseIcon
                 sx={{
-                  color: "#000000",
+                  color: Colors[resolvedTheme].primary,
                 }}
               />
             </IconButton>
@@ -268,7 +270,7 @@ function Dashboard() {
                   >
                     <CloseIcon
                       sx={{
-                        color: "#000000",
+                        color: Colors[resolvedTheme].primary,
                       }}
                     />
                   </IconButton>
@@ -321,7 +323,7 @@ function Dashboard() {
                   >
                     <CloseIcon
                       sx={{
-                        color: "#000000",
+                        color: Colors[resolvedTheme].primary,
                       }}
                     />
                   </IconButton>
@@ -369,7 +371,7 @@ function Dashboard() {
                     >
                       <CloseIcon
                         sx={{
-                          color: "#000000",
+                          color: Colors[resolvedTheme].primary,
                         }}
                       />
                     </IconButton>

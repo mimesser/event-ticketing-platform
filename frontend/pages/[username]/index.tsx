@@ -470,7 +470,7 @@ function Profile() {
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: 320,
-    bgcolor: "white",
+    bgcolor: Colors[resolvedTheme]?.header_bg,
     borderRadius: "25px",
     boxShadow: 24,
     p: 4,
@@ -507,7 +507,7 @@ function Profile() {
             )}
           </div>
         ) : (
-          <div className={styles.nobanner}></div>
+          <div className={styles.nobanner} style={{background: Colors[resolvedTheme].nobanner}}></div>
         )}
 
         {user ? (
@@ -585,7 +585,7 @@ function Profile() {
                 ":hover": {
                   backgroundColor: "black",
                 },
-                backgroundColor: "black",
+                backgroundColor: Colors[resolvedTheme].follow_btn,
                 borderColor: "black",
                 borderRadius: theme.shape.borderRadius,
                 margin: theme.spacing(1),
@@ -903,7 +903,7 @@ function Profile() {
               <IconButton aria-label="close" onClick={editModalClose}>
                 <CloseIcon
                   sx={{
-                    color: "#000000",
+                    color: Colors[resolvedTheme].primary,
                   }}
                 />
               </IconButton>
@@ -1145,7 +1145,6 @@ function Profile() {
                 gutterBottom
                 sx={{
                   marginBottom: "13px",
-                  color: "black",
                   fontFamily: "sans-serif",
                   fontSize: "18px",
                   fontWeight: 550,
@@ -1179,6 +1178,18 @@ function Profile() {
                   error={!!errors?.email}
                   helperText={errors?.email ? errors.email.message : null}
                   size="small"
+                  sx={{
+                    input: { color: Colors[resolvedTheme].primary },
+                    label: { color: Colors[resolvedTheme].secondary },
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: Colors[resolvedTheme].input_border,
+                      },
+                      "&:hover fieldset": {
+                        borderColor: (theme) => theme.palette.primary.main,
+                      },
+                    },
+                  }}
                 />
                 <LoadingButton
                   sx={{ marginTop: "13px" }}
@@ -1222,7 +1233,6 @@ function Profile() {
               sx={{
                 textAlign: "center",
                 marginBottom: "13px",
-                color: "black",
                 fontFamily: "sans-serif",
                 fontSize: "18px",
                 fontWeight: 550,
@@ -1253,6 +1263,18 @@ function Profile() {
                 error={!!errors?.email}
                 helperText={errors?.email ? errors.email.message : null}
                 size="small"
+                sx={{
+                  input: { color: Colors[resolvedTheme].primary },
+                  label: { color: Colors[resolvedTheme].secondary },
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: Colors[resolvedTheme].input_border,
+                    },
+                    "&:hover fieldset": {
+                      borderColor: (theme) => theme.palette.primary.main,
+                    },
+                  },
+                }}
               />
               <LoadingButton
                 sx={{ marginTop: "13px" }}
@@ -1294,7 +1316,7 @@ function Profile() {
                   >
                     <CloseIcon
                       sx={{
-                        color: "#000000",
+                        color: Colors[resolvedTheme].primary,
                       }}
                     />
                   </IconButton>
