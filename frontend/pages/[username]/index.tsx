@@ -599,7 +599,7 @@ function Profile() {
             </Button>
           )}
 
-          {following && (
+          {following && user && (
             <Button
               onClick={() => {
                 setUnFollowModal(true);
@@ -608,24 +608,23 @@ function Profile() {
               sx={(theme) => ({
                 display: !user?.authenticated ? "flex" : "none",
                 width: "6.5em",
-                color: "black",
+                color: Colors[resolvedTheme].primary,
                 backgroundColor: "inherit",
-                borderColor: "black",
+                borderColor: Colors[resolvedTheme].primary,
                 borderRadius: theme.shape.borderRadius,
                 margin: theme.spacing(1),
                 fontFamily: "sans-serif",
                 fontSize: "16px",
                 fontWeight: 550,
                 textTransform: "none",
+                transitionDuration: "unset",
                 ":hover": {
                   borderColor: "red",
-                  color: "red",
                 },
                 ":hover span": {
                   display: "none",
                 },
                 ":hover:before": {
-                  borderColor: "red",
                   color: "red",
                   content: "'Unfollow'",
                 },
@@ -1039,7 +1038,6 @@ function Profile() {
               <Typography
                 gutterBottom
                 sx={{
-                  color: "black",
                   fontFamily: "sans-serif",
                   fontSize: "18px",
                   fontWeight: 550,
@@ -1056,7 +1054,6 @@ function Profile() {
               <Typography
                 sx={{ marginBottom: "12px" }}
                 variant="body1"
-                color="text.secondary"
               >
                 Their activities will no longer show up in your home timeline.
                 You can still view their profile.
@@ -1069,9 +1066,8 @@ function Profile() {
                 variant="contained"
                 sx={(theme) => ({
                   ":hover": {
-                    backgroundColor: "black",
+                    backgroundColor: "rgb(39, 44, 48)",
                   },
-
                   backgroundColor: "black",
                   borderRadius: theme.shape.borderRadius,
                   margin: theme.spacing(1),
@@ -1095,15 +1091,16 @@ function Profile() {
                 onClick={() => {
                   setUnFollowModal(false);
                 }}
-                sx={(theme) => ({
+                sx={ (theme) => ({
+                  color: Colors[resolvedTheme].primary,
                   borderRadius: theme.shape.borderRadius,
                   margin: theme.spacing(1),
-                })}
-                color="inherit"
+                  borderColor: Colors[resolvedTheme].cancel_border,
+                }) }
+                color="primary"
               >
                 <Typography
                   sx={{
-                    color: "black",
                     fontFamily: "sans-serif",
                     fontSize: "16px",
                     fontWeight: 550,
