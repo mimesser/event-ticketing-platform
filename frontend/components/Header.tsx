@@ -69,12 +69,13 @@ import { useUserInfo } from "lib/user-context";
 import { moonPaySrc } from "lib/moon-pay";
 import { magic } from "lib/magic";
 import { shortenAddress, shortenText } from "lib/utils";
+import { supabase } from "lib/supabase";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { signIn, signOut } from "next-auth/react";
 import { useTheme } from "next-themes";
-import React, { useState, useReducer, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import styles from "styles/components/Header.module.scss";
 
@@ -86,8 +87,6 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 });
 
 export default function Header() {
-  const [, forceUpdate] = useReducer((x) => x + 1, 0);
-
   const { theme, resolvedTheme, setTheme } = useTheme();
   const [openStart, setOpenStart] = React.useState(false);
   const [openEnd, setOpenEnd] = React.useState(false);
@@ -112,10 +111,13 @@ export default function Header() {
   const [anchorElPrivacy, setAnchorElPrivacy] = React.useState(null);
   const openPrivacy = Boolean(anchorElPrivacy);
   const CHARACTER_LIMIT = 99;
-
   const handleEventNameChange = (eventName: any) => (event: any) => {
     setValues({ ...values, [eventName]: event.target.value });
   };
+
+  const [notifications, setNotifications] = useState(
+    user?.notifications ? user?.notifications : []
+  );
 
   const handleClickEventPrivacy = (event: any) => {
     setAnchorElPrivacy(event.currentTarget);
@@ -124,15 +126,13 @@ export default function Header() {
     setAnchorElPrivacy(null);
   };
 
-  const totalUnread = user?.notifications.filter(
-    (item: any) => !item.isRead
-  ).length;
-  const newNotificationsLength = user?.notifications.filter(
+  const totalUnread = notifications.filter((item: any) => !item.isRead).length;
+  const newNotificationsLength = notifications.filter(
     (m: any) =>
       differenceInCalendarDays(new Date(), new Date(m.createdAt)) <= 1 &&
       !m.isRead
   ).length;
-  const earlierNotificationsLength = user?.notifications.filter(
+  const earlierNotificationsLength = notifications.filter(
     (m: any) =>
       differenceInCalendarDays(new Date(), new Date(m.createdAt)) > 1 ||
       m.isRead
@@ -148,6 +148,44 @@ export default function Header() {
       }
     }
   }, [router.isReady, router.query]);
+
+  useEffect(() => {
+    async function realtimeNotifications() {
+      supabase
+        .from(`notifications:userId=eq.${user.id}`)
+        .on("*", async (payload) => {
+          const { data: notifications, error } = await supabase
+            .from("notifications")
+            .select("*")
+            .eq("userId", `${user.id}`);
+          if (!error) {
+            setNotifications(notifications as any);
+          }
+        })
+        .subscribe();
+    }
+    if (user) {
+      realtimeNotifications();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    async function getNotifications() {
+      const { data: notifications, error } = await supabase
+        .from("notifications")
+        .select("*")
+        .eq("userId", `${user.id}`);
+
+      if (!error) {
+        setNotifications(notifications as any);
+      } else {
+        console.log(error);
+      }
+    }
+    if (user) {
+      getNotifications();
+    }
+  }, [user]);
 
   const drawerWidth = events ? 340 : 240;
 
@@ -264,23 +302,10 @@ export default function Header() {
     setMoonPayModal(false);
   };
 
-  const markNotificationAsRead = async () => {
-    const ids = user.notifications
-      .filter((m: any) => !m.isRead)
-      .map((m: any) => m.id);
-
-    const res = await fetch("/api/notifications", {
+  const markNotificationAsRead = () =>
+    fetch("/api/notifications", {
       method: "DELETE",
-      body: JSON.stringify({
-        id: ids,
-      }),
     });
-
-    if (res.status === 200) {
-      user.notifications.map((m: any) => (m.isRead = true));
-      forceUpdate();
-    }
-  };
 
   const {
     register: register3,
@@ -1558,11 +1583,8 @@ export default function Header() {
       if (res.status === 200) {
         // Create user signup notifications
         if (!userExists) {
-          await fetch("/api/signup-notifications", {
+          fetch("/api/signup-notifications", {
             method: "POST",
-            body: JSON.stringify({
-              email,
-            }),
           });
         }
 
@@ -1614,11 +1636,8 @@ export default function Header() {
       if (res.status === 200) {
         // Create user signup notifications
         if (!userExists) {
-          await fetch("/api/signup-notifications", {
+          fetch("/api/signup-notifications", {
             method: "POST",
-            body: JSON.stringify({
-              email,
-            }),
           });
         }
 
@@ -2228,7 +2247,7 @@ export default function Header() {
                         }
                       >
                         <MenuList>
-                          {user.notifications.map(
+                          {notifications.map(
                             ({
                               id,
                               title,
@@ -2260,8 +2279,29 @@ export default function Header() {
                                     }}
                                     key={id}
                                   >
+                                    <Typography
+                                      sx={{
+                                        mr: 2.5,
+                                      }}
+                                    >
+                                      <Image
+                                        src={avatarImage}
+                                        alt={id}
+                                        width={40}
+                                        height={40}
+                                      />
+                                    </Typography>
                                     <ListItemText
-                                      primary={shortenText(description)}
+                                      primary={
+                                        <Typography
+                                          whiteSpace="normal"
+                                          sx={{
+                                            width: "240px",
+                                          }}
+                                        >
+                                          {description}
+                                        </Typography>
+                                      }
                                       secondary={
                                         <Typography
                                           variant="caption"
@@ -2316,7 +2356,7 @@ export default function Header() {
                           </ListSubheader>
                         }
                       >
-                        {user.notifications.map(
+                        {notifications.map(
                           ({
                             id,
                             title,
@@ -2347,8 +2387,33 @@ export default function Header() {
                                   }}
                                   key={id}
                                 >
+                                  <Typography
+                                    sx={{
+                                      mr: 2.5,
+                                    }}
+                                  >
+                                    <Image
+                                      src={avatarImage}
+                                      alt={id}
+                                      width={40}
+                                      height={40}
+                                    />
+                                  </Typography>
                                   <ListItemText
-                                    primary={shortenText(description)}
+                                    primary={
+                                      <Typography
+                                        whiteSpace="normal"
+                                        sx={{
+                                          width: "240px",
+                                          ...(isRead && {
+                                            color:
+                                              Colors[resolvedTheme].secondary,
+                                          }),
+                                        }}
+                                      >
+                                        {description}
+                                      </Typography>
+                                    }
                                     secondary={
                                       <Typography
                                         variant="caption"
@@ -2818,7 +2883,8 @@ export default function Header() {
                               borderColor: Colors[resolvedTheme].input_border,
                             },
                             "&:hover fieldset": {
-                              borderColor: (theme) => theme.palette.primary.main,
+                              borderColor: (theme) =>
+                                theme.palette.primary.main,
                             },
                           },
                         })}
@@ -3063,7 +3129,7 @@ export default function Header() {
                         }
                       >
                         <MenuList>
-                          {user.notifications.map(
+                          {notifications.map(
                             ({
                               id,
                               title,
@@ -3095,8 +3161,29 @@ export default function Header() {
                                     }}
                                     key={id}
                                   >
+                                    <Typography
+                                      sx={{
+                                        mr: 2.5,
+                                      }}
+                                    >
+                                      <Image
+                                        src={avatarImage}
+                                        alt={id}
+                                        width={40}
+                                        height={40}
+                                      />
+                                    </Typography>
                                     <ListItemText
-                                      primary={shortenText(description)}
+                                      primary={
+                                        <Typography
+                                          whiteSpace="normal"
+                                          sx={{
+                                            width: "240px",
+                                          }}
+                                        >
+                                          {description}
+                                        </Typography>
+                                      }
                                       secondary={
                                         <Typography
                                           variant="caption"
@@ -3151,7 +3238,7 @@ export default function Header() {
                           </ListSubheader>
                         }
                       >
-                        {user.notifications.map(
+                        {notifications.map(
                           ({
                             id,
                             title,
@@ -3182,8 +3269,33 @@ export default function Header() {
                                   }}
                                   key={id}
                                 >
+                                  <Typography
+                                    sx={{
+                                      mr: 2.5,
+                                    }}
+                                  >
+                                    <Image
+                                      src={avatarImage}
+                                      alt={id}
+                                      width={40}
+                                      height={40}
+                                    />
+                                  </Typography>
                                   <ListItemText
-                                    primary={shortenText(description)}
+                                    primary={
+                                      <Typography
+                                        whiteSpace="normal"
+                                        sx={{
+                                          width: "240px",
+                                          ...(isRead && {
+                                            color:
+                                              Colors[resolvedTheme].secondary,
+                                          }),
+                                        }}
+                                      >
+                                        {description}
+                                      </Typography>
+                                    }
                                     secondary={
                                       <Typography
                                         variant="caption"

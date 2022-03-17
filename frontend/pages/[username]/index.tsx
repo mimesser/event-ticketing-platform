@@ -195,11 +195,8 @@ function Profile() {
       if (res.status === 200) {
         // Create user signup notifications
         if (!userExists) {
-          await fetch("/api/signup-notifications", {
+          fetch("/api/signup-notifications", {
             method: "POST",
-            body: JSON.stringify({
-              email,
-            }),
           });
         }
 
@@ -507,7 +504,10 @@ function Profile() {
             )}
           </div>
         ) : (
-          <div className={styles.nobanner} style={{background: Colors[resolvedTheme].nobanner}}></div>
+          <div
+            className={styles.nobanner}
+            style={{ background: Colors[resolvedTheme].nobanner }}
+          ></div>
         )}
 
         {user ? (
@@ -641,7 +641,10 @@ function Profile() {
               {user.name && <div className={styles.name}>{user.name}</div>}
 
               {user.username && (
-                <div className={styles.username} style={{color: Colors[resolvedTheme].secondary}}>{`@${user.username}`}</div>
+                <div
+                  className={styles.username}
+                  style={{ color: Colors[resolvedTheme].secondary }}
+                >{`@${user.username}`}</div>
               )}
             </>
           )}
@@ -668,9 +671,15 @@ function Profile() {
         </div>
 
         {user ? (
-          <div className={styles.active} style={{color: Colors[resolvedTheme].secondary}}>
+          <div
+            className={styles.active}
+            style={{ color: Colors[resolvedTheme].secondary }}
+          >
             Joined
-            <span className={styles.since} style={{color: Colors[resolvedTheme].primary}}>
+            <span
+              className={styles.since}
+              style={{ color: Colors[resolvedTheme].primary }}
+            >
               {moment(user.createdAt).format("MMMM YYYY")}
             </span>
             {user.twitterUsername && (
@@ -799,23 +808,19 @@ function Profile() {
         }}
       >
         <MenuItem onClick={copyShareLink}>
-          <ListItemIcon style={{color: Colors[resolvedTheme].secondary}}>
+          <ListItemIcon style={{ color: Colors[resolvedTheme].secondary }}>
             {linkCopied ? <CheckIcon /> : <ContentCopyIcon />}
           </ListItemIcon>
-          <span
-            style={{color: Colors[resolvedTheme].primary}}
-          >
+          <span style={{ color: Colors[resolvedTheme].primary }}>
             {linkCopied ? "Link Copied" : "Copy Link"}
           </span>
         </MenuItem>
         {user?.authenticated || user?.showWalletAddress ? (
           <MenuItem onClick={copyShareAddress}>
-            <ListItemIcon style={{color: Colors[resolvedTheme].secondary}}>
+            <ListItemIcon style={{ color: Colors[resolvedTheme].secondary }}>
               {addressCopied ? <CheckIcon /> : <ContentCopyIcon />}
             </ListItemIcon>
-            <span
-              style={{color: Colors[resolvedTheme].primary}}
-            >
+            <span style={{ color: Colors[resolvedTheme].primary }}>
               {addressCopied ? "Address Copied" : "Copy Address"}
             </span>
           </MenuItem>
@@ -1051,10 +1056,7 @@ function Profile() {
                   : ` ${shortenAddress(user.walletAddress)}`}
                 ?
               </Typography>
-              <Typography
-                sx={{ marginBottom: "12px" }}
-                variant="body1"
-              >
+              <Typography sx={{ marginBottom: "12px" }} variant="body1">
                 Their activities will no longer show up in your home timeline.
                 You can still view their profile.
               </Typography>
@@ -1091,12 +1093,12 @@ function Profile() {
                 onClick={() => {
                   setUnFollowModal(false);
                 }}
-                sx={ (theme) => ({
+                sx={(theme) => ({
                   color: Colors[resolvedTheme].primary,
                   borderRadius: theme.shape.borderRadius,
                   margin: theme.spacing(1),
                   borderColor: Colors[resolvedTheme].cancel_border,
-                }) }
+                })}
                 color="primary"
               >
                 <Typography

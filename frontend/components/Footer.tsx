@@ -67,11 +67,8 @@ export default function Footer() {
       if (res.status === 200) {
         // Create user signup notifications
         if (!userExists) {
-          await fetch("/api/signup-notifications", {
+          fetch("/api/signup-notifications", {
             method: "POST",
-            body: JSON.stringify({
-              email,
-            }),
           });
         }
 

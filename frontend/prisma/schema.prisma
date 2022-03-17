@@ -47,7 +47,7 @@ model Notification {
   description      String?
   avatarImage      String?
   notificationType String?
-  createdAt        DateTime @default(now()) @map("created_at")
+  createdAt        DateTime @default(now())
   isRead           Boolean  @default(false)
   user             User?    @relation(fields: [userId], references: [id])
   userId           Int?
