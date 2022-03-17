@@ -133,7 +133,7 @@ function Dashboard() {
   };
 
   return (
-    <>
+    user ? <>
       {/* Buy crypto modal for banner */}
       <Modal
         BackdropProps={{
@@ -158,7 +158,7 @@ function Dashboard() {
             >
               <CloseIcon
                 sx={{
-                  color: Colors[resolvedTheme].primary,
+                  color: Colors[resolvedTheme]?.primary,
                 }}
               />
             </IconButton>
@@ -203,7 +203,7 @@ function Dashboard() {
             >
               <CloseIcon
                 sx={{
-                  color: Colors[resolvedTheme].primary,
+                  color: Colors[resolvedTheme]?.primary,
                 }}
               />
             </IconButton>
@@ -476,7 +476,7 @@ function Dashboard() {
           </>
         )}
       </Layout>
-    </>
+    </> : null
   );
 }
 
