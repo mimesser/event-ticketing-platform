@@ -25,7 +25,7 @@ export default function Twitter() {
   const { resolvedTheme } = useTheme();
   const { data: session, status }: any = useSession();
   const [data, setData] = useState<any>();
-  const { user, loading } = useUser({
+  const { user } = useUser({
     redirectTo: "/",
     redirectIfFound: false,
   });
@@ -138,7 +138,7 @@ export default function Twitter() {
     }
   };
   return (
-    <Layout>
+    user ? <Layout>
       <Modal
         BackdropProps={{
           timeout: 500,
@@ -286,6 +286,6 @@ export default function Twitter() {
           </div>
         </Box>
       </Modal>
-    </Layout>
+    </Layout> : null
   );
 }
