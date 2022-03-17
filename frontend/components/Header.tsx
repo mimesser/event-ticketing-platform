@@ -89,7 +89,8 @@ export default function Header() {
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
   const { theme, resolvedTheme, setTheme } = useTheme();
-
+  const [openStart, setOpenStart] = React.useState(false);
+  const [openEnd, setOpenEnd] = React.useState(false);
   const { user } = useUserInfo();
   const isMobile = useMediaQuery("(max-width:599px)");
   const router = useRouter();
@@ -100,12 +101,21 @@ export default function Header() {
   const [endDate, setEndDate] = React.useState(null);
   const [startTime, setStartTime] = React.useState(null);
   const [endTime, setEndTime] = React.useState(null);
+  const [values, setValues] = React.useState({
+    eventName: "",
+  });
+
   const [events] = useState(router.asPath.includes("/events") ? true : false);
   const [showCreateEvent] = React.useState(
     router.pathname === "/events/create" ? true : false
   );
   const [anchorElPrivacy, setAnchorElPrivacy] = React.useState(null);
   const openPrivacy = Boolean(anchorElPrivacy);
+  const CHARACTER_LIMIT = 99;
+
+  const handleEventNameChange = (eventName: any) => (event: any) => {
+    setValues({ ...values, [eventName]: event.target.value });
+  };
 
   const handleClickEventPrivacy = (event: any) => {
     setAnchorElPrivacy(event.currentTarget);
@@ -696,17 +706,32 @@ export default function Header() {
               >
                 {breadcrumbs}
               </Breadcrumbs>
-              <Typography
-                sx={{
-                  paddingLeft: "16px",
-                  fontSize: "1.6rem",
-                  fontWeight: 900,
-                  color: Colors[resolvedTheme].primary,
-                }}
-                variant="h6"
-              >
-                Create Event
-              </Typography>
+              {!eventDetails ? (
+                <Typography
+                  sx={{
+                    paddingLeft: "16px",
+                    fontSize: "1.6rem",
+                    fontWeight: 900,
+                    color: Colors[resolvedTheme].primary,
+                  }}
+                  variant="h6"
+                >
+                  Create Event
+                </Typography>
+              ) : (
+                <Typography
+                  sx={{
+                    paddingLeft: "16px",
+                    fontSize: "1.6rem",
+                    fontWeight: 900,
+                    color: Colors[resolvedTheme].primary,
+                  }}
+                  variant="h6"
+                >
+                  Event Details
+                </Typography>
+              )}
+
               <List
                 sx={{
                   "&& .Mui-selected": {
@@ -859,36 +884,73 @@ export default function Header() {
                                 theme.palette.primary.main,
                             },
                           },
+
                           marginBottom: "12px",
                         }}
+                        FormHelperTextProps={{
+                          sx: {
+                            position: "absolute",
+                            right: "3%",
+                            color: Colors[resolvedTheme].secondary,
+                          },
+                        }}
+                        inputProps={{ maxLength: CHARACTER_LIMIT }}
+                        onChange={handleEventNameChange("eventName")}
+                        helperText={`${values.eventName.length}/${CHARACTER_LIMIT}`}
                         error={!!errors3?.email}
-                        helperText={
-                          errors3?.email ? errors3.email.message : null
-                        }
                       />
 
                       <Grid
                         sx={{ marginBottom: showEndDate ? "12px" : undefined }}
                         container
-                        rowSpacing={1}
-                        columnSpacing={{ xs: 1, sm: 2, md: 2 }}
+                        columnSpacing={{ xs: 2.3, sm: 2.3, md: 2.3 }}
                       >
-                        <Grid item xs={6}>
+                        <Grid item xs={7}>
                           <LocalizationProvider dateAdapter={AdapterDateFns}>
                             <DatePicker
+                              open={openStart}
+                              onOpen={() => setOpenStart(true)}
                               disablePast
                               label="Start Date"
                               views={["day"]}
                               value={startDate || undefined}
                               onChange={(newValue: any) => {
                                 setStartDate(newValue);
+                                setOpenStart(false);
+                              }}
+                              PopperProps={{ disablePortal: true }}
+                              PaperProps={{
+                                sx: {
+                                  svg: {
+                                    color: Colors[resolvedTheme].primary,
+                                  },
+                                  button: {
+                                    color:
+                                      Colors[resolvedTheme]
+                                        .date_picker_button_color,
+                                    backgroundColor: "transparent",
+                                    ":hover": {
+                                      backgroundColor:
+                                        Colors[resolvedTheme]
+                                          .date_picker_button_bg,
+                                    },
+                                  },
+                                  span: {
+                                    color: Colors[resolvedTheme].primary,
+                                  },
+                                  bgcolor: Colors[resolvedTheme].header_bg,
+                                  color: Colors[resolvedTheme].primary,
+                                },
                               }}
                               inputFormat="MMM d, Y"
                               InputAdornmentProps={{
                                 position: "start",
                               }}
+                              OpenPickerButtonProps={{ disableRipple: true }}
                               renderInput={(params) => (
                                 <TextField
+                                  {...params}
+                                  onClick={(e) => setOpenStart(true)}
                                   sx={{
                                     input: {
                                       color: Colors[resolvedTheme].primary,
@@ -905,10 +967,15 @@ export default function Header() {
                                         borderColor: (theme) =>
                                           theme.palette.primary.main,
                                       },
+                                      "& svg": {
+                                        color: Colors[resolvedTheme].primary,
+                                      },
+                                      "&:hover button": {
+                                        backgroundColor: "transparent",
+                                      },
                                     },
                                   }}
                                   InputLabelProps={{ shrink: true }}
-                                  {...params}
                                   error={!!errors3?.start_date}
                                   helperText={null}
                                 />
@@ -917,41 +984,41 @@ export default function Header() {
                           </LocalizationProvider>
                         </Grid>
 
-                        <Grid item xs={6}>
-                          <LocalizationProvider dateAdapter={AdapterDateFns}>
-                            <TextField
-                              label="Start Time"
-                              type="time"
-                              defaultValue="07:30"
-                              InputLabelProps={{
-                                shrink: true,
-                              }}
-                              inputProps={{
-                                step: 900, // 15 min
-                              }}
-                              sx={{
-                                width: 150,
-                                input: {
-                                  color: Colors[resolvedTheme].primary,
+                        <Grid item xs={5}>
+                          <TextField
+                            label="Start Time"
+                            type="time"
+                            defaultValue="07:30"
+                            InputLabelProps={{
+                              shrink: true,
+                            }}
+                            inputProps={{
+                              step: 900, // 15 min
+                            }}
+                            className={styles.time}
+                            sx={{
+                              width: 117,
+                              input: {
+                                color: Colors[resolvedTheme].primary,
+                              },
+                              label: {
+                                color: Colors[resolvedTheme].secondary,
+                              },
+
+                              "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                  borderColor:
+                                    Colors[resolvedTheme].input_border,
                                 },
-                                label: {
-                                  color: Colors[resolvedTheme].secondary,
+                                "&:hover fieldset": {
+                                  borderColor: (theme) =>
+                                    theme.palette.primary.main,
                                 },
-                                "& .MuiOutlinedInput-root": {
-                                  "& fieldset": {
-                                    borderColor:
-                                      Colors[resolvedTheme].input_border,
-                                  },
-                                  "&:hover fieldset": {
-                                    borderColor: (theme) =>
-                                      theme.palette.primary.main,
-                                  },
-                                },
-                              }}
-                              error={!!errors3?.start_time}
-                              helperText={null}
-                            />
-                          </LocalizationProvider>
+                              },
+                            }}
+                            error={!!errors3?.start_time}
+                            helperText={null}
+                          />
                         </Grid>
                       </Grid>
 
@@ -962,20 +1029,52 @@ export default function Header() {
                             rowSpacing={1}
                             columnSpacing={{ xs: 1, sm: 2, md: 2 }}
                           >
-                            <Grid item xs={6}>
+                            <Grid item xs={7}>
                               <LocalizationProvider
                                 dateAdapter={AdapterDateFns}
                               >
                                 <DatePicker
+                                  open={openEnd}
+                                  onOpen={() => setOpenEnd(true)}
                                   disablePast
                                   label="End Date"
                                   views={["day"]}
                                   value={endDate || undefined}
                                   onChange={(newValue: any) => {
                                     setEndDate(newValue);
+                                    setOpenEnd(false);
+                                  }}
+                                  PopperProps={{ disablePortal: true }}
+                                  PaperProps={{
+                                    sx: {
+                                      svg: {
+                                        color: Colors[resolvedTheme].primary,
+                                      },
+                                      button: {
+                                        color:
+                                          Colors[resolvedTheme]
+                                            .date_picker_button_color,
+                                        backgroundColor: "transparent",
+                                        ":hover": {
+                                          backgroundColor:
+                                            Colors[resolvedTheme]
+                                              .date_picker_button_bg,
+                                        },
+                                      },
+                                      span: {
+                                        color: Colors[resolvedTheme].primary,
+                                      },
+                                      bgcolor: Colors[resolvedTheme].header_bg,
+                                      color: Colors[resolvedTheme].primary,
+                                    },
                                   }}
                                   inputFormat="MMM d, Y"
-                                  InputAdornmentProps={{ position: "start" }}
+                                  InputAdornmentProps={{
+                                    position: "start",
+                                  }}
+                                  OpenPickerButtonProps={{
+                                    disableRipple: true,
+                                  }}
                                   renderInput={(params) => (
                                     <TextField
                                       sx={{
@@ -996,55 +1095,60 @@ export default function Header() {
                                             borderColor: (theme) =>
                                               theme.palette.primary.main,
                                           },
+                                          "& svg": {
+                                            color:
+                                              Colors[resolvedTheme].primary,
+                                          },
+                                          "&:hover button": {
+                                            backgroundColor: "transparent",
+                                          },
                                         },
                                       }}
                                       InputLabelProps={{ shrink: true }}
                                       {...params}
                                       error={!!errors3?.start_date}
                                       helperText={null}
+                                      onClick={(e) => setOpenEnd(true)}
                                     />
                                   )}
                                 />
                               </LocalizationProvider>
                             </Grid>
 
-                            <Grid item xs={6}>
-                              <LocalizationProvider
-                                dateAdapter={AdapterDateFns}
-                              >
-                                <TextField
-                                  label="End Time"
-                                  type="time"
-                                  defaultValue="08:00"
-                                  InputLabelProps={{
-                                    shrink: true,
-                                  }}
-                                  inputProps={{
-                                    step: 900, // 15 min
-                                  }}
-                                  sx={{
-                                    width: 150,
-                                    input: {
-                                      color: Colors[resolvedTheme].primary,
+                            <Grid item xs={5}>
+                              <TextField
+                                label="End Time"
+                                type="time"
+                                defaultValue="08:00"
+                                InputLabelProps={{
+                                  shrink: true,
+                                }}
+                                inputProps={{
+                                  step: 900, // 15 min
+                                }}
+                                className={styles.time}
+                                sx={{
+                                  width: 117,
+                                  input: {
+                                    color: Colors[resolvedTheme].primary,
+                                  },
+                                  label: {
+                                    color: Colors[resolvedTheme].secondary,
+                                  },
+                                  "& .MuiOutlinedInput-root": {
+                                    "& fieldset": {
+                                      borderColor:
+                                        Colors[resolvedTheme].input_border,
                                     },
-                                    label: {
-                                      color: Colors[resolvedTheme].secondary,
+                                    "&:hover fieldset": {
+                                      borderColor: (theme) =>
+                                        theme.palette.primary.main,
                                     },
-                                    "& .MuiOutlinedInput-root": {
-                                      "& fieldset": {
-                                        borderColor:
-                                          Colors[resolvedTheme].input_border,
-                                      },
-                                      "&:hover fieldset": {
-                                        borderColor: (theme) =>
-                                          theme.palette.primary.main,
-                                      },
-                                    },
-                                  }}
-                                  error={!!errors3?.start_time}
-                                  helperText={null}
-                                />
-                              </LocalizationProvider>
+                                  },
+                                }}
+                                error={!!errors3?.start_time}
+                                helperText={null}
+                              />
                             </Grid>
                           </Grid>
                           <IconButton
@@ -1105,7 +1209,7 @@ export default function Header() {
                           color: Colors[resolvedTheme].primary,
                           padding: "8.5px 14px",
                           borderColor: Colors[resolvedTheme].secondary,
-                          justifyContent: "space-around",
+                          justifyContent: "start",
                         }}
                         aria-controls={
                           openPrivacy ? "demo-positioned-menu" : undefined
@@ -1115,52 +1219,70 @@ export default function Header() {
                         onClick={handleClickEventPrivacy}
                         startIcon={
                           <LockIcon
-                            sx={{ color: Colors[resolvedTheme].primary }}
+                            sx={{
+                              marginRight: "12px",
+                              color: Colors[resolvedTheme].primary,
+                            }}
                           />
                         }
                         endIcon={
                           <KeyboardArrowDownIcon
-                            sx={{ color: Colors[resolvedTheme].primary }}
+                            sx={{
+                              position: "absolute",
+                              right: "7%",
+                              top: "26%",
+                              color: Colors[resolvedTheme].primary,
+                            }}
                           />
                         }
                       >
                         {privacy}
                       </Button>
                       <Menu
+                        sx={{ mt: "5px" }}
                         id="demo-positioned-menu"
                         aria-labelledby="demo-positioned-button"
                         anchorEl={anchorElPrivacy}
                         open={openPrivacy}
                         onClose={handleCloseEventPrivacy}
                         anchorOrigin={{
-                          vertical: "top",
+                          vertical: "bottom",
                           horizontal: "left",
                         }}
                         transformOrigin={{
                           vertical: "top",
-                          horizontal: "left",
+                          horizontal: "center",
                         }}
                         PaperProps={{
                           sx: {
+                            width: 304,
                             bgcolor: Colors[resolvedTheme].header_bg,
                             color: Colors[resolvedTheme].primary,
                           },
                         }}
                       >
-                        <MenuItem>
+                        <MenuItem
+                          sx={{
+                            display: "flex",
+                            justifyContent: "start",
+                          }}
+                        >
                           <Typography
                             sx={{
+                              textAlign: "left",
                               fontSize: "0.6rem",
                               color: Colors[resolvedTheme].secondary,
                             }}
                             variant="subtitle1"
                           >
-                            Choose who can see and join this event. <br />
+                            Choose who can see and join this event.
+                            <br />
                             you will be able to invite people later
                           </Typography>
                         </MenuItem>
                         <MenuItem
                           sx={{
+                            px: 0,
                             justifyContent: "space-around",
                           }}
                         >
@@ -1177,7 +1299,7 @@ export default function Header() {
                               <LockIcon
                                 sx={{
                                   display: "flex",
-                                  color: Colors[resolvedTheme].secondary,
+                                  color: Colors[resolvedTheme].primary,
                                 }}
                                 fontSize="small"
                               />
@@ -1223,6 +1345,7 @@ export default function Header() {
                         </MenuItem>
                         <MenuItem
                           sx={{
+                            px: 0,
                             justifyContent: "space-around",
                           }}
                         >
@@ -1239,7 +1362,7 @@ export default function Header() {
                               <PublicRoundedIcon
                                 sx={{
                                   display: "flex",
-                                  color: Colors[resolvedTheme].secondary,
+                                  color: Colors[resolvedTheme].primary,
                                 }}
                                 fontSize="small"
                               />
@@ -1274,6 +1397,7 @@ export default function Header() {
 
                           <Radio
                             sx={{
+                              marginLeft: "17px",
                               "&": { color: Colors[resolvedTheme].primary },
                             }}
                             checked={privacy === "Public"}
@@ -1285,6 +1409,7 @@ export default function Header() {
                         </MenuItem>
                         <MenuItem
                           sx={{
+                            px: 0,
                             justifyContent: "space-around",
                           }}
                         >
@@ -1297,7 +1422,7 @@ export default function Header() {
                               <GroupSharpIcon
                                 sx={{
                                   display: "flex",
-                                  color: Colors[resolvedTheme].secondary,
+                                  color: Colors[resolvedTheme].primary,
                                 }}
                                 fontSize="small"
                               />
@@ -1332,6 +1457,7 @@ export default function Header() {
 
                           <Radio
                             sx={{
+                              marginLeft: "17px",
                               "&": { color: Colors[resolvedTheme].primary },
                             }}
                             checked={privacy === "Followers"}
