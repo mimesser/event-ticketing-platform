@@ -53,7 +53,7 @@ export default function Layout({
             sx={{
               margin: eventFooter
                 ? { xs: "0 10%", md: "auto", sm: "0 0 0 340px" }
-                : { xs: "0 10%", md: "auto", sm: "auto" },
+                : { xs: "auto", md: "0 10%", sm: "0 10%" },
               flexGrow: 1,
             }}
           >
