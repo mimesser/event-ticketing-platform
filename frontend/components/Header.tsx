@@ -1485,7 +1485,7 @@ export default function Header() {
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: 320,
-    bgcolor: Colors[resolvedTheme].header_bg,
+    bgcolor: Colors[resolvedTheme]?.header_bg,
     borderRadius: "25px",
     boxShadow: 24,
     p: 4,
@@ -1700,6 +1700,18 @@ export default function Header() {
                 error={!!errors2?.email}
                 helperText={errors2?.email ? errors2.email.message : null}
                 size="small"
+                sx={{
+                  input: { color: Colors[resolvedTheme].primary },
+                  label: { color: Colors[resolvedTheme].secondary },
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: Colors[resolvedTheme].input_border,
+                    },
+                    "&:hover fieldset": {
+                      borderColor: (theme) => theme.palette.primary.main,
+                    },
+                  },
+                }}
               />
               <LoadingButton
                 sx={{ marginTop: "13px" }}
@@ -2797,6 +2809,16 @@ export default function Header() {
                             marginTop: "38px",
                             [theme.breakpoints.down("md")]: {
                               marginTop: "36px",
+                            },
+                          },
+                          input: { color: Colors[resolvedTheme].primary },
+                          label: { color: Colors[resolvedTheme].secondary },
+                          "& .MuiOutlinedInput-root": {
+                            "& fieldset": {
+                              borderColor: Colors[resolvedTheme].input_border,
+                            },
+                            "&:hover fieldset": {
+                              borderColor: (theme) => theme.palette.primary.main,
                             },
                           },
                         })}

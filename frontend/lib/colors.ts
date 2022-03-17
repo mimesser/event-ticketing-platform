@@ -15,6 +15,8 @@ const Colors: any = {
     selected_drawer_menu: "rgba(45, 136, 255, 0.2)",
     cancel_border: "#3E4042",
     icon_bg: "rgba(255,255,255,0.1)",
+    follow_btn: "rgba(255,255,255,0.1)",
+    nobanner: "rgb(51, 54, 57)",
     date_picker_button_color: "rgb(217, 217, 217)",
     date_picker_button_bg: "rgb(110, 118, 125)",
     date_picker_hover: "rgba(0, 0, 0, 0.04)",
@@ -29,6 +31,8 @@ const Colors: any = {
     cancel_border: "rgba(0, 0, 0, 0.4)",
     close_hover: "rgb(134 134 134 / 4%)",
     icon_bg: "rgba(0, 0, 0, 0.04)",
+    follow_btn: "black",
+    nobanner: "#d0d8df",
     date_picker_hover: "rgba(0, 0, 0, 0.04)",
   },
 };

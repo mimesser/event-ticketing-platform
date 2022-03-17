@@ -17,13 +17,16 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import { useRouter } from "next/router";
 import { getLoginSession } from "lib/auth";
+import Colors from "lib/colors";
 import { fetchPublicUser } from "lib/hooks";
 import { useUserInfo } from "lib/user-context";
 import { shortenAddress } from "lib/utils";
 import React from "react";
 import styles from "styles/pages/View.module.scss";
+import { useTheme } from "next-themes";
 
 function View() {
+  const { resolvedTheme } = useTheme();
   const router = useRouter();
   const { username } = router.query;
   const currentUser = useUserInfo();
@@ -165,7 +168,7 @@ function View() {
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: 320,
-    bgcolor: "white",
+    bgcolor: Colors[resolvedTheme]?.header_bg,
     borderRadius: "25px",
     boxShadow: 24,
     p: 4,
