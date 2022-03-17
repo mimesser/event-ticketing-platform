@@ -102,6 +102,11 @@ export default function Twitter() {
   };
 
   const modalClose = () => {
+    // Create user signup notifications
+    fetch("/api/signup-notifications", {
+      method: "POST",
+    });
+
     setHandleTwitterModal(false);
     Router.push("/", undefined, { shallow: true });
   };
@@ -170,7 +175,9 @@ export default function Twitter() {
                 </Typography>
                 <Box className={styles.linkSocialButtons}>
                   <Button
-                    onClick={() => signIn("twitter", { callbackUrl: "/" })}
+                    onClick={() =>
+                      signIn("twitter", { callbackUrl: "/twitter" })
+                    }
                     id={styles.twtButton}
                     type="submit"
                     size="large"

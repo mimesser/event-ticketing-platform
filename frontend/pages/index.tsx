@@ -64,16 +64,6 @@ export default function Home() {
       });
 
       if (res.status === 200) {
-        // Create user signup notifications
-        if (!userExists) {
-          await fetch("/api/signup-notifications", {
-            method: "POST",
-            body: JSON.stringify({
-              email,
-            }),
-          });
-        }
-
         // redirect
         Router.push(
           {

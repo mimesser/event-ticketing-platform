@@ -1,3 +1,4 @@
+import { getLoginSession } from "lib/auth";
 import prisma from "lib/prisma";
 import { NextApiResponse, NextApiRequest } from "next";
 
@@ -5,44 +6,41 @@ export default async function signupNotifications(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { email } = JSON.parse(req.body);
+  const session = await getLoginSession(req);
+
+  if (!session) {
+    res.status(400).json({ error: "Missing session" });
+    return;
+  }
 
   try {
-    const userId = await prisma.user.findUnique({
-      where: { email: email },
-      select: { id: true },
+    const user = await prisma.user.findUnique({
+      where: { email: session.email },
+      select: { id: true, nativeAssetBalance: true, twitterUsername: true },
     });
 
-    await prisma.notification.createMany({
-      data: [
-        {
-          description: "this is the first notification available",
-          userId: userId?.id,
+    if (user?.nativeAssetBalance === "0" || user?.nativeAssetBalance === null) {
+      await prisma.notification.create({
+        data: {
+          description: "To get started, fuel up with some MATIC",
+          userId: user?.id,
           title: "",
+          avatarImage: "/icons/matic.svg",
         },
-        {
-          description: "this is the second notification available",
-          userId: userId?.id,
-          title: "",
-        },
-        {
+      });
+    }
+
+    if (user?.twitterUsername === null) {
+      await prisma.notification.create({
+        data: {
           description:
-            "this is the third notification available but longer so i can test responsiveness",
-          userId: userId?.id,
+            "Link your Twitter account to get the most out of Impish",
+          userId: user?.id,
           title: "",
+          avatarImage: "/icons/twitter.svg",
         },
-        {
-          description: "this is the fourth notification available",
-          userId: userId?.id,
-          title: "",
-        },
-        {
-          description: "this is the fifth notification available",
-          userId: userId?.id,
-          title: "",
-        },
-      ],
-    });
+      });
+    }
 
     res.status(200).json({ status: "Create signup notificatons success" });
   } catch (error) {

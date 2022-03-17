@@ -18,7 +18,7 @@ import { ethers } from "ethers";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styles from "styles/pages/Dashboard.module.scss";
 import { Tooltip } from "@mui/material";
 import { useTheme } from "next-themes";
@@ -48,36 +48,40 @@ function Dashboard() {
       : false
   );
 
-  useEffect(() => {
-    // Update user nativeAssetBalance
-    async function updateBalance() {
-      const provider = new ethers.providers.Web3Provider(
-        magic?.rpcProvider as any
-      );
+  // Update user nativeAssetBalance
+  const updateBalance = useCallback(async () => {
+    const provider = new ethers.providers.Web3Provider(
+      magic?.rpcProvider as any
+    );
 
-      const balance = await provider.getBalance(user.walletAddress);
+    const balance = await provider.getBalance(user.walletAddress);
 
-      if (balance) {
-        try {
-          await fetch("/api/update-balance", {
-            method: "POST",
-            body: JSON.stringify({
-              walletAddress: user.walletAddress,
-              balance: balance.toString(),
-            }),
-          });
-        } catch (error) {
-          console.log(error);
-        }
+    if (balance) {
+      try {
+        await fetch("/api/update-balance", {
+          method: "POST",
+          body: JSON.stringify({
+            balance: balance.toString(),
+          }),
+        });
+      } catch (error) {
+        console.log(error);
       }
     }
+  }, [user.walletAddress]);
 
+  useEffect(() => {
     if (user) {
       updateBalance();
     }
-  }, [user]);
+  }, [signupFlow, user, updateBalance]);
 
   const modalClose = () => {
+    // Create user signup notifications
+    fetch("/api/signup-notifications", {
+      method: "POST",
+    });
+
     setSignupFlow(false);
     setWelcomeModal(false);
     setMoonPayModal(false);
@@ -109,6 +113,7 @@ function Dashboard() {
       const currentUserAddress = await signer.getAddress();
       const currentUserBalance = await provider.getBalance(currentUserAddress);
       if (currentUserBalance.gt(balance)) {
+        updateBalance();
         setTwitterButton(true);
         clearInterval(timer);
       }

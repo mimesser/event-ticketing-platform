@@ -1,3 +1,4 @@
+import { getLoginSession } from "lib/auth";
 import prisma from "lib/prisma";
 import { NextApiResponse, NextApiRequest } from "next";
 
@@ -5,14 +6,24 @@ export default async function notifications(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { id } = JSON.parse(req.body);
+  const session = await getLoginSession(req);
+
+  if (!session) {
+    res.status(400).json({ error: "Missing session" });
+    return;
+  }
 
   if (req.method === "DELETE") {
+    const userId: any = await prisma.user.findUnique({
+      where: { email: session.email },
+      select: { id: true },
+    });
+
     try {
       await prisma.notification.updateMany({
         where: {
-          id: {
-            in: id,
+          userId: {
+            equals: userId.id,
           },
         },
         data: {

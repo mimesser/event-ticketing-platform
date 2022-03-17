@@ -1,3 +1,4 @@
+import { getLoginSession } from "lib/auth";
 import prisma from "lib/prisma";
 import { NextApiResponse, NextApiRequest } from "next";
 
@@ -5,12 +6,18 @@ export default async function updateBalance(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { walletAddress, balance } = JSON.parse(req.body);
+  const session = await getLoginSession(req);
+  const { balance } = JSON.parse(req.body);
+
+  if (!session) {
+    res.status(400).json({ error: "Missing session" });
+    return;
+  }
 
   try {
     await prisma.user.update({
       where: {
-        walletAddress: walletAddress,
+        walletAddress: session.publicAddress,
       },
       data: {
         nativeAssetBalance: balance,
