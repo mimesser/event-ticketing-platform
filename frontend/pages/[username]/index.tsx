@@ -113,7 +113,6 @@ function Profile() {
       const res = await fetch("/api/twitter/follow", {
         method: "DELETE",
         body: JSON.stringify({
-          email: currentUser.user.email,
           follow: [user.id],
         }),
       });
@@ -134,7 +133,6 @@ function Profile() {
         const res = await fetch("/api/twitter/follow", {
           method: "POST",
           body: JSON.stringify({
-            email: currentUser.user.email,
             follow: [user.id],
           }),
         });

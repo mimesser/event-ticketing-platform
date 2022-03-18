@@ -123,7 +123,6 @@ function View() {
       const res = await fetch("/api/twitter/follow", {
         method: "DELETE",
         body: JSON.stringify({
-          email: currentUser.user.email,
           follow: [id],
         }),
       });
@@ -145,7 +144,6 @@ function View() {
       const res = await fetch("/api/twitter/follow", {
         method: "POST",
         body: JSON.stringify({
-          email: currentUser.user.email,
           follow: [id],
         }),
       });
@@ -208,18 +206,30 @@ function View() {
                 {user.name && <div className={styles.name}>{user.name}</div>}
 
                 {user.username && (
-                  <div className={styles.username} style={{color: Colors[resolvedTheme].secondary}}>{`@${user.username}`}</div>
+                  <div
+                    className={styles.username}
+                    style={{ color: Colors[resolvedTheme].secondary }}
+                  >{`@${user.username}`}</div>
                 )}
 
                 {!user.username && (
-                  <div className={styles.address} style={{color: Colors[resolvedTheme].secondary}}>
+                  <div
+                    className={styles.address}
+                    style={{ color: Colors[resolvedTheme].secondary }}
+                  >
                     {shortenAddress(user.walletAddress)}
                   </div>
                 )}
               </div>
             </Grid>
           </Grid>
-          <Box sx={{ borderBottom: 1, borderColor: Colors[resolvedTheme].tab_divider, width: "100%" }}>
+          <Box
+            sx={{
+              borderBottom: 1,
+              borderColor: Colors[resolvedTheme].tab_divider,
+              width: "100%",
+            }}
+          >
             <Tabs
               sx={{
                 "&& .MuiTab-root": {
@@ -343,15 +353,37 @@ function View() {
                                 </div>
                                 <div className={styles.followItemDetails}>
                                   {name && <p>{name}</p>}
-                                  {name && username && <a style={{color: Colors[resolvedTheme].secondary}}>{` @${username}`}</a>}
+                                  {name && username && (
+                                    <a
+                                      style={{
+                                        color: Colors[resolvedTheme].secondary,
+                                      }}
+                                    >{` @${username}`}</a>
+                                  )}
                                   {!name && username && (
-                                    <p style={{color: Colors[resolvedTheme].secondary}}>{` @${username}`}</p>
+                                    <p
+                                      style={{
+                                        color: Colors[resolvedTheme].secondary,
+                                      }}
+                                    >{` @${username}`}</p>
                                   )}
                                   {!username && !name && (
-                                    <p style={{color: Colors[resolvedTheme].secondary}}>{shortenAddress(walletAddress)}</p>
+                                    <p
+                                      style={{
+                                        color: Colors[resolvedTheme].secondary,
+                                      }}
+                                    >
+                                      {shortenAddress(walletAddress)}
+                                    </p>
                                   )}
                                   {!username && name && (
-                                    <a style={{color: Colors[resolvedTheme].secondary}}>{shortenAddress(walletAddress)}</a>
+                                    <a
+                                      style={{
+                                        color: Colors[resolvedTheme].secondary,
+                                      }}
+                                    >
+                                      {shortenAddress(walletAddress)}
+                                    </a>
                                   )}
                                 </div>
                                 <div className={styles.follow_button}>
@@ -370,7 +402,8 @@ function View() {
                                             ":hover": {
                                               backgroundColor: "black",
                                             },
-                                            backgroundColor: Colors[resolvedTheme].follow_btn,
+                                            backgroundColor:
+                                              Colors[resolvedTheme].follow_btn,
                                             borderColor: "black",
                                             borderRadius:
                                               theme.shape.borderRadius,
@@ -400,9 +433,11 @@ function View() {
                                           variant={"outlined"}
                                           sx={(theme) => ({
                                             width: "6.5em",
-                                            color: Colors[resolvedTheme].primary,
+                                            color:
+                                              Colors[resolvedTheme].primary,
                                             backgroundColor: "inherit",
-                                            borderColor: Colors[resolvedTheme].primary,
+                                            borderColor:
+                                              Colors[resolvedTheme].primary,
                                             borderRadius:
                                               theme.shape.borderRadius,
                                             margin: theme.spacing(1),
@@ -525,15 +560,37 @@ function View() {
                                 </div>
                                 <div className={styles.followItemDetails}>
                                   {name && <p>{name}</p>}
-                                  {name && username && <a style={{color: Colors[resolvedTheme].secondary}}>{` @${username}`}</a>}
+                                  {name && username && (
+                                    <a
+                                      style={{
+                                        color: Colors[resolvedTheme].secondary,
+                                      }}
+                                    >{` @${username}`}</a>
+                                  )}
                                   {!name && username && (
-                                    <p style={{color: Colors[resolvedTheme].secondary}}>{` @${username}`}</p>
+                                    <p
+                                      style={{
+                                        color: Colors[resolvedTheme].secondary,
+                                      }}
+                                    >{` @${username}`}</p>
                                   )}
                                   {!username && !name && (
-                                    <p style={{color: Colors[resolvedTheme].secondary}}>{shortenAddress(walletAddress)}</p>
+                                    <p
+                                      style={{
+                                        color: Colors[resolvedTheme].secondary,
+                                      }}
+                                    >
+                                      {shortenAddress(walletAddress)}
+                                    </p>
                                   )}
                                   {!username && name && (
-                                    <a style={{color: Colors[resolvedTheme].secondary}}>{shortenAddress(walletAddress)}</a>
+                                    <a
+                                      style={{
+                                        color: Colors[resolvedTheme].secondary,
+                                      }}
+                                    >
+                                      {shortenAddress(walletAddress)}
+                                    </a>
                                   )}
                                 </div>
                                 <div className={styles.follow_button}>
@@ -552,7 +609,8 @@ function View() {
                                             ":hover": {
                                               backgroundColor: "black",
                                             },
-                                            backgroundColor: Colors[resolvedTheme].follow_btn,
+                                            backgroundColor:
+                                              Colors[resolvedTheme].follow_btn,
                                             borderColor: "black",
                                             borderRadius:
                                               theme.shape.borderRadius,
@@ -582,9 +640,11 @@ function View() {
                                           variant={"outlined"}
                                           sx={(theme) => ({
                                             width: "6.5em",
-                                            color: Colors[resolvedTheme].primary,
+                                            color:
+                                              Colors[resolvedTheme].primary,
                                             backgroundColor: "inherit",
-                                            borderColor: Colors[resolvedTheme].primary,
+                                            borderColor:
+                                              Colors[resolvedTheme].primary,
                                             borderRadius:
                                               theme.shape.borderRadius,
                                             margin: theme.spacing(1),
@@ -656,10 +716,7 @@ function View() {
                     : ` ${shortenAddress(unfollowModal.walletAddress)}`}
                   ?
                 </Typography>
-                <Typography
-                  sx={{ marginBottom: "12px" }}
-                  variant="body1"
-                >
+                <Typography sx={{ marginBottom: "12px" }} variant="body1">
                   Their activities will no longer show up in your home timeline.
                   You can still view their profile.
                 </Typography>

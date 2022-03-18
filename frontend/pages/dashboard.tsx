@@ -68,7 +68,7 @@ function Dashboard() {
         console.log(error);
       }
     }
-  }, [user.walletAddress]);
+  }, [user?.walletAddress]);
 
   useEffect(() => {
     if (user) {

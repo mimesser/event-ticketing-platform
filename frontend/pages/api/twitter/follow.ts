@@ -1,6 +1,7 @@
-import { getLoginSession } from "../../../lib/auth";
-import { NextApiRequest, NextApiResponse } from "next";
+import { getLoginSession } from "lib/auth";
 import prisma from "lib/prisma";
+import { shortenAddress } from "lib/utils";
+import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function follow(
   req: NextApiRequest,
@@ -25,15 +26,21 @@ export default async function follow(
   }
 
   try {
-    const userId = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { email: session.email },
-      select: { id: true },
+      select: {
+        id: true,
+        avatarImage: true,
+        name: true,
+        username: true,
+        walletAddress: true,
+      },
     });
 
     if (req.method === "POST") {
       try {
-        var data = follow.map((m) => ({
-          followingId: userId!.id,
+        const data = follow.map((m) => ({
+          followingId: user!.id,
           followersId: m,
         }));
 
@@ -41,6 +48,37 @@ export default async function follow(
           data,
           skipDuplicates: true,
         });
+
+        if (res.status(200)) {
+          try {
+            const title = user!.name
+              ? user!.name
+              : user!.username
+              ? user!.username
+              : shortenAddress(user!.walletAddress as string);
+
+            follow.map(async (m) => {
+              const notificationExist = await prisma.notification.findFirst({
+                where: {
+                  userId: m,
+                  title: title,
+                },
+              });
+
+              if (!notificationExist) {
+                await prisma.notification.create({
+                  data: {
+                    description: "followed you",
+                    userId: m,
+                    title: title,
+                  },
+                });
+              }
+            });
+          } catch (e) {
+            res.status(500).json({ e });
+          }
+        }
 
         res.status(200).json({ status: "follow success" });
       } catch (e) {
@@ -54,7 +92,7 @@ export default async function follow(
           where: {
             followersId_followingId: {
               followersId: follow[0],
-              followingId: userId!.id,
+              followingId: user!.id,
             },
           },
         });

@@ -63,7 +63,7 @@ import Typography from "@mui/material/Typography";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Avatar from "boring-avatars";
-import { formatDistanceToNow, differenceInCalendarDays } from "date-fns";
+import { differenceInCalendarDays, formatDistance } from "date-fns";
 import Colors from "lib/colors";
 import { useUserInfo } from "lib/user-context";
 import { moonPaySrc } from "lib/moon-pay";
@@ -87,6 +87,9 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 });
 
 export default function Header() {
+  var dateUTC = new Date(
+    new Date().getTime() + new Date().getTimezoneOffset() * 60000
+  );
   const { theme, resolvedTheme, setTheme } = useTheme();
   const [openStart, setOpenStart] = React.useState(false);
   const [openEnd, setOpenEnd] = React.useState(false);
@@ -130,13 +133,11 @@ export default function Header() {
   const totalUnread = notifications.filter((item: any) => !item.isRead).length;
   const newNotificationsLength = notifications.filter(
     (m: any) =>
-      differenceInCalendarDays(new Date(), new Date(m.createdAt)) <= 1 &&
-      !m.isRead
+      differenceInCalendarDays(new Date(m.createdAt), dateUTC) <= 1 && !m.isRead
   ).length;
   const earlierNotificationsLength = notifications.filter(
     (m: any) =>
-      differenceInCalendarDays(new Date(), new Date(m.createdAt)) > 1 ||
-      m.isRead
+      differenceInCalendarDays(new Date(m.createdAt), dateUTC) > 1 || m.isRead
   ).length;
 
   useEffect(() => {
@@ -2355,8 +2356,8 @@ export default function Header() {
                             }: any) => {
                               if (
                                 differenceInCalendarDays(
-                                  new Date(),
-                                  new Date(createdAt)
+                                  new Date(createdAt),
+                                  dateUTC
                                 ) <= 1 &&
                                 !isRead
                               ) {
@@ -2380,12 +2381,27 @@ export default function Header() {
                                         mr: 2.5,
                                       }}
                                     >
-                                      <Image
-                                        src={avatarImage}
-                                        alt={id}
-                                        width={40}
-                                        height={40}
-                                      />
+                                      {avatarImage ? (
+                                        <Image
+                                          src={avatarImage}
+                                          alt={id}
+                                          width={40}
+                                          height={40}
+                                        />
+                                      ) : (
+                                        <Avatar
+                                          size={40}
+                                          name={title}
+                                          variant="pixel"
+                                          colors={[
+                                            "#ffad08",
+                                            "#edd75a",
+                                            "#73b06f",
+                                            "#0c8f8f",
+                                            "#405059",
+                                          ]}
+                                        />
+                                      )}
                                     </Typography>
                                     <ListItemText
                                       primary={
@@ -2393,9 +2409,12 @@ export default function Header() {
                                           whiteSpace="normal"
                                           sx={{
                                             width: "240px",
+                                            overflowWrap: "break-word",
                                           }}
                                         >
-                                          {description}
+                                          {title
+                                            ? `${title} ${description}`
+                                            : `${description}`}
                                         </Typography>
                                       }
                                       secondary={
@@ -2417,11 +2436,10 @@ export default function Header() {
                                               height: 16,
                                             }}
                                           />
-                                          {formatDistanceToNow(
+                                          {formatDistance(
                                             new Date(createdAt),
-                                            {
-                                              addSuffix: true,
-                                            }
+                                            dateUTC,
+                                            { addSuffix: true }
                                           )}
                                         </Typography>
                                       }
@@ -2464,8 +2482,8 @@ export default function Header() {
                           }: any) => {
                             if (
                               differenceInCalendarDays(
-                                new Date(),
-                                new Date(createdAt)
+                                new Date(createdAt),
+                                dateUTC
                               ) > 1 ||
                               isRead
                             ) {
@@ -2488,12 +2506,27 @@ export default function Header() {
                                       mr: 2.5,
                                     }}
                                   >
-                                    <Image
-                                      src={avatarImage}
-                                      alt={id}
-                                      width={40}
-                                      height={40}
-                                    />
+                                    {avatarImage ? (
+                                      <Image
+                                        src={avatarImage}
+                                        alt={id}
+                                        width={40}
+                                        height={40}
+                                      />
+                                    ) : (
+                                      <Avatar
+                                        size={40}
+                                        name={title}
+                                        variant="pixel"
+                                        colors={[
+                                          "#ffad08",
+                                          "#edd75a",
+                                          "#73b06f",
+                                          "#0c8f8f",
+                                          "#405059",
+                                        ]}
+                                      />
+                                    )}
                                   </Typography>
                                   <ListItemText
                                     primary={
@@ -2501,13 +2534,16 @@ export default function Header() {
                                         whiteSpace="normal"
                                         sx={{
                                           width: "240px",
+                                          overflowWrap: "break-word",
                                           ...(isRead && {
                                             color:
                                               Colors[resolvedTheme].secondary,
                                           }),
                                         }}
                                       >
-                                        {description}
+                                        {title
+                                          ? `${title} ${description}`
+                                          : `${description}`}
                                       </Typography>
                                     }
                                     secondary={
@@ -2529,11 +2565,10 @@ export default function Header() {
                                             height: 16,
                                           }}
                                         />
-                                        {formatDistanceToNow(
+                                        {formatDistance(
                                           new Date(createdAt),
-                                          {
-                                            addSuffix: true,
-                                          }
+                                          dateUTC,
+                                          { addSuffix: true }
                                         )}
                                       </Typography>
                                     }
@@ -3237,8 +3272,8 @@ export default function Header() {
                             }: any) => {
                               if (
                                 differenceInCalendarDays(
-                                  new Date(),
-                                  new Date(createdAt)
+                                  new Date(createdAt),
+                                  dateUTC
                                 ) <= 1 &&
                                 !isRead
                               ) {
@@ -3262,12 +3297,27 @@ export default function Header() {
                                         mr: 2.5,
                                       }}
                                     >
-                                      <Image
-                                        src={avatarImage}
-                                        alt={id}
-                                        width={40}
-                                        height={40}
-                                      />
+                                      {avatarImage ? (
+                                        <Image
+                                          src={avatarImage}
+                                          alt={id}
+                                          width={40}
+                                          height={40}
+                                        />
+                                      ) : (
+                                        <Avatar
+                                          size={40}
+                                          name={title}
+                                          variant="pixel"
+                                          colors={[
+                                            "#ffad08",
+                                            "#edd75a",
+                                            "#73b06f",
+                                            "#0c8f8f",
+                                            "#405059",
+                                          ]}
+                                        />
+                                      )}
                                     </Typography>
                                     <ListItemText
                                       primary={
@@ -3275,9 +3325,12 @@ export default function Header() {
                                           whiteSpace="normal"
                                           sx={{
                                             width: "240px",
+                                            overflowWrap: "break-word",
                                           }}
                                         >
-                                          {description}
+                                          {title
+                                            ? `${title} ${description}`
+                                            : `${description}`}
                                         </Typography>
                                       }
                                       secondary={
@@ -3299,11 +3352,10 @@ export default function Header() {
                                               height: 16,
                                             }}
                                           />
-                                          {formatDistanceToNow(
+                                          {formatDistance(
                                             new Date(createdAt),
-                                            {
-                                              addSuffix: true,
-                                            }
+                                            dateUTC,
+                                            { addSuffix: true }
                                           )}
                                         </Typography>
                                       }
@@ -3346,8 +3398,8 @@ export default function Header() {
                           }: any) => {
                             if (
                               differenceInCalendarDays(
-                                new Date(),
-                                new Date(createdAt)
+                                new Date(createdAt),
+                                dateUTC
                               ) > 1 ||
                               isRead
                             ) {
@@ -3370,12 +3422,27 @@ export default function Header() {
                                       mr: 2.5,
                                     }}
                                   >
-                                    <Image
-                                      src={avatarImage}
-                                      alt={id}
-                                      width={40}
-                                      height={40}
-                                    />
+                                    {avatarImage ? (
+                                      <Image
+                                        src={avatarImage}
+                                        alt={id}
+                                        width={40}
+                                        height={40}
+                                      />
+                                    ) : (
+                                      <Avatar
+                                        size={40}
+                                        name={title}
+                                        variant="pixel"
+                                        colors={[
+                                          "#ffad08",
+                                          "#edd75a",
+                                          "#73b06f",
+                                          "#0c8f8f",
+                                          "#405059",
+                                        ]}
+                                      />
+                                    )}
                                   </Typography>
                                   <ListItemText
                                     primary={
@@ -3383,13 +3450,16 @@ export default function Header() {
                                         whiteSpace="normal"
                                         sx={{
                                           width: "240px",
+                                          overflowWrap: "break-word",
                                           ...(isRead && {
                                             color:
                                               Colors[resolvedTheme].secondary,
                                           }),
                                         }}
                                       >
-                                        {description}
+                                        {title
+                                          ? `${title} ${description}`
+                                          : `${description}`}
                                       </Typography>
                                     }
                                     secondary={
@@ -3411,11 +3481,10 @@ export default function Header() {
                                             height: 16,
                                           }}
                                         />
-                                        {formatDistanceToNow(
+                                        {formatDistance(
                                           new Date(createdAt),
-                                          {
-                                            addSuffix: true,
-                                          }
+                                          dateUTC,
+                                          { addSuffix: true }
                                         )}
                                       </Typography>
                                     }
