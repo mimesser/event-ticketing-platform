@@ -32,3 +32,22 @@ export const checkUsernameEqual = (left: any, right: any) => {
 
   return left.toString().toLowerCase() === right.toString().toLowerCase();
 };
+
+export const eventTime = () => {
+  var hours, minutes, ampm;
+  var time = [];
+  for (var i = 0; i <= 1440; i += 15) {
+    hours = Math.floor(i / 60);
+    minutes = i % 60;
+    if (minutes < 10) {
+      minutes = "0" + minutes; // adding leading zero
+    }
+    ampm = hours % 24 < 12 ? "AM" : "PM";
+    hours = hours % 12;
+    if (hours === 0) {
+      hours = 12;
+    }
+    time.push(hours + ":" + minutes + " " + ampm);
+  }
+  return time;
+};
