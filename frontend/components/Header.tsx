@@ -1785,7 +1785,6 @@ export default function Header() {
               sx={{
                 textAlign: "center",
                 marginBottom: "13px",
-                color: "black",
                 fontFamily: "sans-serif",
                 fontSize: "18px",
                 fontWeight: 550,
