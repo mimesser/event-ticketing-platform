@@ -132,8 +132,8 @@ function Dashboard() {
     p: 4,
   };
 
-  return (
-    user ? <>
+  return user ? (
+    <>
       {/* Buy crypto modal for banner */}
       <Modal
         BackdropProps={{
@@ -394,9 +394,8 @@ function Dashboard() {
                             id={styles.continueButtons}
                             onClick={continueToMoonPayModal}
                             type="submit"
-                            color="primary"
                             size="large"
-                            variant="outlined"
+                            variant="contained"
                             endIcon={<ArrowRightIcon />}
                           >
                             Continue
@@ -426,9 +425,8 @@ function Dashboard() {
                               id={styles.continueButtons}
                               onClick={continueToTwitter}
                               type="submit"
-                              color="primary"
                               size="large"
-                              variant="outlined"
+                              variant="contained"
                               endIcon={<ArrowRightIcon />}
                             >
                               Continue
@@ -476,8 +474,8 @@ function Dashboard() {
           </>
         )}
       </Layout>
-    </> : null
-  );
+    </>
+  ) : null;
 }
 
 export async function getServerSideProps(context: any) {

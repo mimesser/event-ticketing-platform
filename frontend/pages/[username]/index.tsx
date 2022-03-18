@@ -1333,9 +1333,8 @@ function Profile() {
                           id={styles.continueButtons}
                           onClick={continueToMoonPayModal}
                           type="submit"
-                          color="primary"
                           size="large"
-                          variant="outlined"
+                          variant="contained"
                           endIcon={<ArrowRightIcon />}
                         >
                           Continue
@@ -1368,9 +1367,8 @@ function Profile() {
                             id={styles.continueButtons}
                             onClick={continueToTwitter}
                             type="submit"
-                            color="primary"
                             size="large"
-                            variant="outlined"
+                            variant="contained"
                             endIcon={<ArrowRightIcon />}
                           >
                             Continue
