@@ -189,7 +189,10 @@ function View() {
                 onClick={() => router.back()}
                 size="large"
                 sx={{
-                  color: "black",
+                  color: Colors[resolvedTheme].primary,
+                  ":hover": {
+                    backgroundColor: Colors[resolvedTheme].hover,
+                  },
                 }}
               >
                 <ArrowBackIcon
@@ -205,26 +208,29 @@ function View() {
                 {user.name && <div className={styles.name}>{user.name}</div>}
 
                 {user.username && (
-                  <div className={styles.username}>{`@${user.username}`}</div>
+                  <div className={styles.username} style={{color: Colors[resolvedTheme].secondary}}>{`@${user.username}`}</div>
                 )}
 
                 {!user.username && (
-                  <div className={styles.address}>
+                  <div className={styles.address} style={{color: Colors[resolvedTheme].secondary}}>
                     {shortenAddress(user.walletAddress)}
                   </div>
                 )}
               </div>
             </Grid>
           </Grid>
-          <Box sx={{ borderBottom: 1, borderColor: "divider", width: "100%" }}>
+          <Box sx={{ borderBottom: 1, borderColor: Colors[resolvedTheme].tab_divider, width: "100%" }}>
             <Tabs
               sx={{
                 "&& .MuiTab-root": {
-                  color: "text.secondary",
+                  color: Colors[resolvedTheme].secondary,
+                  ":hover": {
+                    backgroundColor: Colors[resolvedTheme].tab_hover,
+                  },
                 },
                 "&& .Mui-selected": {
                   "&, & .MuiListItemText-root": {
-                    color: "black",
+                    color: Colors[resolvedTheme].primary,
                     fontSize: "16px",
                   },
                 },
@@ -246,8 +252,8 @@ function View() {
               value={value}
               onChange={handleChange}
             >
-              <LinkTab label="Followers" />
-              <LinkTab label="Following" />
+              <LinkTab label="Followers" disableRipple />
+              <LinkTab label="Following" disableRipple />
             </Tabs>
           </Box>
           <Box>
@@ -275,7 +281,7 @@ function View() {
 
                     <Typography
                       variant="body1"
-                      sx={{ color: "text.secondary" }}
+                      sx={{ color: Colors[resolvedTheme].secondary }}
                     >
                       When someone follows them, they’ll be listed here.
                     </Typography>
@@ -295,7 +301,15 @@ function View() {
                       }: any) => {
                         return (
                           <div key={id}>
-                            <ListItem id={styles.followItem} disablePadding>
+                            <ListItem
+                              id={styles.followItem}
+                              disablePadding
+                              sx={{
+                                ":hover": {
+                                  backgroundColor: Colors[resolvedTheme].hover,
+                                },
+                              }}
+                            >
                               <ListItemButton
                                 onClick={() =>
                                   router.push(
@@ -329,15 +343,15 @@ function View() {
                                 </div>
                                 <div className={styles.followItemDetails}>
                                   {name && <p>{name}</p>}
-                                  {name && username && <a>{` @${username}`}</a>}
+                                  {name && username && <a style={{color: Colors[resolvedTheme].secondary}}>{` @${username}`}</a>}
                                   {!name && username && (
-                                    <p>{` @${username}`}</p>
+                                    <p style={{color: Colors[resolvedTheme].secondary}}>{` @${username}`}</p>
                                   )}
                                   {!username && !name && (
-                                    <p>{shortenAddress(walletAddress)}</p>
+                                    <p style={{color: Colors[resolvedTheme].secondary}}>{shortenAddress(walletAddress)}</p>
                                   )}
                                   {!username && name && (
-                                    <a>{shortenAddress(walletAddress)}</a>
+                                    <a style={{color: Colors[resolvedTheme].secondary}}>{shortenAddress(walletAddress)}</a>
                                   )}
                                 </div>
                                 <div className={styles.follow_button}>
@@ -356,7 +370,7 @@ function View() {
                                             ":hover": {
                                               backgroundColor: "black",
                                             },
-                                            backgroundColor: "black",
+                                            backgroundColor: Colors[resolvedTheme].follow_btn,
                                             borderColor: "black",
                                             borderRadius:
                                               theme.shape.borderRadius,
@@ -386,9 +400,9 @@ function View() {
                                           variant={"outlined"}
                                           sx={(theme) => ({
                                             width: "6.5em",
-                                            color: "black",
+                                            color: Colors[resolvedTheme].primary,
                                             backgroundColor: "inherit",
-                                            borderColor: "black",
+                                            borderColor: Colors[resolvedTheme].primary,
                                             borderRadius:
                                               theme.shape.borderRadius,
                                             margin: theme.spacing(1),
@@ -396,15 +410,14 @@ function View() {
                                             fontSize: "16px",
                                             fontWeight: 550,
                                             textTransform: "none",
+                                            transitionDuration: "unset",
                                             ":hover": {
                                               borderColor: "red",
-                                              color: "red",
                                             },
                                             ":hover span": {
                                               display: "none",
                                             },
                                             ":hover:before": {
-                                              borderColor: "red",
                                               color: "red",
                                               content: "'Unfollow'",
                                             },
@@ -418,7 +431,6 @@ function View() {
                                 </div>
                               </ListItemButton>
                             </ListItem>
-                            <Divider />
                           </div>
                         );
                       }
@@ -451,7 +463,7 @@ function View() {
 
                     <Typography
                       variant="body1"
-                      sx={{ color: "text.secondary" }}
+                      sx={{ color: Colors[resolvedTheme].secondary }}
                     >
                       When they do, they’ll be listed here.
                     </Typography>
@@ -471,7 +483,15 @@ function View() {
                       }: any) => {
                         return (
                           <div key={id}>
-                            <ListItem id={styles.followItem} disablePadding>
+                            <ListItem
+                              id={styles.followItem}
+                              disablePadding
+                              sx={{
+                                ":hover": {
+                                  backgroundColor: Colors[resolvedTheme].hover,
+                                },
+                              }}
+                            >
                               <ListItemButton
                                 onClick={() =>
                                   router.push(
@@ -505,15 +525,15 @@ function View() {
                                 </div>
                                 <div className={styles.followItemDetails}>
                                   {name && <p>{name}</p>}
-                                  {name && username && <a>{` @${username}`}</a>}
+                                  {name && username && <a style={{color: Colors[resolvedTheme].secondary}}>{` @${username}`}</a>}
                                   {!name && username && (
-                                    <p>{` @${username}`}</p>
+                                    <p style={{color: Colors[resolvedTheme].secondary}}>{` @${username}`}</p>
                                   )}
                                   {!username && !name && (
-                                    <p>{shortenAddress(walletAddress)}</p>
+                                    <p style={{color: Colors[resolvedTheme].secondary}}>{shortenAddress(walletAddress)}</p>
                                   )}
                                   {!username && name && (
-                                    <a>{shortenAddress(walletAddress)}</a>
+                                    <a style={{color: Colors[resolvedTheme].secondary}}>{shortenAddress(walletAddress)}</a>
                                   )}
                                 </div>
                                 <div className={styles.follow_button}>
@@ -532,7 +552,7 @@ function View() {
                                             ":hover": {
                                               backgroundColor: "black",
                                             },
-                                            backgroundColor: "black",
+                                            backgroundColor: Colors[resolvedTheme].follow_btn,
                                             borderColor: "black",
                                             borderRadius:
                                               theme.shape.borderRadius,
@@ -562,9 +582,9 @@ function View() {
                                           variant={"outlined"}
                                           sx={(theme) => ({
                                             width: "6.5em",
-                                            color: "black",
+                                            color: Colors[resolvedTheme].primary,
                                             backgroundColor: "inherit",
-                                            borderColor: "black",
+                                            borderColor: Colors[resolvedTheme].primary,
                                             borderRadius:
                                               theme.shape.borderRadius,
                                             margin: theme.spacing(1),
@@ -572,15 +592,14 @@ function View() {
                                             fontSize: "16px",
                                             fontWeight: 550,
                                             textTransform: "none",
+                                            transitionDuration: "unset",
                                             ":hover": {
                                               borderColor: "red",
-                                              color: "red",
                                             },
                                             ":hover span": {
                                               display: "none",
                                             },
                                             ":hover:before": {
-                                              borderColor: "red",
                                               color: "red",
                                               content: "'Unfollow'",
                                             },
@@ -594,7 +613,6 @@ function View() {
                                 </div>
                               </ListItemButton>
                             </ListItem>
-                            <Divider />
                           </div>
                         );
                       }
@@ -625,7 +643,6 @@ function View() {
                 <Typography
                   gutterBottom
                   sx={{
-                    color: "black",
                     fontFamily: "sans-serif",
                     fontSize: "18px",
                     fontWeight: 550,
@@ -642,7 +659,6 @@ function View() {
                 <Typography
                   sx={{ marginBottom: "12px" }}
                   variant="body1"
-                  color="text.secondary"
                 >
                   Their activities will no longer show up in your home timeline.
                   You can still view their profile.
@@ -657,7 +673,7 @@ function View() {
                   variant="contained"
                   sx={(theme) => ({
                     ":hover": {
-                      backgroundColor: "black",
+                      backgroundColor: "rgb(39, 44, 48)",
                     },
 
                     backgroundColor: "black",
@@ -688,14 +704,15 @@ function View() {
                     });
                   }}
                   sx={(theme) => ({
+                    color: Colors[resolvedTheme].primary,
                     borderRadius: theme.shape.borderRadius,
                     margin: theme.spacing(1),
+                    borderColor: Colors[resolvedTheme].cancel_border,
                   })}
-                  color="inherit"
+                  color="primary"
                 >
                   <Typography
                     sx={{
-                      color: "black",
                       fontFamily: "sans-serif",
                       fontSize: "16px",
                       fontWeight: 550,
