@@ -32,7 +32,7 @@ export default function Twitter() {
   const [handleTwitterModal, setHandleTwitterModal] = useState(true);
   const [selectedFrenz, setSelectedFrenz] = useState([] as any);
   const [followBtnText, setFollowBtnText] = useState("Follow all");
-  const [followBtnStyle, setFollowBtnStyle] = useState(true);
+  const [followBtnStyle, setFollowBtnStyle] = useState(false);
 
   useEffect(() => {
     async function linkUser() {
@@ -61,7 +61,7 @@ export default function Twitter() {
     }
 
     if (data?.matchedFrenz.length === selectedFrenz.length) {
-      setFollowBtnText("Unfollow all");
+      setFollowBtnText("Follow none");
       setFollowBtnStyle(false);
     } else {
       setFollowBtnText("Follow all");
@@ -137,8 +137,8 @@ export default function Twitter() {
       setSelectedFrenz([]);
     }
   };
-  return (
-    user ? <Layout>
+  return user ? (
+    <Layout>
       <Modal
         BackdropProps={{
           timeout: 500,
@@ -273,9 +273,8 @@ export default function Twitter() {
                     id={styles.continueButtons}
                     onClick={continueButton}
                     type="submit"
-                    color="primary"
                     size="large"
-                    variant="outlined"
+                    variant="contained"
                     endIcon={<ArrowRightIcon />}
                   >
                     Continue
@@ -286,6 +285,6 @@ export default function Twitter() {
           </div>
         </Box>
       </Modal>
-    </Layout> : null
-  );
+    </Layout>
+  ) : null;
 }
