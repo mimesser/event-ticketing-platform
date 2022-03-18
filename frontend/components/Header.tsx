@@ -68,7 +68,7 @@ import Colors from "lib/colors";
 import { useUserInfo } from "lib/user-context";
 import { moonPaySrc } from "lib/moon-pay";
 import { magic } from "lib/magic";
-import { shortenAddress, shortenText } from "lib/utils";
+import { shortenAddress, shortenText, eventTime } from "lib/utils";
 import { supabase } from "lib/supabase";
 import Image from "next/image";
 import Link from "next/link";
@@ -103,6 +103,7 @@ export default function Header() {
   const [values, setValues] = React.useState({
     eventName: "",
   });
+  const [times] = React.useState(eventTime() || []);
 
   const [events] = useState(router.asPath.includes("/events") ? true : false);
   const [showCreateEvent] = React.useState(
@@ -943,9 +944,27 @@ export default function Header() {
                                 setStartDate(newValue);
                                 setOpenStart(false);
                               }}
-                              PopperProps={{ disablePortal: true }}
+                              PopperProps={{
+                                disablePortal: true,
+                              }}
                               PaperProps={{
                                 sx: {
+                                  borderRadius: (theme) =>
+                                    Number(theme.shape.borderRadius) / 2,
+                                  "&& .Mui-selected": {
+                                    backgroundColor:
+                                      Colors[resolvedTheme].selected_date_bg,
+                                    "&, & .MuiList-root": {
+                                      color:
+                                        Colors[resolvedTheme].selected_date,
+                                    },
+                                  },
+                                  "&& .Mui-selected:hover": {
+                                    color: Colors[resolvedTheme].primary,
+                                  },
+                                  "&& .MuiPaper-root": {
+                                    color: Colors[resolvedTheme].secondary,
+                                  },
                                   svg: {
                                     color: Colors[resolvedTheme].primary,
                                   },
@@ -958,6 +977,12 @@ export default function Header() {
                                       backgroundColor:
                                         Colors[resolvedTheme]
                                           .date_picker_button_bg,
+                                      color:
+                                        Colors[resolvedTheme]
+                                          .date_picker_button_color,
+                                    },
+                                    ":disabled": {
+                                      color: Colors[resolvedTheme].secondary,
                                     },
                                   },
                                   span: {
@@ -992,6 +1017,7 @@ export default function Header() {
                                         borderColor: (theme) =>
                                           theme.palette.primary.main,
                                       },
+
                                       "& svg": {
                                         color: Colors[resolvedTheme].primary,
                                       },
@@ -1012,15 +1038,12 @@ export default function Header() {
                         <Grid item xs={5}>
                           <TextField
                             label="Start Time"
-                            type="time"
-                            defaultValue="07:30"
+                            defaultValue="7:00 AM"
                             InputLabelProps={{
                               shrink: true,
                             }}
-                            inputProps={{
-                              step: 900, // 15 min
-                            }}
-                            className={styles.time}
+                            select
+                            SelectProps={{ IconComponent: () => null }}
                             sx={{
                               width: 117,
                               input: {
@@ -1039,11 +1062,37 @@ export default function Header() {
                                   borderColor: (theme) =>
                                     theme.palette.primary.main,
                                 },
+
+                                "& .MuiSelect-select": {
+                                  color: Colors[resolvedTheme].primary,
+                                },
                               },
                             }}
                             error={!!errors3?.start_time}
                             helperText={null}
-                          />
+                          >
+                            {times.map((time, index) => (
+                              <MenuItem
+                                sx={{
+                                  "& .MuiList-root": {
+                                    py: 0,
+                                  },
+
+                                  bgcolor: Colors[resolvedTheme].header_bg,
+                                  color: Colors[resolvedTheme].primary,
+
+                                  ":hover": {
+                                    backgroundColor:
+                                      Colors[resolvedTheme].time_hover,
+                                  },
+                                }}
+                                key={index}
+                                value={time}
+                              >
+                                {time}
+                              </MenuItem>
+                            ))}
+                          </TextField>
                         </Grid>
                       </Grid>
 
@@ -1072,6 +1121,23 @@ export default function Header() {
                                   PopperProps={{ disablePortal: true }}
                                   PaperProps={{
                                     sx: {
+                                      borderRadius: (theme) =>
+                                        Number(theme.shape.borderRadius) / 2,
+                                      "&& .Mui-selected": {
+                                        backgroundColor:
+                                          Colors[resolvedTheme]
+                                            .selected_date_bg,
+                                        "&, & .MuiList-root": {
+                                          color:
+                                            Colors[resolvedTheme].selected_date,
+                                        },
+                                      },
+                                      "&& .Mui-selected:hover": {
+                                        color: Colors[resolvedTheme].primary,
+                                      },
+                                      "&& .MuiPaper-root": {
+                                        color: Colors[resolvedTheme].secondary,
+                                      },
                                       svg: {
                                         color: Colors[resolvedTheme].primary,
                                       },
@@ -1084,6 +1150,13 @@ export default function Header() {
                                           backgroundColor:
                                             Colors[resolvedTheme]
                                               .date_picker_button_bg,
+                                          color:
+                                            Colors[resolvedTheme]
+                                              .date_picker_button_color,
+                                        },
+                                        ":disabled": {
+                                          color:
+                                            Colors[resolvedTheme].secondary,
                                         },
                                       },
                                       span: {
@@ -1133,7 +1206,9 @@ export default function Header() {
                                       {...params}
                                       error={!!errors3?.start_date}
                                       helperText={null}
-                                      onClick={(e) => setOpenEnd(true)}
+                                      onClick={(e) => {
+                                        setOpenEnd(true);
+                                      }}
                                     />
                                   )}
                                 />
@@ -1143,15 +1218,12 @@ export default function Header() {
                             <Grid item xs={5}>
                               <TextField
                                 label="End Time"
-                                type="time"
-                                defaultValue="08:00"
+                                defaultValue="7:00 AM"
                                 InputLabelProps={{
                                   shrink: true,
                                 }}
-                                inputProps={{
-                                  step: 900, // 15 min
-                                }}
-                                className={styles.time}
+                                select
+                                SelectProps={{ IconComponent: () => null }}
                                 sx={{
                                   width: 117,
                                   input: {
@@ -1169,11 +1241,36 @@ export default function Header() {
                                       borderColor: (theme) =>
                                         theme.palette.primary.main,
                                     },
+                                    "& .MuiSelect-select": {
+                                      color: Colors[resolvedTheme].primary,
+                                    },
                                   },
                                 }}
                                 error={!!errors3?.start_time}
                                 helperText={null}
-                              />
+                              >
+                                {times.map((time, index) => (
+                                  <MenuItem
+                                    sx={{
+                                      "& .MuiList-root": {
+                                        py: 0,
+                                      },
+
+                                      bgcolor: Colors[resolvedTheme].header_bg,
+                                      color: Colors[resolvedTheme].primary,
+
+                                      ":hover": {
+                                        backgroundColor:
+                                          Colors[resolvedTheme].time_hover,
+                                      },
+                                    }}
+                                    key={index}
+                                    value={time}
+                                  >
+                                    {time}
+                                  </MenuItem>
+                                ))}
+                              </TextField>
                             </Grid>
                           </Grid>
                           <IconButton
