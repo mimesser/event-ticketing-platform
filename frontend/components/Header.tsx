@@ -935,8 +935,10 @@ export default function Header() {
                         <Grid item xs={7}>
                           <LocalizationProvider dateAdapter={AdapterDateFns}>
                             <DatePicker
+                              desktopModeMediaQuery=""
                               open={openStart}
                               onOpen={() => setOpenStart(true)}
+                              allowSameDateSelection={true}
                               disablePast
                               label="Start Date"
                               views={["day"]}
@@ -953,18 +955,22 @@ export default function Header() {
                                   borderRadius: (theme) =>
                                     Number(theme.shape.borderRadius) / 2,
                                   "&& .Mui-selected": {
-                                    backgroundColor:
-                                      Colors[resolvedTheme].selected_date_bg,
+                                    backgroundColor: (theme) =>
+                                      theme.palette.primary.main,
                                     "&, & .MuiList-root": {
                                       color:
                                         Colors[resolvedTheme].selected_date,
                                     },
                                   },
                                   "&& .Mui-selected:hover": {
-                                    color: Colors[resolvedTheme].primary,
+                                    backgroundColor: (theme) =>
+                                      theme.palette.primary.dark,
                                   },
                                   "&& .MuiPaper-root": {
                                     color: Colors[resolvedTheme].secondary,
+                                  },
+                                  "&& .MuiPickersDay-today": {
+                                    borderColor: Colors[resolvedTheme].primary,
                                   },
                                   svg: {
                                     color: Colors[resolvedTheme].primary,
@@ -976,8 +982,7 @@ export default function Header() {
                                     backgroundColor: "transparent",
                                     ":hover": {
                                       backgroundColor:
-                                        Colors[resolvedTheme]
-                                          .date_picker_button_bg,
+                                        Colors[resolvedTheme].hover,
                                       color:
                                         Colors[resolvedTheme]
                                           .date_picker_button_color,
@@ -1109,11 +1114,13 @@ export default function Header() {
                                 dateAdapter={AdapterDateFns}
                               >
                                 <DatePicker
+                                  desktopModeMediaQuery=""
                                   open={openEnd}
                                   onOpen={() => setOpenEnd(true)}
                                   disablePast
                                   label="End Date"
                                   views={["day"]}
+                                  allowSameDateSelection={true}
                                   value={endDate || undefined}
                                   onChange={(newValue: any) => {
                                     setEndDate(newValue);
@@ -1125,19 +1132,23 @@ export default function Header() {
                                       borderRadius: (theme) =>
                                         Number(theme.shape.borderRadius) / 2,
                                       "&& .Mui-selected": {
-                                        backgroundColor:
-                                          Colors[resolvedTheme]
-                                            .selected_date_bg,
+                                        backgroundColor: (theme) =>
+                                          theme.palette.primary.main,
                                         "&, & .MuiList-root": {
                                           color:
                                             Colors[resolvedTheme].selected_date,
                                         },
                                       },
                                       "&& .Mui-selected:hover": {
-                                        color: Colors[resolvedTheme].primary,
+                                        backgroundColor: (theme) =>
+                                          theme.palette.primary.dark,
                                       },
                                       "&& .MuiPaper-root": {
                                         color: Colors[resolvedTheme].secondary,
+                                      },
+                                      "&& .MuiPickersDay-today": {
+                                        borderColor:
+                                          Colors[resolvedTheme].primary,
                                       },
                                       svg: {
                                         color: Colors[resolvedTheme].primary,
@@ -1149,8 +1160,7 @@ export default function Header() {
                                         backgroundColor: "transparent",
                                         ":hover": {
                                           backgroundColor:
-                                            Colors[resolvedTheme]
-                                              .date_picker_button_bg,
+                                            Colors[resolvedTheme].hover,
                                           color:
                                             Colors[resolvedTheme]
                                               .date_picker_button_color,
