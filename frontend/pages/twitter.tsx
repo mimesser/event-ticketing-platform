@@ -156,6 +156,11 @@ export default function Twitter() {
               aria-label="close"
               onClick={modalClose}
               className={styles.close_button}
+              sx={{
+                ":hover": {
+                  backgroundColor: Colors[resolvedTheme].hover,
+                },
+              }}
             >
               <CloseIcon
                 sx={{
@@ -207,20 +212,54 @@ export default function Twitter() {
                   {!data && <CircularProgress />}
                   {data?.matchedFrenz.length > 0 && (
                     <>
-                      <Button
-                        id={
-                          followBtnStyle
-                            ? styles.followAllBtn
-                            : styles.unfollowAllBtn
-                        }
-                        onClick={followAll}
-                        type="submit"
-                        color="primary"
-                        size="large"
-                        variant="outlined"
-                      >
-                        {followBtnText}
-                      </Button>
+                      {followBtnStyle ? (
+                        <Button
+                          id={styles.followAllBtn}
+                          onClick={followAll}
+                          type="submit"
+                          color="primary"
+                          size="large"
+                          variant="contained"
+                          sx={{
+                            ":hover": {
+                              backgroundColor: "black",
+                            },
+                            backgroundColor: Colors[resolvedTheme].follow_btn,
+                            borderColor: "black",
+                            fontFamily: "sans-serif",
+                            fontSize: "16px",
+                            fontWeight: 550,
+                            textTransform: "none",
+                          }}
+                        >
+                          {followBtnText}
+                        </Button>
+                      ) : (
+                        <Button
+                          id={styles.unfollowAllBtn}
+                          onClick={followAll}
+                          type="submit"
+                          color="primary"
+                          size="large"
+                          variant="outlined"
+                          sx={{
+                            color: Colors[resolvedTheme].primary,
+                            backgroundColor: "inherit",
+                            borderColor: Colors[resolvedTheme].primary,
+                            fontFamily: "sans-serif",
+                            fontSize: "16px",
+                            fontWeight: 550,
+                            textTransform: "none",
+                            transitionDuration: "unset",
+                            ":hover": {
+                              color: "red",
+                              borderColor: "red",
+                            },
+                          }}
+                        >
+                          {followBtnText}
+                        </Button>
+                      )}
                       <List className={styles.matchedFrenz}>
                         {data.matchedFrenz.map(
                           ({
@@ -235,8 +274,15 @@ export default function Twitter() {
                                   id={styles.frenz}
                                   sx={{
                                     ...(selectedFrenz.indexOf(id) !== -1 && {
-                                      bgcolor: "action.selected",
+                                      bgcolor:
+                                        Colors[resolvedTheme]
+                                          .selected_event_menu,
                                     }),
+                                    ":hover": {
+                                      backgroundColor:
+                                        Colors[resolvedTheme]
+                                          .selected_event_menu,
+                                    },
                                   }}
                                   disablePadding
                                 >
@@ -260,7 +306,6 @@ export default function Twitter() {
                                     </div>
                                   </ListItemButton>
                                 </ListItem>
-                                <Divider />
                               </div>
                             );
                           }

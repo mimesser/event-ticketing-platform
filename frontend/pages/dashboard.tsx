@@ -155,6 +155,11 @@ function Dashboard() {
                 setMoonpayModalForBanner(false);
               }}
               className={styles.close_button}
+              sx={{
+                ":hover": {
+                  backgroundColor: Colors[resolvedTheme].hover,
+                },
+              }}
             >
               <CloseIcon
                 sx={{
@@ -163,7 +168,7 @@ function Dashboard() {
               />
             </IconButton>
             {moonpayModalForBanner && (
-              <div style={{ height: "60vh" }}>
+              <div style={{ height: "60vh", margin: "12px" }}>
                 <iframe
                   allow="accelerometer; autoplay; camera; gyroscope; payment"
                   frameBorder="0"
@@ -200,6 +205,11 @@ function Dashboard() {
                 setTwitterModalForBanner(false);
               }}
               className={styles.close_button}
+              sx={{
+                ":hover": {
+                  backgroundColor: Colors[resolvedTheme].hover,
+                },
+              }}
             >
               <CloseIcon
                 sx={{
@@ -373,6 +383,11 @@ function Dashboard() {
                       aria-label="close"
                       onClick={modalClose}
                       className={styles.close_button}
+                      sx={{
+                        ":hover": {
+                          backgroundColor: Colors[resolvedTheme].hover,
+                        },
+                      }}
                     >
                       <CloseIcon
                         sx={{
@@ -407,7 +422,7 @@ function Dashboard() {
                     {moonPayModal && (
                       <div
                         className={styles.modal_body}
-                        style={{ height: "60vh" }}
+                        style={{ height: "60vh", margin: "12px" }}
                       >
                         <iframe
                           allow="accelerometer; autoplay; camera; gyroscope; payment"

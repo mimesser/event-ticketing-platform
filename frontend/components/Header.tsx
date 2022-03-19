@@ -1860,6 +1860,11 @@ export default function Header() {
               aria-label="close"
               onClick={modalClose}
               className={styles.close_button}
+              sx={{
+                ":hover": {
+                  backgroundColor: Colors[resolvedTheme].hover,
+                },
+              }}
             >
               <CloseIcon
                 sx={{
@@ -1868,7 +1873,7 @@ export default function Header() {
               />
             </IconButton>
             {moonPayModal && (
-              <div style={{ height: "60vh" }}>
+              <div style={{ height: "60vh", margin: "12px" }}>
                 <iframe
                   allow="accelerometer; autoplay; camera; gyroscope; payment"
                   frameBorder="0"
