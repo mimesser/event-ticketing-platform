@@ -1310,6 +1310,11 @@ function Profile() {
                     aria-label="close"
                     onClick={modalClose}
                     className={styles.close_button}
+                    sx={{
+                      ":hover": {
+                        backgroundColor: Colors[resolvedTheme].hover,
+                      },
+                    }}
                   >
                     <CloseIcon
                       sx={{
@@ -1344,7 +1349,7 @@ function Profile() {
                   {moonPayModal && (
                     <div
                       className={styles.modal_body}
-                      style={{ height: "60vh" }}
+                      style={{ height: "60vh", margin: "12px" }}
                     >
                       <iframe
                         allow="accelerometer; autoplay; camera; gyroscope; payment"
