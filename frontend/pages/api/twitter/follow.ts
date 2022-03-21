@@ -69,6 +69,28 @@ export default async function follow(
                 },
               });
 
+              const followedBack = await prisma.follows.findUnique({
+                where: {
+                  followersId_followingId: {
+                    followersId: user!.id,
+                    followingId: m,
+                  },
+                },
+                select: {
+                  createdAt: true,
+                },
+              });
+
+              // If user follow back within 48 hours, send "followed you back" notification
+              const description =
+                differenceInHours(
+                  new Date(),
+                  new Date(followedBack?.createdAt as any)
+                ) <= 48
+                  ? "followed you back"
+                  : "followed you";
+
+              // If user received same notification within 24 hours, do not send notification again
               if (
                 differenceInHours(
                   new Date(),
@@ -78,7 +100,7 @@ export default async function follow(
               ) {
                 await prisma.notification.create({
                   data: {
-                    description: "followed you",
+                    description: description,
                     userId: m,
                     title: title,
                   },

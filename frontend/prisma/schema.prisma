@@ -33,10 +33,12 @@ model User {
 }
 
 model Follows {
-  followers   User @relation("followers", fields: [followersId], references: [id])
+  followers   User     @relation("followers", fields: [followersId], references: [id])
   followersId Int
-  following   User @relation("following", fields: [followingId], references: [id])
+  following   User     @relation("following", fields: [followingId], references: [id])
   followingId Int
+  createdAt   DateTime @default(now())
+
 
   @@id([followersId, followingId])
 }
