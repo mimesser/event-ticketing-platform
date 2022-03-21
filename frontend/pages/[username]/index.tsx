@@ -899,10 +899,18 @@ function Profile() {
         onClose={editModalClose}
         open={profileModal}
       >
-        <div className={styles.profile_modal}>
+        <div className={styles.profile_modal} style={{backgroundColor: Colors[resolvedTheme].header_bg}}>
           <div className={styles.header}>
             <div className={styles.header_title}>
-              <IconButton aria-label="close" onClick={editModalClose}>
+              <IconButton
+                aria-label="close"
+                onClick={editModalClose}
+                sx={{
+                  ":hover": {
+                    backgroundColor: Colors[resolvedTheme].hover,
+                  }
+                }}
+              >
                 <CloseIcon
                   sx={{
                     color: Colors[resolvedTheme].primary,
@@ -983,6 +991,18 @@ function Profile() {
             className={styles.name}
             value={newName}
             onChange={nameUpdated}
+            sx={{
+              input: { color: Colors[resolvedTheme].primary },
+              label: { color: Colors[resolvedTheme].secondary },
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: Colors[resolvedTheme].input_border,
+                },
+                "&:hover fieldset": {
+                  borderColor: (theme) => theme.palette.primary.main,
+                },
+              },
+            }}
           />
 
           <TextField
@@ -998,6 +1018,18 @@ function Profile() {
             value={newUsername}
             onChange={usernameUpdated}
             onBlur={checkUsername}
+            sx={{
+              input: { color: Colors[resolvedTheme].primary },
+              label: { color: Colors[resolvedTheme].secondary },
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: Colors[resolvedTheme].input_border,
+                },
+                "&:hover fieldset": {
+                  borderColor: (theme) => theme.palette.primary.main,
+                },
+              },
+            }}
           />
         </div>
       </Modal>
@@ -1010,7 +1042,7 @@ function Profile() {
         onClose={discardModalClose}
         open={discardModal}
       >
-        <div className={styles.discard_modal}>
+        <div className={styles.discard_modal} style={{backgroundColor: Colors[resolvedTheme].header_bg}}>
           <span className={styles.title}>Discard changes?</span>
           <span className={styles.content}>
             This can&apos;t be undone and you&apos;ll lose your changes.
