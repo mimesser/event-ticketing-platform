@@ -1060,7 +1060,31 @@ export default function Header() {
                               shrink: true,
                             }}
                             select
-                            SelectProps={{ IconComponent: () => null }}
+                            SelectProps={{
+                              MenuProps: {
+                                sx: {
+                                  "& .MuiPaper-root": {
+                                    borderRadius: (theme) =>
+                                      Number(theme.shape.borderRadius) / 2,
+                                  },
+                                  padding: 0,
+                                  height: "400px",
+                                  top: "7%",
+                                  "&& .MuiMenu-list": {
+                                    py: 0,
+                                  },
+                                },
+                                anchorOrigin: {
+                                  vertical: "top",
+                                  horizontal: "center",
+                                },
+                                transformOrigin: {
+                                  vertical: "top",
+                                  horizontal: "center",
+                                },
+                              },
+                              IconComponent: () => null,
+                            }}
                             sx={{
                               width: 117,
                               input: {
@@ -1091,8 +1115,8 @@ export default function Header() {
                             {times.map((time, index) => (
                               <MenuItem
                                 sx={{
-                                  "& .MuiList-root": {
-                                    py: 0,
+                                  "&& .MuiMenu-list": {
+                                    paddingTop: 0,
                                   },
 
                                   bgcolor: Colors[resolvedTheme].header_bg,
@@ -1206,6 +1230,7 @@ export default function Header() {
                                           color:
                                             Colors[resolvedTheme].secondary,
                                         },
+
                                         "& .MuiOutlinedInput-root": {
                                           "& fieldset": {
                                             borderColor:
@@ -1246,7 +1271,32 @@ export default function Header() {
                                   shrink: true,
                                 }}
                                 select
-                                SelectProps={{ IconComponent: () => null }}
+                                SelectProps={{
+                                  MenuProps: {
+                                    sx: {
+                                      "& .MuiPaper-root": {
+                                        borderRadius: (theme) =>
+                                          Number(theme.shape.borderRadius) / 2,
+                                      },
+                                      padding: 0,
+
+                                      height: "400px",
+                                      top: "7%",
+                                      "&& .MuiMenu-list": {
+                                        py: 0,
+                                      },
+                                    },
+                                    anchorOrigin: {
+                                      vertical: "top",
+                                      horizontal: "center",
+                                    },
+                                    transformOrigin: {
+                                      vertical: "top",
+                                      horizontal: "center",
+                                    },
+                                  },
+                                  IconComponent: () => null,
+                                }}
                                 sx={{
                                   width: 117,
                                   input: {
