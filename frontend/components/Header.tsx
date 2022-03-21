@@ -122,6 +122,16 @@ export default function Header() {
   const [notifications, setNotifications] = useState(
     user?.notifications ? user?.notifications : []
   );
+  notifications.sort((firstItem: any, secondItem: any) => {
+    if (firstItem.createdAt < secondItem.createdAt) {
+      return 1;
+    }
+
+    if (firstItem.createdAt > secondItem.createdAt) {
+      return -1;
+    }
+    return 0;
+  });
 
   const handleClickEventPrivacy = (event: any) => {
     setAnchorElPrivacy(event.currentTarget);
@@ -2427,9 +2437,8 @@ export default function Header() {
                                             overflowWrap: "break-word",
                                           }}
                                         >
-                                          {title
-                                            ? `${title} ${description}`
-                                            : `${description}`}
+                                          {title && <b>{title}&nbsp;</b>}
+                                          {description}
                                         </Typography>
                                       }
                                       secondary={
@@ -2556,9 +2565,8 @@ export default function Header() {
                                           }),
                                         }}
                                       >
-                                        {title
-                                          ? `${title} ${description}`
-                                          : `${description}`}
+                                        {title && <b>{title}&nbsp;</b>}
+                                        {description}
                                       </Typography>
                                     }
                                     secondary={
@@ -3343,9 +3351,8 @@ export default function Header() {
                                             overflowWrap: "break-word",
                                           }}
                                         >
-                                          {title
-                                            ? `${title} ${description}`
-                                            : `${description}`}
+                                          {title && <b>{title}&nbsp;</b>}
+                                          {description}
                                         </Typography>
                                       }
                                       secondary={
@@ -3472,9 +3479,8 @@ export default function Header() {
                                           }),
                                         }}
                                       >
-                                        {title
-                                          ? `${title} ${description}`
-                                          : `${description}`}
+                                        {title && <b>{title}&nbsp;</b>}
+                                        {description}
                                       </Typography>
                                     }
                                     secondary={
