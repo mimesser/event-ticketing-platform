@@ -153,13 +153,16 @@ export default function Header() {
   useEffect(() => {
     if (router.isReady) {
       const query = router.query;
-      if (query.createEvent) {
+      if (query.createEvent || router.pathname === "/events/create") {
         if (query.createEvent === "true") {
           setEventDetails(true);
+          if (isMobile) {
+            setMobileOpen(true);
+          }
         }
       }
     }
-  }, [router.isReady, router.query]);
+  }, [router.isReady, router.query, isMobile]);
 
   useEffect(() => {
     async function realtimeNotifications() {
