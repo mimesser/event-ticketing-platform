@@ -54,7 +54,7 @@ export default async function follow(
             const title = user!.name
               ? user!.name
               : user!.username
-              ? user!.username
+              ? `@${user!.username}`
               : shortenAddress(user!.walletAddress as string);
 
             follow.map(async (m) => {
