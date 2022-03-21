@@ -962,6 +962,7 @@ export default function Header() {
                               }}
                               PaperProps={{
                                 sx: {
+                                  border: Colors[resolvedTheme].border,
                                   borderRadius: (theme) =>
                                     Number(theme.shape.borderRadius) / 2,
                                   "&& .Mui-selected": {
@@ -976,7 +977,7 @@ export default function Header() {
                                     backgroundColor: (theme) =>
                                       theme.palette.primary.dark,
                                   },
-                                  "&& .MuiPaper-root": {
+                                  "& .MuiPaper-root": {
                                     color: Colors[resolvedTheme].secondary,
                                   },
                                   "&& .MuiPickersDay-today": {
@@ -1139,6 +1140,7 @@ export default function Header() {
                                   PopperProps={{ disablePortal: true }}
                                   PaperProps={{
                                     sx: {
+                                      border: Colors[resolvedTheme].border,
                                       borderRadius: (theme) =>
                                         Number(theme.shape.borderRadius) / 2,
                                       "&& .Mui-selected": {
