@@ -191,13 +191,6 @@ function Profile() {
       });
 
       if (res.status === 200) {
-        // Create user signup notifications
-        if (!userExists) {
-          fetch("/api/signup-notifications", {
-            method: "POST",
-          });
-        }
-
         // redirect
         router.reload();
         setSigningIn(false);
@@ -899,7 +892,10 @@ function Profile() {
         onClose={editModalClose}
         open={profileModal}
       >
-        <div className={styles.profile_modal} style={{backgroundColor: Colors[resolvedTheme].header_bg}}>
+        <div
+          className={styles.profile_modal}
+          style={{ backgroundColor: Colors[resolvedTheme].header_bg }}
+        >
           <div className={styles.header}>
             <div className={styles.header_title}>
               <IconButton
@@ -908,7 +904,7 @@ function Profile() {
                 sx={{
                   ":hover": {
                     backgroundColor: Colors[resolvedTheme].hover,
-                  }
+                  },
                 }}
               >
                 <CloseIcon
@@ -1042,7 +1038,10 @@ function Profile() {
         onClose={discardModalClose}
         open={discardModal}
       >
-        <div className={styles.discard_modal} style={{backgroundColor: Colors[resolvedTheme].header_bg}}>
+        <div
+          className={styles.discard_modal}
+          style={{ backgroundColor: Colors[resolvedTheme].header_bg }}
+        >
           <span className={styles.title}>Discard changes?</span>
           <span className={styles.content}>
             This can&apos;t be undone and you&apos;ll lose your changes.
