@@ -1,3 +1,4 @@
+import { differenceInHours } from "date-fns";
 import { getLoginSession } from "lib/auth";
 import prisma from "lib/prisma";
 import { shortenAddress } from "lib/utils";
@@ -58,14 +59,23 @@ export default async function follow(
               : shortenAddress(user!.walletAddress as string);
 
             follow.map(async (m) => {
-              const notificationExist = await prisma.notification.findFirst({
+              const lastNotification = await prisma.notification.findFirst({
                 where: {
                   userId: m,
                   title: title,
                 },
+                orderBy: {
+                  createdAt: "desc",
+                },
               });
 
-              if (!notificationExist) {
+              if (
+                differenceInHours(
+                  new Date(),
+                  new Date(lastNotification?.createdAt as any)
+                ) >= 24 ||
+                lastNotification === null
+              ) {
                 await prisma.notification.create({
                   data: {
                     description: "followed you",
