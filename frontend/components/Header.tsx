@@ -1699,13 +1699,6 @@ export default function Header() {
       });
 
       if (res.status === 200) {
-        // Create user signup notifications
-        if (!userExists) {
-          fetch("/api/signup-notifications", {
-            method: "POST",
-          });
-        }
-
         // redirect
         router.reload();
         setSigningIn(false);
@@ -1752,13 +1745,6 @@ export default function Header() {
       });
 
       if (res.status === 200) {
-        // Create user signup notifications
-        if (!userExists) {
-          fetch("/api/signup-notifications", {
-            method: "POST",
-          });
-        }
-
         // redirect
         router.reload();
         setSigningInEvents(false);

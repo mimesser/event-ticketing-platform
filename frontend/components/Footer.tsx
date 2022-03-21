@@ -65,13 +65,6 @@ export default function Footer() {
       });
 
       if (res.status === 200) {
-        // Create user signup notifications
-        if (!userExists) {
-          fetch("/api/signup-notifications", {
-            method: "POST",
-          });
-        }
-
         // redirect
         router.reload();
         setSigningIn(false);
