@@ -985,7 +985,7 @@ function Profile() {
             label="Name"
             variant="outlined"
             className={styles.name}
-            value={newName}
+            value={!newName ? undefined : newName}
             onChange={nameUpdated}
             sx={{
               input: { color: Colors[resolvedTheme].primary },
@@ -1011,7 +1011,7 @@ function Profile() {
             }
             variant="outlined"
             className={styles.username}
-            value={newUsername}
+            value={!newUsername ? undefined : newUsername}
             onChange={usernameUpdated}
             onBlur={checkUsername}
             sx={{
