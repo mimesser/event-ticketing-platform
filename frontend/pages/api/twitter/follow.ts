@@ -62,7 +62,7 @@ export default async function follow(
               const lastNotification = await prisma.notification.findFirst({
                 where: {
                   userId: m,
-                  title: title,
+                  followerUserId: user!.id,
                 },
                 orderBy: {
                   createdAt: "desc",
@@ -100,6 +100,7 @@ export default async function follow(
               ) {
                 await prisma.notification.create({
                   data: {
+                    followerUserId: user!.id,
                     description: description,
                     userId: m,
                     title: title,
