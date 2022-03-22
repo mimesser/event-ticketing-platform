@@ -57,3 +57,31 @@ export const eventTime = () => {
   });
   return uniqueChars;
 };
+
+export const roundUpTime = () => {
+  const date = new Date(Math.ceil(new Date().getTime() / 3600000) * 3600000);
+  var hours: any = date.getHours();
+  var minutes: any = date.getMinutes();
+  var ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  minutes = minutes < 10 ? "0" + minutes : minutes;
+
+  var strTime = hours + ":" + minutes + " " + ampm;
+  return strTime.toString();
+};
+
+export const roundUpTimePlus3 = () => {
+  const date = new Date(Math.ceil(new Date().getTime() / 3600000) * 3600000);
+  const h = 3;
+  date.setTime(date.getTime() + h * 60 * 60 * 1000);
+  var hours: any = date.getHours();
+  var minutes: any = date.getMinutes();
+  var ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  minutes = minutes < 10 ? "0" + minutes : minutes;
+
+  var strTime = hours + ":" + minutes + " " + ampm;
+  return strTime.toString();
+};
