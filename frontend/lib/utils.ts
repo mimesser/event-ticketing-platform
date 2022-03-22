@@ -36,6 +36,7 @@ export const checkUsernameEqual = (left: any, right: any) => {
 export const eventTime = () => {
   var hours, minutes, ampm;
   var time = [];
+  var uniqueChars: any = [];
   for (var i = 0; i <= 1440; i += 15) {
     hours = Math.floor(i / 60);
     minutes = i % 60;
@@ -49,5 +50,10 @@ export const eventTime = () => {
     }
     time.push(hours + ":" + minutes + " " + ampm);
   }
-  return time;
+  time.forEach((c) => {
+    if (!uniqueChars.includes(c)) {
+      uniqueChars.push(c);
+    }
+  });
+  return uniqueChars;
 };
