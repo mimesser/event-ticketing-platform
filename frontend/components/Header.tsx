@@ -1179,7 +1179,7 @@ export default function Header() {
                           <Grid
                             container
                             rowSpacing={1}
-                            columnSpacing={{ xs: 1, sm: 2, md: 2 }}
+                            columnSpacing={{ xs: 2.3, sm: 2.3, md: 2.3 }}
                           >
                             <Grid item xs={7}>
                               <LocalizationProvider
