@@ -7,9 +7,20 @@ export default async function notifications(
   res: NextApiResponse
 ) {
   const session = await getLoginSession(req);
+  const { notifications }: any = JSON.parse(req.body);
 
-  if (!session) {
-    res.status(400).json({ error: "Missing session" });
+  if (!session || !notifications) {
+    res.status(400).json({ error: "Missing session or notifications object" });
+    return;
+  }
+
+  if (
+    !Array.isArray(notifications) ||
+    !notifications.every((id: any) => typeof id === "number")
+  ) {
+    res
+      .status(400)
+      .json({ error: "Wrong type for notifications, only number objects" });
     return;
   }
 
@@ -21,11 +32,8 @@ export default async function notifications(
 
     try {
       await prisma.notification.updateMany({
-        where: {
-          userId: {
-            equals: userId.id,
-          },
-        },
+        where: { id: { in: notifications }, userId: userId.id },
+
         data: {
           isRead: true,
         },

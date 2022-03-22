@@ -324,9 +324,12 @@ export default function Header() {
     setMoonPayModal(false);
   };
 
-  const markNotificationAsRead = () =>
+  const markNotificationAsRead = (notificationIds: Array<any>) =>
     fetch("/api/notifications", {
       method: "DELETE",
+      body: JSON.stringify({
+        notifications: notificationIds,
+      }),
     });
 
   const {
@@ -2446,7 +2449,13 @@ export default function Header() {
                           <Tooltip title="Mark all as read">
                             <IconButton
                               color="primary"
-                              onClick={markNotificationAsRead}
+                              onClick={() => {
+                                markNotificationAsRead(
+                                  notifications
+                                    .filter((m: any) => m.isRead === false)
+                                    .map((m: any) => m.id)
+                                );
+                              }}
                               size="large"
                             >
                               <DoneAllIcon
@@ -2501,6 +2510,15 @@ export default function Header() {
                               ) {
                                 return (
                                   <MenuItem
+                                    onClick={() => {
+                                      markNotificationAsRead([id]);
+
+                                      notificationType === "Twitter" &&
+                                        setTwitterModal(true);
+
+                                      notificationType === "Matic" &&
+                                        buyModal();
+                                    }}
                                     sx={{
                                       ...(!isRead && {
                                         bgcolor: "action.selected",
@@ -2626,6 +2644,12 @@ export default function Header() {
                             ) {
                               return (
                                 <MenuItem
+                                  onClick={() => {
+                                    notificationType === "Twitter" &&
+                                      setTwitterModal(true);
+
+                                    notificationType === "Matic" && buyModal();
+                                  }}
                                   sx={{
                                     color: Colors[resolvedTheme].primary,
                                     py: 1.5,
@@ -3360,7 +3384,13 @@ export default function Header() {
                           <Tooltip title="Mark all as read">
                             <IconButton
                               color="primary"
-                              onClick={markNotificationAsRead}
+                              onClick={() => {
+                                markNotificationAsRead(
+                                  notifications
+                                    .filter((m: any) => m.isRead === false)
+                                    .map((m: any) => m.id)
+                                );
+                              }}
                               size="large"
                             >
                               <DoneAllIcon
@@ -3415,6 +3445,15 @@ export default function Header() {
                               ) {
                                 return (
                                   <MenuItem
+                                    onClick={() => {
+                                      markNotificationAsRead([id]);
+
+                                      notificationType === "Twitter" &&
+                                        setTwitterModal(true);
+
+                                      notificationType === "Matic" &&
+                                        buyModal();
+                                    }}
                                     sx={{
                                       ...(!isRead && {
                                         bgcolor: "action.selected",
@@ -3540,6 +3579,12 @@ export default function Header() {
                             ) {
                               return (
                                 <MenuItem
+                                  onClick={() => {
+                                    notificationType === "Twitter" &&
+                                      setTwitterModal(true);
+
+                                    notificationType === "Matic" && buyModal();
+                                  }}
                                   sx={{
                                     color: Colors[resolvedTheme].primary,
                                     py: 1.5,

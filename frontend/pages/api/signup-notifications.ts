@@ -25,6 +25,7 @@ export default async function signupNotifications(
           description: "To get started, fuel up with some MATIC",
           userId: user?.id,
           avatarImage: "/icons/matic.svg",
+          notificationType: "Matic",
         },
       });
     }
@@ -36,6 +37,7 @@ export default async function signupNotifications(
             "Link your Twitter account to get the most out of Impish",
           userId: user?.id,
           avatarImage: "/icons/twitter.svg",
+          notificationType: "Twitter",
         },
       });
     }
