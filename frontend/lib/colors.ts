@@ -21,7 +21,7 @@ const Colors: any = {
     date_picker_button_bg: "black",
     date_picker_hover: "rgba(0, 0, 0, 0.04)",
     selected_date: "rgb(217, 217, 217)",
-    time_hover: "rgb(110, 118, 125)",
+    time_hover: "rgba(255,255,255,0.1)",
     tab_divider: "#3E4042",
     tab_hover: "rgba(255,255,255,0.1)",
   },

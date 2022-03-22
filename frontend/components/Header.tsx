@@ -1058,7 +1058,7 @@ export default function Header() {
                         <Grid item xs={5}>
                           <TextField
                             label="Start Time"
-                            defaultValue="7:00 AM"
+                            defaultValue="12:00 AM"
                             InputLabelProps={{
                               shrink: true,
                             }}
@@ -1066,7 +1066,22 @@ export default function Header() {
                             SelectProps={{
                               MenuProps: {
                                 sx: {
+                                  "&& .Mui-selected": {
+                                    backgroundColor: "transparent",
+                                    borderRadius: (theme) =>
+                                      Number(theme.shape.borderRadius) / 2,
+                                  },
+                                  "&& .Mui-selected:focus": {
+                                    backgroundColor: "transparent",
+                                  },
+                                  "&& .Mui-selected:hover": {
+                                    backgroundColor:
+                                      Colors[resolvedTheme].date_picker_hover,
+                                    borderRadius: (theme) =>
+                                      Number(theme.shape.borderRadius) / 2,
+                                  },
                                   "& .MuiPaper-root": {
+                                    bgcolor: Colors[resolvedTheme].header_bg,
                                     borderRadius: (theme) =>
                                       Number(theme.shape.borderRadius) / 2,
                                   },
@@ -1074,7 +1089,9 @@ export default function Header() {
                                   height: "400px",
                                   top: "7%",
                                   "&& .MuiMenu-list": {
-                                    py: 0,
+                                    paddingTop: 0.5,
+                                    paddingBottom: 0.5,
+                                    bgcolor: Colors[resolvedTheme].header_bg,
                                   },
                                 },
                                 anchorOrigin: {
@@ -1115,19 +1132,29 @@ export default function Header() {
                             error={!!errors3?.start_time}
                             helperText={null}
                           >
-                            {times.map((time, index) => (
+                            {times.map((time: any, index: any) => (
                               <MenuItem
                                 sx={{
+                                  "&& .Mui-selected": {
+                                    "&, & .MuiMenuItem-root": {
+                                      backgroundColor:
+                                        Colors[resolvedTheme].time_hover,
+                                    },
+                                    backgroundColor:
+                                      Colors[resolvedTheme].time_hover,
+                                  },
                                   "&& .MuiMenu-list": {
                                     paddingTop: 0,
                                   },
 
                                   bgcolor: Colors[resolvedTheme].header_bg,
                                   color: Colors[resolvedTheme].primary,
-
+                                  margin: "0 8px",
                                   ":hover": {
                                     backgroundColor:
                                       Colors[resolvedTheme].time_hover,
+                                    borderRadius: (theme) =>
+                                      Number(theme.shape.borderRadius) / 2,
                                   },
                                 }}
                                 key={index}
@@ -1269,7 +1296,7 @@ export default function Header() {
                             <Grid item xs={5}>
                               <TextField
                                 label="End Time"
-                                defaultValue="7:00 AM"
+                                defaultValue="12:00 AM"
                                 InputLabelProps={{
                                   shrink: true,
                                 }}
@@ -1277,16 +1304,35 @@ export default function Header() {
                                 SelectProps={{
                                   MenuProps: {
                                     sx: {
+                                      "&& .Mui-selected": {
+                                        backgroundColor: "transparent",
+                                        borderRadius: (theme) =>
+                                          Number(theme.shape.borderRadius) / 2,
+                                      },
+                                      "&& .Mui-selected:focus": {
+                                        backgroundColor: "transparent",
+                                      },
+                                      "&& .Mui-selected:hover": {
+                                        backgroundColor:
+                                          Colors[resolvedTheme]
+                                            .date_picker_hover,
+                                        borderRadius: (theme) =>
+                                          Number(theme.shape.borderRadius) / 2,
+                                      },
                                       "& .MuiPaper-root": {
+                                        bgcolor:
+                                          Colors[resolvedTheme].header_bg,
                                         borderRadius: (theme) =>
                                           Number(theme.shape.borderRadius) / 2,
                                       },
                                       padding: 0,
-
                                       height: "400px",
                                       top: "7%",
                                       "&& .MuiMenu-list": {
-                                        py: 0,
+                                        paddingTop: 0.5,
+                                        paddingBottom: 0.5,
+                                        bgcolor:
+                                          Colors[resolvedTheme].header_bg,
                                       },
                                     },
                                     anchorOrigin: {
@@ -1325,19 +1371,29 @@ export default function Header() {
                                 error={!!errors3?.start_time}
                                 helperText={null}
                               >
-                                {times.map((time, index) => (
+                                {times.map((time: any, index: any) => (
                                   <MenuItem
                                     sx={{
-                                      "& .MuiList-root": {
-                                        py: 0,
+                                      "&& .Mui-selected": {
+                                        "&, & .MuiMenuItem-root": {
+                                          backgroundColor:
+                                            Colors[resolvedTheme].time_hover,
+                                        },
+                                        backgroundColor:
+                                          Colors[resolvedTheme].time_hover,
+                                      },
+                                      "&& .MuiMenu-list": {
+                                        paddingTop: 0,
                                       },
 
                                       bgcolor: Colors[resolvedTheme].header_bg,
                                       color: Colors[resolvedTheme].primary,
-
+                                      margin: "0 8px",
                                       ":hover": {
                                         backgroundColor:
                                           Colors[resolvedTheme].time_hover,
+                                        borderRadius: (theme) =>
+                                          Number(theme.shape.borderRadius) / 2,
                                       },
                                     }}
                                     key={index}
