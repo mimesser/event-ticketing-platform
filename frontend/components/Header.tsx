@@ -1465,6 +1465,7 @@ export default function Header() {
                         disableRipple
                         fullWidth
                         sx={{
+                          height: "56px",
                           border: "1px solid",
                           textTransform: "none",
                           color: Colors[resolvedTheme].primary,
@@ -1481,7 +1482,7 @@ export default function Header() {
                         startIcon={
                           <LockIcon
                             sx={{
-                              marginRight: "12px",
+                              margin: 1,
                               color: Colors[resolvedTheme].primary,
                             }}
                           />
@@ -1491,7 +1492,7 @@ export default function Header() {
                             sx={{
                               position: "absolute",
                               right: "7%",
-                              top: "26%",
+                              top: "31%",
                               color: Colors[resolvedTheme].primary,
                             }}
                           />
@@ -1505,6 +1506,7 @@ export default function Header() {
                         aria-labelledby="demo-positioned-button"
                         anchorEl={anchorElPrivacy}
                         open={openPrivacy}
+                        transitionDuration={0}
                         onClose={handleCloseEventPrivacy}
                         anchorOrigin={{
                           vertical: "bottom",
@@ -1523,25 +1525,30 @@ export default function Header() {
                         }}
                       >
                         <MenuItem
+                          disableRipple
                           sx={{
                             display: "flex",
                             justifyContent: "start",
+                            ":hover": {
+                              backgroundColor: "transparent",
+                            },
                           }}
                         >
                           <Typography
                             sx={{
                               textAlign: "left",
-                              fontSize: "0.6rem",
-                              color: Colors[resolvedTheme].secondary,
+                              fontSize: "0.8rem",
+                              color: Colors[resolvedTheme].primary,
                             }}
                             variant="subtitle1"
                           >
                             Choose who can see and join this event.
                             <br />
-                            you will be able to invite people later
+                            You will be able to invite people later.
                           </Typography>
                         </MenuItem>
                         <MenuItem
+                          disableRipple
                           sx={{
                             px: 0,
                             justifyContent: "space-around",
@@ -1584,11 +1591,11 @@ export default function Header() {
                                 variant="subtitle1"
                                 component="span"
                                 sx={{
-                                  fontSize: "0.6rem",
+                                  fontSize: "0.8rem",
                                   color: Colors[resolvedTheme].secondary,
                                 }}
                               >
-                                only People Who are invited
+                                Only people who are invited
                               </Typography>
                             </Box>
                           </Box>
@@ -1605,6 +1612,7 @@ export default function Header() {
                           />
                         </MenuItem>
                         <MenuItem
+                          disableRipple
                           sx={{
                             px: 0,
                             justifyContent: "space-around",
@@ -1647,11 +1655,11 @@ export default function Header() {
                                 variant="subtitle1"
                                 component="span"
                                 sx={{
-                                  fontSize: "0.6rem",
+                                  fontSize: "0.8rem",
                                   color: Colors[resolvedTheme].secondary,
                                 }}
                               >
-                                Anyone off or on Impish
+                                Anyone on or off Impish
                               </Typography>
                             </Box>
                           </Box>
@@ -1669,6 +1677,7 @@ export default function Header() {
                           />
                         </MenuItem>
                         <MenuItem
+                          disableRipple
                           sx={{
                             px: 0,
                             justifyContent: "space-around",
@@ -1707,7 +1716,7 @@ export default function Header() {
                                 variant="subtitle1"
                                 component="span"
                                 sx={{
-                                  fontSize: "0.6rem",
+                                  fontSize: "0.8rem",
                                   color: Colors[resolvedTheme].secondary,
                                 }}
                               >
