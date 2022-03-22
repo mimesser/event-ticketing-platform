@@ -3,7 +3,6 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CloseIcon from "@mui/icons-material/Close";
 import CircularProgress from "@mui/material/CircularProgress";
-import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import Modal from "@mui/material/Modal";
 import TwitterIcon from "@mui/icons-material/Twitter";
