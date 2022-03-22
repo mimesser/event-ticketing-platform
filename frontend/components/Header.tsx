@@ -68,7 +68,13 @@ import Colors from "lib/colors";
 import { useUserInfo } from "lib/user-context";
 import { moonPaySrc } from "lib/moon-pay";
 import { magic } from "lib/magic";
-import { shortenAddress, shortenText, eventTime } from "lib/utils";
+import {
+  shortenAddress,
+  shortenText,
+  eventTime,
+  roundUpTime,
+  roundUpTimePlus3,
+} from "lib/utils";
 import { supabase } from "lib/supabase";
 import Image from "next/image";
 import Link from "next/link";
@@ -90,6 +96,7 @@ export default function Header() {
   var dateUTC = new Date(
     new Date().getTime() + new Date().getTimezoneOffset() * 60000
   );
+
   const { theme, resolvedTheme, setTheme } = useTheme();
   const [openStart, setOpenStart] = React.useState(false);
   const [openEnd, setOpenEnd] = React.useState(false);
@@ -101,8 +108,8 @@ export default function Header() {
   const [eventDetails, setEventDetails] = React.useState(false);
   const [startDate, setStartDate] = React.useState(null);
   const [endDate, setEndDate] = React.useState(null);
-  const [startTime, setStartTime] = React.useState(null);
-  const [endTime, setEndTime] = React.useState(null);
+  const [startTime, setStartTime] = React.useState(roundUpTime());
+  const [endTime, setEndTime] = React.useState(roundUpTimePlus3());
   const [values, setValues] = React.useState({
     eventName: "",
   });
@@ -162,7 +169,7 @@ export default function Header() {
         }
       }
     }
-  }, [router.isReady, router.query, isMobile]);
+  }, [router.isReady, router.query, isMobile, router.pathname]);
 
   useEffect(() => {
     async function realtimeNotifications() {
@@ -1058,7 +1065,7 @@ export default function Header() {
                         <Grid item xs={5}>
                           <TextField
                             label="Start Time"
-                            defaultValue="12:00 AM"
+                            defaultValue={startTime}
                             InputLabelProps={{
                               shrink: true,
                             }}
@@ -1296,7 +1303,7 @@ export default function Header() {
                             <Grid item xs={5}>
                               <TextField
                                 label="End Time"
-                                defaultValue="12:00 AM"
+                                defaultValue={endTime}
                                 InputLabelProps={{
                                   shrink: true,
                                 }}
