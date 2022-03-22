@@ -16,27 +16,32 @@ export default async function updateProfile(
   }
 
   try {
-    const users = await prisma.user.findMany({
-      where: {
-        username: {
-          equals: username,
-          mode: "insensitive",
-        },
-      },
-      select: { email: true, username: true },
-    });
+    if (username !== null) {
+      if (username.length !== 0) {
+        const users = await prisma.user.findMany({
+          where: {
+            username: {
+              equals: username,
+              mode: "insensitive",
+            },
+          },
+          select: { email: true, username: true },
+        });
 
-    const filteredUsers = users.find(user => user.email !== email);
-    if(filteredUsers)
-      res.status(200).json({ error: true })
+        const filteredUsers = users.find((user) => user.email !== email);
+        if (filteredUsers) res.status(200).json({ error: true });
+      }
+    }
 
     const user = await prisma.user.update({
       where: { email: email },
       data: {
-        name: name,
-        username: username,
-        avatarImage: avatarImage,
-        bannerImage: bannerImage,
+        name: name === null || name.length === 0 ? null : name,
+        username: username === null || username.length === 0 ? null : username,
+        avatarImage:
+          avatarImage === null || avatarImage.length === 0 ? null : avatarImage,
+        bannerImage:
+          bannerImage === null || bannerImage.length === 0 ? null : bannerImage,
       },
     });
     res.status(200).json({ user });
