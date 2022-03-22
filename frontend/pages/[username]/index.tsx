@@ -204,6 +204,11 @@ function Profile() {
   };
 
   const modalClose = () => {
+    // Create user signup notifications
+    fetch("/api/signup-notifications", {
+      method: "POST",
+    });
+
     setSignupFlow(false);
     setWelcomeModal(false);
     setMoonPayModal(false);
