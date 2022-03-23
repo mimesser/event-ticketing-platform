@@ -366,11 +366,10 @@ export default function Header() {
         Event
       </BreadcrumLink>
     </Link>,
-    <Link key="2" href="/events/create" passHref>
+    <Link key="2" href="/events" passHref>
       <BreadcrumLink
         sx={{ color: Colors[resolvedTheme].secondary, fontSize: "0.8rem" }}
         underline="hover"
-        href="/events/create"
       >
         Create Event
       </BreadcrumLink>
