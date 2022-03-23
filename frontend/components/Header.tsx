@@ -1475,6 +1475,7 @@ export default function Header() {
                           padding: "8.5px 14px",
                           justifyContent: "start",
                           ":hover": {
+                            backgroundColor: "transparent",
                             borderColor: (theme) => theme.palette.primary.main,
                           },
                           ":focus": {
