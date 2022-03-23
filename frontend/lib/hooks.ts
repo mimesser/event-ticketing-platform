@@ -26,7 +26,7 @@ export function useUser({ redirectTo, redirectIfFound }: any = {}) {
   return { user, loading };
 }
 
-export async function fetchPublicUser(username: string) {
+export async function fetchPublicUser(username: any) {
   const user =
     (
       await (

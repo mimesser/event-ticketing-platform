@@ -14,7 +14,16 @@ export default async function publicUser(
     const { username } = JSON.parse(req.body);
 
     let whereCondition: Prisma.UserWhereInput;
-    if (ethers.utils.isAddress(username)) {
+    if (typeof username === "number") {
+      whereCondition = {
+        id: {
+          equals: username,
+        },
+      };
+    } else if (
+      ethers.utils.isAddress(username) &&
+      typeof username !== "number"
+    ) {
       whereCondition = {
         walletAddress: {
           equals: username,
