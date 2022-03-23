@@ -1564,7 +1564,14 @@ export default function Header() {
                           disableRipple
                           sx={{
                             px: 0,
+                            margin: "0 8px",
+
                             justifyContent: "space-around",
+                            ":hover": {
+                              borderRadius: (theme) =>
+                                Number(theme.shape.borderRadius) / 2,
+                              backgroundColor: Colors[resolvedTheme].time_hover,
+                            },
                           }}
                         >
                           <Box
@@ -1575,6 +1582,7 @@ export default function Header() {
                             <ListItemIcon
                               sx={{
                                 minWidth: "auto",
+                                alignItems: "center",
                               }}
                             >
                               <LockIcon
@@ -1615,6 +1623,9 @@ export default function Header() {
 
                           <Radio
                             sx={{
+                              ":hover": {
+                                backgroundColor: "transparent",
+                              },
                               "&": { color: Colors[resolvedTheme].primary },
                             }}
                             checked={privacy === "Private"}
@@ -1628,7 +1639,14 @@ export default function Header() {
                           disableRipple
                           sx={{
                             px: 0,
+                            margin: "0 8px",
+
                             justifyContent: "space-around",
+                            ":hover": {
+                              borderRadius: (theme) =>
+                                Number(theme.shape.borderRadius) / 2,
+                              backgroundColor: Colors[resolvedTheme].time_hover,
+                            },
                           }}
                         >
                           <Box
@@ -1639,6 +1657,7 @@ export default function Header() {
                             <ListItemIcon
                               sx={{
                                 minWidth: "auto",
+                                alignItems: "center",
                               }}
                             >
                               <PublicRoundedIcon
@@ -1680,6 +1699,9 @@ export default function Header() {
                           <Radio
                             sx={{
                               marginLeft: "17px",
+                              ":hover": {
+                                backgroundColor: "transparent",
+                              },
                               "&": { color: Colors[resolvedTheme].primary },
                             }}
                             checked={privacy === "Public"}
@@ -1693,13 +1715,21 @@ export default function Header() {
                           disableRipple
                           sx={{
                             px: 0,
+                            margin: "0 8px",
+
                             justifyContent: "space-around",
+                            ":hover": {
+                              borderRadius: (theme) =>
+                                Number(theme.shape.borderRadius) / 2,
+                              backgroundColor: Colors[resolvedTheme].time_hover,
+                            },
                           }}
                         >
                           <Box sx={{ display: "flex" }}>
                             <ListItemIcon
                               sx={{
                                 minWidth: "auto",
+                                alignItems: "center",
                               }}
                             >
                               <GroupSharpIcon
@@ -1741,6 +1771,9 @@ export default function Header() {
                           <Radio
                             sx={{
                               marginLeft: "17px",
+                              ":hover": {
+                                backgroundColor: "transparent",
+                              },
                               "&": { color: Colors[resolvedTheme].primary },
                             }}
                             checked={privacy === "Followers"}
