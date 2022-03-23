@@ -9,6 +9,7 @@ export default async function updateProfile(
   const { email, name, username, avatarImage, bannerImage }: User = JSON.parse(
     req.body
   );
+  const filteredUsername = username?.replace(/\s/g, "");
 
   if (!email) {
     res.status(400).json({ error: "Missing email" });
@@ -16,12 +17,12 @@ export default async function updateProfile(
   }
 
   try {
-    if (username !== null) {
-      if (username.length !== 0) {
+    if (filteredUsername !== null) {
+      if (filteredUsername?.length !== 0) {
         const users = await prisma.user.findMany({
           where: {
             username: {
-              equals: username,
+              equals: filteredUsername,
               mode: "insensitive",
             },
           },
@@ -37,7 +38,10 @@ export default async function updateProfile(
       where: { email: email },
       data: {
         name: name === null || name.length === 0 ? null : name,
-        username: username === null || username.length === 0 ? null : username,
+        username:
+          filteredUsername === null || filteredUsername?.length === 0
+            ? null
+            : filteredUsername,
         avatarImage:
           avatarImage === null || avatarImage.length === 0 ? null : avatarImage,
         bannerImage:

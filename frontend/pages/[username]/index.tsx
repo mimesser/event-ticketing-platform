@@ -319,9 +319,12 @@ function Profile() {
   const usernameUpdated = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
+    if (event.target.value.charAt(event.target.value.length - 1) === " ") {
+      return;
+    }
     if (event.target.value.length > 50) return;
     invalidateUsername(false);
-    setNewUsername(event.target.value);
+    setNewUsername(event.target.value.replace(/\s/g, ""));
   };
   const [invalidUsername, invalidateUsername] = React.useState(false);
   const checkUsername = async () => {
