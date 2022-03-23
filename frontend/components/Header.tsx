@@ -1469,12 +1469,17 @@ export default function Header() {
                         fullWidth
                         sx={{
                           height: "56px",
-                          border: "1px solid",
+                          border: `1px solid ${Colors[resolvedTheme].privacy_border}`,
                           textTransform: "none",
                           color: Colors[resolvedTheme].primary,
                           padding: "8.5px 14px",
-                          borderColor: Colors[resolvedTheme].secondary,
                           justifyContent: "start",
+                          ":hover": {
+                            borderColor: (theme) => theme.palette.primary.main,
+                          },
+                          ":focus": {
+                            borderColor: (theme) => theme.palette.primary.main,
+                          },
                         }}
                         aria-controls={
                           openPrivacy ? "demo-positioned-menu" : undefined
