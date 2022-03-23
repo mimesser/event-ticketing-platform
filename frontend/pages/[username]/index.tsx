@@ -1,4 +1,3 @@
-import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -7,7 +6,6 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CircularProgress from "@mui/material/CircularProgress";
-import Fade from "@mui/material/Fade";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -25,7 +23,6 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import Avatar from "boring-avatars";
 import Layout from "components/Layout";
 import copy from "copy-to-clipboard";
-import { ethers } from "ethers";
 import Colors from "lib/colors";
 import { fetchPublicUser } from "lib/hooks";
 import { useUserInfo } from "lib/user-context";
@@ -36,11 +33,9 @@ import {
   stopPropagation,
 } from "lib/utils";
 import { magic } from "lib/magic";
-import { moonPaySrc } from "lib/moon-pay";
 import moment from "moment";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { signIn } from "next-auth/react";
 import { useTheme } from "next-themes";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -49,19 +44,11 @@ import styles from "styles/pages/Profile.module.scss";
 function Profile() {
   const router = useRouter();
   const currentUser = useUserInfo();
-  const { username, userExists } = router.query;
-  const firstTimeUser = userExists === "false";
+  const { username } = router.query;
   const isMobile = useMediaQuery("(max-width:599px)");
   const { resolvedTheme } = useTheme();
 
   const [loading, finishLoading] = React.useState(true);
-  const [signupFlow, setSignupFlow] = React.useState(
-    firstTimeUser ? true : false
-  );
-  const [welcomeModal, setWelcomeModal] = React.useState(true); // Welcome modal
-  const [moonPayModal, setMoonPayModal] = React.useState(false); // buy crypto on moonpay modal
-  const [twitterModal, setTwitterModal] = React.useState(false); // Find frens on Twitter modal
-  const [twitterButton, setTwitterButton] = React.useState(false);
 
   const [user, setUser] = React.useState<any>(null);
 
@@ -201,49 +188,6 @@ function Profile() {
     } catch (error) {
       setSigningIn(false);
     }
-  };
-
-  const modalClose = () => {
-    // Create user signup notifications
-    fetch("/api/signup-notifications", {
-      method: "POST",
-    });
-
-    setSignupFlow(false);
-    setWelcomeModal(false);
-    setMoonPayModal(false);
-  };
-
-  // Buy crypto modal to find frens on Twitter modal
-  const continueToTwitter = () => {
-    setMoonPayModal(false);
-    setTwitterModal(true);
-  };
-
-  // MoonPay modal to to buy crypto
-  const continueToMoonPayModal = () => {
-    setWelcomeModal(false);
-    setMoonPayModal(true);
-    getUsersBalance();
-  };
-
-  //check users balance after moonplay load and show twitter button upon change in account balance
-  const getUsersBalance = async () => {
-    const provider = new ethers.providers.Web3Provider(
-      magic?.rpcProvider as any
-    );
-
-    const signer = provider.getSigner();
-    const userAddress = await signer.getAddress();
-    const balance = await provider.getBalance(userAddress);
-    let timer = setInterval(async () => {
-      const currentUserAddress = await signer.getAddress();
-      const currentUserBalance = await provider.getBalance(currentUserAddress);
-      if (currentUserBalance.gt(balance)) {
-        setTwitterButton(true);
-        clearInterval(timer);
-      }
-    }, 250);
   };
 
   const copyShareLink = () => {
@@ -1323,137 +1267,6 @@ function Profile() {
           </Grid>
         </Box>
       </Modal>
-
-      {/* firsttimer sigup modal */}
-
-      {currentUser.user && signupFlow && (
-        <>
-          <Modal
-            BackdropComponent={Backdrop}
-            BackdropProps={{
-              timeout: 500,
-            }}
-            closeAfterTransition
-            onClose={modalClose}
-            open={signupFlow}
-            aria-labelledby="transition-modal-title"
-            aria-describedby="transition-modal-description"
-          >
-            <Fade in={signupFlow}>
-              <Box sx={modalStyle}>
-                <div className={styles.modal_box}>
-                  <IconButton
-                    aria-label="close"
-                    onClick={modalClose}
-                    className={styles.close_button}
-                    sx={{
-                      ":hover": {
-                        backgroundColor: Colors[resolvedTheme].hover,
-                      },
-                    }}
-                  >
-                    <CloseIcon
-                      sx={{
-                        color: Colors[resolvedTheme].primary,
-                      }}
-                    />
-                  </IconButton>
-                  {/* Welcome modal */}
-                  {welcomeModal && (
-                    <div className={styles.modal_body}>
-                      <Typography id={styles.h5} variant="h5">
-                        Welcome to Impish
-                      </Typography>
-                      <Typography variant="h6">
-                        {"Let's"} get started!
-                      </Typography>
-                      <Box>
-                        <Button
-                          id={styles.continueButtons}
-                          onClick={continueToMoonPayModal}
-                          type="submit"
-                          size="large"
-                          variant="contained"
-                          endIcon={<ArrowRightIcon />}
-                        >
-                          Continue
-                        </Button>
-                      </Box>
-                    </div>
-                  )}
-                  {/* MoonPay modal */}
-                  {moonPayModal && (
-                    <div
-                      className={styles.modal_body}
-                      style={{ height: "60vh", margin: "12px" }}
-                    >
-                      <iframe
-                        allow="accelerometer; autoplay; camera; gyroscope; payment"
-                        frameBorder="0"
-                        height="100%"
-                        id="moonPayFrame"
-                        src={moonPaySrc(
-                          currentUser.user.walletAddress,
-                          currentUser.user.email
-                        )}
-                        width="100%"
-                      >
-                        <p>Your browser does not support iframes.</p>
-                      </iframe>
-                      {twitterButton && (
-                        <Box>
-                          <Button
-                            id={styles.continueButtons}
-                            onClick={continueToTwitter}
-                            type="submit"
-                            size="large"
-                            variant="contained"
-                            endIcon={<ArrowRightIcon />}
-                          >
-                            Continue
-                          </Button>
-                        </Box>
-                      )}
-                    </div>
-                  )}
-                  {/* Twitter modal */}
-                  {twitterModal && (
-                    <div className={styles.modal_body}>
-                      <Typography id={styles.h5} variant="h5">
-                        Find frens you follow on Twitter
-                      </Typography>
-                      <Typography id={styles.body1} variant="body1">
-                        To get the most of your Web3 adventure, connect with
-                        frens on Twitter.
-                      </Typography>
-                      <Box className={styles.linkSocialButtons}>
-                        <Button
-                          onClick={() =>
-                            signIn("twitter", { callbackUrl: "/twitter" })
-                          }
-                          id={styles.twtButton}
-                          type="submit"
-                          size="large"
-                          variant="outlined"
-                          sx={{
-                            backgroundColor: "rgb(29, 161, 242)",
-                            ":hover": {
-                              backgroundColor: "rgb(26, 140, 216)",
-                            },
-                          }}
-                          startIcon={<TwitterIcon />}
-                        >
-                          Find frens I follow
-                        </Button>
-                      </Box>
-                    </div>
-                  )}
-                </div>
-              </Box>
-            </Fade>
-          </Modal>
-        </>
-      )}
     </Layout>
   );
 }
