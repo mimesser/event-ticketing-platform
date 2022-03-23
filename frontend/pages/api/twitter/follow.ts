@@ -56,7 +56,7 @@ export default async function follow(
               ? user!.name
               : user!.username
               ? `@${user!.username}`
-              : shortenAddress(user!.walletAddress as string);
+              : user!.walletAddress;
 
             follow.map(async (m) => {
               const lastNotification = await prisma.notification.findFirst({

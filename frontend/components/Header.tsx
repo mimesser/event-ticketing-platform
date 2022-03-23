@@ -65,6 +65,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import Avatar from "boring-avatars";
 import { differenceInCalendarDays, formatDistance } from "date-fns";
 import Colors from "lib/colors";
+import { fetchPublicUser } from "lib/hooks";
 import { useUserInfo } from "lib/user-context";
 import { moonPaySrc } from "lib/moon-pay";
 import { magic } from "lib/magic";
@@ -325,13 +326,26 @@ export default function Header() {
     setMoonPayModal(false);
   };
 
-  const markNotificationAsRead = (notificationIds: Array<any>) =>
+  const markNotificationAsRead = (notificationIds: Array<any>) => {
     fetch("/api/notifications", {
       method: "DELETE",
       body: JSON.stringify({
         notifications: notificationIds,
       }),
     });
+  };
+
+  const goToFollower = (followerUserId: number) => {
+    fetchPublicUser(followerUserId).then((followerUser) => {
+      if (followerUser !== null) {
+        if (followerUser.username) {
+          router.push("/" + followerUser.username.toLowerCase());
+        } else {
+          router.push("/" + followerUser.walletAddress);
+        }
+      }
+    });
+  };
 
   const {
     register: register3,
@@ -2556,6 +2570,7 @@ export default function Header() {
                               createdAt,
                               avatarImage,
                               notificationType,
+                              followerUserId,
                             }: any) => {
                               if (
                                 differenceInCalendarDays(
@@ -2567,6 +2582,7 @@ export default function Header() {
                                 return (
                                   <MenuItem
                                     onClick={() => {
+                                      goToFollower(followerUserId);
                                       markNotificationAsRead([id]);
 
                                       notificationType === "Twitter" &&
@@ -2624,7 +2640,12 @@ export default function Header() {
                                             overflowWrap: "break-word",
                                           }}
                                         >
-                                          {title && <b>{title}&nbsp;</b>}
+                                          {title && (
+                                            <b>
+                                              {shortenAddress(title as string)}
+                                              &nbsp;
+                                            </b>
+                                          )}
                                           {description}
                                         </Typography>
                                       }
@@ -2690,6 +2711,7 @@ export default function Header() {
                             createdAt,
                             avatarImage,
                             notificationType,
+                            followerUserId,
                           }: any) => {
                             if (
                               differenceInCalendarDays(
@@ -2701,6 +2723,7 @@ export default function Header() {
                               return (
                                 <MenuItem
                                   onClick={() => {
+                                    goToFollower(followerUserId);
                                     notificationType === "Twitter" &&
                                       setTwitterModal(true);
 
@@ -2758,7 +2781,12 @@ export default function Header() {
                                           }),
                                         }}
                                       >
-                                        {title && <b>{title}&nbsp;</b>}
+                                        {title && (
+                                          <b>
+                                            {shortenAddress(title as string)}
+                                            &nbsp;
+                                          </b>
+                                        )}
                                         {description}
                                       </Typography>
                                     }
@@ -3491,6 +3519,7 @@ export default function Header() {
                               createdAt,
                               avatarImage,
                               notificationType,
+                              followerUserId,
                             }: any) => {
                               if (
                                 differenceInCalendarDays(
@@ -3502,6 +3531,7 @@ export default function Header() {
                                 return (
                                   <MenuItem
                                     onClick={() => {
+                                      goToFollower(followerUserId);
                                       markNotificationAsRead([id]);
 
                                       notificationType === "Twitter" &&
@@ -3559,7 +3589,12 @@ export default function Header() {
                                             overflowWrap: "break-word",
                                           }}
                                         >
-                                          {title && <b>{title}&nbsp;</b>}
+                                          {title && (
+                                            <b>
+                                              {shortenAddress(title as string)}
+                                              &nbsp;
+                                            </b>
+                                          )}
                                           {description}
                                         </Typography>
                                       }
@@ -3625,6 +3660,7 @@ export default function Header() {
                             createdAt,
                             avatarImage,
                             notificationType,
+                            followerUserId,
                           }: any) => {
                             if (
                               differenceInCalendarDays(
@@ -3636,6 +3672,7 @@ export default function Header() {
                               return (
                                 <MenuItem
                                   onClick={() => {
+                                    goToFollower(followerUserId);
                                     notificationType === "Twitter" &&
                                       setTwitterModal(true);
 
@@ -3693,7 +3730,12 @@ export default function Header() {
                                           }),
                                         }}
                                       >
-                                        {title && <b>{title}&nbsp;</b>}
+                                        {title && (
+                                          <b>
+                                            {shortenAddress(title as string)}
+                                            &nbsp;
+                                          </b>
+                                        )}
                                         {description}
                                       </Typography>
                                     }
