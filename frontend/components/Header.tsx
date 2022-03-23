@@ -1527,7 +1527,11 @@ export default function Header() {
                         }}
                         PaperProps={{
                           sx: {
+                            border: Colors[resolvedTheme].border,
+                            borderRadius: (theme) =>
+                              Number(theme.shape.borderRadius) / 2,
                             width: 304,
+                            boxShadow: "0px 0px 5px rgb(0 0 0 / 20%)",
                             bgcolor: Colors[resolvedTheme].header_bg,
                             color: Colors[resolvedTheme].primary,
                           },
