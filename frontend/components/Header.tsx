@@ -302,9 +302,10 @@ export default function Header() {
     }
   }
   const handlePrivacyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPrivacy(event.target.value);
+    setPrivacy(privacy);
     handleCloseEventPrivacy();
   };
+
   const createEvent = () => {
     if (user) {
       router.push({
@@ -1561,6 +1562,10 @@ export default function Header() {
                           </Typography>
                         </MenuItem>
                         <MenuItem
+                          onClick={() => {
+                            setPrivacy("Private");
+                            handleCloseEventPrivacy();
+                          }}
                           disableRipple
                           sx={{
                             px: 0,
@@ -1636,6 +1641,10 @@ export default function Header() {
                           />
                         </MenuItem>
                         <MenuItem
+                          onClick={() => {
+                            setPrivacy("Public");
+                            handleCloseEventPrivacy();
+                          }}
                           disableRipple
                           sx={{
                             px: 0,
@@ -1712,6 +1721,10 @@ export default function Header() {
                           />
                         </MenuItem>
                         <MenuItem
+                          onClick={() => {
+                            setPrivacy("Followers");
+                            handleCloseEventPrivacy();
+                          }}
                           disableRipple
                           sx={{
                             px: 0,
