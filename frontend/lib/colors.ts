@@ -24,6 +24,7 @@ const Colors: any = {
     time_hover: "rgba(255,255,255,0.1)",
     tab_divider: "#3E4042",
     tab_hover: "rgba(255,255,255,0.1)",
+    privacy_border: "rgb(110, 118, 125)",
   },
   light: {
     header_bg: "#FFFFFF",
@@ -43,6 +44,7 @@ const Colors: any = {
     time_hover: "rgba(0, 0, 0, 0.04)",
     tab_divider: "rgba(0, 0, 0, 0.12)",
     tab_hover: "rgba(0, 0, 0, 0.04)",
+    privacy_border: "rgb(196 196 196)",
   },
 };
 
