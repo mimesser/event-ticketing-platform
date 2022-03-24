@@ -1415,12 +1415,40 @@ export default function Drawer() {
                         aria-expanded={openPrivacy ? "true" : undefined}
                         onClick={handleClickEventPrivacy}
                         startIcon={
-                          <LockIcon
-                            sx={{
-                              margin: 1,
-                              color: Colors[resolvedTheme].primary,
-                            }}
-                          />
+                          <>
+                            {privacy == "Privacy" && (
+                              <LockIcon
+                                sx={{
+                                  margin: 1,
+                                  color: Colors[resolvedTheme].primary,
+                                }}
+                              />
+                            )}
+                            {privacy == "Private" && (
+                              <LockIcon
+                                sx={{
+                                  margin: 1,
+                                  color: Colors[resolvedTheme].primary,
+                                }}
+                              />
+                            )}
+                            {privacy == "Public" && (
+                              <PublicRoundedIcon
+                                sx={{
+                                  margin: 1,
+                                  color: Colors[resolvedTheme].primary,
+                                }}
+                              />
+                            )}
+                            {privacy == "Followers" && (
+                              <GroupSharpIcon
+                                sx={{
+                                  margin: 1,
+                                  color: Colors[resolvedTheme].primary,
+                                }}
+                              />
+                            )}
+                          </>
                         }
                         endIcon={
                           <KeyboardArrowDownIcon
@@ -1433,7 +1461,34 @@ export default function Drawer() {
                           />
                         }
                       >
-                        {privacy}
+                        {privacy == "Privacy" ? (
+                          <>Privacy</>
+                        ) : (
+                          <Box
+                            sx={{ display: "flex", flexDirection: "column" }}
+                          >
+                            <Typography
+                              sx={{
+                                fontSize: "0.7rem",
+                                textAlign: "left",
+                                color: (theme) =>
+                                  openPrivacy
+                                    ? theme.palette.primary.main
+                                    : "undefined",
+                              }}
+                              component="span"
+                            >
+                              Privacy
+                            </Typography>
+                            <Typography
+                              sx={{
+                                color: Colors[resolvedTheme].primary,
+                              }}
+                            >
+                              {privacy}
+                            </Typography>
+                          </Box>
+                        )}
                       </Button>
                       <Menu
                         sx={{ mt: "5px" }}
