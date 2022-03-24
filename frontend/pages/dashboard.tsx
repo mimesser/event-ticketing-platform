@@ -145,7 +145,13 @@ function Dashboard() {
               </Typography>
               <Box className={styles.linkSocialButtons}>
                 <Button
-                  onClick={() => signIn("twitter", { callbackUrl: "/twitter" })}
+                  onClick={() => {
+                    localStorage.setItem(
+                      `${user.id}/open-twitter-modal`,
+                      "true"
+                    );
+                    signIn("twitter");
+                  }}
                   id={styles.twtButton}
                   type="submit"
                   size="large"
