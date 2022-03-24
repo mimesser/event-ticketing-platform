@@ -74,6 +74,7 @@ export default function Drawer() {
   const [eventDetails, setEventDetails] = React.useState(false);
   const [startDate, setStartDate] = React.useState(null);
   const [endDate, setEndDate] = React.useState(null);
+  const [goToRoute, setGoToRoute] = React.useState("");
   const [startTime, setStartTime] = React.useState(roundUpTime());
   const [endTime, setEndTime] = React.useState(roundUpTimePlus3());
   const [values, setValues] = React.useState({
@@ -82,6 +83,10 @@ export default function Drawer() {
   const [openStart, setOpenStart] = React.useState(false);
   const [openEnd, setOpenEnd] = React.useState(false);
   const [times] = React.useState(eventTime() || []);
+  const [discardModal, showDiscardModal] = React.useState(false);
+  const discardModalClose = () => {
+    showDiscardModal(false);
+  };
   const [anchorElPrivacy, setAnchorElPrivacy] = React.useState(null);
   const [signingInEvents, setSigningInEvents] = React.useState(false);
 
@@ -98,26 +103,75 @@ export default function Drawer() {
 
   const openPrivacy = Boolean(anchorElPrivacy);
   const CHARACTER_LIMIT = 99;
+
+  const discard = () => {
+    if (
+      startDate !== null ||
+      endDate !== null ||
+      startTime !== roundUpTime() ||
+      endTime !== roundUpTimePlus3() ||
+      values.eventName !== ""
+    ) {
+      setGoToRoute("/events");
+      showDiscardModal(true);
+    } else {
+      router.push({
+        pathname: "/events",
+      });
+    }
+  };
+
+  const goHome = () => {
+    if (
+      startDate !== null ||
+      endDate !== null ||
+      startTime !== roundUpTime() ||
+      endTime !== roundUpTimePlus3() ||
+      values.eventName !== ""
+    ) {
+      setGoToRoute("/");
+      showDiscardModal(true);
+    } else {
+      router.push({
+        pathname: "/",
+      });
+    }
+  };
+  const leavePage = () => {
+    router.push({
+      pathname: goToRoute,
+    });
+  };
+
+  const stayOnPage = () => {
+    showDiscardModal(false);
+  };
+
   const breadcrumbs = [
-    <Link key="1" href="/events" passHref>
-      <BreadcrumLink
-        sx={{
-          fontSize: "0.8rem",
-          color: Colors[resolvedTheme].secondary,
-        }}
-        underline="hover"
-      >
-        Event
-      </BreadcrumLink>
-    </Link>,
-    <Link key="2" href="/events" passHref>
-      <BreadcrumLink
-        sx={{ color: Colors[resolvedTheme].secondary, fontSize: "0.8rem" }}
-        underline="hover"
-      >
-        Create Event
-      </BreadcrumLink>
-    </Link>,
+    <BreadcrumLink
+      onClick={discard}
+      key="1"
+      sx={{
+        cursor: "pointer",
+        fontSize: "0.8rem",
+        color: Colors[resolvedTheme].secondary,
+      }}
+      underline="hover"
+    >
+      Event
+    </BreadcrumLink>,
+    <BreadcrumLink
+      onClick={discard}
+      key="2"
+      sx={{
+        cursor: "pointer",
+        color: Colors[resolvedTheme].secondary,
+        fontSize: "0.8rem",
+      }}
+      underline="hover"
+    >
+      Create Event
+    </BreadcrumLink>,
   ];
   const modalStyle = {
     position: "absolute",
@@ -302,6 +356,32 @@ export default function Drawer() {
             </form>
           </Grid>
         </Box>
+      </Modal>
+      {/* Leave page modal */}
+      <Modal
+        BackdropProps={{
+          timeout: 500,
+        }}
+        closeAfterTransition
+        onClose={discardModalClose}
+        open={discardModal}
+      >
+        <div
+          className={styles.discard_modal}
+          style={{ backgroundColor: Colors[resolvedTheme].header_bg }}
+        >
+          <span className={styles.title}>Leave Page?</span>
+          <span className={styles.content}>
+            Are you sure you want to leave? Your changes will be lost if you
+            leave this page.
+          </span>
+          <span className={styles.discard} onClick={leavePage}>
+            Leave
+          </span>
+          <span className={styles.cancel} onClick={stayOnPage}>
+            Stay
+          </span>
+        </div>
       </Modal>
       <Toolbar sx={{ display: showCreateEvent ? "none" : "flex" }} />
       {!events ? (
@@ -618,23 +698,22 @@ export default function Drawer() {
                   justifyContent="start"
                   alignItems="center"
                 >
-                  <Link href="/events" passHref>
-                    <Tooltip title="close">
-                      <IconButton
-                        sx={{
-                          backgroundColor: Colors[resolvedTheme].icon_bg,
-                          marginRight: "8px",
-                          ":hover": {
-                            background: Colors[resolvedTheme].close_hover,
-                          },
-                        }}
-                      >
-                        <CloseIcon
-                          sx={{ color: Colors[resolvedTheme].secondary }}
-                        />
-                      </IconButton>
-                    </Tooltip>
-                  </Link>
+                  <Tooltip title="close">
+                    <IconButton
+                      onClick={discard}
+                      sx={{
+                        backgroundColor: Colors[resolvedTheme].icon_bg,
+                        marginRight: "8px",
+                        ":hover": {
+                          background: Colors[resolvedTheme].close_hover,
+                        },
+                      }}
+                    >
+                      <CloseIcon
+                        sx={{ color: Colors[resolvedTheme].secondary }}
+                      />
+                    </IconButton>
+                  </Tooltip>
 
                   <Box
                     component="div"
@@ -652,17 +731,15 @@ export default function Drawer() {
                       },
                     }}
                   >
-                    <IconButton edge="start" size="small">
-                      <Link href="/">
-                        <a>
-                          <Image
-                            src={"/icons/impish.svg"}
-                            width={45}
-                            height={32}
-                            alt={`Impish icon`}
-                          />
-                        </a>
-                      </Link>
+                    <IconButton onClick={goHome} edge="start" size="small">
+                      <a>
+                        <Image
+                          src={"/icons/impish.svg"}
+                          width={45}
+                          height={32}
+                          alt={`Impish icon`}
+                        />
+                      </a>
                     </IconButton>
                   </Box>
                 </Grid>
@@ -996,6 +1073,9 @@ export default function Drawer() {
                             InputLabelProps={{
                               shrink: true,
                             }}
+                            onChange={(e) => {
+                              setStartTime(e.target.value);
+                            }}
                             select
                             SelectProps={{
                               MenuProps: {
@@ -1233,6 +1313,9 @@ export default function Drawer() {
                                 defaultValue={endTime}
                                 InputLabelProps={{
                                   shrink: true,
+                                }}
+                                onChange={(e) => {
+                                  setEndTime(e.target.value);
                                 }}
                                 select
                                 SelectProps={{
