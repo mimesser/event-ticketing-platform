@@ -319,6 +319,14 @@ function Profile() {
   const usernameUpdated = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
+    var expr = /^[a-zA-Z0-9._]*$/;
+    if (!expr.test(event.target.value)) {
+      setOnlyAllowed(true);
+      return;
+    } else {
+      setOnlyAllowed(false);
+    }
+
     if (event.target.value.charAt(event.target.value.length - 1) === " ") {
       return;
     }
@@ -327,6 +335,7 @@ function Profile() {
     setNewUsername(event.target.value.replace(/\s/g, ""));
   };
   const [invalidUsername, invalidateUsername] = React.useState(false);
+  const [onlyAllowed, setOnlyAllowed] = React.useState(false);
   const checkUsername = async () => {
     const userExists =
       !checkUsernameEqual(user.username, newUsername) &&
@@ -955,10 +964,12 @@ function Profile() {
 
           <TextField
             label="Username"
-            error={invalidUsername}
+            error={invalidUsername || onlyAllowed}
             helperText={
               invalidUsername
                 ? "That username has been taken. Please choose another."
+                : onlyAllowed
+                ? "Your username can only contain letters, numbers and '_'"
                 : ""
             }
             variant="outlined"

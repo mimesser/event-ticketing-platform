@@ -263,15 +263,17 @@ export default function Header() {
   };
 
   const goToFollower = (followerUserId: number) => {
-    fetchPublicUser(followerUserId).then((followerUser) => {
-      if (followerUser !== null) {
-        if (followerUser.username) {
+    if (followerUserId === null) {
+      return;
+    } else {
+      fetchPublicUser(followerUserId).then((followerUser) => {
+        if (followerUser !== null && followerUser.username) {
           router.push("/" + followerUser.username.toLowerCase());
         } else {
           router.push("/" + followerUser.walletAddress);
         }
-      }
-    });
+      });
+    }
   };
 
   const modalStyle = {
