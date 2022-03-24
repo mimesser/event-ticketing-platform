@@ -1393,7 +1393,9 @@ export default function Drawer() {
                         fullWidth
                         sx={{
                           height: "56px",
-                          border: `1px solid ${Colors[resolvedTheme].privacy_border}`,
+                          border: openPrivacy
+                            ? `1px solid ${Colors[resolvedTheme].active_privacy_border}`
+                            : `1px solid ${Colors[resolvedTheme].privacy_border}`,
                           textTransform: "none",
                           color: Colors[resolvedTheme].primary,
                           padding: "8.5px 14px",
