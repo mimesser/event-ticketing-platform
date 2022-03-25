@@ -26,6 +26,7 @@ const Colors: any = {
     tab_hover: "rgba(255,255,255,0.1)",
     privacy_border: "rgb(110, 118, 125)",
     active_privacy_border: "rgb(25 118 209)",
+    selected_notification: "rgb(50 50 50)",
   },
   light: {
     header_bg: "#FFFFFF",
@@ -47,6 +48,8 @@ const Colors: any = {
     tab_hover: "rgba(0, 0, 0, 0.04)",
     privacy_border: "rgb(196 196 196)",
     active_privacy_border: "rgb(25 118 209)",
+    hover: "rgba(210 210 210)",
+    selected_notification: "rgb(230 230 230)",
   },
 };
 
