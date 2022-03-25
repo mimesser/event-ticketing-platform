@@ -25,6 +25,11 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
       walletAddress: metadata.publicAddress,
     };
 
+    const firstTime = await prisma.user.findUnique({
+      where: { email: metadata.email },
+      select: { email: true },
+    });
+
     await prisma.user.upsert({
       where: {
         email: metadata.email,
@@ -32,6 +37,25 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
       create: dbInfo,
       update: {},
     });
+
+    if (!firstTime) {
+      const userId = await prisma.user.findUnique({
+        where: { email: metadata.email },
+        select: { id: true },
+      });
+
+      if (userId) {
+        await prisma.user.update({
+          where: {
+            email: metadata.email,
+          },
+          data: {
+            username: `imp${userId.id}`,
+          },
+        });
+      }
+    }
+
     res.status(200).json({ status: "login success" });
   } catch (e) {
     res.status(500).json({ e });
