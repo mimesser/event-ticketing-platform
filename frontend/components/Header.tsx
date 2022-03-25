@@ -103,11 +103,12 @@ export default function Header() {
   const totalUnread = notifications.filter((item: any) => !item.isRead).length;
   const newNotificationsLength = notifications.filter(
     (m: any) =>
-      differenceInCalendarDays(new Date(m.createdAt), dateUTC) <= 1 && !m.isRead
+      differenceInCalendarDays(new Date(m.createdAt), dateUTC) >= -1 &&
+      !m.isRead
   ).length;
   const earlierNotificationsLength = notifications.filter(
     (m: any) =>
-      differenceInCalendarDays(new Date(m.createdAt), dateUTC) > 1 || m.isRead
+      differenceInCalendarDays(new Date(m.createdAt), dateUTC) < -1 || m.isRead
   ).length;
 
   useEffect(() => {
@@ -903,7 +904,7 @@ export default function Header() {
                               differenceInCalendarDays(
                                 new Date(createdAt),
                                 dateUTC
-                              ) <= 1 &&
+                              ) >= -1 &&
                               !isRead
                             ) {
                               return (
@@ -919,14 +920,23 @@ export default function Header() {
                                   }}
                                   sx={{
                                     ...(!isRead && {
-                                      bgcolor: "action.selected",
+                                      backgroundColor:
+                                        Colors[resolvedTheme]
+                                          .selected_notification,
                                     }),
+                                    borderRadius: "0.75rem",
                                     py: 1.5,
                                     px: 2.5,
-                                    mt: "1px",
+                                    mt: "5px",
+                                    ml: "5px",
+                                    mx: "5px",
                                     display: "flex",
                                     alignItems: "center",
                                     color: Colors[resolvedTheme].primary,
+                                    ":hover": {
+                                      backgroundColor:
+                                        Colors[resolvedTheme].hover,
+                                    },
                                   }}
                                   key={id}
                                 >
@@ -1043,7 +1053,7 @@ export default function Header() {
                             differenceInCalendarDays(
                               new Date(createdAt),
                               dateUTC
-                            ) > 1 ||
+                            ) < -1 ||
                             isRead
                           ) {
                             return (
@@ -1056,14 +1066,24 @@ export default function Header() {
                                   notificationType === "Matic" && buyModal();
                                 }}
                                 sx={{
-                                  color: Colors[resolvedTheme].primary,
+                                  ...(!isRead && {
+                                    backgroundColor:
+                                      Colors[resolvedTheme]
+                                        .selected_notification,
+                                  }),
+                                  borderRadius: "0.75rem",
                                   py: 1.5,
                                   px: 2.5,
-                                  mt: "1px",
-                                  ...(!isRead && {
-                                    bgcolor: "action.selected",
-                                    color: Colors[resolvedTheme].primary,
-                                  }),
+                                  mt: "5px",
+                                  ml: "5px",
+                                  mx: "5px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  color: Colors[resolvedTheme].primary,
+                                  ":hover": {
+                                    backgroundColor:
+                                      Colors[resolvedTheme].hover,
+                                  },
                                 }}
                                 key={id}
                               >
