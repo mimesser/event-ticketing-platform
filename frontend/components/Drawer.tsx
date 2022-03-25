@@ -90,6 +90,67 @@ export default function Drawer() {
   const [anchorElPrivacy, setAnchorElPrivacy] = React.useState(null);
   const [signingInEvents, setSigningInEvents] = React.useState(false);
 
+  // prompt the user if they try and leave with unsaved changes
+  React.useEffect(() => {
+    const warningText =
+      "You have unsaved changes - are you sure you wish to leave this page?";
+
+    const handleWindowClose = (e: BeforeUnloadEvent) => {
+      if (!eventDetails) return;
+      if (discardModal) return;
+
+      if (
+        startDate !== null ||
+        endDate !== null ||
+        startTime !== roundUpTime() ||
+        endTime !== roundUpTimePlus3() ||
+        values.eventName !== ""
+      ) {
+        e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
+        // Chrome requires returnValue to be set
+        e.returnValue = warningText;
+      }
+
+      return;
+    };
+
+    const handleBrowseAway = () => {
+      if (!eventDetails) return;
+      if (discardModal) return;
+
+      if (
+        startDate !== null ||
+        endDate !== null ||
+        startTime !== roundUpTime() ||
+        endTime !== roundUpTimePlus3() ||
+        values.eventName !== ""
+      ) {
+        if (window.confirm(warningText)) return;
+        router.events.emit("routeChangeError");
+        throw "routeChange aborted.";
+      }
+
+      return;
+    };
+
+    window.addEventListener("beforeunload", handleWindowClose);
+    router.events.on("routeChangeStart", handleBrowseAway);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleWindowClose);
+      router.events.off("routeChangeStart", handleBrowseAway);
+    };
+  }, [
+    discardModal,
+    endDate,
+    endTime,
+    eventDetails,
+    router.events,
+    startDate,
+    startTime,
+    values.eventName,
+  ]);
+
   React.useEffect(() => {
     if (router.isReady) {
       const query = router.query;
