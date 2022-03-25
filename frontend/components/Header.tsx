@@ -1260,14 +1260,14 @@ export default function Header() {
                         >{`See your profile`}</div>
                       </div>
                     </MenuItem>
-                    <MenuItem
-                      divider
+
+                    <Divider
                       sx={{
-                        padding: "0px",
+                        borderColor: Colors[resolvedTheme].divider,
                         margin: "5px 16px",
-                        borderBottom: Colors[resolvedTheme].border,
                       }}
-                    ></MenuItem>
+                    />
+
                     <MenuItem
                       onClick={() => setSelectedMenu("settings")}
                       className={styles.menu_items}
