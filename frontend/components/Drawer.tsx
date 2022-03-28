@@ -1610,14 +1610,6 @@ export default function Drawer() {
                                 }}
                               />
                             )}
-                            {privacy == "Followers" && (
-                              <GroupSharpIcon
-                                sx={{
-                                  margin: 1,
-                                  color: Colors[resolvedTheme].primary,
-                                }}
-                              />
-                            )}
                           </>
                         }
                         endIcon={
@@ -1866,82 +1858,6 @@ export default function Drawer() {
                             checked={privacy === "Public"}
                             onChange={handlePrivacyChange}
                             value="Public"
-                            name="radio-buttons"
-                            inputProps={{ "aria-label": "A" }}
-                          />
-                        </MenuItem>
-                        <MenuItem
-                          onClick={() => {
-                            setPrivacy("Followers");
-                            handleCloseEventPrivacy();
-                          }}
-                          disableRipple
-                          sx={{
-                            px: 0,
-                            margin: "0 8px",
-
-                            justifyContent: "space-around",
-                            ":hover": {
-                              borderRadius: (theme) =>
-                                Number(theme.shape.borderRadius) / 2,
-                              backgroundColor: Colors[resolvedTheme].time_hover,
-                            },
-                          }}
-                        >
-                          <Box sx={{ display: "flex" }}>
-                            <ListItemIcon
-                              sx={{
-                                minWidth: "auto",
-                                alignItems: "center",
-                              }}
-                            >
-                              <GroupSharpIcon
-                                sx={{
-                                  display: "flex",
-                                  color: Colors[resolvedTheme].primary,
-                                }}
-                                fontSize="small"
-                              />
-                            </ListItemIcon>
-                            <Box
-                              sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "start",
-                              }}
-                            >
-                              <ListItemText
-                                disableTypography
-                                style={{
-                                  color: Colors[resolvedTheme].primary,
-                                }}
-                              >
-                                Followers
-                              </ListItemText>
-                              <Typography
-                                variant="subtitle1"
-                                component="span"
-                                sx={{
-                                  fontSize: "0.8rem",
-                                  color: Colors[resolvedTheme].secondary,
-                                }}
-                              >
-                                Your followers on Impish
-                              </Typography>
-                            </Box>
-                          </Box>
-
-                          <Radio
-                            sx={{
-                              marginLeft: "17px",
-                              ":hover": {
-                                backgroundColor: "transparent",
-                              },
-                              "&": { color: Colors[resolvedTheme].primary },
-                            }}
-                            checked={privacy === "Followers"}
-                            onChange={handlePrivacyChange}
-                            value="Followers"
                             name="radio-buttons"
                             inputProps={{ "aria-label": "A" }}
                           />
