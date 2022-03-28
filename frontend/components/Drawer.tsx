@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import DatePicker from "@mui/lab/DatePicker";
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -37,7 +38,9 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import PublicRoundedIcon from "@mui/icons-material/PublicRounded";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Avatar from "boring-avatars";
+import moment from "moment";
 import Colors from "lib/colors";
+import { useNewEvent } from "lib/event-context";
 import { magic } from "lib/magic";
 import { useUserInfo } from "lib/user-context";
 import {
@@ -56,6 +59,14 @@ import styles from "styles/components/Drawer.module.scss";
 
 export default function Drawer() {
   const { resolvedTheme } = useTheme();
+  const {
+    setEventName,
+    setHost,
+    setAvatar,
+    setAddress,
+    setStartDateAndTime,
+    setEndDateAndTime,
+  } = useNewEvent();
   const { user } = useUserInfo();
   const router = useRouter();
   const isMobile = useMediaQuery("(max-width:599px)");
@@ -150,6 +161,21 @@ export default function Drawer() {
     startTime,
     values.eventName,
   ]);
+
+  React.useEffect(() => {
+    setEventName(values.eventName);
+  }, [values]);
+  React.useEffect(() => {
+    setHost(user?.name);
+    setAvatar(user?.avatarImage);
+    setAddress(user?.walletAddress);
+  }, [user]);
+  React.useEffect(() => {
+    setStartDateAndTime(startDate || new Date(), startTime);
+  }, [startDate, startTime]);
+  React.useEffect(() => {
+    setEndDateAndTime(showEndDate, endDate || new Date(), endTime);
+  }, [showEndDate, endDate, endTime]);
 
   React.useEffect(() => {
     if (router.isReady) {

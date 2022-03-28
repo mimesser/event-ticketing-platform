@@ -11,10 +11,40 @@ import { getLoginSession } from "lib/auth";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
+import DesktopMacIcon from "@mui/icons-material/DesktopMac";
+import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
+import Preview from "components/EventPreview";
+import { useNewEvent } from "lib/event-context";
+import moment from "moment";
+
 function Create() {
   const router = useRouter();
   const [eventCreate, setEventCreate] = useState(false);
   const { resolvedTheme } = useTheme();
+
+  const { eventName, host, avatar, address, startDate, endDate } = useNewEvent();
+  const [eventDay, setEventDay] = useState<any>();
+  const [eventPeriod, setEventPeriod] = useState<any>();
+  useEffect(() => {
+    const sDate = moment(startDate);
+    setEventDay(sDate.date());
+    let period =
+      sDate.format("dddd, MMMM DD, YYYY") + " AT " + sDate.format("h:mm A");
+    if (endDate) {
+      period += " - ";
+
+      const tDate = moment(endDate);
+      if (!sDate.isSame(tDate, "day")) {
+        period += tDate.format("dddd, MMMM DD, YYYY") + " AT ";
+      }
+      period += tDate.format("h:mm A");
+    }
+    var zone = new Date()
+      .toLocaleTimeString("en-us", { timeZoneName: "short" })
+      .split(" ")[2];
+    period += " " + zone;
+    setEventPeriod(period);
+  }, [startDate, endDate]);
 
   const createEvent = () => {
     setEventCreate(true);
@@ -34,6 +64,8 @@ function Create() {
       }
     }
   }, [router.isReady, router.query]);
+
+  const [previewMode, setPreviewMode] = useState("Desktop");
 
   return (
     <Layout>
@@ -135,7 +167,87 @@ function Create() {
             </Grid>
           </Box>
         ) : (
-          <></>
+          <Box
+            component="div"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <div
+              style={{
+                background: Colors[resolvedTheme].header_bg,
+                boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
+                border: Colors[resolvedTheme].border,
+                padding: "15px",
+                display: "flex",
+                flexDirection: "column",
+                width: "100%",
+                maxWidth: previewMode === "Desktop" ? "900px" : "500px",
+                borderRadius: "10px",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <span>{previewMode} Preview</span>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "10px",
+                  }}
+                >
+                  <IconButton
+                    onClick={() => setPreviewMode("Desktop")}
+                    sx={{
+                      color: (theme) =>
+                        previewMode === "Desktop"
+                          ? theme.palette.primary.main
+                          : Colors[resolvedTheme].primary,
+                      ":hover": {
+                        backgroundColor: Colors[resolvedTheme].hover,
+                      },
+                    }}
+                  >
+                    <DesktopMacIcon />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => setPreviewMode("Mobile")}
+                    sx={{
+                      color: (theme) =>
+                        previewMode === "Mobile"
+                          ? theme.palette.primary.main
+                          : Colors[resolvedTheme].primary,
+                      ":hover": {
+                        backgroundColor: Colors[resolvedTheme].hover,
+                      },
+                    }}
+                  >
+                    <PhoneIphoneIcon />
+                  </IconButton>
+                </div>
+              </div>
+
+              <Preview
+                eventName={eventName}
+                host={host}
+                avatar={avatar}
+                address={address}
+                eventDay={eventDay}
+                eventPeriod={eventPeriod}
+                view={previewMode}
+              />
+            </div>
+          </Box>
         )}
       </>
     </Layout>
