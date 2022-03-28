@@ -3,6 +3,7 @@ import StateProvider from "state"; // Global state provider
 import type { AppProps } from "next/app"; // Types
 import { SessionProvider } from "next-auth/react"; // Session provider from NextAuth
 import { ThemeProvider } from "next-themes";
+import EventProvider from "lib/event-context";
 import UserProvider from "lib/user-context";
 
 // Export application‚
@@ -17,7 +18,9 @@ export default function MerkleAirdropStarter({
       <StateProvider>
         <UserProvider>
           <ThemeProvider>
-            <Component {...pageProps} />
+            <EventProvider>
+              <Component {...pageProps} />
+            </EventProvider>
           </ThemeProvider>
         </UserProvider>
       </StateProvider>
