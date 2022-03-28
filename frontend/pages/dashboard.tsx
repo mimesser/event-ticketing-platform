@@ -193,6 +193,13 @@ function Dashboard() {
                 sx={{
                   borderRadius: (theme) => theme.shape.borderRadius,
                   textTransform: "none",
+                  borderColor: (theme) =>
+                    moonpayModalForBanner
+                      ? theme.palette.primary.main
+                      : Colors[resolvedTheme].primary,
+                  ":hover": {
+                    backgroundColor: Colors[resolvedTheme].hover,
+                  },
                 }}
                 onClick={(e: any) => {
                   setMoonpayModalForBanner(true);
@@ -202,9 +209,16 @@ function Dashboard() {
                 <div className={styles.closeBannerBtn}>
                   <IconButton
                     aria-label="close"
+                    size="small"
                     onClick={(e: any) => {
                       setBuyBanner(false);
                       e.stopPropagation();
+                    }}
+                    sx={{
+                      margin: 0.5,
+                      ":hover": {
+                        backgroundColor: Colors[resolvedTheme].hover,
+                      },
                     }}
                   >
                     <CloseIcon
@@ -246,6 +260,13 @@ function Dashboard() {
                 sx={{
                   borderRadius: (theme) => theme.shape.borderRadius,
                   textTransform: "none",
+                  borderColor: (theme) =>
+                    twitterModalForBanner
+                      ? theme.palette.primary.main
+                      : Colors[resolvedTheme].primary,
+                  ":hover": {
+                    backgroundColor: Colors[resolvedTheme].hover,
+                  },
                 }}
                 onClick={(e: any) => {
                   setTwitterModalForBanner(true);
@@ -255,9 +276,16 @@ function Dashboard() {
                 <div className={styles.closeBannerBtn}>
                   <IconButton
                     aria-label="close"
+                    size="small"
                     onClick={(e: any) => {
                       setTwitterBanner(false);
                       e.stopPropagation();
+                    }}
+                    sx={{
+                      margin: 0.5,
+                      ":hover": {
+                        backgroundColor: Colors[resolvedTheme].hover,
+                      },
                     }}
                   >
                     <CloseIcon
