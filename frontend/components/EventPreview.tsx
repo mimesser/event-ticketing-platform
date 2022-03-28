@@ -107,20 +107,6 @@ export default function Preview({
               className={styles.status_item}
               style={{ backgroundColor: Colors[resolvedTheme].header_bg }}
             >
-              <HelpOutlineIcon />
-              Maybe
-            </div>
-            <div
-              className={styles.status_item}
-              style={{ backgroundColor: Colors[resolvedTheme].header_bg }}
-            >
-              <HighlightOffIcon />
-              Can&apos;t Go
-            </div>
-            <div
-              className={styles.status_item}
-              style={{ backgroundColor: Colors[resolvedTheme].header_bg }}
-            >
               <EmailIcon />
               Invite
             </div>
@@ -175,14 +161,6 @@ export default function Preview({
             <div className={styles.col}>
               <span>1</span>
               <span>GOING</span>
-            </div>
-            <div className={styles.col}>
-              <span>0</span>
-              <span>MAYBE</span>
-            </div>
-            <div className={styles.col}>
-              <span>1</span>
-              <span>INVITED</span>
             </div>
           </div>
           <div
