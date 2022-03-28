@@ -9,7 +9,7 @@ export default async function updateProfile(
   const { email, name, username, avatarImage, bannerImage }: User = JSON.parse(
     req.body
   );
-  const filteredUsername = username?.replace(/[^a-zA-Z_]/g, "");
+  const filteredUsername = username?.replace(/[^a-zA-Z_0-9]/g, "");
 
   if (!email) {
     res.status(400).json({ error: "Missing email" });
