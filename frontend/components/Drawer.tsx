@@ -155,13 +155,55 @@ export default function Drawer() {
     values.eventName,
   ]);
 
-  const adjustEndDate = () => {
+  const getStartDate = () => {
     const sDate = startDate || new Date();
+    sDate.setHours(0, 0, 0, 0);
+    return sDate;
+  };
+  const getEndtDate = () => {
+    const eDate = endDate || new Date();
+    eDate.setHours(0, 0, 0, 0);
+    return eDate;
+  };
+
+  const availableStartTimes = () => {
+    let result: any = [];
+    times.forEach((time: any) => {
+      if (
+        !showEndDate ||
+        validEventTime(getStartDate(), time, getEndtDate(), endTime)
+      )
+        result.push(time);
+    });
+    return result;
+  };
+  const availableEndTimes = () => {
+    let result: any = [];
+    times.forEach((time: any) => {
+      if (validEventTime(getStartDate(), startTime, getEndtDate(), time))
+        result.push(time);
+    });
+    return result;
+  };
+
+  const adjustEndDate = () => {
+    const sDate = getStartDate();
     const sTime = moment("1900-01-01 " + startTime);
     sDate.setHours(sTime.hours(), sTime.minutes());
     const tDate = new Date(sDate.getTime() + 3 * 60 * 60 * 1000);
     setEndDate(tDate);
     setEndTime(moment(tDate).format("h:mm A"));
+  };
+  const validEventTime = (sDate: any, sTime: any, tDate: any, tTime: any) => {
+    sDate = sDate || new Date();
+    sTime = moment("1900-01-01 " + sTime);
+    sDate.setHours(sTime.hours(), sTime.minutes(), 0, 0);
+
+    tDate = tDate || new Date();
+    tTime = moment("1900-01-01 " + tTime);
+    tDate.setHours(tTime.hours(), tTime.minutes(), 0, 0);
+
+    return sDate < tDate;
   };
 
   React.useEffect(() => {
@@ -1050,9 +1092,22 @@ export default function Drawer() {
                               disablePast
                               label="Start Date"
                               views={["day"]}
-                              value={startDate || undefined}
+                              value={getStartDate()}
+                              maxDate={getEndtDate()}
                               onChange={(newValue: any) => {
-                                setStartDate(newValue);
+                                if (
+                                  !showEndDate ||
+                                  validEventTime(
+                                    newValue,
+                                    startTime,
+                                    endDate,
+                                    endTime
+                                  )
+                                ) {
+                                  setStartDate(newValue);
+                                }
+                              }}
+                              onClose={() => {
                                 setOpenStart(false);
                               }}
                               PopperProps={{
@@ -1153,12 +1208,22 @@ export default function Drawer() {
                         <Grid item xs={5}>
                           <TextField
                             label="Start Time"
-                            defaultValue={startTime}
+                            value={startTime}
                             InputLabelProps={{
                               shrink: true,
                             }}
                             onChange={(e) => {
-                              setStartTime(e.target.value);
+                              if (
+                                !showEndDate ||
+                                validEventTime(
+                                  startDate,
+                                  e.target.value,
+                                  endDate,
+                                  endTime
+                                )
+                              ) {
+                                setStartTime(e.target.value);
+                              }
                             }}
                             select
                             SelectProps={{
@@ -1230,37 +1295,39 @@ export default function Drawer() {
                             error={!!errors3?.start_time}
                             helperText={null}
                           >
-                            {times.map((time: any, index: any) => (
-                              <MenuItem
-                                sx={{
-                                  "&& .Mui-selected": {
-                                    "&, & .MuiMenuItem-root": {
+                            {availableStartTimes().map(
+                              (time: any, index: any) => (
+                                <MenuItem
+                                  sx={{
+                                    "&& .Mui-selected": {
+                                      "&, & .MuiMenuItem-root": {
+                                        backgroundColor:
+                                          Colors[resolvedTheme].time_hover,
+                                      },
                                       backgroundColor:
                                         Colors[resolvedTheme].time_hover,
                                     },
-                                    backgroundColor:
-                                      Colors[resolvedTheme].time_hover,
-                                  },
-                                  "&& .MuiMenu-list": {
-                                    paddingTop: 0,
-                                  },
+                                    "&& .MuiMenu-list": {
+                                      paddingTop: 0,
+                                    },
 
-                                  bgcolor: Colors[resolvedTheme].header_bg,
-                                  color: Colors[resolvedTheme].primary,
-                                  margin: "0 8px",
-                                  ":hover": {
-                                    backgroundColor:
-                                      Colors[resolvedTheme].time_hover,
-                                    borderRadius: (theme) =>
-                                      Number(theme.shape.borderRadius) / 2,
-                                  },
-                                }}
-                                key={index}
-                                value={time}
-                              >
-                                {time}
-                              </MenuItem>
-                            ))}
+                                    bgcolor: Colors[resolvedTheme].header_bg,
+                                    color: Colors[resolvedTheme].primary,
+                                    margin: "0 8px",
+                                    ":hover": {
+                                      backgroundColor:
+                                        Colors[resolvedTheme].time_hover,
+                                      borderRadius: (theme) =>
+                                        Number(theme.shape.borderRadius) / 2,
+                                    },
+                                  }}
+                                  key={index}
+                                  value={time}
+                                >
+                                  {time}
+                                </MenuItem>
+                              )
+                            )}
                           </TextField>
                         </Grid>
                       </Grid>
@@ -1280,13 +1347,26 @@ export default function Drawer() {
                                   desktopModeMediaQuery=""
                                   open={openEnd}
                                   onOpen={() => setOpenEnd(true)}
-                                  minDate={startDate}
+                                  allowSameDateSelection={true}
                                   label="End Date"
                                   views={["day"]}
-                                  allowSameDateSelection={true}
-                                  value={endDate || undefined}
+                                  value={getEndtDate()}
+                                  minDate={getStartDate()}
                                   onChange={(newValue: any) => {
-                                    setEndDate(newValue);
+                                    if (
+                                      validEventTime(
+                                        startDate,
+                                        startTime,
+                                        newValue,
+                                        endTime
+                                      )
+                                    ) {
+                                      setEndDate(newValue);
+                                    } else {
+                                      adjustEndDate();
+                                    }
+                                  }}
+                                  onClose={() => {
                                     setOpenEnd(false);
                                   }}
                                   PopperProps={{ disablePortal: true }}
@@ -1394,12 +1474,21 @@ export default function Drawer() {
                             <Grid item xs={5}>
                               <TextField
                                 label="End Time"
-                                defaultValue={endTime}
+                                value={endTime}
                                 InputLabelProps={{
                                   shrink: true,
                                 }}
                                 onChange={(e) => {
-                                  setEndTime(e.target.value);
+                                  if (
+                                    validEventTime(
+                                      startDate,
+                                      startTime,
+                                      endDate,
+                                      e.target.value
+                                    )
+                                  ) {
+                                    setEndTime(e.target.value);
+                                  }
                                 }}
                                 select
                                 SelectProps={{
@@ -1472,37 +1561,41 @@ export default function Drawer() {
                                 error={!!errors3?.start_time}
                                 helperText={null}
                               >
-                                {times.map((time: any, index: any) => (
-                                  <MenuItem
-                                    sx={{
-                                      "&& .Mui-selected": {
-                                        "&, & .MuiMenuItem-root": {
+                                {availableEndTimes().map(
+                                  (time: any, index: any) => (
+                                    <MenuItem
+                                      sx={{
+                                        "&& .Mui-selected": {
+                                          "&, & .MuiMenuItem-root": {
+                                            backgroundColor:
+                                              Colors[resolvedTheme].time_hover,
+                                          },
                                           backgroundColor:
                                             Colors[resolvedTheme].time_hover,
                                         },
-                                        backgroundColor:
-                                          Colors[resolvedTheme].time_hover,
-                                      },
-                                      "&& .MuiMenu-list": {
-                                        paddingTop: 0,
-                                      },
+                                        "&& .MuiMenu-list": {
+                                          paddingTop: 0,
+                                        },
 
-                                      bgcolor: Colors[resolvedTheme].header_bg,
-                                      color: Colors[resolvedTheme].primary,
-                                      margin: "0 8px",
-                                      ":hover": {
-                                        backgroundColor:
-                                          Colors[resolvedTheme].time_hover,
-                                        borderRadius: (theme) =>
-                                          Number(theme.shape.borderRadius) / 2,
-                                      },
-                                    }}
-                                    key={index}
-                                    value={time}
-                                  >
-                                    {time}
-                                  </MenuItem>
-                                ))}
+                                        bgcolor:
+                                          Colors[resolvedTheme].header_bg,
+                                        color: Colors[resolvedTheme].primary,
+                                        margin: "0 8px",
+                                        ":hover": {
+                                          backgroundColor:
+                                            Colors[resolvedTheme].time_hover,
+                                          borderRadius: (theme) =>
+                                            Number(theme.shape.borderRadius) /
+                                            2,
+                                        },
+                                      }}
+                                      key={index}
+                                      value={time}
+                                    >
+                                      {time}
+                                    </MenuItem>
+                                  )
+                                )}
                               </TextField>
                             </Grid>
                           </Grid>
