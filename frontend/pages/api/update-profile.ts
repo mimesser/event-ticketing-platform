@@ -48,6 +48,34 @@ export default async function updateProfile(
           bannerImage === null || bannerImage.length === 0 ? null : bannerImage,
       },
     });
+
+    const follower = await prisma.user.findUnique({
+      where: {
+        email: email,
+      },
+      select: {
+        username: true,
+        name: true,
+        walletAddress: true,
+        id: true,
+      },
+    });
+
+    await prisma.notification.updateMany({
+      where: {
+        followerUserId: {
+          equals: follower?.id,
+        },
+      },
+      data: {
+        title: follower?.name
+          ? follower?.name
+          : follower?.username
+          ? `@${follower?.username}`
+          : follower?.walletAddress,
+      },
+    });
+
     res.status(200).json({ user });
   } catch (error) {
     console.error(error);
