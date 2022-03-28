@@ -193,12 +193,14 @@ function Create() {
               <div
                 style={{
                   display: "flex",
+                  marginBottom: "10px",
+                  marginTop: "-5px",
                   flexDirection: "row",
                   alignItems: "center",
                   justifyContent: "space-between",
                 }}
               >
-                <span>{previewMode} Preview</span>
+                <span style={{ fontWeight: 500 }}>{previewMode} Preview</span>
                 <div
                   style={{
                     display: "flex",
@@ -215,6 +217,7 @@ function Create() {
                         previewMode === "Desktop"
                           ? theme.palette.primary.main
                           : Colors[resolvedTheme].primary,
+                      marginRight: "-5px",
                       ":hover": {
                         backgroundColor: Colors[resolvedTheme].hover,
                       },

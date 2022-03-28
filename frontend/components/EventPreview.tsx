@@ -1,7 +1,5 @@
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import EmailIcon from "@mui/icons-material/Email";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import Avatar from "boring-avatars";
 import Colors from "lib/colors";
@@ -50,15 +48,15 @@ export default function Preview({
           {eventName ? (
             <span>{eventName}</span>
           ) : (
-            <span style={{ color: Colors[resolvedTheme].secondary }}>
-              Event Name
+            <span style={{ color: Colors[resolvedTheme].privacy_border }}>
+              Event name
             </span>
           )}
         </div>
         <span
           style={{
             marginTop: "5px",
-            color: Colors[resolvedTheme].secondary,
+            color: Colors[resolvedTheme].privacy_border,
           }}
         >
           Location
@@ -98,14 +96,14 @@ export default function Preview({
           <div className={styles.row}>
             <div
               className={styles.status_item}
-              style={{ backgroundColor: Colors[resolvedTheme].header_bg }}
+              style={{ backgroundColor: Colors[resolvedTheme].tab_divider }}
             >
               <CheckCircleOutlineIcon />
               Going
             </div>
             <div
               className={styles.status_item}
-              style={{ backgroundColor: Colors[resolvedTheme].header_bg }}
+              style={{ backgroundColor: Colors[resolvedTheme].tab_divider }}
             >
               <EmailIcon />
               Invite
@@ -120,6 +118,7 @@ export default function Preview({
         }
         style={{
           backgroundColor: Colors[resolvedTheme].drawer_bg,
+          minHeight: "45vh",
         }}
       >
         <div
