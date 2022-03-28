@@ -15,6 +15,7 @@ import DesktopMacIcon from "@mui/icons-material/DesktopMac";
 import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
 import Preview from "components/EventPreview";
 import { useNewEvent } from "lib/event-context";
+import { useUserInfo } from "lib/user-context";
 import moment from "moment";
 
 function Create() {
@@ -22,7 +23,8 @@ function Create() {
   const [eventCreate, setEventCreate] = useState(false);
   const { resolvedTheme } = useTheme();
 
-  const { eventName, host, avatar, address, startDate, endDate } = useNewEvent();
+  const { user } = useUserInfo();
+  const { eventName, startDate, endDate } = useNewEvent();
   const [eventDay, setEventDay] = useState<any>();
   const [eventPeriod, setEventPeriod] = useState<any>();
   useEffect(() => {
@@ -239,9 +241,9 @@ function Create() {
 
               <Preview
                 eventName={eventName}
-                host={host}
-                avatar={avatar}
-                address={address}
+                host={user?.name}
+                avatar={user?.avatarImage}
+                address={user?.walletAddress}
                 eventDay={eventDay}
                 eventPeriod={eventPeriod}
                 view={previewMode}

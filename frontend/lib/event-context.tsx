@@ -1,24 +1,12 @@
 import moment from "moment";
-import {
-  ReactElement,
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-} from "react";
+import { ReactElement, createContext, useContext, useState } from "react";
 
 const EventContext = createContext<{
   eventName?: string;
-  host?: string;
-  avatar?: string;
-  address?: string;
   startDate?: string;
   endDate?: string;
 
   setEventName?: any;
-  setHost?: any;
-  setAvatar?: any;
-  setAddress?: any;
   setStartDateAndTime?: any;
   setEndDateAndTime?: any;
 }>({});
@@ -31,9 +19,6 @@ export default function EventProvider({
   children: ReactElement | ReactElement[];
 }) {
   const [eventName, setEventName] = useState("");
-  const [host, setHost] = useState("");
-  const [avatar, setAvatar] = useState("");
-  const [address, setAddress] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
@@ -55,16 +40,10 @@ export default function EventProvider({
     <EventContext.Provider
       value={{
         eventName,
-        host,
-        avatar,
-        address,
         startDate,
         endDate,
 
         setEventName,
-        setHost,
-        setAvatar,
-        setAddress,
         setStartDateAndTime,
         setEndDateAndTime,
       }}

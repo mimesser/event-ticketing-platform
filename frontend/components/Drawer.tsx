@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import DatePicker from "@mui/lab/DatePicker";
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -38,7 +37,6 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import PublicRoundedIcon from "@mui/icons-material/PublicRounded";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Avatar from "boring-avatars";
-import moment from "moment";
 import Colors from "lib/colors";
 import { useNewEvent } from "lib/event-context";
 import { magic } from "lib/magic";
@@ -50,6 +48,7 @@ import {
   roundUpTimePlus3,
 } from "lib/utils";
 import Image from "next/image";
+import moment from "moment";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useTheme } from "next-themes";
@@ -59,14 +58,8 @@ import styles from "styles/components/Drawer.module.scss";
 
 export default function Drawer() {
   const { resolvedTheme } = useTheme();
-  const {
-    setEventName,
-    setHost,
-    setAvatar,
-    setAddress,
-    setStartDateAndTime,
-    setEndDateAndTime,
-  } = useNewEvent();
+  const { setEventName, setStartDateAndTime, setEndDateAndTime } =
+    useNewEvent();
   const { user } = useUserInfo();
   const router = useRouter();
   const isMobile = useMediaQuery("(max-width:599px)");
@@ -83,8 +76,8 @@ export default function Drawer() {
   const [privacy, setPrivacy] = React.useState("Privacy");
   const [showEndDate, setShowEndDate] = React.useState(false);
   const [eventDetails, setEventDetails] = React.useState(false);
-  const [startDate, setStartDate] = React.useState(null);
-  const [endDate, setEndDate] = React.useState(null);
+  const [startDate, setStartDate] = React.useState<any>(null);
+  const [endDate, setEndDate] = React.useState<any>(null);
   const [goToRoute, setGoToRoute] = React.useState("");
   const [startTime, setStartTime] = React.useState(roundUpTime());
   const [endTime, setEndTime] = React.useState(roundUpTimePlus3());
@@ -162,20 +155,24 @@ export default function Drawer() {
     values.eventName,
   ]);
 
+  const adjustEndDate = () => {
+    const sDate = startDate || new Date();
+    const sTime = moment("1900-01-01 " + startTime);
+    sDate.setHours(sTime.hours(), sTime.minutes());
+    const tDate = new Date(sDate.getTime() + 3 * 60 * 60 * 1000);
+    setEndDate(tDate);
+    setEndTime(moment(tDate).format("h:mm A"));
+  };
+
   React.useEffect(() => {
     setEventName(values.eventName);
-  }, [values]);
-  React.useEffect(() => {
-    setHost(user?.name);
-    setAvatar(user?.avatarImage);
-    setAddress(user?.walletAddress);
-  }, [user]);
+  }, [setEventName, values]);
   React.useEffect(() => {
     setStartDateAndTime(startDate || new Date(), startTime);
-  }, [startDate, startTime]);
+  }, [setStartDateAndTime, startDate, startTime]);
   React.useEffect(() => {
     setEndDateAndTime(showEndDate, endDate || new Date(), endTime);
-  }, [showEndDate, endDate, endTime]);
+  }, [showEndDate, endDate, endTime, setEndDateAndTime]);
 
   React.useEffect(() => {
     if (router.isReady) {
@@ -1283,7 +1280,7 @@ export default function Drawer() {
                                   desktopModeMediaQuery=""
                                   open={openEnd}
                                   onOpen={() => setOpenEnd(true)}
-                                  disablePast
+                                  minDate={startDate}
                                   label="End Date"
                                   views={["day"]}
                                   allowSameDateSelection={true}
@@ -1536,6 +1533,7 @@ export default function Drawer() {
                       ) : (
                         <IconButton
                           onClick={() => {
+                            adjustEndDate();
                             setShowEndDate(true);
                           }}
                           sx={{
