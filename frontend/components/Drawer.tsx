@@ -330,7 +330,7 @@ export default function Drawer() {
   const onSubmitCreateEvents: any = async ({ email }: { email: any }) => {};
 
   const handlePrivacyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPrivacy(privacy);
+    setPrivacy(event.target.value);
     handleCloseEventPrivacy();
   };
   const handleClick = () => {
