@@ -1,11 +1,10 @@
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import EmailIcon from "@mui/icons-material/Email";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import Avatar from "components/Avatar";
 import Typography from "@mui/material/Typography";
-import Avatar from "boring-avatars";
 import Colors from "lib/colors";
 import { shortenAddress } from "lib/utils";
-import Image from "next/image";
 import { useTheme } from "next-themes";
 import styles from "styles/components/Preview.module.scss";
 
@@ -71,24 +70,7 @@ export default function Preview({
           }}
         >
           <div className={styles.row}>
-            <div className={styles.avatar}>
-              {avatar ? (
-                <Image src={avatar} width={24} height={24} alt="Avatar" />
-              ) : (
-                <Avatar
-                  size={24}
-                  name={address}
-                  variant="pixel"
-                  colors={[
-                    "#ffad08",
-                    "#edd75a",
-                    "#73b06f",
-                    "#0c8f8f",
-                    "#405059",
-                  ]}
-                />
-              )}
-            </div>
+            <Avatar avatarImage={avatar} walletAddress={address} size={24} />
             <span>
               <b>{host || shortenAddress(address)}</b>
               &nbsp;invited you
@@ -140,18 +122,14 @@ export default function Preview({
             <PeopleAltIcon />1 person going, including{" "}
             {host || shortenAddress(address)}
           </div>
-          <div className={styles.avatar} style={{ marginLeft: 30 }}>
-            {avatar ? (
-              <Image src={avatar} width={24} height={24} alt="Avatar" />
-            ) : (
-              <Avatar
-                size={24}
-                name={address}
-                variant="pixel"
-                colors={["#ffad08", "#edd75a", "#73b06f", "#0c8f8f", "#405059"]}
-              />
-            )}
-          </div>
+          <Avatar
+            avatarImage={avatar}
+            walletAddress={address}
+            size={24}
+            style={{
+              marginLeft: 30,
+            }}
+          />
           <span>No details yet</span>
         </div>
         <div
@@ -178,24 +156,7 @@ export default function Preview({
             style={{ backgroundColor: Colors[resolvedTheme].hover }}
           />
           <div className={styles.row}>
-            <div className={styles.avatar} style={{ width: 36, height: 36 }}>
-              {avatar ? (
-                <Image src={avatar} width={36} height={36} alt="Avatar" />
-              ) : (
-                <Avatar
-                  size={36}
-                  name={address}
-                  variant="pixel"
-                  colors={[
-                    "#ffad08",
-                    "#edd75a",
-                    "#73b06f",
-                    "#0c8f8f",
-                    "#405059",
-                  ]}
-                />
-              )}
-            </div>
+            <Avatar avatarImage={avatar} walletAddress={address} size={36} />
             <div className={styles.col} style={{ alignItems: "start" }}>
               <span>{host || shortenAddress(address)}</span>
               <span>Host</span>
