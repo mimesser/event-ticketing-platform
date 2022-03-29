@@ -20,7 +20,7 @@ import Tooltip from "@mui/material/Tooltip";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import Avatar from "boring-avatars";
+import Avatar from "components/Avatar";
 import Layout from "components/Layout";
 import copy from "copy-to-clipboard";
 import Colors from "lib/colors";
@@ -460,23 +460,18 @@ function Profile() {
         )}
 
         {user ? (
-          <div className={styles.avatar} onClick={() => updatePhoto("avatar")}>
-            {user.avatarImage ? (
-              <Image
-                src={user.avatarImage}
-                width={80}
-                height={80}
-                alt="Avatar"
-              />
-            ) : (
-              <Avatar
-                size={80}
-                name={user.walletAddress}
-                variant="pixel"
-                colors={["#ffad08", "#edd75a", "#73b06f", "#0c8f8f", "#405059"]}
-              />
-            )}
-          </div>
+          <Avatar
+            avatarImage={user?.avatarImage}
+            walletAddress={user?.walletAddress}
+            size={80}
+            style={{
+              position: "absolute",
+              left: 20,
+              top: 110,
+              cursor: "pointer",
+            }}
+            onClick={() => updatePhoto("avatar")}
+          />
         ) : (
           <div className={styles.noavatar}></div>
         )}
@@ -789,29 +784,12 @@ function Profile() {
         >
           <div className={styles.backdrop}>
             {photo === "avatar" ? (
-              <div className={styles.avatar} onClick={stopPropagation}>
-                {user.avatarImage ? (
-                  <Image
-                    src={user.avatarImage}
-                    width={240}
-                    height={240}
-                    alt="Avatar"
-                  />
-                ) : (
-                  <Avatar
-                    size={240}
-                    name={user.walletAddress}
-                    variant="pixel"
-                    colors={[
-                      "#ffad08",
-                      "#edd75a",
-                      "#73b06f",
-                      "#0c8f8f",
-                      "#405059",
-                    ]}
-                  />
-                )}
-              </div>
+              <Avatar
+                avatarImage={user?.avatarImage}
+                walletAddress={user?.walletAddress}
+                size={240}
+                onClick={stopPropagation}
+              />
             ) : (
               <div className={styles.banner} onClick={stopPropagation}>
                 {user.bannerImage && (
@@ -905,23 +883,18 @@ function Profile() {
               />
             </div>
 
-            <div className={styles.avatar}>
-              {newAvatar ? (
-                <Image src={newAvatar} width={80} height={80} alt="Avatar" />
-              ) : (
-                <Avatar
-                  size={80}
-                  name={user?.walletAddress}
-                  variant="pixel"
-                  colors={[
-                    "#ffad08",
-                    "#edd75a",
-                    "#73b06f",
-                    "#0c8f8f",
-                    "#405059",
-                  ]}
-                />
-              )}
+            <Avatar
+              avatarImage={newAvatar}
+              walletAddress={user?.walletAddress}
+              size={80}
+              style={{
+                position: "absolute",
+                left: 10,
+                bottom: -60,
+                background: "white",
+                border: "3px solid white",
+              }}
+            >
               <div className={styles.dim} />
               <div className={styles.icon_set}>
                 <CameraEnhanceIcon
@@ -936,7 +909,7 @@ function Profile() {
                   style={{ display: "none" }}
                 />
               </div>
-            </div>
+            </Avatar>
           </div>
 
           <TextField
