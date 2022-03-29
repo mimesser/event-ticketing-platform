@@ -1,6 +1,7 @@
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import EmailIcon from "@mui/icons-material/Email";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import Typography from "@mui/material/Typography";
 import Avatar from "boring-avatars";
 import Colors from "lib/colors";
 import { shortenAddress } from "lib/utils";
@@ -96,16 +97,22 @@ export default function Preview({
           <div className={styles.row}>
             <div
               className={styles.status_item}
-              style={{ backgroundColor: Colors[resolvedTheme].tab_divider }}
+              style={{
+                backgroundColor: Colors[resolvedTheme].tab_divider,
+                fontWeight: 500,
+              }}
             >
-              <CheckCircleOutlineIcon />
+              <CheckCircleOutlineIcon fontSize="small" />
               Going
             </div>
             <div
               className={styles.status_item}
-              style={{ backgroundColor: Colors[resolvedTheme].tab_divider }}
+              style={{
+                backgroundColor: Colors[resolvedTheme].tab_divider,
+                fontWeight: 500,
+              }}
             >
-              <EmailIcon />
+              <EmailIcon fontSize="small" />
               Invite
             </div>
           </div>
@@ -125,6 +132,7 @@ export default function Preview({
           className={styles.event_details}
           style={{
             backgroundColor: Colors[resolvedTheme].header_bg,
+            boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
           }}
         >
           <span>Details</span>
@@ -150,11 +158,14 @@ export default function Preview({
           className={styles.guest_list}
           style={{
             backgroundColor: Colors[resolvedTheme].header_bg,
+            boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
           }}
         >
           <div className={styles.between}>
             <span>Guest List</span>
-            <span>See All</span>
+            <Typography color="primary" fontWeight={300}>
+              See All
+            </Typography>
           </div>
           <div className={styles.between} style={{ margin: "0 30px" }}>
             <div className={styles.col}>
