@@ -1,20 +1,18 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import Avatar from "boring-avatars";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import Image from "next/image";
 import Modal from "@mui/material/Modal";
 import Layout from "components/Layout";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
+import Avatar from "components/Avatar";
 import { useRouter } from "next/router";
 import { getLoginSession } from "lib/auth";
 import Colors from "lib/colors";
@@ -327,30 +325,12 @@ function View() {
                                   )
                                 }
                               >
-                                <div id={styles.profilePhoto}>
-                                  {avatarImage ? (
-                                    <Image
-                                      id={styles.profilePhoto}
-                                      src={avatarImage}
-                                      alt={avatarImage}
-                                      width={50}
-                                      height={50}
-                                    />
-                                  ) : (
-                                    <Avatar
-                                      size={50}
-                                      name={user.walletAddress}
-                                      variant="pixel"
-                                      colors={[
-                                        "#ffad08",
-                                        "#edd75a",
-                                        "#73b06f",
-                                        "#0c8f8f",
-                                        "#405059",
-                                      ]}
-                                    />
-                                  )}
-                                </div>
+                                <Avatar
+                                  avatarImage={avatarImage}
+                                  walletAddress={user?.walletAddress}
+                                  size={50}
+                                  id={styles.profilePhoto}
+                                />
                                 <div className={styles.followItemDetails}>
                                   {name && <p>{name}</p>}
                                   {name && username && (
@@ -534,30 +514,12 @@ function View() {
                                   )
                                 }
                               >
-                                <div id={styles.profilePhoto}>
-                                  {avatarImage ? (
-                                    <Image
-                                      id={styles.profilePhoto}
-                                      src={avatarImage}
-                                      alt={avatarImage}
-                                      width={50}
-                                      height={50}
-                                    />
-                                  ) : (
-                                    <Avatar
-                                      size={50}
-                                      name={user.walletAddress}
-                                      variant="pixel"
-                                      colors={[
-                                        "#ffad08",
-                                        "#edd75a",
-                                        "#73b06f",
-                                        "#0c8f8f",
-                                        "#405059",
-                                      ]}
-                                    />
-                                  )}
-                                </div>
+                                <Avatar
+                                  avatarImage={avatarImage}
+                                  walletAddress={user?.walletAddress}
+                                  size={50}
+                                  id={styles.profilePhoto}
+                                />
                                 <div className={styles.followItemDetails}>
                                   {name && <p>{name}</p>}
                                   {name && username && (

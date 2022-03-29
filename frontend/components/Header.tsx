@@ -45,7 +45,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import Avatar from "boring-avatars";
+import Avatar from "components/Avatar";
 import MyDrawer from "components/Drawer";
 import { differenceInCalendarDays, formatDistance } from "date-fns";
 import Colors from "lib/colors";
@@ -940,33 +940,15 @@ export default function Header() {
                                   }}
                                   key={id}
                                 >
-                                  <Typography
-                                    sx={{
-                                      mr: 2.5,
+                                  <Avatar
+                                    avatarImage={avatarImage}
+                                    walletAddress={title}
+                                    size={40}
+                                    rounded={false}
+                                    style={{
+                                      marginRight: 20,
                                     }}
-                                  >
-                                    {avatarImage ? (
-                                      <Image
-                                        src={avatarImage}
-                                        alt={id}
-                                        width={40}
-                                        height={40}
-                                      />
-                                    ) : (
-                                      <Avatar
-                                        size={40}
-                                        name={title}
-                                        variant="pixel"
-                                        colors={[
-                                          "#ffad08",
-                                          "#edd75a",
-                                          "#73b06f",
-                                          "#0c8f8f",
-                                          "#405059",
-                                        ]}
-                                      />
-                                    )}
-                                  </Typography>
+                                  />
                                   <ListItemText
                                     primary={
                                       <Typography
@@ -1087,33 +1069,15 @@ export default function Header() {
                                 }}
                                 key={id}
                               >
-                                <Typography
-                                  sx={{
-                                    mr: 2.5,
+                                <Avatar
+                                  avatarImage={avatarImage}
+                                  walletAddress={title}
+                                  size={40}
+                                  rounded={false}
+                                  style={{
+                                    marginRight: 20,
                                   }}
-                                >
-                                  {avatarImage ? (
-                                    <Image
-                                      src={avatarImage}
-                                      alt={id}
-                                      width={40}
-                                      height={40}
-                                    />
-                                  ) : (
-                                    <Avatar
-                                      size={40}
-                                      name={title}
-                                      variant="pixel"
-                                      colors={[
-                                        "#ffad08",
-                                        "#edd75a",
-                                        "#73b06f",
-                                        "#0c8f8f",
-                                        "#405059",
-                                      ]}
-                                    />
-                                  )}
-                                </Typography>
+                                />
                                 <ListItemText
                                   primary={
                                     <Typography
@@ -1228,27 +1192,11 @@ export default function Header() {
                       <ListItemIcon
                         style={{ borderRadius: "50%", overflow: "hidden" }}
                       >
-                        {user.avatarImage ? (
-                          <Image
-                            src={user.avatarImage}
-                            width={48}
-                            height={48}
-                            alt="Avatar"
-                          />
-                        ) : (
-                          <Avatar
-                            size={48}
-                            name={user.walletAddress}
-                            variant="pixel"
-                            colors={[
-                              "#ffad08",
-                              "#edd75a",
-                              "#73b06f",
-                              "#0c8f8f",
-                              "#405059",
-                            ]}
-                          />
-                        )}
+                        <Avatar
+                          avatarImage={user?.avatarImage}
+                          walletAddress={user?.walletAddress}
+                          size={48}
+                        />
                       </ListItemIcon>
                       <div style={{ marginLeft: "15px" }}>
                         <div style={{ color: Colors[resolvedTheme].primary }}>

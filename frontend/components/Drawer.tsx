@@ -36,7 +36,7 @@ import LockIcon from "@mui/icons-material/Lock";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import PublicRoundedIcon from "@mui/icons-material/PublicRounded";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import Avatar from "boring-avatars";
+import Avatar from "components/Avatar";
 import Colors from "lib/colors";
 import { useNewEvent } from "lib/event-context";
 import { magic } from "lib/magic";
@@ -540,29 +540,11 @@ export default function Drawer() {
               }}
               selected={router.pathname === "/[username]"}
             >
-              <div className={styles.account}>
-                {user.avatarImage ? (
-                  <Image
-                    src={user.avatarImage}
-                    width={36}
-                    height={36}
-                    alt="Avatar"
-                  />
-                ) : (
-                  <Avatar
-                    size={36}
-                    name={user.walletAddress}
-                    variant="pixel"
-                    colors={[
-                      "#ffad08",
-                      "#edd75a",
-                      "#73b06f",
-                      "#0c8f8f",
-                      "#405059",
-                    ]}
-                  />
-                )}
-              </div>
+              <Avatar
+                avatarImage={user?.avatarImage}
+                walletAddress={user?.walletAddress}
+                size={36}
+              />
               <Link
                 href={`/${encodeURIComponent(
                   user.username || user.walletAddress
@@ -940,29 +922,11 @@ export default function Drawer() {
                     cursor: "default",
                   }}
                 >
-                  <div className={styles.account}>
-                    {user.avatarImage ? (
-                      <Image
-                        src={user.avatarImage}
-                        width={36}
-                        height={36}
-                        alt="Avatar"
-                      />
-                    ) : (
-                      <Avatar
-                        size={36}
-                        name={user.walletAddress}
-                        variant="pixel"
-                        colors={[
-                          "#ffad08",
-                          "#edd75a",
-                          "#73b06f",
-                          "#0c8f8f",
-                          "#405059",
-                        ]}
-                      />
-                    )}
-                  </div>
+                  <Avatar
+                    avatarImage={user?.avatarImage}
+                    walletAddress={user?.walletAddress}
+                    size={36}
+                  />
                   <Box
                     sx={{
                       display: "flex",
