@@ -7,7 +7,7 @@ const SECRET_KEY = process.env.NEXT_PUBLIC_MOONPAY_SECRET_KEY;
 export const moonPaySrc = (walletAddress: any, email: string) => {
   const originalUrl = `https://buy-sandbox.moonpay.com?apiKey=${TEST_KEY}&currencyCode=${
     isProduction ? "MATIC" : "ETH"
-  }&walletAddress=${walletAddress}&email=${email}`;
+  }&walletAddress=${walletAddress}&email=${encodeURIComponent(email)}`;
 
   const signature = createHmac("sha256", `${SECRET_KEY}`)
     .update(new URL(originalUrl).search)
@@ -17,5 +17,5 @@ export const moonPaySrc = (walletAddress: any, email: string) => {
     signature
   )}`;
 
-  return originalUrl;
+  return urlWithSignature;
 };
