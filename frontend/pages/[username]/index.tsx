@@ -366,32 +366,29 @@ function Profile() {
     const filename = encodeURIComponent(
       user.walletAddress + "-" + selectedPhoto + "-" + Date.now()
     );
-    const res = await fetch(`/api/upload-image?file=${filename}`);
-    const { url, fields } = await res.json();
-    const formData = new FormData();
 
-    Object.entries({ ...fields, file }).forEach(([key, value]) => {
-      formData.append(key, value as string);
-    });
+    const formData = new FormData();
+    formData.append("file", file);
     let upload;
 
     try {
-      upload = await fetch(url, {
-        method: "POST",
-        body: formData,
-        mode: isProduction ? undefined : "no-cors",
-      });
+      upload = await (
+        await fetch(`/api/upload-to-supabase?filename=${filename}`, {
+          method: "POST",
+          body: formData,
+          mode: isProduction ? undefined : "no-cors",
+        })
+      ).json();
+      if (upload?.url) {
+        console.log("Uploaded successfully!");
+
+        if (selectedPhoto === "avatar") setNewAvatar(upload.url);
+        if (selectedPhoto === "banner") setNewBanner(upload.url);
+      } else {
+        console.error("Upload failed.");
+      }
     } catch (e) {
       console.log(e);
-    }
-
-    if (upload?.ok || upload?.type === "opaque") {
-      console.log("Uploaded successfully!");
-
-      if (selectedPhoto === "avatar") setNewAvatar(url + fields.key);
-      if (selectedPhoto === "banner") setNewBanner(url + fields.key);
-    } else {
-      console.error("Upload failed.");
     }
   };
 
