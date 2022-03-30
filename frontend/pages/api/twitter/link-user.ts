@@ -1,5 +1,5 @@
-import { getLoginSession } from "../../../lib/auth";
 import { NextApiRequest, NextApiResponse } from "next";
+import { getLoginSession } from "lib/auth";
 import prisma from "lib/prisma";
 import { User } from "@prisma/client";
 
