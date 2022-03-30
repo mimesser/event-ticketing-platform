@@ -46,9 +46,10 @@
       border-radius: 5px;
       display: flex;
       flex-direction: row;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       padding: 10px;
+      gap: 10px;
     }
 
     .mobile_info {
@@ -122,20 +123,31 @@
     gap: 15px;
   }
 
-  .event_details {
-    border-radius: 5px;
+  .event_info {
     display: flex;
     flex-direction: column;
     flex: 1;
-    padding: 15px;
     gap: 15px;
-
-    .event_host {
+    .event_details {
+      border-radius: 5px;
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
+      padding: 15px;
+      gap: 15px;
+
+      .event_host {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 5px;
+        font-size: 14px;
+      }
+    }
+    .event_host_info {
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 5px;
-      font-size: 14px;
+      border-radius: 5px;
     }
   }
 
