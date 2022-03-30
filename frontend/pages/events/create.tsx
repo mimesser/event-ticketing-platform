@@ -27,17 +27,36 @@ function Create() {
   const { eventName, startDate, endDate } = useNewEvent();
   const [eventDay, setEventDay] = useState<any>();
   const [eventPeriod, setEventPeriod] = useState<any>();
+
+  const DESKTOP_DATE_FORMAT = "dddd, MMMM DD, YYYY";
+  const DESKTOP_DATE_SEPARATOR = " AT ";
+  const MOBILE_DATE_FORMAT = "MMM DD, YYYY";
+  const MOBILE_DATE_SEPARATOR = ", ";
+
+  const [previewMode, setPreviewMode] = useState("Desktop");
+
   useEffect(() => {
+    const getDateFormat = () => {
+      if (previewMode === "Mobile") return MOBILE_DATE_FORMAT;
+      return DESKTOP_DATE_FORMAT;
+    };
+    const getDateSeparator = () => {
+      if (previewMode === "Mobile") return MOBILE_DATE_SEPARATOR;
+      return DESKTOP_DATE_SEPARATOR;
+    };
+
     const sDate = moment(startDate);
     setEventDay(sDate.date());
     let period =
-      sDate.format("dddd, MMMM DD, YYYY") + " AT " + sDate.format("h:mm A");
+      sDate.format(getDateFormat()) +
+      getDateSeparator() +
+      sDate.format("h:mm A");
     if (endDate) {
       period += " - ";
 
       const tDate = moment(endDate);
       if (!sDate.isSame(tDate, "day")) {
-        period += tDate.format("dddd, MMMM DD, YYYY") + " AT ";
+        period += tDate.format(getDateFormat()) + getDateSeparator();
       }
       period += tDate.format("h:mm A");
     }
@@ -46,7 +65,7 @@ function Create() {
       .split(" ")[2];
     period += " " + zone;
     setEventPeriod(period);
-  }, [startDate, endDate]);
+  }, [startDate, endDate, previewMode]);
 
   const createEvent = () => {
     setEventCreate(true);
@@ -66,8 +85,6 @@ function Create() {
       }
     }
   }, [router.isReady, router.query]);
-
-  const [previewMode, setPreviewMode] = useState("Desktop");
 
   return (
     <Layout>
@@ -244,7 +261,7 @@ function Create() {
 
               <Preview
                 eventName={eventName}
-                host={user?.name}
+                host={user?.name || `@${user?.username}`}
                 avatar={user?.avatarImage}
                 address={user?.walletAddress}
                 eventDay={eventDay}
