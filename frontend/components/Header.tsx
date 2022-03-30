@@ -111,19 +111,6 @@ export default function Header() {
       differenceInCalendarDays(new Date(m.createdAt), dateUTC) < -1 || m.isRead
   ).length;
 
-  // useEffect(() => {
-  //   if (router.isReady) {
-  //     const query = router.query;
-  //     if (query.createEvent || router.pathname === "/events/create") {
-  //       if (query.createEvent === "true") {
-  //         if (isMobile) {
-  //           setMobileOpen(true);
-  //         }
-  //       }
-  //     }
-  //   }
-  // }, [router.isReady, router.query, isMobile, router.pathname]);
-
   useEffect(() => {
     async function realtimeNotifications() {
       supabase
