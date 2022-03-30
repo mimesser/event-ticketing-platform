@@ -78,7 +78,7 @@ export default function Header() {
 
   const { theme, resolvedTheme, setTheme } = useTheme();
   const { user } = useUserInfo();
-  const isMobile = useMediaQuery("(max-width:599px)");
+  const isMobile = useMediaQuery("(max-width:899px)");
   const router = useRouter();
 
   const [events] = useState(router.asPath.includes("/events") ? true : false);
@@ -111,18 +111,18 @@ export default function Header() {
       differenceInCalendarDays(new Date(m.createdAt), dateUTC) < -1 || m.isRead
   ).length;
 
-  useEffect(() => {
-    if (router.isReady) {
-      const query = router.query;
-      if (query.createEvent || router.pathname === "/events/create") {
-        if (query.createEvent === "true") {
-          if (isMobile) {
-            setMobileOpen(true);
-          }
-        }
-      }
-    }
-  }, [router.isReady, router.query, isMobile, router.pathname]);
+  // useEffect(() => {
+  //   if (router.isReady) {
+  //     const query = router.query;
+  //     if (query.createEvent || router.pathname === "/events/create") {
+  //       if (query.createEvent === "true") {
+  //         if (isMobile) {
+  //           setMobileOpen(true);
+  //         }
+  //       }
+  //     }
+  //   }
+  // }, [router.isReady, router.query, isMobile, router.pathname]);
 
   useEffect(() => {
     async function realtimeNotifications() {
@@ -707,9 +707,7 @@ export default function Header() {
             <Box
               sx={{
                 flexGrow: 1,
-                display: !events
-                  ? { xs: "flex", md: "none" }
-                  : { xs: "flex", md: "none", sm: "none" },
+                display: { xs: "flex", md: "none" },
               }}
             >
               <IconButton
@@ -1585,34 +1583,13 @@ export default function Header() {
         sx={{ width: { md: drawerWidth }, flexShrink: { sm: 0 } }}
       >
         <Drawer
-          variant="temporary"
+          variant={isMobile ? "temporary" : "permanent"}
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
             keepMounted: true,
           }}
           sx={{
-            display: !events
-              ? { xs: "flex", md: "none" }
-              : { xs: "flex", md: "none", sm: "none" },
-            "& .MuiDrawer-paper": {
-              backgroundColor: !events
-                ? Colors[resolvedTheme].drawer_bg
-                : Colors[resolvedTheme].event_drawer_bg,
-              boxSizing: "border-box",
-              boxShadow: !events ? "none" : "0px 0px 5px rgb(0 0 0 / 20%)",
-              width: drawerWidth,
-            },
-          }}
-        >
-          <MyDrawer />
-        </Drawer>
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: !events
-              ? { xs: "none", md: "flex" }
-              : { xs: "none", md: "flex", sm: "flex" },
             "& .MuiDrawer-paper": {
               backgroundColor: !events
                 ? Colors[resolvedTheme].drawer_bg

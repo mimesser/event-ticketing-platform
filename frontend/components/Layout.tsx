@@ -244,9 +244,7 @@ export default function Layout({
           <Box
             component="main"
             sx={{
-              margin: eventFooter
-                ? { xs: "0 10%", md: "auto", sm: "0 0 0 340px" }
-                : { xs: "auto", md: "0 10%", sm: "0 10%" },
+              padding: "0 20px",
               flexGrow: 1,
             }}
           >

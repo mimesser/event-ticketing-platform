@@ -70,10 +70,16 @@ export default function Preview({
           }}
         >
           <div className={styles.row}>
-            <Avatar avatarImage={avatar} walletAddress={address} size={24} />
-            <span>
+            <Avatar avatarImage={avatar} walletAddress={address} size={32} />
+            <span
+              className={
+                view === "Desktop"
+                  ? styles.desktop_invite
+                  : styles.mobile_invite
+              }
+            >
               <b>{host || shortenAddress(address)}</b>
-              &nbsp;invited you
+              <span>invited you</span>
             </span>
           </div>
           <div className={styles.row}>
@@ -117,20 +123,30 @@ export default function Preview({
             boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
           }}
         >
-          <span>Details</span>
+          <span style={{ fontWeight: "bold" }}>Details</span>
           <div className={styles.event_host}>
-            <PeopleAltIcon />1 person going, including{" "}
-            {host || shortenAddress(address)}
+            <PeopleAltIcon />
+            <div>
+              1 person
+              <span className={styles.mobile_hide}>
+                {" "}
+                going, including {host || shortenAddress(address)}
+              </span>
+            </div>
           </div>
           <Avatar
             avatarImage={avatar}
             walletAddress={address}
-            size={24}
+            size={32}
             style={{
               marginLeft: 30,
             }}
           />
-          <span>No details yet</span>
+          <span
+            style={{ fontSize: 12, color: Colors[resolvedTheme].secondary }}
+          >
+            No details yet
+          </span>
         </div>
         <div
           className={styles.guest_list}
@@ -140,15 +156,22 @@ export default function Preview({
           }}
         >
           <div className={styles.between}>
-            <span>Guest List</span>
-            <Typography color="primary" fontWeight={300}>
+            <span style={{ fontWeight: "bold" }}>Guest List</span>
+            <Typography color="primary" fontWeight={300} fontSize={14}>
               See All
             </Typography>
           </div>
           <div className={styles.between} style={{ margin: "0 30px" }}>
             <div className={styles.col}>
-              <span>1</span>
-              <span>GOING</span>
+              <span style={{ fontWeight: "bold" }}>1</span>
+              <span
+                style={{
+                  color: Colors[resolvedTheme].secondary,
+                  fontSize: 14,
+                }}
+              >
+                GOING
+              </span>
             </div>
           </div>
           <div
@@ -159,7 +182,11 @@ export default function Preview({
             <Avatar avatarImage={avatar} walletAddress={address} size={36} />
             <div className={styles.col} style={{ alignItems: "start" }}>
               <span>{host || shortenAddress(address)}</span>
-              <span>Host</span>
+              <span
+                style={{ fontSize: 12, color: Colors[resolvedTheme].secondary }}
+              >
+                Host
+              </span>
             </div>
           </div>
         </div>
