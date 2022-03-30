@@ -1,5 +1,4 @@
 .preview {
-  border: solid 1px;
   border-radius: 5px;
   display: flex;
   flex-direction: column;
@@ -104,6 +103,8 @@
 
   .desktop_lower {
     background: #18191c;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
     padding: 10px 25px;
     display: flex;
     flex-direction: row;
@@ -113,6 +114,8 @@
 
   .mobile_lower {
     background: #18191c;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
     padding: 10px 25px;
     display: flex;
     flex-direction: column;
