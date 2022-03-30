@@ -28,6 +28,7 @@ const Colors: any = {
     active_privacy_border: "rgb(25 118 209)",
     selected_notification: "rgba(255, 255, 255, 0.07)",
     preview_border: "1px solid #3E4042",
+    back_hover: "rgba(255,255,255,0.3)",
   },
   light: {
     header_bg: "#FFFFFF",
@@ -52,6 +53,7 @@ const Colors: any = {
     hover: "rgba(0, 0, 0, 0.15)",
     selected_notification: "rgba(0, 0, 0, 0.07)",
     preview_border: "1px solid rgba(0, 0, 0, 0.23)",
+    back_hover: "rgba(0, 0, 0, 0.35)",
   },
 };
 

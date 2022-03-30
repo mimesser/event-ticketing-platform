@@ -93,12 +93,39 @@ export default function Drawer() {
   };
   const [anchorElPrivacy, setAnchorElPrivacy] = React.useState(null);
   const [signingInEvents, setSigningInEvents] = React.useState(false);
+  const warningText =
+    "You have unsaved changes - are you sure you wish to leave this page?";
+
+  const handleBrowseAway = React.useCallback(() => {
+    if (!eventDetails) return;
+    if (discardModal) return;
+
+    if (
+      startDate !== null ||
+      endDate !== null ||
+      startTime !== roundUpTime() ||
+      endTime !== roundUpTimePlus3() ||
+      values.eventName !== ""
+    ) {
+      if (window.confirm(warningText)) return;
+      router.events.emit("routeChangeError");
+      throw "routeChange aborted.";
+    }
+
+    return;
+  }, [
+    discardModal,
+    endDate,
+    endTime,
+    eventDetails,
+    router.events,
+    startDate,
+    startTime,
+    values.eventName,
+  ]);
 
   // prompt the user if they try and leave with unsaved changes
   React.useEffect(() => {
-    const warningText =
-      "You have unsaved changes - are you sure you wish to leave this page?";
-
     const handleWindowClose = (e: BeforeUnloadEvent) => {
       if (!eventDetails) return;
       if (discardModal) return;
@@ -118,25 +145,6 @@ export default function Drawer() {
       return;
     };
 
-    const handleBrowseAway = () => {
-      if (!eventDetails) return;
-      if (discardModal) return;
-
-      if (
-        startDate !== null ||
-        endDate !== null ||
-        startTime !== roundUpTime() ||
-        endTime !== roundUpTimePlus3() ||
-        values.eventName !== ""
-      ) {
-        if (window.confirm(warningText)) return;
-        router.events.emit("routeChangeError");
-        throw "routeChange aborted.";
-      }
-
-      return;
-    };
-
     window.addEventListener("beforeunload", handleWindowClose);
     router.events.on("routeChangeStart", handleBrowseAway);
 
@@ -149,6 +157,7 @@ export default function Drawer() {
     endDate,
     endTime,
     eventDetails,
+    handleBrowseAway,
     router.events,
     startDate,
     startTime,
@@ -219,10 +228,12 @@ export default function Drawer() {
   React.useEffect(() => {
     if (router.isReady) {
       const query = router.query;
-      if (query.createEvent || router.pathname === "/events/create") {
+      if (query.createEvent) {
         if (query.createEvent === "true") {
           setEventDetails(true);
         }
+      } else {
+        setEventDetails(false);
       }
     }
   }, [router.isReady, router.query, router.pathname]);
@@ -245,6 +256,11 @@ export default function Drawer() {
         pathname: "/events",
       });
     }
+  };
+
+  const handleBack = () => {
+    router.events.off("routeChangeStart", handleBrowseAway);
+    router.push({ pathname: "/events/create" });
   };
 
   const goHome = () => {
@@ -287,7 +303,7 @@ export default function Drawer() {
       Event
     </BreadcrumLink>,
     <BreadcrumLink
-      onClick={discard}
+      onClick={handleBack}
       key="2"
       sx={{
         cursor: "pointer",
@@ -399,7 +415,7 @@ export default function Drawer() {
   };
 
   return (
-    <>
+    <div>
       {/*  Events signIn Modal */}
       <Modal
         BackdropProps={{
@@ -1926,6 +1942,61 @@ export default function Drawer() {
           )}
         </>
       )}
-    </>
+      {eventDetails && (
+        <div style={{ position: "absolute", bottom: "0", width: "100%" }}>
+          <Divider
+            sx={{
+              borderColor: Colors[resolvedTheme].divider,
+            }}
+          />
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              padding: "10px 16px",
+            }}
+          >
+            <Button
+              disableElevation
+              variant="contained"
+              sx={{
+                borderRadius: (theme) => Number(theme.shape.borderRadius) / 2,
+                backgroundColor: Colors[resolvedTheme].tab_divider,
+                flexGrow: "1",
+                color: Colors[resolvedTheme].primary,
+                marginRight: "10px",
+                fontWeight: "600",
+                textTransform: "none",
+                "&:hover": {
+                  backgroundColor: Colors[resolvedTheme].back_hover,
+                },
+              }}
+              onClick={handleBack}
+            >
+              Back
+            </Button>
+            <Button
+              disableElevation
+              variant="contained"
+              sx={{
+                flexGrow: "12",
+                borderRadius: (theme) => Number(theme.shape.borderRadius) / 2,
+                color: "white",
+                backgroundColor: "#1976d2",
+                fontWeight: "600",
+                textTransform: "none",
+                "&:disabled": {
+                  backgroundColor: Colors[resolvedTheme].tab_divider,
+                  color: Colors[resolvedTheme].border,
+                },
+              }}
+              disabled={values.eventName.length === 0 || privacy === "Privacy"}
+            >
+              Next
+            </Button>
+          </Box>
+        </div>
+      )}
+    </div>
   );
 }

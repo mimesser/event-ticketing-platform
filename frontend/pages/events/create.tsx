@@ -82,6 +82,8 @@ function Create() {
         if (query.createEvent === "true") {
           setEventCreate(true);
         }
+      } else {
+        setEventCreate(false);
       }
     }
   }, [router.isReady, router.query]);
