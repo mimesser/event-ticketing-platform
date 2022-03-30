@@ -8,6 +8,7 @@ import BreadcrumLink from "@mui/material/Link";
 import Button from "@mui/material/Button";
 import Collapse from "@mui/material/Collapse";
 import Divider from "@mui/material/Divider";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
@@ -37,6 +38,7 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import PublicRoundedIcon from "@mui/icons-material/PublicRounded";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Avatar from "components/Avatar";
+import IOSSwitch from "components/IOSSwitch";
 import Colors from "lib/colors";
 import { useNewEvent } from "lib/event-context";
 import { magic } from "lib/magic";
@@ -58,8 +60,13 @@ import styles from "styles/components/Drawer.module.scss";
 
 export default function Drawer() {
   const { resolvedTheme } = useTheme();
-  const { setEventName, setStartDateAndTime, setEndDateAndTime } =
-    useNewEvent();
+  const {
+    setEventName,
+    setStartDateAndTime,
+    setEndDateAndTime,
+    setEventPrivacy,
+    setEventInvitable,
+  } = useNewEvent();
   const { user } = useUserInfo();
   const router = useRouter();
   const isMobile = useMediaQuery("(max-width:599px)");
@@ -74,6 +81,7 @@ export default function Drawer() {
   );
   const [signInEventsModal, setSignInEventsModal] = React.useState(false);
   const [privacy, setPrivacy] = React.useState("Privacy");
+  const [invitable, setInvitable] = React.useState(true);
   const [showEndDate, setShowEndDate] = React.useState(false);
   const [eventDetails, setEventDetails] = React.useState(false);
   const [startDate, setStartDate] = React.useState<any>(null);
@@ -224,6 +232,12 @@ export default function Drawer() {
   React.useEffect(() => {
     setEndDateAndTime(showEndDate, endDate || new Date(), endTime);
   }, [showEndDate, endDate, endTime, setEndDateAndTime]);
+  React.useEffect(() => {
+    setEventPrivacy(privacy);
+  }, [privacy, setEventPrivacy]);
+  React.useEffect(() => {
+    setEventInvitable(invitable);
+  }, [invitable, setEventInvitable]);
 
   React.useEffect(() => {
     if (router.isReady) {
@@ -1723,6 +1737,42 @@ export default function Drawer() {
                           </Box>
                         )}
                       </Button>
+                      {privacy === "Private" && (
+                        <FormControlLabel
+                          control={
+                            <IOSSwitch
+                              sx={{ m: 1 }}
+                              checked={invitable}
+                              onChange={(event) =>
+                                setInvitable(event.target.checked)
+                              }
+                            />
+                          }
+                          label={
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                              }}
+                            >
+                              <b>Guests Can Invite People</b>
+                              <span style={{ fontSize: 12 }}>
+                                If this is on, guests can invite people to the
+                                event.
+                              </span>
+                            </div>
+                          }
+                          labelPlacement="start"
+                          sx={{
+                            color: Colors[resolvedTheme].primary,
+                            margin: "10px 0",
+                            display: "flex",
+                            flexDirection: "row-reverse",
+                            alignItems: "start",
+                            justifyContent: "space-between",
+                          }}
+                        />
+                      )}
                       <Menu
                         sx={{ mt: "5px" }}
                         id="demo-positioned-menu"
@@ -1856,6 +1906,7 @@ export default function Drawer() {
                         <MenuItem
                           onClick={() => {
                             setPrivacy("Public");
+                            setInvitable(true);
                             handleCloseEventPrivacy();
                           }}
                           disableRipple
