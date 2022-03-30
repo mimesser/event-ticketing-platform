@@ -5,10 +5,14 @@ const EventContext = createContext<{
   eventName?: string;
   startDate?: string;
   endDate?: string;
+  privacy?: string;
+  invitable?: boolean;
 
   setEventName?: any;
   setStartDateAndTime?: any;
   setEndDateAndTime?: any;
+  setEventPrivacy?: any;
+  setEventInvitable?: any;
 }>({});
 
 export const useNewEvent = () => useContext(EventContext);
@@ -21,6 +25,8 @@ export default function EventProvider({
   const [eventName, setEventName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [privacy, setEventPrivacy] = useState("");
+  const [invitable, setEventInvitable] = useState(true);
 
   const setStartDateAndTime = (date: string, time: string) => {
     const formatted = moment(date).format("YYYY-MM-DD ") + time;
@@ -42,10 +48,14 @@ export default function EventProvider({
         eventName,
         startDate,
         endDate,
+        privacy,
+        invitable,
 
         setEventName,
         setStartDateAndTime,
         setEndDateAndTime,
+        setEventPrivacy,
+        setEventInvitable,
       }}
     >
       {children}

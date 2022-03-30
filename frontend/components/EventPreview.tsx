@@ -1,6 +1,9 @@
+import Button from "@mui/material/Button";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import EmailIcon from "@mui/icons-material/Email";
+import LockIcon from "@mui/icons-material/Lock";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import PublicIcon from "@mui/icons-material/Public";
 import Avatar from "components/Avatar";
 import Typography from "@mui/material/Typography";
 import Colors from "lib/colors";
@@ -15,6 +18,8 @@ export default function Preview({
   address,
   eventDay,
   eventPeriod,
+  privacy,
+  invitable,
   view,
 }: {
   eventName: any;
@@ -23,6 +28,8 @@ export default function Preview({
   address: any;
   eventDay: any;
   eventPeriod: any;
+  privacy: any;
+  invitable: any;
   view: any;
 }) {
   const { resolvedTheme } = useTheme();
@@ -66,22 +73,38 @@ export default function Preview({
             view === "Desktop" ? styles.desktop_info : styles.mobile_info
           }
           style={{
-            backgroundColor: Colors[resolvedTheme].drawer_bg,
+            backgroundColor:
+              privacy === "Public" ? "unset" : Colors[resolvedTheme].drawer_bg,
           }}
         >
-          <div className={styles.row}>
-            <Avatar avatarImage={avatar} walletAddress={address} size={32} />
-            <span
-              className={
-                view === "Desktop"
-                  ? styles.desktop_invite
-                  : styles.mobile_invite
-              }
+          {privacy === "Public" ? (
+            <Typography
+              color="primary"
+              fontWeight="bold"
+              sx={{
+                borderBottom: (theme) =>
+                  `solid 3px ${theme.palette.primary.main}`,
+                width: "100%",
+                paddingBottom: 1,
+              }}
             >
-              <b>{host || shortenAddress(address)}</b>
-              <span>invited you</span>
-            </span>
-          </div>
+              About
+            </Typography>
+          ) : (
+            <div className={styles.row}>
+              <Avatar avatarImage={avatar} walletAddress={address} size={32} />
+              <span
+                className={
+                  view === "Desktop"
+                    ? styles.desktop_invite
+                    : styles.mobile_invite
+                }
+              >
+                <b>{host || shortenAddress(address)}</b>
+                <span>invited you</span>
+              </span>
+            </div>
+          )}
           <div className={styles.row}>
             <div
               className={styles.status_item}
@@ -93,16 +116,18 @@ export default function Preview({
               <CheckCircleOutlineIcon fontSize="small" />
               Going
             </div>
-            <div
-              className={styles.status_item}
-              style={{
-                backgroundColor: Colors[resolvedTheme].tab_divider,
-                fontWeight: 500,
-              }}
-            >
-              <EmailIcon fontSize="small" />
-              Invite
-            </div>
+            {invitable && (
+              <div
+                className={styles.status_item}
+                style={{
+                  backgroundColor: Colors[resolvedTheme].tab_divider,
+                  fontWeight: 500,
+                }}
+              >
+                <EmailIcon fontSize="small" />
+                Invite
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -116,37 +141,106 @@ export default function Preview({
           minHeight: "45vh",
         }}
       >
-        <div
-          className={styles.event_details}
-          style={{
-            backgroundColor: Colors[resolvedTheme].header_bg,
-            boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
-          }}
-        >
-          <span style={{ fontWeight: "bold" }}>Details</span>
-          <div className={styles.event_host}>
-            <PeopleAltIcon />
-            <div>
-              1 person
-              <span className={styles.mobile_hide}>
-                {" "}
-                going, including {host || shortenAddress(address)}
-              </span>
-            </div>
-          </div>
-          <Avatar
-            avatarImage={avatar}
-            walletAddress={address}
-            size={32}
+        <div className={styles.event_info}>
+          <div
+            className={styles.event_details}
             style={{
-              marginLeft: 30,
+              backgroundColor: Colors[resolvedTheme].header_bg,
+              boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
             }}
-          />
-          <span
-            style={{ fontSize: 12, color: Colors[resolvedTheme].secondary }}
           >
-            No details yet
-          </span>
+            <span style={{ fontWeight: "bold" }}>Details</span>
+            <div className={styles.event_host}>
+              <PeopleAltIcon />
+              <div>
+                1 person
+                <span className={styles.mobile_hide}>
+                  {" "}
+                  going, including {host || shortenAddress(address)}
+                </span>
+              </div>
+            </div>
+            <Avatar
+              avatarImage={avatar}
+              walletAddress={address}
+              size={32}
+              style={{
+                marginLeft: 30,
+              }}
+            />
+            {privacy === "Private" && (
+              <div className={styles.event_host}>
+                <LockIcon />
+                <span>Private &bull; Only people who are invited</span>
+              </div>
+            )}
+            {privacy === "Public" && (
+              <div className={styles.event_host}>
+                <PublicIcon />
+                <span>Public &bull; Anyone on or off Impish</span>
+              </div>
+            )}
+            <span
+              style={{ fontSize: 12, color: Colors[resolvedTheme].secondary }}
+            >
+              No details yet
+            </span>
+          </div>
+          {privacy === "Public" && (
+            <div
+              className={styles.event_details}
+              style={{
+                backgroundColor: Colors[resolvedTheme].header_bg,
+                boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
+              }}
+            >
+              <span style={{ fontWeight: "bold" }}>Meet Your Host</span>
+              <div
+                className={styles.event_host_info}
+                style={{
+                  border: Colors[resolvedTheme].preview_border,
+                }}
+              >
+                <Avatar
+                  avatarImage={avatar}
+                  walletAddress={address}
+                  size={160}
+                  style={{ padding: 10 }}
+                />
+                <Typography sx={{ pb: 2 }} fontWeight="bold">
+                  {host || shortenAddress(address)}
+                </Typography>
+                <div
+                  className={styles.divider}
+                  style={{
+                    backgroundColor: Colors[resolvedTheme].hover,
+                    width: "calc(100% - 20px)",
+                  }}
+                />
+                <Button
+                  disableElevation
+                  disableRipple
+                  variant="contained"
+                  sx={{
+                    borderRadius: (theme) =>
+                      Number(theme.shape.borderRadius) / 2,
+                    color: Colors[resolvedTheme].primary,
+                    backgroundColor: Colors[resolvedTheme].tab_divider,
+                    cursor: "default",
+                    "&:hover": {
+                      backgroundColor: Colors[resolvedTheme].tab_divider,
+                    },
+                    fontWeight: "bold",
+                    textTransform: "none",
+                    m: 1,
+                    width: "calc(100% - 20px)",
+                  }}
+                >
+                  Follow
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
         <div
           className={styles.guest_list}
