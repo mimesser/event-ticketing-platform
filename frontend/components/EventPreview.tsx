@@ -30,7 +30,7 @@ export default function Preview({
     <div
       className={styles.preview}
       style={{
-        border: Colors[resolvedTheme].border,
+        border: Colors[resolvedTheme].preview_border,
       }}
     >
       <div className={styles.upper}>
