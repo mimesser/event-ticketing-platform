@@ -555,6 +555,9 @@ export default function Drawer() {
           {user && (
             <ListItem
               button
+              onClick={() => {
+                router.push("/" + (user.username || user.walletAddress));
+              }}
               sx={{
                 borderRadius: (theme) => theme.shape.borderRadius,
                 ":hover": {
@@ -575,28 +578,21 @@ export default function Drawer() {
                 walletAddress={user?.walletAddress}
                 size={36}
               />
-              <Link
-                href={`/${encodeURIComponent(
-                  user.username || user.walletAddress
-                )}`}
-                passHref
+              <ListItemText
+                disableTypography
+                style={{
+                  height: 16,
+                  marginLeft: "6%",
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                  textAlign: "left",
+                  textOverflow: "ellipsis",
+                  width: 16,
+                  color: Colors[resolvedTheme].primary,
+                }}
               >
-                <ListItemText
-                  disableTypography
-                  style={{
-                    height: 16,
-                    marginLeft: "6%",
-                    overflow: "hidden",
-                    whiteSpace: "nowrap",
-                    textAlign: "left",
-                    textOverflow: "ellipsis",
-                    width: 16,
-                    color: Colors[resolvedTheme].primary,
-                  }}
-                >
-                  {user.name || shortenAddress(user.walletAddress)}
-                </ListItemText>
-              </Link>
+                {user.name || shortenAddress(user.walletAddress)}
+              </ListItemText>
             </ListItem>
           )}
 
