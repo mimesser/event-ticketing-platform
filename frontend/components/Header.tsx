@@ -51,7 +51,6 @@ import { differenceInCalendarDays, formatDistance } from "date-fns";
 import Colors from "lib/colors";
 import { fetchPublicUser } from "lib/hooks";
 import { useUserInfo } from "lib/user-context";
-import { moonPaySrc } from "lib/moon-pay";
 import { magic } from "lib/magic";
 import { shortenAddress, shortenText } from "lib/utils";
 import { supabase } from "lib/supabase";
@@ -71,7 +70,11 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-export default function Header() {
+export default function Header({
+  urlWithSignature,
+}: {
+  urlWithSignature: string;
+}) {
   var dateUTC = new Date(
     new Date().getTime() + new Date().getTimezoneOffset() * 60000
   );
@@ -365,7 +368,7 @@ export default function Header() {
                   frameBorder="0"
                   height="100%"
                   id="moonPayFrame"
-                  src={moonPaySrc(user.walletAddress, user.email)}
+                  src={urlWithSignature}
                   width="100%"
                 >
                   <p>Your browser does not support iframes.</p>
