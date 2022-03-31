@@ -11,7 +11,6 @@ import Container from "@mui/material/Container";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import Divider from "@mui/material/Divider";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
-import Drawer from "@mui/material/Drawer";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormGroup from "@mui/material/FormGroup";
@@ -46,7 +45,7 @@ import Typography from "@mui/material/Typography";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Avatar from "components/Avatar";
-import MyDrawer from "components/Drawer";
+import Drawer from "components/Drawer";
 import { differenceInCalendarDays, formatDistance } from "date-fns";
 import Colors from "lib/colors";
 import { fetchPublicUser } from "lib/hooks";
@@ -633,7 +632,7 @@ export default function Header({
                 zIndex: (theme) => theme.zIndex.drawer + 1,
               }
             : {
-                bgcolor: "transparent",
+                bgcolor: Colors[resolvedTheme].drawer_bg,
                 boxShadow: "none",
               }
         }
@@ -1549,25 +1548,9 @@ export default function Header({
       >
         <Drawer
           variant={isMobile ? "temporary" : "permanent"}
-          open={mobileOpen}
+          drawerOpen={mobileOpen}
           onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true,
-          }}
-          sx={{
-            "& .MuiDrawer-paper": {
-              backgroundColor: !events
-                ? Colors[resolvedTheme].drawer_bg
-                : Colors[resolvedTheme].event_drawer_bg,
-              boxSizing: "border-box",
-              boxShadow: !events ? "none" : "0px 0px 5px rgb(0 0 0 / 20%)",
-              borderRight: !events ? "none" : Colors[resolvedTheme].border,
-              width: drawerWidth,
-            },
-          }}
-        >
-          <MyDrawer />
-        </Drawer>
+        />
       </Box>
     </>
   );
