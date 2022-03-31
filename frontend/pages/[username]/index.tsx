@@ -254,7 +254,6 @@ function Profile() {
       await fetch("/api/update-profile", {
         method: "POST",
         body: JSON.stringify({
-          email: user.email,
           name: newName,
           username: newUsername,
           avatarImage: newAvatar,
