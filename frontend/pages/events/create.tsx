@@ -263,7 +263,11 @@ function Create() {
 
               <Preview
                 eventName={eventName}
-                host={user?.name || `@${user?.username}`}
+                host={
+                  user?.name || user?.username
+                    ? `@${user?.username}`
+                    : undefined
+                }
                 avatar={user?.avatarImage}
                 address={user?.walletAddress}
                 eventDay={eventDay}
