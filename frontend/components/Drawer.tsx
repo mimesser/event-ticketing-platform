@@ -8,6 +8,7 @@ import BreadcrumLink from "@mui/material/Link";
 import Button from "@mui/material/Button";
 import Collapse from "@mui/material/Collapse";
 import Divider from "@mui/material/Divider";
+import Drawer from "@mui/material/Drawer";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
@@ -58,7 +59,15 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import styles from "styles/components/Drawer.module.scss";
 
-export default function Drawer() {
+export default function ImpishDrawer({
+  variant,
+  drawerOpen,
+  onClose,
+}: {
+  variant: "permanent" | "temporary";
+  drawerOpen: boolean;
+  onClose: any;
+}) {
   const { resolvedTheme } = useTheme();
   const {
     setEventName,
@@ -76,6 +85,9 @@ export default function Drawer() {
   const [events] = React.useState(
     router.asPath.includes("/events") ? true : false
   );
+
+  const drawerWidth = events ? 340 : 240;
+
   const [open, setOpen] = React.useState(
     router.pathname === "/events/[username]" ? true : false
   );
@@ -429,305 +441,279 @@ export default function Drawer() {
   };
 
   return (
-    <div>
-      {/*  Events signIn Modal */}
-      <Modal
-        BackdropProps={{
-          timeout: 500,
-        }}
-        closeAfterTransition
-        onClose={() => {
-          setSignInEventsModal(false);
-        }}
-        open={signInEventsModal}
-      >
-        <Box sx={modalStyle}>
-          <Grid container justifyContent="center" direction="column">
-            <div className={styles.modal_img}>
-              <Image
-                src={"/logo-" + resolvedTheme + ".png"}
-                width={isMobile ? 45 : 90}
-                height={isMobile ? 45 : 90}
-                alt={`Impish icon`}
-              />
-            </div>
-            <Typography
-              gutterBottom
-              sx={{
-                textAlign: "center",
-                marginBottom: "13px",
-                fontFamily: "sans-serif",
-                fontSize: "18px",
-                fontWeight: 550,
-                textTransform: "none",
-              }}
-              variant="body1"
-            >
-              Create events on Impish
-            </Typography>
-            <form
-              onSubmit={handleSubmit2(onSubmitEvents)}
-              className={styles.login_items_events}
-            >
-              <TextField
-                fullWidth
-                label="Email address"
-                variant="outlined"
-                autoComplete="email"
-                autoFocus
-                {...register2("email", {
-                  required: "Required field",
-                  pattern: {
-                    value:
-                      /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
-                    message: "Invalid email address",
-                  },
-                })}
-                error={!!errors2?.email}
-                helperText={errors2?.email ? errors2.email.message : null}
-                size="small"
-                sx={{
-                  input: { color: Colors[resolvedTheme].primary },
-                  label: { color: Colors[resolvedTheme].secondary },
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      borderColor: Colors[resolvedTheme].input_border,
-                    },
-                    "&:hover fieldset": {
-                      borderColor: (theme) => theme.palette.primary.main,
-                    },
-                  },
-                }}
-              />
-              <LoadingButton
-                sx={{ marginTop: "13px" }}
-                fullWidth
-                loading={signingInEvents}
-                type="submit"
-                size="large"
-                variant="contained"
-              >
-                Log in / Sign up
-              </LoadingButton>
-            </form>
-          </Grid>
-        </Box>
-      </Modal>
-      {/* Leave page modal */}
-      <Modal
-        BackdropProps={{
-          timeout: 500,
-        }}
-        closeAfterTransition
-        onClose={discardModalClose}
-        open={discardModal}
-      >
-        <div
-          className={styles.discard_modal}
-          style={{ backgroundColor: Colors[resolvedTheme].header_bg }}
-        >
-          <span className={styles.title}>Leave Page?</span>
-          <span className={styles.content}>
-            Are you sure you want to leave? Your changes will be lost if you
-            leave this page.
-          </span>
-          <span className={styles.discard} onClick={leavePage}>
-            Leave
-          </span>
-          <span className={styles.cancel} onClick={stayOnPage}>
-            Stay
-          </span>
-        </div>
-      </Modal>
-      <Toolbar sx={{ display: showCreateEvent ? "none" : "flex" }} />
-      {!events ? (
-        <List
-          sx={{
-            "&& .Mui-selected": {
-              "&, & .MuiListItemText-root": {
-                color: (theme) => theme.palette.primary.main,
-              },
-              backgroundColor: Colors[resolvedTheme].selected_drawer_menu,
-            },
-            px: 2,
+    <Drawer
+      variant={variant}
+      open={drawerOpen}
+      onClose={onClose}
+      ModalProps={{
+        keepMounted: true,
+      }}
+      sx={{
+        "& .MuiDrawer-paper": {
+          backgroundColor: !events
+            ? Colors[resolvedTheme].drawer_bg
+            : Colors[resolvedTheme].event_drawer_bg,
+          boxSizing: "border-box",
+          boxShadow: !events ? "none" : "0px 0px 5px rgb(0 0 0 / 20%)",
+          borderRight: !events ? "none" : Colors[resolvedTheme].border,
+          width: drawerWidth,
+        },
+      }}
+    >
+      <div>
+        {/*  Events signIn Modal */}
+        <Modal
+          BackdropProps={{
+            timeout: 500,
           }}
+          closeAfterTransition
+          onClose={() => {
+            setSignInEventsModal(false);
+          }}
+          open={signInEventsModal}
         >
-          {user && (
-            <ListItem
-              button
-              onClick={() => {
-                router.push("/" + (user.username || user.walletAddress));
-              }}
-              sx={{
-                borderRadius: (theme) => theme.shape.borderRadius,
-                ":hover": {
-                  backgroundColor: Colors[resolvedTheme].hover,
-                },
-              }}
-              style={{
-                margin: "0px 0",
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                padding: "12px",
-              }}
-              selected={router.pathname === "/[username]"}
-            >
-              <Avatar
-                avatarImage={user?.avatarImage}
-                walletAddress={user?.walletAddress}
-                size={36}
-              />
-              <ListItemText
-                disableTypography
-                style={{
-                  height: 16,
-                  marginLeft: "6%",
-                  overflow: "hidden",
-                  whiteSpace: "nowrap",
-                  textAlign: "left",
-                  textOverflow: "ellipsis",
-                  width: 16,
-                  color: Colors[resolvedTheme].primary,
+          <Box sx={modalStyle}>
+            <Grid container justifyContent="center" direction="column">
+              <div className={styles.modal_img}>
+                <Image
+                  src={"/logo-" + resolvedTheme + ".png"}
+                  width={isMobile ? 45 : 90}
+                  height={isMobile ? 45 : 90}
+                  alt={`Impish icon`}
+                />
+              </div>
+              <Typography
+                gutterBottom
+                sx={{
+                  textAlign: "center",
+                  marginBottom: "13px",
+                  fontFamily: "sans-serif",
+                  fontSize: "18px",
+                  fontWeight: 550,
+                  textTransform: "none",
                 }}
+                variant="body1"
               >
-                {user.name || shortenAddress(user.walletAddress)}
-              </ListItemText>
-            </ListItem>
-          )}
-
-          <Link href="/events" passHref>
-            <ListItem
-              button
-              sx={{
-                borderRadius: (theme) => theme.shape.borderRadius,
-                ":hover": {
-                  backgroundColor: Colors[resolvedTheme].hover,
-                },
-              }}
-              style={{
-                margin: "0px 0",
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                padding: "12px",
-              }}
-              selected={router.pathname === "/events"}
-            >
-              <ListItemIcon sx={{ minWidth: "auto" }}>
-                <CalendarMonthIcon
-                  fontSize="large"
+                Create events on Impish
+              </Typography>
+              <form
+                onSubmit={handleSubmit2(onSubmitEvents)}
+                className={styles.login_items_events}
+              >
+                <TextField
+                  fullWidth
+                  label="Email address"
+                  variant="outlined"
+                  autoComplete="email"
+                  autoFocus
+                  {...register2("email", {
+                    required: "Required field",
+                    pattern: {
+                      value:
+                        /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+                      message: "Invalid email address",
+                    },
+                  })}
+                  error={!!errors2?.email}
+                  helperText={errors2?.email ? errors2.email.message : null}
+                  size="small"
                   sx={{
-                    color: Colors[resolvedTheme].primary,
-                    width: 32,
-                    height: 32,
+                    input: { color: Colors[resolvedTheme].primary },
+                    label: { color: Colors[resolvedTheme].secondary },
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: Colors[resolvedTheme].input_border,
+                      },
+                      "&:hover fieldset": {
+                        borderColor: (theme) => theme.palette.primary.main,
+                      },
+                    },
                   }}
                 />
-              </ListItemIcon>
-
-              <ListItemText
-                disableTypography
+                <LoadingButton
+                  sx={{ marginTop: "13px" }}
+                  fullWidth
+                  loading={signingInEvents}
+                  type="submit"
+                  size="large"
+                  variant="contained"
+                >
+                  Log in / Sign up
+                </LoadingButton>
+              </form>
+            </Grid>
+          </Box>
+        </Modal>
+        {/* Leave page modal */}
+        <Modal
+          BackdropProps={{
+            timeout: 500,
+          }}
+          closeAfterTransition
+          onClose={discardModalClose}
+          open={discardModal}
+        >
+          <div
+            className={styles.discard_modal}
+            style={{ backgroundColor: Colors[resolvedTheme].header_bg }}
+          >
+            <span className={styles.title}>Leave Page?</span>
+            <span className={styles.content}>
+              Are you sure you want to leave? Your changes will be lost if you
+              leave this page.
+            </span>
+            <span className={styles.discard} onClick={leavePage}>
+              Leave
+            </span>
+            <span className={styles.cancel} onClick={stayOnPage}>
+              Stay
+            </span>
+          </div>
+        </Modal>
+        <Toolbar sx={{ display: showCreateEvent ? "none" : "flex" }} />
+        {!events ? (
+          <List
+            sx={{
+              "&& .Mui-selected": {
+                "&, & .MuiListItemText-root": {
+                  color: (theme) => theme.palette.primary.main,
+                },
+                backgroundColor: Colors[resolvedTheme].selected_drawer_menu,
+              },
+              px: 2,
+            }}
+          >
+            {user && (
+              <ListItem
+                button
+                onClick={() => {
+                  router.push("/" + (user.username || user.walletAddress));
+                }}
+                sx={{
+                  borderRadius: (theme) => theme.shape.borderRadius,
+                  ":hover": {
+                    backgroundColor: Colors[resolvedTheme].hover,
+                  },
+                }}
                 style={{
-                  height: 16,
-                  marginLeft: "6%",
-                  overflow: "hidden",
-                  whiteSpace: "nowrap",
-                  textAlign: "left",
-                  textOverflow: "ellipsis",
-                  width: 16,
-                  color: Colors[resolvedTheme].primary,
+                  margin: "0px 0",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  padding: "12px",
                 }}
+                selected={router.pathname === "/[username]"}
               >
-                Events
-              </ListItemText>
-            </ListItem>
-          </Link>
-        </List>
-      ) : (
-        // Events drawer menu
-        <>
-          {!showCreateEvent ? (
-            <>
-              <Typography
-                sx={{
-                  paddingLeft: "16px",
-                  fontSize: "1.8rem",
-                  marginTop: "12px",
-                  fontWeight: 900,
-                  color: Colors[resolvedTheme].primary,
-                }}
-                variant="h6"
-              >
-                Events
-              </Typography>
+                <Avatar
+                  avatarImage={user?.avatarImage}
+                  walletAddress={user?.walletAddress}
+                  size={36}
+                />
+                <ListItemText
+                  disableTypography
+                  style={{
+                    height: 16,
+                    marginLeft: "6%",
+                    overflow: "hidden",
+                    whiteSpace: "nowrap",
+                    textAlign: "left",
+                    textOverflow: "ellipsis",
+                    width: 16,
+                    color: Colors[resolvedTheme].primary,
+                  }}
+                >
+                  {user.name || shortenAddress(user.walletAddress)}
+                </ListItemText>
+              </ListItem>
+            )}
 
-              <List
+            <Link href="/events" passHref>
+              <ListItem
+                button
                 sx={{
-                  "&& .MuiListItemButton-root:hover": {
-                    backgroundColor: Colors[resolvedTheme].selected_event_menu,
+                  borderRadius: (theme) => theme.shape.borderRadius,
+                  ":hover": {
+                    backgroundColor: Colors[resolvedTheme].hover,
                   },
-                  "&& .Mui-selected": {
-                    backgroundColor: Colors[resolvedTheme].selected_event_menu,
-                    "&, & .MuiListItemIcon-root": {
-                      color: (theme) => theme.palette.primary.main,
-                    },
-                  },
-                  "&& .Mui-selected:hover": {
-                    backgroundColor: Colors[resolvedTheme].selected_event_menu,
-                  },
-                  px: 2,
                 }}
+                style={{
+                  margin: "0px 0",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  padding: "12px",
+                }}
+                selected={router.pathname === "/events"}
               >
-                <Link href="/events" passHref>
-                  <ListItemButton
+                <ListItemIcon sx={{ minWidth: "auto" }}>
+                  <CalendarMonthIcon
+                    fontSize="large"
                     sx={{
-                      borderRadius: (theme) => theme.shape.borderRadius,
+                      color: Colors[resolvedTheme].primary,
+                      width: 32,
+                      height: 32,
                     }}
-                    style={{
-                      margin: "0px 0",
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "center",
-                      padding: "12px",
-                    }}
-                    selected={router.pathname === "/events"}
-                  >
-                    <ListItemIcon
-                      sx={{
-                        minWidth: "auto",
-                      }}
-                    >
-                      <CalendarViewMonth
-                        fontSize="large"
-                        sx={{
-                          color: (theme) =>
-                            router.pathname === "/events"
-                              ? theme.palette.primary.main
-                              : Colors[resolvedTheme].primary,
-                        }}
-                      />
-                    </ListItemIcon>
-                    <ListItemText
-                      disableTypography
-                      sx={{
-                        height: 16,
-                        marginLeft: "6%",
-                        overflow: "hidden",
-                        whiteSpace: "nowrap",
-                        textAlign: "left",
-                        textOverflow: "ellipsis",
-                        width: 16,
-                        color: Colors[resolvedTheme].primary,
-                      }}
-                    >
-                      Home
-                    </ListItemText>
-                  </ListItemButton>
-                </Link>
-                {user && (
-                  <>
+                  />
+                </ListItemIcon>
+
+                <ListItemText
+                  disableTypography
+                  style={{
+                    height: 16,
+                    marginLeft: "6%",
+                    overflow: "hidden",
+                    whiteSpace: "nowrap",
+                    textAlign: "left",
+                    textOverflow: "ellipsis",
+                    width: 16,
+                    color: Colors[resolvedTheme].primary,
+                  }}
+                >
+                  Events
+                </ListItemText>
+              </ListItem>
+            </Link>
+          </List>
+        ) : (
+          // Events drawer menu
+          <>
+            {!showCreateEvent ? (
+              <>
+                <Typography
+                  sx={{
+                    paddingLeft: "16px",
+                    fontSize: "1.8rem",
+                    marginTop: "12px",
+                    fontWeight: 900,
+                    color: Colors[resolvedTheme].primary,
+                  }}
+                  variant="h6"
+                >
+                  Events
+                </Typography>
+
+                <List
+                  sx={{
+                    "&& .MuiListItemButton-root:hover": {
+                      backgroundColor:
+                        Colors[resolvedTheme].selected_event_menu,
+                    },
+                    "&& .Mui-selected": {
+                      backgroundColor:
+                        Colors[resolvedTheme].selected_event_menu,
+                      "&, & .MuiListItemIcon-root": {
+                        color: (theme) => theme.palette.primary.main,
+                      },
+                    },
+                    "&& .Mui-selected:hover": {
+                      backgroundColor:
+                        Colors[resolvedTheme].selected_event_menu,
+                    },
+                    px: 2,
+                  }}
+                >
+                  <Link href="/events" passHref>
                     <ListItemButton
-                      onClick={handleClick}
                       sx={{
                         borderRadius: (theme) => theme.shape.borderRadius,
                       }}
@@ -738,14 +724,18 @@ export default function Drawer() {
                         alignItems: "center",
                         padding: "12px",
                       }}
-                      selected={router.pathname === "/events/[username]"}
+                      selected={router.pathname === "/events"}
                     >
-                      <ListItemIcon sx={{ minWidth: "auto" }}>
-                        <AccountCircleIcon
+                      <ListItemIcon
+                        sx={{
+                          minWidth: "auto",
+                        }}
+                      >
+                        <CalendarViewMonth
                           fontSize="large"
                           sx={{
                             color: (theme) =>
-                              router.pathname === "/events/[username]"
+                              router.pathname === "/events"
                                 ? theme.palette.primary.main
                                 : Colors[resolvedTheme].primary,
                           }}
@@ -764,235 +754,227 @@ export default function Drawer() {
                           color: Colors[resolvedTheme].primary,
                         }}
                       >
-                        Your Events
+                        Home
                       </ListItemText>
-                      {open ? (
-                        <ExpandLess
-                          sx={{
-                            color: Colors[resolvedTheme].primary,
-                          }}
-                        />
-                      ) : (
-                        <ExpandMore
-                          sx={{
-                            color: Colors[resolvedTheme].primary,
-                          }}
-                        />
-                      )}
                     </ListItemButton>
+                  </Link>
+                  {user && (
+                    <>
+                      <ListItemButton
+                        onClick={handleClick}
+                        sx={{
+                          borderRadius: (theme) => theme.shape.borderRadius,
+                        }}
+                        style={{
+                          margin: "0px 0",
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                          padding: "12px",
+                        }}
+                        selected={router.pathname === "/events/[username]"}
+                      >
+                        <ListItemIcon sx={{ minWidth: "auto" }}>
+                          <AccountCircleIcon
+                            fontSize="large"
+                            sx={{
+                              color: (theme) =>
+                                router.pathname === "/events/[username]"
+                                  ? theme.palette.primary.main
+                                  : Colors[resolvedTheme].primary,
+                            }}
+                          />
+                        </ListItemIcon>
+                        <ListItemText
+                          disableTypography
+                          sx={{
+                            height: 16,
+                            marginLeft: "6%",
+                            overflow: "hidden",
+                            whiteSpace: "nowrap",
+                            textAlign: "left",
+                            textOverflow: "ellipsis",
+                            width: 16,
+                            color: Colors[resolvedTheme].primary,
+                          }}
+                        >
+                          Your Events
+                        </ListItemText>
+                        {open ? (
+                          <ExpandLess
+                            sx={{
+                              color: Colors[resolvedTheme].primary,
+                            }}
+                          />
+                        ) : (
+                          <ExpandMore
+                            sx={{
+                              color: Colors[resolvedTheme].primary,
+                            }}
+                          />
+                        )}
+                      </ListItemButton>
 
-                    <Collapse in={open} timeout="auto" unmountOnExit>
-                      <List component="div" disablePadding>
-                        <ListItemButton sx={{ pl: 4 }}>
-                          <ListItemText>No events</ListItemText>
-                        </ListItemButton>
-                      </List>
-                    </Collapse>
-                  </>
-                )}
-                <Box sx={{ marginTop: "12px " }}>
-                  <Button
-                    fullWidth
-                    onClick={createEvent}
-                    sx={{
-                      textTransform: "none",
-                      color: Colors[resolvedTheme].primary.main,
-                    }}
-                    type="submit"
-                    size="medium"
-                    variant="contained"
-                    startIcon={<AddOutlinedIcon />}
-                  >
-                    Create new event
-                  </Button>
-                </Box>
-
-                <Divider
-                  sx={{
-                    borderColor: Colors[resolvedTheme].divider,
-                    marginTop: "12px",
-                  }}
-                />
-              </List>
-            </>
-          ) : (
-            <>
-              <Box
-                component="nav"
-                sx={{
-                  px: 2,
-                  py: 1,
-                  boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
-                  borderBottom: Colors[resolvedTheme].border,
-                }}
-              >
-                <Grid
-                  container
-                  direction="row"
-                  justifyContent="start"
-                  alignItems="center"
-                >
-                  <Tooltip title="close">
-                    <IconButton
-                      onClick={discard}
+                      <Collapse in={open} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding>
+                          <ListItemButton sx={{ pl: 4 }}>
+                            <ListItemText>No events</ListItemText>
+                          </ListItemButton>
+                        </List>
+                      </Collapse>
+                    </>
+                  )}
+                  <Box sx={{ marginTop: "12px " }}>
+                    <Button
+                      fullWidth
+                      onClick={createEvent}
                       sx={{
-                        backgroundColor: Colors[resolvedTheme].icon_bg,
-                        marginRight: "8px",
+                        textTransform: "none",
+                        color: Colors[resolvedTheme].primary.main,
+                      }}
+                      type="submit"
+                      size="medium"
+                      variant="contained"
+                      startIcon={<AddOutlinedIcon />}
+                    >
+                      Create new event
+                    </Button>
+                  </Box>
+
+                  <Divider
+                    sx={{
+                      borderColor: Colors[resolvedTheme].divider,
+                      marginTop: "12px",
+                    }}
+                  />
+                </List>
+              </>
+            ) : (
+              <>
+                <Box
+                  component="nav"
+                  sx={{
+                    px: 2,
+                    py: 1,
+                    boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
+                    borderBottom: Colors[resolvedTheme].border,
+                  }}
+                >
+                  <Grid
+                    container
+                    direction="row"
+                    justifyContent="start"
+                    alignItems="center"
+                  >
+                    <Tooltip title="close">
+                      <IconButton
+                        onClick={discard}
+                        sx={{
+                          backgroundColor: Colors[resolvedTheme].icon_bg,
+                          marginRight: "8px",
+                          ":hover": {
+                            background: Colors[resolvedTheme].close_hover,
+                          },
+                        }}
+                      >
+                        <CloseIcon
+                          sx={{ color: Colors[resolvedTheme].secondary }}
+                        />
+                      </IconButton>
+                    </Tooltip>
+
+                    <Box
+                      component="div"
+                      sx={{
+                        whiteSpace: "nowrap",
+                        mr: !events ? 2 : 0,
+                        variant: "h6",
+                        display: !events
+                          ? { xs: "none", md: "flex" }
+                          : { xs: "flex", md: "flex", sm: "flex" },
                         ":hover": {
-                          background: Colors[resolvedTheme].close_hover,
+                          borderRadius: (theme) =>
+                            Number(theme.shape.borderRadius) * 2,
+                          background: Colors[resolvedTheme].hover,
                         },
                       }}
                     >
-                      <CloseIcon
-                        sx={{ color: Colors[resolvedTheme].secondary }}
-                      />
-                    </IconButton>
-                  </Tooltip>
+                      <IconButton onClick={goHome} edge="start" size="small">
+                        <a>
+                          <Image
+                            src={"/icons/impish.svg"}
+                            width={45}
+                            height={32}
+                            alt={`Impish icon`}
+                          />
+                        </a>
+                      </IconButton>
+                    </Box>
+                  </Grid>
+                </Box>
 
-                  <Box
-                    component="div"
-                    sx={{
-                      whiteSpace: "nowrap",
-                      mr: !events ? 2 : 0,
-                      variant: "h6",
-                      display: !events
-                        ? { xs: "none", md: "flex" }
-                        : { xs: "flex", md: "flex", sm: "flex" },
-                      ":hover": {
-                        borderRadius: (theme) =>
-                          Number(theme.shape.borderRadius) * 2,
-                        background: Colors[resolvedTheme].hover,
-                      },
-                    }}
-                  >
-                    <IconButton onClick={goHome} edge="start" size="small">
-                      <a>
-                        <Image
-                          src={"/icons/impish.svg"}
-                          width={45}
-                          height={32}
-                          alt={`Impish icon`}
-                        />
-                      </a>
-                    </IconButton>
-                  </Box>
-                </Grid>
-              </Box>
-
-              <Breadcrumbs
-                sx={{ px: 2, marginTop: "12px" }}
-                separator={
-                  <NavigateNextIcon
-                    sx={{ color: Colors[resolvedTheme].secondary }}
-                    fontSize="small"
-                  />
-                }
-                aria-label="breadcrumb"
-              >
-                {breadcrumbs}
-              </Breadcrumbs>
-              {!eventDetails ? (
-                <Typography
-                  sx={{
-                    paddingLeft: "16px",
-                    fontSize: "1.6rem",
-                    fontWeight: 900,
-                    color: Colors[resolvedTheme].primary,
-                  }}
-                  variant="h6"
+                <Breadcrumbs
+                  sx={{ px: 2, marginTop: "12px" }}
+                  separator={
+                    <NavigateNextIcon
+                      sx={{ color: Colors[resolvedTheme].secondary }}
+                      fontSize="small"
+                    />
+                  }
+                  aria-label="breadcrumb"
                 >
-                  Create Event
-                </Typography>
-              ) : (
-                <Typography
-                  sx={{
-                    paddingLeft: "16px",
-                    fontSize: "1.6rem",
-                    fontWeight: 900,
-                    color: Colors[resolvedTheme].primary,
-                  }}
-                  variant="h6"
-                >
-                  Event Details
-                </Typography>
-              )}
-
-              <List
-                sx={{
-                  "&& .Mui-selected": {
-                    backgroundColor: Colors[resolvedTheme].selected_event_menu,
-                    "&, & .MuiListItemIcon-root": {
-                      color: (theme) => theme.palette.primary.main,
-                    },
-                  },
-                  "&& .Mui-selected:hover": {
-                    backgroundColor: Colors[resolvedTheme].selected_event_menu,
-                  },
-                  px: 2,
-                }}
-              >
-                <ListItemButton
-                  disableRipple
-                  sx={{
-                    borderRadius: (theme) => theme.shape.borderRadius,
-                    ":hover": {
-                      backgroundColor: "transparent",
-                    },
-                  }}
-                  style={{
-                    margin: "0px 0",
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    padding: "12px",
-                    cursor: "default",
-                  }}
-                >
-                  <Avatar
-                    avatarImage={user?.avatarImage}
-                    walletAddress={user?.walletAddress}
-                    size={36}
-                  />
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "start",
-                      marginLeft: "5%",
-                    }}
-                  >
-                    <ListItemText
-                      disableTypography
-                      style={{
-                        height: 16,
-                        overflow: "hidden",
-                        whiteSpace: "nowrap",
-                        textAlign: "left",
-                        textOverflow: "ellipsis",
-                        width: "130px",
-                        color: Colors[resolvedTheme].primary,
-                      }}
-                    >
-                      {user.name || shortenAddress(user.walletAddress)}
-                    </ListItemText>
-                    <Typography
-                      variant="subtitle1"
-                      component="span"
-                      sx={{
-                        fontSize: "0.6rem",
-                        color: Colors[resolvedTheme].secondary,
-                      }}
-                    >
-                      Host - Your Profile
-                    </Typography>
-                  </Box>
-                </ListItemButton>
+                  {breadcrumbs}
+                </Breadcrumbs>
                 {!eventDetails ? (
+                  <Typography
+                    sx={{
+                      paddingLeft: "16px",
+                      fontSize: "1.6rem",
+                      fontWeight: 900,
+                      color: Colors[resolvedTheme].primary,
+                    }}
+                    variant="h6"
+                  >
+                    Create Event
+                  </Typography>
+                ) : (
+                  <Typography
+                    sx={{
+                      paddingLeft: "16px",
+                      fontSize: "1.6rem",
+                      fontWeight: 900,
+                      color: Colors[resolvedTheme].primary,
+                    }}
+                    variant="h6"
+                  >
+                    Event Details
+                  </Typography>
+                )}
+
+                <List
+                  sx={{
+                    "&& .Mui-selected": {
+                      backgroundColor:
+                        Colors[resolvedTheme].selected_event_menu,
+                      "&, & .MuiListItemIcon-root": {
+                        color: (theme) => theme.palette.primary.main,
+                      },
+                    },
+                    "&& .Mui-selected:hover": {
+                      backgroundColor:
+                        Colors[resolvedTheme].selected_event_menu,
+                    },
+                    px: 2,
+                  }}
+                >
                   <ListItemButton
+                    disableRipple
                     sx={{
                       borderRadius: (theme) => theme.shape.borderRadius,
+                      ":hover": {
+                        backgroundColor: "transparent",
+                      },
                     }}
-                    disableRipple
                     style={{
                       margin: "0px 0",
                       display: "flex",
@@ -1001,167 +983,598 @@ export default function Drawer() {
                       padding: "12px",
                       cursor: "default",
                     }}
-                    selected={router.pathname === "/events/create"}
                   >
-                    <ListItemIcon sx={{ minWidth: "auto" }}>
-                      <GroupSharpIcon
-                        fontSize="large"
-                        sx={{
-                          color: (theme) =>
-                            router.pathname === "/events/create"
-                              ? theme.palette.primary.main
-                              : Colors[resolvedTheme].primary,
-                        }}
-                      />
-                    </ListItemIcon>
-                    <ListItemText
-                      disableTypography
+                    <Avatar
+                      avatarImage={user?.avatarImage}
+                      walletAddress={user?.walletAddress}
+                      size={36}
+                    />
+                    <Box
                       sx={{
-                        height: 16,
-                        marginLeft: "6%",
-                        overflow: "hidden",
-                        whiteSpace: "nowrap",
-                        textAlign: "left",
-                        textOverflow: "ellipsis",
-                        width: 16,
-                        color: Colors[resolvedTheme].primary,
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "start",
+                        marginLeft: "5%",
                       }}
                     >
-                      Create Events
-                    </ListItemText>
-                  </ListItemButton>
-                ) : (
-                  <>
-                    <form onSubmit={handleSubmit3(onSubmitCreateEvents)}>
-                      <TextField
-                        fullWidth
-                        label="Event name"
-                        variant="outlined"
-                        autoComplete="event"
-                        autoFocus
-                        sx={{
-                          input: { color: Colors[resolvedTheme].primary },
-                          label: { color: Colors[resolvedTheme].secondary },
-                          "& .MuiOutlinedInput-root": {
-                            "& fieldset": {
-                              borderColor: Colors[resolvedTheme].input_border,
-                            },
-                            "&:hover fieldset": {
-                              borderColor: (theme) =>
-                                theme.palette.primary.main,
-                            },
-                          },
-
-                          marginBottom: "12px",
+                      <ListItemText
+                        disableTypography
+                        style={{
+                          height: 16,
+                          overflow: "hidden",
+                          whiteSpace: "nowrap",
+                          textAlign: "left",
+                          textOverflow: "ellipsis",
+                          width: "130px",
+                          color: Colors[resolvedTheme].primary,
                         }}
-                        FormHelperTextProps={{
-                          sx: {
-                            position: "absolute",
-                            right: "3%",
-                            color: Colors[resolvedTheme].secondary,
-                          },
-                        }}
-                        inputProps={{ maxLength: CHARACTER_LIMIT }}
-                        onChange={handleEventNameChange("eventName")}
-                        helperText={`${values.eventName.length}/${CHARACTER_LIMIT}`}
-                        error={!!errors3?.email}
-                      />
-
-                      <Grid
-                        sx={{ marginBottom: showEndDate ? "12px" : undefined }}
-                        container
-                        columnSpacing={{ xs: 2.3, sm: 2.3, md: 2.3 }}
                       >
-                        <Grid item xs={7}>
-                          <LocalizationProvider dateAdapter={AdapterDateFns}>
-                            <DatePicker
-                              desktopModeMediaQuery=""
-                              open={openStart}
-                              onOpen={() => setOpenStart(true)}
-                              allowSameDateSelection={true}
-                              disablePast
-                              label="Start Date"
-                              views={["day"]}
-                              value={getStartDate()}
-                              maxDate={getEndtDate()}
-                              onChange={(newValue: any) => {
+                        {user.name || shortenAddress(user.walletAddress)}
+                      </ListItemText>
+                      <Typography
+                        variant="subtitle1"
+                        component="span"
+                        sx={{
+                          fontSize: "0.6rem",
+                          color: Colors[resolvedTheme].secondary,
+                        }}
+                      >
+                        Host - Your Profile
+                      </Typography>
+                    </Box>
+                  </ListItemButton>
+                  {!eventDetails ? (
+                    <ListItemButton
+                      sx={{
+                        borderRadius: (theme) => theme.shape.borderRadius,
+                      }}
+                      disableRipple
+                      style={{
+                        margin: "0px 0",
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        padding: "12px",
+                        cursor: "default",
+                      }}
+                      selected={router.pathname === "/events/create"}
+                    >
+                      <ListItemIcon sx={{ minWidth: "auto" }}>
+                        <GroupSharpIcon
+                          fontSize="large"
+                          sx={{
+                            color: (theme) =>
+                              router.pathname === "/events/create"
+                                ? theme.palette.primary.main
+                                : Colors[resolvedTheme].primary,
+                          }}
+                        />
+                      </ListItemIcon>
+                      <ListItemText
+                        disableTypography
+                        sx={{
+                          height: 16,
+                          marginLeft: "6%",
+                          overflow: "hidden",
+                          whiteSpace: "nowrap",
+                          textAlign: "left",
+                          textOverflow: "ellipsis",
+                          width: 16,
+                          color: Colors[resolvedTheme].primary,
+                        }}
+                      >
+                        Create Events
+                      </ListItemText>
+                    </ListItemButton>
+                  ) : (
+                    <>
+                      <form onSubmit={handleSubmit3(onSubmitCreateEvents)}>
+                        <TextField
+                          fullWidth
+                          label="Event name"
+                          variant="outlined"
+                          autoComplete="event"
+                          autoFocus
+                          sx={{
+                            input: { color: Colors[resolvedTheme].primary },
+                            label: { color: Colors[resolvedTheme].secondary },
+                            "& .MuiOutlinedInput-root": {
+                              "& fieldset": {
+                                borderColor: Colors[resolvedTheme].input_border,
+                              },
+                              "&:hover fieldset": {
+                                borderColor: (theme) =>
+                                  theme.palette.primary.main,
+                              },
+                            },
+
+                            marginBottom: "12px",
+                          }}
+                          FormHelperTextProps={{
+                            sx: {
+                              position: "absolute",
+                              right: "3%",
+                              color: Colors[resolvedTheme].secondary,
+                            },
+                          }}
+                          inputProps={{ maxLength: CHARACTER_LIMIT }}
+                          onChange={handleEventNameChange("eventName")}
+                          value={values["eventName"]}
+                          helperText={`${values.eventName.length}/${CHARACTER_LIMIT}`}
+                          error={!!errors3?.email}
+                        />
+
+                        <Grid
+                          sx={{
+                            marginBottom: showEndDate ? "12px" : undefined,
+                          }}
+                          container
+                          columnSpacing={{ xs: 2.3, sm: 2.3, md: 2.3 }}
+                        >
+                          <Grid item xs={7}>
+                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                              <DatePicker
+                                desktopModeMediaQuery=""
+                                open={openStart}
+                                onOpen={() => setOpenStart(true)}
+                                allowSameDateSelection={true}
+                                disablePast
+                                label="Start Date"
+                                views={["day"]}
+                                value={getStartDate()}
+                                maxDate={getEndtDate()}
+                                onChange={(newValue: any) => {
+                                  if (
+                                    !showEndDate ||
+                                    validEventTime(
+                                      newValue,
+                                      startTime,
+                                      endDate,
+                                      endTime
+                                    )
+                                  ) {
+                                    setStartDate(newValue);
+                                  }
+                                }}
+                                onClose={() => {
+                                  setOpenStart(false);
+                                }}
+                                PopperProps={{
+                                  disablePortal: true,
+                                }}
+                                PaperProps={{
+                                  sx: {
+                                    border: Colors[resolvedTheme].border,
+                                    borderRadius: (theme) =>
+                                      Number(theme.shape.borderRadius) / 2,
+                                    "&& .Mui-selected": {
+                                      backgroundColor: (theme) =>
+                                        theme.palette.primary.main,
+                                      "&, & .MuiList-root": {
+                                        color:
+                                          Colors[resolvedTheme].selected_date,
+                                      },
+                                    },
+                                    "&& .Mui-selected:hover": {
+                                      backgroundColor: (theme) =>
+                                        theme.palette.primary.dark,
+                                    },
+                                    "& .MuiPaper-root": {
+                                      color: Colors[resolvedTheme].secondary,
+                                    },
+                                    "&& .MuiPickersDay-today": {
+                                      borderColor:
+                                        Colors[resolvedTheme].primary,
+                                    },
+                                    svg: {
+                                      color: Colors[resolvedTheme].primary,
+                                    },
+                                    button: {
+                                      color:
+                                        Colors[resolvedTheme]
+                                          .date_picker_button_color,
+                                      backgroundColor: "transparent",
+                                      ":hover": {
+                                        backgroundColor:
+                                          Colors[resolvedTheme].hover,
+                                        color:
+                                          Colors[resolvedTheme]
+                                            .date_picker_button_color,
+                                      },
+                                      ":disabled": {
+                                        color: Colors[resolvedTheme].secondary,
+                                      },
+                                    },
+                                    span: {
+                                      color: Colors[resolvedTheme].primary,
+                                    },
+                                    bgcolor: Colors[resolvedTheme].header_bg,
+                                    color: Colors[resolvedTheme].primary,
+                                  },
+                                }}
+                                inputFormat="MMM d, Y"
+                                InputAdornmentProps={{
+                                  position: "start",
+                                }}
+                                OpenPickerButtonProps={{ disableRipple: true }}
+                                renderInput={(params) => (
+                                  <TextField
+                                    {...params}
+                                    onClick={(e) => setOpenStart(true)}
+                                    sx={{
+                                      input: {
+                                        color: Colors[resolvedTheme].primary,
+                                      },
+                                      label: {
+                                        color: Colors[resolvedTheme].secondary,
+                                      },
+                                      "& .MuiOutlinedInput-root": {
+                                        "& fieldset": {
+                                          borderColor:
+                                            Colors[resolvedTheme].input_border,
+                                        },
+                                        "&:hover fieldset": {
+                                          borderColor: (theme) =>
+                                            theme.palette.primary.main,
+                                        },
+
+                                        "& svg": {
+                                          color: Colors[resolvedTheme].primary,
+                                        },
+                                        "&:hover button": {
+                                          backgroundColor: "transparent",
+                                        },
+                                      },
+                                    }}
+                                    InputLabelProps={{ shrink: true }}
+                                    error={!!errors3?.start_date}
+                                    helperText={null}
+                                  />
+                                )}
+                              />
+                            </LocalizationProvider>
+                          </Grid>
+
+                          <Grid item xs={5}>
+                            <TextField
+                              label="Start Time"
+                              value={startTime}
+                              InputLabelProps={{
+                                shrink: true,
+                              }}
+                              onChange={(e) => {
                                 if (
                                   !showEndDate ||
                                   validEventTime(
-                                    newValue,
-                                    startTime,
+                                    startDate,
+                                    e.target.value,
                                     endDate,
                                     endTime
                                   )
                                 ) {
-                                  setStartDate(newValue);
+                                  setStartTime(e.target.value);
                                 }
                               }}
-                              onClose={() => {
-                                setOpenStart(false);
-                              }}
-                              PopperProps={{
-                                disablePortal: true,
-                              }}
-                              PaperProps={{
-                                sx: {
-                                  border: Colors[resolvedTheme].border,
-                                  borderRadius: (theme) =>
-                                    Number(theme.shape.borderRadius) / 2,
-                                  "&& .Mui-selected": {
-                                    backgroundColor: (theme) =>
-                                      theme.palette.primary.main,
-                                    "&, & .MuiList-root": {
-                                      color:
-                                        Colors[resolvedTheme].selected_date,
+                              select
+                              SelectProps={{
+                                MenuProps: {
+                                  sx: {
+                                    "&& .Mui-selected": {
+                                      backgroundColor: "transparent",
+                                      borderRadius: (theme) =>
+                                        Number(theme.shape.borderRadius) / 2,
                                     },
-                                  },
-                                  "&& .Mui-selected:hover": {
-                                    backgroundColor: (theme) =>
-                                      theme.palette.primary.dark,
-                                  },
-                                  "& .MuiPaper-root": {
-                                    color: Colors[resolvedTheme].secondary,
-                                  },
-                                  "&& .MuiPickersDay-today": {
-                                    borderColor: Colors[resolvedTheme].primary,
-                                  },
-                                  svg: {
-                                    color: Colors[resolvedTheme].primary,
-                                  },
-                                  button: {
-                                    color:
-                                      Colors[resolvedTheme]
-                                        .date_picker_button_color,
-                                    backgroundColor: "transparent",
-                                    ":hover": {
+                                    "&& .Mui-selected:focus": {
+                                      backgroundColor: "transparent",
+                                    },
+                                    "&& .Mui-selected:hover": {
                                       backgroundColor:
-                                        Colors[resolvedTheme].hover,
-                                      color:
-                                        Colors[resolvedTheme]
-                                          .date_picker_button_color,
+                                        Colors[resolvedTheme].date_picker_hover,
+                                      borderRadius: (theme) =>
+                                        Number(theme.shape.borderRadius) / 2,
                                     },
-                                    ":disabled": {
-                                      color: Colors[resolvedTheme].secondary,
+                                    "& .MuiPaper-root": {
+                                      bgcolor: Colors[resolvedTheme].header_bg,
+                                      borderRadius: (theme) =>
+                                        Number(theme.shape.borderRadius) / 2,
+                                    },
+                                    padding: 0,
+                                    height: "400px",
+                                    top: "7%",
+                                    "&& .MuiMenu-list": {
+                                      paddingTop: 0.5,
+                                      paddingBottom: 0.5,
+                                      bgcolor: Colors[resolvedTheme].header_bg,
                                     },
                                   },
-                                  span: {
-                                    color: Colors[resolvedTheme].primary,
+                                  anchorOrigin: {
+                                    vertical: "top",
+                                    horizontal: "center",
                                   },
-                                  bgcolor: Colors[resolvedTheme].header_bg,
+                                  transformOrigin: {
+                                    vertical: "top",
+                                    horizontal: "center",
+                                  },
+                                },
+                                IconComponent: () => null,
+                              }}
+                              sx={{
+                                width: 117,
+                                input: {
                                   color: Colors[resolvedTheme].primary,
                                 },
+                                label: {
+                                  color: Colors[resolvedTheme].secondary,
+                                },
+
+                                "& .MuiOutlinedInput-root": {
+                                  "& fieldset": {
+                                    borderColor:
+                                      Colors[resolvedTheme].input_border,
+                                  },
+                                  "&:hover fieldset": {
+                                    borderColor: (theme) =>
+                                      theme.palette.primary.main,
+                                  },
+
+                                  "& .MuiSelect-select": {
+                                    color: Colors[resolvedTheme].primary,
+                                  },
+                                },
                               }}
-                              inputFormat="MMM d, Y"
-                              InputAdornmentProps={{
-                                position: "start",
-                              }}
-                              OpenPickerButtonProps={{ disableRipple: true }}
-                              renderInput={(params) => (
+                              error={!!errors3?.start_time}
+                              helperText={null}
+                            >
+                              {availableStartTimes().map(
+                                (time: any, index: any) => (
+                                  <MenuItem
+                                    sx={{
+                                      "&& .Mui-selected": {
+                                        "&, & .MuiMenuItem-root": {
+                                          backgroundColor:
+                                            Colors[resolvedTheme].time_hover,
+                                        },
+                                        backgroundColor:
+                                          Colors[resolvedTheme].time_hover,
+                                      },
+                                      "&& .MuiMenu-list": {
+                                        paddingTop: 0,
+                                      },
+
+                                      bgcolor: Colors[resolvedTheme].header_bg,
+                                      color: Colors[resolvedTheme].primary,
+                                      margin: "0 8px",
+                                      ":hover": {
+                                        backgroundColor:
+                                          Colors[resolvedTheme].time_hover,
+                                        borderRadius: (theme) =>
+                                          Number(theme.shape.borderRadius) / 2,
+                                      },
+                                    }}
+                                    key={index}
+                                    value={time}
+                                  >
+                                    {time}
+                                  </MenuItem>
+                                )
+                              )}
+                            </TextField>
+                          </Grid>
+                        </Grid>
+
+                        {showEndDate ? (
+                          <>
+                            <Grid
+                              container
+                              rowSpacing={1}
+                              columnSpacing={{ xs: 2.3, sm: 2.3, md: 2.3 }}
+                            >
+                              <Grid item xs={7}>
+                                <LocalizationProvider
+                                  dateAdapter={AdapterDateFns}
+                                >
+                                  <DatePicker
+                                    desktopModeMediaQuery=""
+                                    open={openEnd}
+                                    onOpen={() => setOpenEnd(true)}
+                                    allowSameDateSelection={true}
+                                    label="End Date"
+                                    views={["day"]}
+                                    value={getEndtDate()}
+                                    minDate={getStartDate()}
+                                    onChange={(newValue: any) => {
+                                      if (
+                                        validEventTime(
+                                          startDate,
+                                          startTime,
+                                          newValue,
+                                          endTime
+                                        )
+                                      ) {
+                                        setEndDate(newValue);
+                                      } else {
+                                        adjustEndDate();
+                                      }
+                                    }}
+                                    onClose={() => {
+                                      setOpenEnd(false);
+                                    }}
+                                    PopperProps={{ disablePortal: true }}
+                                    PaperProps={{
+                                      sx: {
+                                        border: Colors[resolvedTheme].border,
+                                        borderRadius: (theme) =>
+                                          Number(theme.shape.borderRadius) / 2,
+                                        "&& .Mui-selected": {
+                                          backgroundColor: (theme) =>
+                                            theme.palette.primary.main,
+                                          "&, & .MuiList-root": {
+                                            color:
+                                              Colors[resolvedTheme]
+                                                .selected_date,
+                                          },
+                                        },
+                                        "&& .Mui-selected:hover": {
+                                          backgroundColor: (theme) =>
+                                            theme.palette.primary.dark,
+                                        },
+                                        "&& .MuiPaper-root": {
+                                          color:
+                                            Colors[resolvedTheme].secondary,
+                                        },
+                                        "&& .MuiPickersDay-today": {
+                                          borderColor:
+                                            Colors[resolvedTheme].primary,
+                                        },
+                                        svg: {
+                                          color: Colors[resolvedTheme].primary,
+                                        },
+                                        button: {
+                                          color:
+                                            Colors[resolvedTheme]
+                                              .date_picker_button_color,
+                                          backgroundColor: "transparent",
+                                          ":hover": {
+                                            backgroundColor:
+                                              Colors[resolvedTheme].hover,
+                                            color:
+                                              Colors[resolvedTheme]
+                                                .date_picker_button_color,
+                                          },
+                                          ":disabled": {
+                                            color:
+                                              Colors[resolvedTheme].secondary,
+                                          },
+                                        },
+                                        span: {
+                                          color: Colors[resolvedTheme].primary,
+                                        },
+                                        bgcolor:
+                                          Colors[resolvedTheme].header_bg,
+                                        color: Colors[resolvedTheme].primary,
+                                      },
+                                    }}
+                                    inputFormat="MMM d, Y"
+                                    InputAdornmentProps={{
+                                      position: "start",
+                                    }}
+                                    OpenPickerButtonProps={{
+                                      disableRipple: true,
+                                    }}
+                                    renderInput={(params) => (
+                                      <TextField
+                                        sx={{
+                                          input: {
+                                            color:
+                                              Colors[resolvedTheme].primary,
+                                          },
+                                          label: {
+                                            color:
+                                              Colors[resolvedTheme].secondary,
+                                          },
+
+                                          "& .MuiOutlinedInput-root": {
+                                            "& fieldset": {
+                                              borderColor:
+                                                Colors[resolvedTheme]
+                                                  .input_border,
+                                            },
+                                            "&:hover fieldset": {
+                                              borderColor: (theme) =>
+                                                theme.palette.primary.main,
+                                            },
+                                            "& svg": {
+                                              color:
+                                                Colors[resolvedTheme].primary,
+                                            },
+                                            "&:hover button": {
+                                              backgroundColor: "transparent",
+                                            },
+                                          },
+                                        }}
+                                        InputLabelProps={{ shrink: true }}
+                                        {...params}
+                                        error={!!errors3?.start_date}
+                                        helperText={null}
+                                        onClick={(e) => {
+                                          setOpenEnd(true);
+                                        }}
+                                      />
+                                    )}
+                                  />
+                                </LocalizationProvider>
+                              </Grid>
+
+                              <Grid item xs={5}>
                                 <TextField
-                                  {...params}
-                                  onClick={(e) => setOpenStart(true)}
+                                  label="End Time"
+                                  value={endTime}
+                                  InputLabelProps={{
+                                    shrink: true,
+                                  }}
+                                  onChange={(e) => {
+                                    if (
+                                      validEventTime(
+                                        startDate,
+                                        startTime,
+                                        endDate,
+                                        e.target.value
+                                      )
+                                    ) {
+                                      setEndTime(e.target.value);
+                                    }
+                                  }}
+                                  select
+                                  SelectProps={{
+                                    MenuProps: {
+                                      sx: {
+                                        "&& .Mui-selected": {
+                                          backgroundColor: "transparent",
+                                          borderRadius: (theme) =>
+                                            Number(theme.shape.borderRadius) /
+                                            2,
+                                        },
+                                        "&& .Mui-selected:focus": {
+                                          backgroundColor: "transparent",
+                                        },
+                                        "&& .Mui-selected:hover": {
+                                          backgroundColor:
+                                            Colors[resolvedTheme]
+                                              .date_picker_hover,
+                                          borderRadius: (theme) =>
+                                            Number(theme.shape.borderRadius) /
+                                            2,
+                                        },
+                                        "& .MuiPaper-root": {
+                                          bgcolor:
+                                            Colors[resolvedTheme].header_bg,
+                                          borderRadius: (theme) =>
+                                            Number(theme.shape.borderRadius) /
+                                            2,
+                                        },
+                                        padding: 0,
+                                        height: "400px",
+                                        top: "7%",
+                                        "&& .MuiMenu-list": {
+                                          paddingTop: 0.5,
+                                          paddingBottom: 0.5,
+                                          bgcolor:
+                                            Colors[resolvedTheme].header_bg,
+                                        },
+                                      },
+                                      anchorOrigin: {
+                                        vertical: "top",
+                                        horizontal: "center",
+                                      },
+                                      transformOrigin: {
+                                        vertical: "top",
+                                        horizontal: "center",
+                                      },
+                                    },
+                                    IconComponent: () => null,
+                                  }}
                                   sx={{
+                                    width: 117,
                                     input: {
                                       color: Colors[resolvedTheme].primary,
                                     },
@@ -1177,873 +1590,515 @@ export default function Drawer() {
                                         borderColor: (theme) =>
                                           theme.palette.primary.main,
                                       },
-
-                                      "& svg": {
+                                      "& .MuiSelect-select": {
                                         color: Colors[resolvedTheme].primary,
-                                      },
-                                      "&:hover button": {
-                                        backgroundColor: "transparent",
                                       },
                                     },
                                   }}
-                                  InputLabelProps={{ shrink: true }}
-                                  error={!!errors3?.start_date}
+                                  error={!!errors3?.start_time}
                                   helperText={null}
-                                />
-                              )}
-                            />
-                          </LocalizationProvider>
-                        </Grid>
-
-                        <Grid item xs={5}>
-                          <TextField
-                            label="Start Time"
-                            value={startTime}
-                            InputLabelProps={{
-                              shrink: true,
-                            }}
-                            onChange={(e) => {
-                              if (
-                                !showEndDate ||
-                                validEventTime(
-                                  startDate,
-                                  e.target.value,
-                                  endDate,
-                                  endTime
-                                )
-                              ) {
-                                setStartTime(e.target.value);
-                              }
-                            }}
-                            select
-                            SelectProps={{
-                              MenuProps: {
-                                sx: {
-                                  "&& .Mui-selected": {
-                                    backgroundColor: "transparent",
-                                    borderRadius: (theme) =>
-                                      Number(theme.shape.borderRadius) / 2,
-                                  },
-                                  "&& .Mui-selected:focus": {
-                                    backgroundColor: "transparent",
-                                  },
-                                  "&& .Mui-selected:hover": {
-                                    backgroundColor:
-                                      Colors[resolvedTheme].date_picker_hover,
-                                    borderRadius: (theme) =>
-                                      Number(theme.shape.borderRadius) / 2,
-                                  },
-                                  "& .MuiPaper-root": {
-                                    bgcolor: Colors[resolvedTheme].header_bg,
-                                    borderRadius: (theme) =>
-                                      Number(theme.shape.borderRadius) / 2,
-                                  },
-                                  padding: 0,
-                                  height: "400px",
-                                  top: "7%",
-                                  "&& .MuiMenu-list": {
-                                    paddingTop: 0.5,
-                                    paddingBottom: 0.5,
-                                    bgcolor: Colors[resolvedTheme].header_bg,
-                                  },
-                                },
-                                anchorOrigin: {
-                                  vertical: "top",
-                                  horizontal: "center",
-                                },
-                                transformOrigin: {
-                                  vertical: "top",
-                                  horizontal: "center",
-                                },
-                              },
-                              IconComponent: () => null,
-                            }}
-                            sx={{
-                              width: 117,
-                              input: {
-                                color: Colors[resolvedTheme].primary,
-                              },
-                              label: {
-                                color: Colors[resolvedTheme].secondary,
-                              },
-
-                              "& .MuiOutlinedInput-root": {
-                                "& fieldset": {
-                                  borderColor:
-                                    Colors[resolvedTheme].input_border,
-                                },
-                                "&:hover fieldset": {
-                                  borderColor: (theme) =>
-                                    theme.palette.primary.main,
-                                },
-
-                                "& .MuiSelect-select": {
-                                  color: Colors[resolvedTheme].primary,
-                                },
-                              },
-                            }}
-                            error={!!errors3?.start_time}
-                            helperText={null}
-                          >
-                            {availableStartTimes().map(
-                              (time: any, index: any) => (
-                                <MenuItem
-                                  sx={{
-                                    "&& .Mui-selected": {
-                                      "&, & .MuiMenuItem-root": {
-                                        backgroundColor:
-                                          Colors[resolvedTheme].time_hover,
-                                      },
-                                      backgroundColor:
-                                        Colors[resolvedTheme].time_hover,
-                                    },
-                                    "&& .MuiMenu-list": {
-                                      paddingTop: 0,
-                                    },
-
-                                    bgcolor: Colors[resolvedTheme].header_bg,
-                                    color: Colors[resolvedTheme].primary,
-                                    margin: "0 8px",
-                                    ":hover": {
-                                      backgroundColor:
-                                        Colors[resolvedTheme].time_hover,
-                                      borderRadius: (theme) =>
-                                        Number(theme.shape.borderRadius) / 2,
-                                    },
-                                  }}
-                                  key={index}
-                                  value={time}
                                 >
-                                  {time}
-                                </MenuItem>
-                              )
-                            )}
-                          </TextField>
-                        </Grid>
-                      </Grid>
-
-                      {showEndDate ? (
-                        <>
-                          <Grid
-                            container
-                            rowSpacing={1}
-                            columnSpacing={{ xs: 2.3, sm: 2.3, md: 2.3 }}
-                          >
-                            <Grid item xs={7}>
-                              <LocalizationProvider
-                                dateAdapter={AdapterDateFns}
-                              >
-                                <DatePicker
-                                  desktopModeMediaQuery=""
-                                  open={openEnd}
-                                  onOpen={() => setOpenEnd(true)}
-                                  allowSameDateSelection={true}
-                                  label="End Date"
-                                  views={["day"]}
-                                  value={getEndtDate()}
-                                  minDate={getStartDate()}
-                                  onChange={(newValue: any) => {
-                                    if (
-                                      validEventTime(
-                                        startDate,
-                                        startTime,
-                                        newValue,
-                                        endTime
-                                      )
-                                    ) {
-                                      setEndDate(newValue);
-                                    } else {
-                                      adjustEndDate();
-                                    }
-                                  }}
-                                  onClose={() => {
-                                    setOpenEnd(false);
-                                  }}
-                                  PopperProps={{ disablePortal: true }}
-                                  PaperProps={{
-                                    sx: {
-                                      border: Colors[resolvedTheme].border,
-                                      borderRadius: (theme) =>
-                                        Number(theme.shape.borderRadius) / 2,
-                                      "&& .Mui-selected": {
-                                        backgroundColor: (theme) =>
-                                          theme.palette.primary.main,
-                                        "&, & .MuiList-root": {
-                                          color:
-                                            Colors[resolvedTheme].selected_date,
-                                        },
-                                      },
-                                      "&& .Mui-selected:hover": {
-                                        backgroundColor: (theme) =>
-                                          theme.palette.primary.dark,
-                                      },
-                                      "&& .MuiPaper-root": {
-                                        color: Colors[resolvedTheme].secondary,
-                                      },
-                                      "&& .MuiPickersDay-today": {
-                                        borderColor:
-                                          Colors[resolvedTheme].primary,
-                                      },
-                                      svg: {
-                                        color: Colors[resolvedTheme].primary,
-                                      },
-                                      button: {
-                                        color:
-                                          Colors[resolvedTheme]
-                                            .date_picker_button_color,
-                                        backgroundColor: "transparent",
-                                        ":hover": {
-                                          backgroundColor:
-                                            Colors[resolvedTheme].hover,
-                                          color:
-                                            Colors[resolvedTheme]
-                                              .date_picker_button_color,
-                                        },
-                                        ":disabled": {
-                                          color:
-                                            Colors[resolvedTheme].secondary,
-                                        },
-                                      },
-                                      span: {
-                                        color: Colors[resolvedTheme].primary,
-                                      },
-                                      bgcolor: Colors[resolvedTheme].header_bg,
-                                      color: Colors[resolvedTheme].primary,
-                                    },
-                                  }}
-                                  inputFormat="MMM d, Y"
-                                  InputAdornmentProps={{
-                                    position: "start",
-                                  }}
-                                  OpenPickerButtonProps={{
-                                    disableRipple: true,
-                                  }}
-                                  renderInput={(params) => (
-                                    <TextField
-                                      sx={{
-                                        input: {
-                                          color: Colors[resolvedTheme].primary,
-                                        },
-                                        label: {
-                                          color:
-                                            Colors[resolvedTheme].secondary,
-                                        },
-
-                                        "& .MuiOutlinedInput-root": {
-                                          "& fieldset": {
-                                            borderColor:
-                                              Colors[resolvedTheme]
-                                                .input_border,
-                                          },
-                                          "&:hover fieldset": {
-                                            borderColor: (theme) =>
-                                              theme.palette.primary.main,
-                                          },
-                                          "& svg": {
-                                            color:
-                                              Colors[resolvedTheme].primary,
-                                          },
-                                          "&:hover button": {
-                                            backgroundColor: "transparent",
-                                          },
-                                        },
-                                      }}
-                                      InputLabelProps={{ shrink: true }}
-                                      {...params}
-                                      error={!!errors3?.start_date}
-                                      helperText={null}
-                                      onClick={(e) => {
-                                        setOpenEnd(true);
-                                      }}
-                                    />
-                                  )}
-                                />
-                              </LocalizationProvider>
-                            </Grid>
-
-                            <Grid item xs={5}>
-                              <TextField
-                                label="End Time"
-                                value={endTime}
-                                InputLabelProps={{
-                                  shrink: true,
-                                }}
-                                onChange={(e) => {
-                                  if (
-                                    validEventTime(
-                                      startDate,
-                                      startTime,
-                                      endDate,
-                                      e.target.value
-                                    )
-                                  ) {
-                                    setEndTime(e.target.value);
-                                  }
-                                }}
-                                select
-                                SelectProps={{
-                                  MenuProps: {
-                                    sx: {
-                                      "&& .Mui-selected": {
-                                        backgroundColor: "transparent",
-                                        borderRadius: (theme) =>
-                                          Number(theme.shape.borderRadius) / 2,
-                                      },
-                                      "&& .Mui-selected:focus": {
-                                        backgroundColor: "transparent",
-                                      },
-                                      "&& .Mui-selected:hover": {
-                                        backgroundColor:
-                                          Colors[resolvedTheme]
-                                            .date_picker_hover,
-                                        borderRadius: (theme) =>
-                                          Number(theme.shape.borderRadius) / 2,
-                                      },
-                                      "& .MuiPaper-root": {
-                                        bgcolor:
-                                          Colors[resolvedTheme].header_bg,
-                                        borderRadius: (theme) =>
-                                          Number(theme.shape.borderRadius) / 2,
-                                      },
-                                      padding: 0,
-                                      height: "400px",
-                                      top: "7%",
-                                      "&& .MuiMenu-list": {
-                                        paddingTop: 0.5,
-                                        paddingBottom: 0.5,
-                                        bgcolor:
-                                          Colors[resolvedTheme].header_bg,
-                                      },
-                                    },
-                                    anchorOrigin: {
-                                      vertical: "top",
-                                      horizontal: "center",
-                                    },
-                                    transformOrigin: {
-                                      vertical: "top",
-                                      horizontal: "center",
-                                    },
-                                  },
-                                  IconComponent: () => null,
-                                }}
-                                sx={{
-                                  width: 117,
-                                  input: {
-                                    color: Colors[resolvedTheme].primary,
-                                  },
-                                  label: {
-                                    color: Colors[resolvedTheme].secondary,
-                                  },
-                                  "& .MuiOutlinedInput-root": {
-                                    "& fieldset": {
-                                      borderColor:
-                                        Colors[resolvedTheme].input_border,
-                                    },
-                                    "&:hover fieldset": {
-                                      borderColor: (theme) =>
-                                        theme.palette.primary.main,
-                                    },
-                                    "& .MuiSelect-select": {
-                                      color: Colors[resolvedTheme].primary,
-                                    },
-                                  },
-                                }}
-                                error={!!errors3?.start_time}
-                                helperText={null}
-                              >
-                                {availableEndTimes().map(
-                                  (time: any, index: any) => (
-                                    <MenuItem
-                                      sx={{
-                                        "&& .Mui-selected": {
-                                          "&, & .MuiMenuItem-root": {
+                                  {availableEndTimes().map(
+                                    (time: any, index: any) => (
+                                      <MenuItem
+                                        sx={{
+                                          "&& .Mui-selected": {
+                                            "&, & .MuiMenuItem-root": {
+                                              backgroundColor:
+                                                Colors[resolvedTheme]
+                                                  .time_hover,
+                                            },
                                             backgroundColor:
                                               Colors[resolvedTheme].time_hover,
                                           },
-                                          backgroundColor:
-                                            Colors[resolvedTheme].time_hover,
-                                        },
-                                        "&& .MuiMenu-list": {
-                                          paddingTop: 0,
-                                        },
+                                          "&& .MuiMenu-list": {
+                                            paddingTop: 0,
+                                          },
 
-                                        bgcolor:
-                                          Colors[resolvedTheme].header_bg,
-                                        color: Colors[resolvedTheme].primary,
-                                        margin: "0 8px",
-                                        ":hover": {
-                                          backgroundColor:
-                                            Colors[resolvedTheme].time_hover,
-                                          borderRadius: (theme) =>
-                                            Number(theme.shape.borderRadius) /
-                                            2,
-                                        },
-                                      }}
-                                      key={index}
-                                      value={time}
-                                    >
-                                      {time}
-                                    </MenuItem>
-                                  )
-                                )}
-                              </TextField>
+                                          bgcolor:
+                                            Colors[resolvedTheme].header_bg,
+                                          color: Colors[resolvedTheme].primary,
+                                          margin: "0 8px",
+                                          ":hover": {
+                                            backgroundColor:
+                                              Colors[resolvedTheme].time_hover,
+                                            borderRadius: (theme) =>
+                                              Number(theme.shape.borderRadius) /
+                                              2,
+                                          },
+                                        }}
+                                        key={index}
+                                        value={time}
+                                      >
+                                        {time}
+                                      </MenuItem>
+                                    )
+                                  )}
+                                </TextField>
+                              </Grid>
                             </Grid>
-                          </Grid>
+                            <IconButton
+                              onClick={() => {
+                                setShowEndDate(false);
+                              }}
+                              sx={{
+                                ":hover": {
+                                  color: (theme) => theme.palette.primary.main,
+                                  textDecoration: "underline",
+                                  backgroundColor: "transparent",
+                                },
+                              }}
+                            >
+                              <Typography
+                                sx={{
+                                  fontWeight: 550,
+                                  color: (theme) => theme.palette.primary.main,
+                                  fontSize: "0.8rem",
+                                }}
+                                variant="subtitle1"
+                              >
+                                - End Date and Time
+                              </Typography>
+                            </IconButton>
+                          </>
+                        ) : (
                           <IconButton
                             onClick={() => {
-                              setShowEndDate(false);
+                              adjustEndDate();
+                              setShowEndDate(true);
                             }}
                             sx={{
                               ":hover": {
                                 color: (theme) => theme.palette.primary.main,
-                                textDecoration: "underline",
                                 backgroundColor: "transparent",
+                                textDecoration: "underline",
                               },
                             }}
                           >
                             <Typography
                               sx={{
+                                fontSize: "0.8rem",
                                 fontWeight: 550,
                                 color: (theme) => theme.palette.primary.main,
-                                fontSize: "0.8rem",
                               }}
                               variant="subtitle1"
                             >
-                              - End Date and Time
+                              + End Date and Time
                             </Typography>
                           </IconButton>
-                        </>
-                      ) : (
-                        <IconButton
-                          onClick={() => {
-                            adjustEndDate();
-                            setShowEndDate(true);
-                          }}
-                          sx={{
-                            ":hover": {
-                              color: (theme) => theme.palette.primary.main,
-                              backgroundColor: "transparent",
-                              textDecoration: "underline",
-                            },
-                          }}
-                        >
-                          <Typography
-                            sx={{
-                              fontSize: "0.8rem",
-                              fontWeight: 550,
-                              color: (theme) => theme.palette.primary.main,
-                            }}
-                            variant="subtitle1"
-                          >
-                            + End Date and Time
-                          </Typography>
-                        </IconButton>
-                      )}
-                      <Button
-                        disableRipple
-                        fullWidth
-                        sx={{
-                          height: "56px",
-                          border: openPrivacy
-                            ? `1px solid ${Colors[resolvedTheme].active_privacy_border}`
-                            : `1px solid ${Colors[resolvedTheme].privacy_border}`,
-                          textTransform: "none",
-                          color: Colors[resolvedTheme].primary,
-                          padding: "8.5px 14px",
-                          justifyContent: "start",
-                          ":hover": {
-                            backgroundColor: "transparent",
-                            borderColor: (theme) => theme.palette.primary.main,
-                          },
-                          ":focus": {
-                            borderColor: (theme) => theme.palette.primary.main,
-                          },
-                        }}
-                        aria-controls={
-                          openPrivacy ? "demo-positioned-menu" : undefined
-                        }
-                        aria-haspopup="true"
-                        aria-expanded={openPrivacy ? "true" : undefined}
-                        onClick={handleClickEventPrivacy}
-                        startIcon={
-                          <>
-                            {privacy == "Privacy" && (
-                              <LockIcon
-                                sx={{
-                                  margin: 1,
-                                  color: Colors[resolvedTheme].primary,
-                                }}
-                              />
-                            )}
-                            {privacy == "Private" && (
-                              <LockIcon
-                                sx={{
-                                  margin: 1,
-                                  color: Colors[resolvedTheme].primary,
-                                }}
-                              />
-                            )}
-                            {privacy == "Public" && (
-                              <PublicRoundedIcon
-                                sx={{
-                                  margin: 1,
-                                  color: Colors[resolvedTheme].primary,
-                                }}
-                              />
-                            )}
-                          </>
-                        }
-                        endIcon={
-                          <KeyboardArrowDownIcon
-                            sx={{
-                              position: "absolute",
-                              right: "7%",
-                              top: "31%",
-                              color: Colors[resolvedTheme].primary,
-                            }}
-                          />
-                        }
-                      >
-                        {privacy == "Privacy" ? (
-                          <>Privacy</>
-                        ) : (
-                          <Box
-                            sx={{ display: "flex", flexDirection: "column" }}
-                          >
-                            <Typography
-                              sx={{
-                                fontSize: "0.7rem",
-                                textAlign: "left",
-                                color: (theme) =>
-                                  openPrivacy
-                                    ? theme.palette.primary.main
-                                    : "undefined",
-                              }}
-                              component="span"
-                            >
-                              Privacy
-                            </Typography>
-                            <Typography
-                              sx={{
-                                color: Colors[resolvedTheme].primary,
-                              }}
-                            >
-                              {privacy}
-                            </Typography>
-                          </Box>
                         )}
-                      </Button>
-                      {privacy === "Private" && (
-                        <FormControlLabel
-                          control={
-                            <IOSSwitch
-                              sx={{ m: 1 }}
-                              checked={invitable}
-                              onChange={(event) =>
-                                setInvitable(event.target.checked)
-                              }
-                            />
-                          }
-                          label={
-                            <div
-                              style={{
-                                display: "flex",
-                                flexDirection: "column",
-                              }}
-                            >
-                              <b>Guests Can Invite People</b>
-                              <span style={{ fontSize: 12 }}>
-                                If this is on, guests can invite people to the
-                                event.
-                              </span>
-                            </div>
-                          }
-                          labelPlacement="start"
-                          sx={{
-                            color: Colors[resolvedTheme].primary,
-                            margin: "10px 0",
-                            display: "flex",
-                            flexDirection: "row-reverse",
-                            alignItems: "start",
-                            justifyContent: "space-between",
-                          }}
-                        />
-                      )}
-                      <Menu
-                        sx={{ mt: "5px" }}
-                        id="demo-positioned-menu"
-                        aria-labelledby="demo-positioned-button"
-                        anchorEl={anchorElPrivacy}
-                        open={openPrivacy}
-                        transitionDuration={0}
-                        onClose={handleCloseEventPrivacy}
-                        anchorOrigin={{
-                          vertical: "bottom",
-                          horizontal: "left",
-                        }}
-                        transformOrigin={{
-                          vertical: "top",
-                          horizontal: "center",
-                        }}
-                        PaperProps={{
-                          sx: {
-                            border: Colors[resolvedTheme].border,
-                            borderRadius: (theme) =>
-                              Number(theme.shape.borderRadius) / 2,
-                            width: 304,
-                            boxShadow: "0px 0px 5px rgb(0 0 0 / 20%)",
-                            bgcolor: Colors[resolvedTheme].header_bg,
-                            color: Colors[resolvedTheme].primary,
-                          },
-                        }}
-                      >
-                        <MenuItem
+                        <Button
                           disableRipple
+                          fullWidth
                           sx={{
-                            display: "flex",
+                            height: "56px",
+                            border: openPrivacy
+                              ? `1px solid ${Colors[resolvedTheme].active_privacy_border}`
+                              : `1px solid ${Colors[resolvedTheme].privacy_border}`,
+                            textTransform: "none",
+                            color: Colors[resolvedTheme].primary,
+                            padding: "8.5px 14px",
                             justifyContent: "start",
                             ":hover": {
                               backgroundColor: "transparent",
+                              borderColor: (theme) =>
+                                theme.palette.primary.main,
+                            },
+                            ":focus": {
+                              borderColor: (theme) =>
+                                theme.palette.primary.main,
                             },
                           }}
+                          aria-controls={
+                            openPrivacy ? "demo-positioned-menu" : undefined
+                          }
+                          aria-haspopup="true"
+                          aria-expanded={openPrivacy ? "true" : undefined}
+                          onClick={handleClickEventPrivacy}
+                          startIcon={
+                            <>
+                              {privacy == "Privacy" && (
+                                <LockIcon
+                                  sx={{
+                                    margin: 1,
+                                    color: Colors[resolvedTheme].primary,
+                                  }}
+                                />
+                              )}
+                              {privacy == "Private" && (
+                                <LockIcon
+                                  sx={{
+                                    margin: 1,
+                                    color: Colors[resolvedTheme].primary,
+                                  }}
+                                />
+                              )}
+                              {privacy == "Public" && (
+                                <PublicRoundedIcon
+                                  sx={{
+                                    margin: 1,
+                                    color: Colors[resolvedTheme].primary,
+                                  }}
+                                />
+                              )}
+                            </>
+                          }
+                          endIcon={
+                            <KeyboardArrowDownIcon
+                              sx={{
+                                position: "absolute",
+                                right: "7%",
+                                top: "31%",
+                                color: Colors[resolvedTheme].primary,
+                              }}
+                            />
+                          }
                         >
-                          <Typography
+                          {privacy == "Privacy" ? (
+                            <>Privacy</>
+                          ) : (
+                            <Box
+                              sx={{ display: "flex", flexDirection: "column" }}
+                            >
+                              <Typography
+                                sx={{
+                                  fontSize: "0.7rem",
+                                  textAlign: "left",
+                                  color: (theme) =>
+                                    openPrivacy
+                                      ? theme.palette.primary.main
+                                      : "undefined",
+                                }}
+                                component="span"
+                              >
+                                Privacy
+                              </Typography>
+                              <Typography
+                                sx={{
+                                  color: Colors[resolvedTheme].primary,
+                                }}
+                              >
+                                {privacy}
+                              </Typography>
+                            </Box>
+                          )}
+                        </Button>
+                        {privacy === "Private" && (
+                          <FormControlLabel
+                            control={
+                              <IOSSwitch
+                                sx={{ m: 1 }}
+                                checked={invitable}
+                                onChange={(event) =>
+                                  setInvitable(event.target.checked)
+                                }
+                              />
+                            }
+                            label={
+                              <div
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                }}
+                              >
+                                <b>Guests Can Invite People</b>
+                                <span style={{ fontSize: 12 }}>
+                                  If this is on, guests can invite people to the
+                                  event.
+                                </span>
+                              </div>
+                            }
+                            labelPlacement="start"
                             sx={{
-                              textAlign: "left",
-                              fontSize: "0.8rem",
                               color: Colors[resolvedTheme].primary,
+                              margin: "10px 0",
+                              display: "flex",
+                              flexDirection: "row-reverse",
+                              alignItems: "start",
+                              justifyContent: "space-between",
                             }}
-                            variant="subtitle1"
-                          >
-                            Choose who can see and join this event.
-                            <br />
-                            You will be able to invite people later.
-                          </Typography>
-                        </MenuItem>
-                        <MenuItem
-                          onClick={() => {
-                            setPrivacy("Private");
-                            handleCloseEventPrivacy();
+                          />
+                        )}
+                        <Menu
+                          sx={{ mt: "5px" }}
+                          id="demo-positioned-menu"
+                          aria-labelledby="demo-positioned-button"
+                          anchorEl={anchorElPrivacy}
+                          open={openPrivacy}
+                          transitionDuration={0}
+                          onClose={handleCloseEventPrivacy}
+                          anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "left",
                           }}
-                          disableRipple
-                          sx={{
-                            px: 0,
-                            margin: "0 8px",
-
-                            justifyContent: "space-around",
-                            ":hover": {
+                          transformOrigin={{
+                            vertical: "top",
+                            horizontal: "center",
+                          }}
+                          PaperProps={{
+                            sx: {
+                              border: Colors[resolvedTheme].border,
                               borderRadius: (theme) =>
                                 Number(theme.shape.borderRadius) / 2,
-                              backgroundColor: Colors[resolvedTheme].time_hover,
+                              width: 304,
+                              boxShadow: "0px 0px 5px rgb(0 0 0 / 20%)",
+                              bgcolor: Colors[resolvedTheme].header_bg,
+                              color: Colors[resolvedTheme].primary,
                             },
                           }}
                         >
-                          <Box
+                          <MenuItem
+                            disableRipple
                             sx={{
                               display: "flex",
-                            }}
-                          >
-                            <ListItemIcon
-                              sx={{
-                                minWidth: "auto",
-                                alignItems: "center",
-                              }}
-                            >
-                              <LockIcon
-                                sx={{
-                                  display: "flex",
-                                  color: Colors[resolvedTheme].primary,
-                                }}
-                                fontSize="small"
-                              />
-                            </ListItemIcon>
-                            <Box
-                              sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "start",
-                              }}
-                            >
-                              <ListItemText
-                                disableTypography
-                                style={{
-                                  color: Colors[resolvedTheme].primary,
-                                }}
-                              >
-                                Private
-                              </ListItemText>
-                              <Typography
-                                variant="subtitle1"
-                                component="span"
-                                sx={{
-                                  fontSize: "0.8rem",
-                                  color: Colors[resolvedTheme].secondary,
-                                }}
-                              >
-                                Only people who are invited
-                              </Typography>
-                            </Box>
-                          </Box>
-
-                          <Radio
-                            sx={{
+                              justifyContent: "start",
                               ":hover": {
                                 backgroundColor: "transparent",
                               },
-                              "&": { color: Colors[resolvedTheme].primary },
-                            }}
-                            checked={privacy === "Private"}
-                            onChange={handlePrivacyChange}
-                            value="Private"
-                            name="radio-buttons"
-                            inputProps={{ "aria-label": "A" }}
-                          />
-                        </MenuItem>
-                        <MenuItem
-                          onClick={() => {
-                            setPrivacy("Public");
-                            setInvitable(true);
-                            handleCloseEventPrivacy();
-                          }}
-                          disableRipple
-                          sx={{
-                            px: 0,
-                            margin: "0 8px",
-
-                            justifyContent: "space-around",
-                            ":hover": {
-                              borderRadius: (theme) =>
-                                Number(theme.shape.borderRadius) / 2,
-                              backgroundColor: Colors[resolvedTheme].time_hover,
-                            },
-                          }}
-                        >
-                          <Box
-                            sx={{
-                              display: "flex",
                             }}
                           >
-                            <ListItemIcon
+                            <Typography
                               sx={{
-                                minWidth: "auto",
-                                alignItems: "center",
+                                textAlign: "left",
+                                fontSize: "0.8rem",
+                                color: Colors[resolvedTheme].primary,
                               }}
+                              variant="subtitle1"
                             >
-                              <PublicRoundedIcon
-                                sx={{
-                                  display: "flex",
-                                  color: Colors[resolvedTheme].primary,
-                                }}
-                                fontSize="small"
-                              />
-                            </ListItemIcon>
+                              Choose who can see and join this event.
+                              <br />
+                              You will be able to invite people later.
+                            </Typography>
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() => {
+                              setPrivacy("Private");
+                              handleCloseEventPrivacy();
+                            }}
+                            disableRipple
+                            sx={{
+                              px: 0,
+                              margin: "0 8px",
+
+                              justifyContent: "space-around",
+                              ":hover": {
+                                borderRadius: (theme) =>
+                                  Number(theme.shape.borderRadius) / 2,
+                                backgroundColor:
+                                  Colors[resolvedTheme].time_hover,
+                              },
+                            }}
+                          >
                             <Box
                               sx={{
                                 display: "flex",
-                                flexDirection: "column",
-                                alignItems: "start",
                               }}
                             >
-                              <ListItemText
-                                disableTypography
-                                style={{
-                                  color: Colors[resolvedTheme].primary,
-                                }}
-                              >
-                                Public
-                              </ListItemText>
-                              <Typography
-                                variant="subtitle1"
-                                component="span"
+                              <ListItemIcon
                                 sx={{
-                                  fontSize: "0.8rem",
-                                  color: Colors[resolvedTheme].secondary,
+                                  minWidth: "auto",
+                                  alignItems: "center",
                                 }}
                               >
-                                Anyone on or off Impish
-                              </Typography>
+                                <LockIcon
+                                  sx={{
+                                    display: "flex",
+                                    color: Colors[resolvedTheme].primary,
+                                  }}
+                                  fontSize="small"
+                                />
+                              </ListItemIcon>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  alignItems: "start",
+                                }}
+                              >
+                                <ListItemText
+                                  disableTypography
+                                  style={{
+                                    color: Colors[resolvedTheme].primary,
+                                  }}
+                                >
+                                  Private
+                                </ListItemText>
+                                <Typography
+                                  variant="subtitle1"
+                                  component="span"
+                                  sx={{
+                                    fontSize: "0.8rem",
+                                    color: Colors[resolvedTheme].secondary,
+                                  }}
+                                >
+                                  Only people who are invited
+                                </Typography>
+                              </Box>
                             </Box>
-                          </Box>
 
-                          <Radio
-                            sx={{
-                              marginLeft: "17px",
-                              ":hover": {
-                                backgroundColor: "transparent",
-                              },
-                              "&": { color: Colors[resolvedTheme].primary },
+                            <Radio
+                              sx={{
+                                ":hover": {
+                                  backgroundColor: "transparent",
+                                },
+                                "&": { color: Colors[resolvedTheme].primary },
+                              }}
+                              checked={privacy === "Private"}
+                              onChange={handlePrivacyChange}
+                              value="Private"
+                              name="radio-buttons"
+                              inputProps={{ "aria-label": "A" }}
+                            />
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() => {
+                              setPrivacy("Public");
+                              setInvitable(true);
+                              handleCloseEventPrivacy();
                             }}
-                            checked={privacy === "Public"}
-                            onChange={handlePrivacyChange}
-                            value="Public"
-                            name="radio-buttons"
-                            inputProps={{ "aria-label": "A" }}
-                          />
-                        </MenuItem>
-                      </Menu>
-                    </form>
-                  </>
-                )}
-              </List>
-            </>
-          )}
-        </>
-      )}
-      {eventDetails && (
-        <div style={{ position: "absolute", bottom: "0", width: "100%" }}>
-          <Divider
-            sx={{
-              borderColor: Colors[resolvedTheme].divider,
-            }}
-          />
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              padding: "10px 16px",
-            }}
-          >
-            <Button
-              disableElevation
-              variant="contained"
+                            disableRipple
+                            sx={{
+                              px: 0,
+                              margin: "0 8px",
+
+                              justifyContent: "space-around",
+                              ":hover": {
+                                borderRadius: (theme) =>
+                                  Number(theme.shape.borderRadius) / 2,
+                                backgroundColor:
+                                  Colors[resolvedTheme].time_hover,
+                              },
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                display: "flex",
+                              }}
+                            >
+                              <ListItemIcon
+                                sx={{
+                                  minWidth: "auto",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <PublicRoundedIcon
+                                  sx={{
+                                    display: "flex",
+                                    color: Colors[resolvedTheme].primary,
+                                  }}
+                                  fontSize="small"
+                                />
+                              </ListItemIcon>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  alignItems: "start",
+                                }}
+                              >
+                                <ListItemText
+                                  disableTypography
+                                  style={{
+                                    color: Colors[resolvedTheme].primary,
+                                  }}
+                                >
+                                  Public
+                                </ListItemText>
+                                <Typography
+                                  variant="subtitle1"
+                                  component="span"
+                                  sx={{
+                                    fontSize: "0.8rem",
+                                    color: Colors[resolvedTheme].secondary,
+                                  }}
+                                >
+                                  Anyone on or off Impish
+                                </Typography>
+                              </Box>
+                            </Box>
+
+                            <Radio
+                              sx={{
+                                marginLeft: "17px",
+                                ":hover": {
+                                  backgroundColor: "transparent",
+                                },
+                                "&": { color: Colors[resolvedTheme].primary },
+                              }}
+                              checked={privacy === "Public"}
+                              onChange={handlePrivacyChange}
+                              value="Public"
+                              name="radio-buttons"
+                              inputProps={{ "aria-label": "A" }}
+                            />
+                          </MenuItem>
+                        </Menu>
+                      </form>
+                    </>
+                  )}
+                </List>
+              </>
+            )}
+          </>
+        )}
+        {eventDetails && (
+          <div style={{ position: "absolute", bottom: "0", width: "100%" }}>
+            <Divider
               sx={{
-                borderRadius: (theme) => Number(theme.shape.borderRadius) / 2,
-                backgroundColor: Colors[resolvedTheme].tab_divider,
-                flexGrow: "1",
-                color: Colors[resolvedTheme].primary,
-                marginRight: "10px",
-                fontWeight: "600",
-                textTransform: "none",
-                "&:hover": {
-                  backgroundColor: Colors[resolvedTheme].back_hover,
-                },
+                borderColor: Colors[resolvedTheme].divider,
               }}
-              onClick={handleBack}
-            >
-              Back
-            </Button>
-            <Button
-              disableElevation
-              variant="contained"
+            />
+            <Box
               sx={{
-                flexGrow: "12",
-                borderRadius: (theme) => Number(theme.shape.borderRadius) / 2,
-                color: "white",
-                backgroundColor: "#1976d2",
-                fontWeight: "600",
-                textTransform: "none",
-                "&:disabled": {
+                display: "flex",
+                flexDirection: "row",
+                padding: "10px 16px",
+              }}
+            >
+              <Button
+                disableElevation
+                variant="contained"
+                sx={{
+                  borderRadius: (theme) => Number(theme.shape.borderRadius) / 2,
                   backgroundColor: Colors[resolvedTheme].tab_divider,
-                  color: Colors[resolvedTheme].border,
-                },
-              }}
-              disabled={values.eventName.length === 0 || privacy === "Privacy"}
-            >
-              Next
-            </Button>
-          </Box>
-        </div>
-      )}
-    </div>
+                  flexGrow: "1",
+                  color: Colors[resolvedTheme].primary,
+                  marginRight: "10px",
+                  fontWeight: "600",
+                  textTransform: "none",
+                  "&:hover": {
+                    backgroundColor: Colors[resolvedTheme].back_hover,
+                  },
+                }}
+                onClick={handleBack}
+              >
+                Back
+              </Button>
+              <Button
+                disableElevation
+                variant="contained"
+                sx={{
+                  flexGrow: "12",
+                  borderRadius: (theme) => Number(theme.shape.borderRadius) / 2,
+                  color: "white",
+                  backgroundColor: "#1976d2",
+                  fontWeight: "600",
+                  textTransform: "none",
+                  "&:disabled": {
+                    backgroundColor: Colors[resolvedTheme].tab_divider,
+                    color: Colors[resolvedTheme].border,
+                  },
+                }}
+                disabled={
+                  values.eventName.length === 0 || privacy === "Privacy"
+                }
+              >
+                Next
+              </Button>
+            </Box>
+          </div>
+        )}
+      </div>
+    </Drawer>
   );
 }

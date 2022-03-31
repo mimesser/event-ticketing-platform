@@ -194,6 +194,7 @@ function Create() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              margin: "20px 0",
             }}
           >
             <div
