@@ -644,11 +644,12 @@ export default function Header({
               component="div"
               sx={{
                 whiteSpace: "nowrap",
-                mr: !events ? 2 : 0,
+                mr: 0,
                 variant: "h6",
-                display: !events
-                  ? { xs: "none", md: "flex" }
-                  : { xs: "flex", md: "flex", sm: "flex" },
+                display:
+                  !events && router.asPath === "/"
+                    ? { xs: "none", md: "flex" }
+                    : { xs: "flex", md: "flex", sm: "flex" },
                 ":hover": {
                   borderRadius: (theme) => Number(theme.shape.borderRadius) * 2,
                   background: Colors[resolvedTheme].hover,
