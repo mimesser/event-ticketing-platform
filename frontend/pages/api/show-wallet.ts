@@ -1,3 +1,4 @@
+import { getLoginSession } from "lib/auth";
 import prisma from "lib/prisma";
 import { NextApiResponse, NextApiRequest } from "next";
 
@@ -5,15 +6,25 @@ export default async function showWallet(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { email, showWalletAddress } = JSON.parse(req.body);
+  const session = await getLoginSession(req);
+
+  if (!session) {
+    res.status(400).json({ error: "Missing session" });
+    return;
+  }
 
   try {
+    const userShowWalletAddress = await prisma.user.findUnique({
+      where: { email: session.email },
+      select: { email: true, showWalletAddress: true },
+    });
+
     await prisma.user.update({
       where: {
-        email: email,
+        email: session.email,
       },
       data: {
-        showWalletAddress: showWalletAddress,
+        showWalletAddress: !userShowWalletAddress?.showWalletAddress,
       },
     });
 
