@@ -8,7 +8,6 @@ import TwitterIcon from "@mui/icons-material/Twitter";
 import Typography from "@mui/material/Typography";
 import Colors from "lib/colors";
 import { useUser } from "lib/hooks";
-import { moonPaySrc } from "lib/moon-pay";
 import Layout from "components/Layout";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -37,6 +36,15 @@ function Dashboard() {
       ? true
       : false
   );
+
+  const [urlWithSignature, setUrlWithSignature] = useState("");
+  React.useEffect(() => {
+    fetch("/api/moonpay-url")
+      .then((r) => r.json())
+      .then((data) => {
+        setUrlWithSignature(data.urlWithSignature);
+      });
+  }, []);
 
   const modalStyle = {
     position: "absolute",
@@ -92,7 +100,7 @@ function Dashboard() {
                   frameBorder="0"
                   height="100%"
                   id="moonPayFrame"
-                  src={moonPaySrc(user.walletAddress, user.email)}
+                  src={urlWithSignature}
                   width="100%"
                 >
                   <p>Your browser does not support iframes.</p>

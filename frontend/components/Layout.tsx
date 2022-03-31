@@ -28,7 +28,6 @@ import ListItemButton from "@mui/material/ListItemButton";
 import { useLocalStorage } from "lib/hooks";
 import Colors from "lib/colors";
 import { magic } from "lib/magic";
-import { moonPaySrc } from "lib/moon-pay";
 import styles from "styles/components/Layout.module.scss";
 
 export default function Layout({
@@ -63,6 +62,15 @@ export default function Layout({
   const [moonPayModal, setMoonPayModal] = useState(false); // buy crypto on moonpay modal
   const [twitterModal, setTwitterModal] = useState(false); // Find frens on Twitter modal
   const [twitterButton, setTwitterButton] = useState(false);
+
+  const [urlWithSignature, setUrlWithSignature] = useState("");
+  React.useEffect(() => {
+    fetch("/api/moonpay-url")
+      .then((r) => r.json())
+      .then((data) => {
+        setUrlWithSignature(data.urlWithSignature);
+      });
+  }, []);
 
   const modalClose = () => {
     setFindFrens(null);
@@ -239,7 +247,7 @@ export default function Layout({
           {/* Site meta */}
           <Meta />
 
-          <Header />
+          <Header urlWithSignature={urlWithSignature} />
           {/* Injected child content */}
           <Box
             component="main"
@@ -326,7 +334,7 @@ export default function Layout({
                         frameBorder="0"
                         height="100%"
                         id="moonPayFrame"
-                        src={moonPaySrc(user.walletAddress, user.email)}
+                        src={urlWithSignature}
                         width="100%"
                       >
                         <p>Your browser does not support iframes.</p>

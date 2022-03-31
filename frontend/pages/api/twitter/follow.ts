@@ -1,7 +1,6 @@
 import { differenceInHours } from "date-fns";
 import { getLoginSession } from "lib/auth";
 import prisma from "lib/prisma";
-import { shortenAddress } from "lib/utils";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function follow(
