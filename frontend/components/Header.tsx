@@ -189,45 +189,19 @@ export default function Header() {
   const [errorSnackShow, setErrorSnackShow] = useState(false);
 
   async function handleShowWalletAddress() {
-    if (showWalletAddress) {
-      setShowWalletAddress(false);
-      try {
-        const res = await fetch("/api/show-wallet", {
-          method: "POST",
-          body: JSON.stringify({
-            email: user.email,
-            showWalletAddress: false,
-          }),
-        });
-        if (res.status === 200) {
-          setSuccessSnackShow(true);
-        } else {
-          setErrorSnackShow(true);
-        }
-      } catch (error) {
+    try {
+      const res = await fetch("/api/show-wallet", {
+        method: "POST",
+      });
+
+      if (res.status === 200) {
+        setShowWalletAddress(!showWalletAddress);
+        setSuccessSnackShow(true);
+      } else {
         setErrorSnackShow(true);
-        console.log(error);
       }
-    }
-    if (!showWalletAddress) {
-      setShowWalletAddress(true);
-      try {
-        const res = await fetch("/api/show-wallet", {
-          method: "POST",
-          body: JSON.stringify({
-            email: user.email,
-            showWalletAddress: true,
-          }),
-        });
-        if (res.status === 200) {
-          setSuccessSnackShow(true);
-        } else {
-          setErrorSnackShow(true);
-        }
-      } catch (error) {
-        setErrorSnackShow(true);
-        console.log(error);
-      }
+    } catch (error) {
+      setErrorSnackShow(true);
     }
   }
 
