@@ -1,4 +1,5 @@
 import { User } from "@prisma/client";
+import { getLoginSession } from "lib/auth";
 import prisma from "lib/prisma";
 import { NextApiResponse, NextApiRequest } from "next";
 
@@ -6,15 +7,17 @@ export default async function updateProfile(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { email, name, username, avatarImage, bannerImage }: User = JSON.parse(
+  const session = await getLoginSession(req);
+
+  if (!session) {
+    res.status(400).json({ error: "Missing session" });
+    return;
+  }
+
+  const { name, username, avatarImage, bannerImage }: User = JSON.parse(
     req.body
   );
   const filteredUsername = username?.replace(/[^a-zA-Z_0-9]/g, "");
-
-  if (!email) {
-    res.status(400).json({ error: "Missing email" });
-    return;
-  }
 
   try {
     if (filteredUsername !== null) {
@@ -29,13 +32,15 @@ export default async function updateProfile(
           select: { email: true, username: true },
         });
 
-        const filteredUsers = users.find((user) => user.email !== email);
+        const filteredUsers = users.find(
+          (user) => user.email !== session.email
+        );
         if (filteredUsers) res.status(200).json({ error: true });
       }
     }
 
     const user = await prisma.user.update({
-      where: { email: email },
+      where: { email: session.email },
       data: {
         name: name === null || name.length === 0 ? null : name,
         username:
@@ -51,7 +56,7 @@ export default async function updateProfile(
 
     const follower = await prisma.user.findUnique({
       where: {
-        email: email,
+        email: session.email,
       },
       select: {
         username: true,
