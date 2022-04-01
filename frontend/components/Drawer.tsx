@@ -448,10 +448,13 @@ export default function ImpishDrawer({
           boxShadow: !events ? "none" : "0px 0px 5px rgb(0 0 0 / 20%)",
           borderRight: !events ? "none" : Colors[resolvedTheme].border,
           width: drawerWidth,
+          minHeight: "100vh",
         },
       }}
     >
-      <div>
+      <div
+        style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
+      >
         {/*  Events signIn Modal */}
         <Modal
           BackdropProps={{
@@ -979,6 +982,7 @@ export default function ImpishDrawer({
                         Colors[resolvedTheme].selected_event_menu,
                     },
                     px: 2,
+                    flexGrow: "1",
                   }}
                 >
                   {(!eventDetails || !eventStep) && (
@@ -2119,7 +2123,7 @@ export default function ImpishDrawer({
           </>
         )}
         {eventDetails && (
-          <div style={{ position: "absolute", bottom: "0", width: "100%" }}>
+          <div>
             <Divider
               sx={{
                 borderColor: Colors[resolvedTheme].divider,
