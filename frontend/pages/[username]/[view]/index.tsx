@@ -17,19 +17,19 @@ import { useRouter } from "next/router";
 import { getLoginSession } from "lib/auth";
 import Colors from "lib/colors";
 import { fetchPublicUser } from "lib/hooks";
+import prisma from "lib/prisma";
 import { useUserInfo } from "lib/user-context";
 import { shortenAddress } from "lib/utils";
 import React from "react";
 import styles from "styles/pages/View.module.scss";
 import { useTheme } from "next-themes";
 
-function View() {
+function View({ data, query }: { data: any; query: any }) {
   const { resolvedTheme } = useTheme();
   const router = useRouter();
   const { username } = router.query;
   const currentUser = useUserInfo();
   const [user, setUser] = React.useState<any>(null);
-  const [data, setData] = React.useState<any>();
 
   const [unfollowModal, setUnFollowModal] = React.useState({
     id: "false",
@@ -51,28 +51,6 @@ function View() {
       });
     }
   }, [username, router]);
-
-  React.useEffect(() => {
-    async function getViewList() {
-      if (user) {
-        try {
-          await fetch("/api/twitter/view-list", {
-            method: "POST",
-            body: JSON.stringify({
-              id: user.id,
-            }),
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              setData(data);
-            });
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    }
-    getViewList();
-  }, [user]);
 
   const view = router.query.view;
   const [value, setValue] = React.useState(view === "followers" ? 0 : 1);
@@ -750,27 +728,64 @@ function View() {
   );
 }
 
-export async function getServerSideProps(context: any) {
-  const query = context.query;
-  const session = await getLoginSession(context.req);
-  if (query.view === "followers" || query.view === "following") {
-    if (session) {
-      return {
-        props: {},
-      };
-    } else {
-      return {
-        redirect: {
-          permanent: false,
-          destination: `/${query.username}`,
-        },
-      };
-    }
-  } else {
-    return {
-      notFound: true,
-    };
-  }
-}
-
 export default View;
+
+export async function getServerSideProps(context: any) {
+  const session = await getLoginSession(context.req);
+  let followers: any[] = [];
+  let following: any[] = [];
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email: session.email },
+      select: { id: true, followers: true, following: true },
+    });
+
+    const followersIds = user?.followers.map((m: any) => m.followingId);
+
+    followers = await prisma.user.findMany({
+      where: {
+        id: {
+          in: followersIds,
+        },
+      },
+      select: {
+        id: true,
+        avatarImage: true,
+        name: true,
+        username: true,
+        walletAddress: true,
+      },
+    });
+
+    const followingIds = user?.following.map((m: any) => m.followersId);
+
+    following = await prisma.user.findMany({
+      where: {
+        id: {
+          in: followingIds,
+        },
+      },
+      select: {
+        id: true,
+        avatarImage: true,
+        name: true,
+        username: true,
+        walletAddress: true,
+      },
+    });
+  } catch (e) {
+    console.log("error fetching tweet following info ", e);
+    followers = [];
+    following = [];
+  }
+  return {
+    props: {
+      data: {
+        followers,
+        following,
+      },
+      query: context.query,
+    },
+  };
+}
