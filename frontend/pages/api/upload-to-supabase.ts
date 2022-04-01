@@ -35,6 +35,7 @@ apiRoute.post(async (req: any, res: NextApiResponse) => {
   const { error } = await storage.upload(filename, req.file.buffer, {
     cacheControl: "3600",
     upsert: false,
+    contentType: "image"
   });
 
   if (error) {
