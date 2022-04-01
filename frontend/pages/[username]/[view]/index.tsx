@@ -731,61 +731,76 @@ function View({ data, query }: { data: any; query: any }) {
 export default View;
 
 export async function getServerSideProps(context: any) {
+  const query = context.query;
   const session = await getLoginSession(context.req);
-  let followers: any[] = [];
-  let following: any[] = [];
 
-  try {
-    const user = await prisma.user.findUnique({
-      where: { email: session.email },
-      select: { id: true, followers: true, following: true },
-    });
+  if (query.view === "followers" || query.view === "following") {
+    if (session) {
+      let followers: any[] = [];
+      let following: any[] = [];
 
-    const followersIds = user?.followers.map((m: any) => m.followingId);
+      try {
+        const user = await prisma.user.findUnique({
+          where: { email: session.email },
+          select: { id: true, followers: true, following: true },
+        });
 
-    followers = await prisma.user.findMany({
-      where: {
-        id: {
-          in: followersIds,
+        const followersIds = user?.followers.map((m: any) => m.followingId);
+
+        followers = await prisma.user.findMany({
+          where: {
+            id: {
+              in: followersIds,
+            },
+          },
+          select: {
+            id: true,
+            avatarImage: true,
+            name: true,
+            username: true,
+            walletAddress: true,
+          },
+        });
+
+        const followingIds = user?.following.map((m: any) => m.followersId);
+
+        following = await prisma.user.findMany({
+          where: {
+            id: {
+              in: followingIds,
+            },
+          },
+          select: {
+            id: true,
+            avatarImage: true,
+            name: true,
+            username: true,
+            walletAddress: true,
+          },
+        });
+      } catch (e) {
+        console.log("error fetching tweet following info ", e);
+        followers = [];
+        following = [];
+      }
+      return {
+        props: {
+          data: {
+            followers,
+            following,
+          },
+          query: context.query,
         },
-      },
-      select: {
-        id: true,
-        avatarImage: true,
-        name: true,
-        username: true,
-        walletAddress: true,
-      },
-    });
-
-    const followingIds = user?.following.map((m: any) => m.followersId);
-
-    following = await prisma.user.findMany({
-      where: {
-        id: {
-          in: followingIds,
+      };
+    } else {
+      return {
+        redirect: {
+          permanent: false,
+          destination: `/${query.username}`,
         },
-      },
-      select: {
-        id: true,
-        avatarImage: true,
-        name: true,
-        username: true,
-        walletAddress: true,
-      },
-    });
-  } catch (e) {
-    console.log("error fetching tweet following info ", e);
-    followers = [];
-    following = [];
+      };
+    }
+  } else {
+    return { notFound: true };
   }
-  return {
-    props: {
-      data: {
-        followers,
-        following,
-      },
-      query: context.query,
-    },
-  };
 }
