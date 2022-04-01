@@ -29,6 +29,8 @@ const Colors: any = {
     selected_notification: "rgba(255, 255, 255, 0.07)",
     preview_border: "1px solid #3E4042",
     back_hover: "rgba(255,255,255,0.3)",
+    location_btn_bg: "#383939",
+    location_btn_hover: "#40504F",
   },
   light: {
     header_bg: "#FFFFFF",
@@ -54,6 +56,8 @@ const Colors: any = {
     selected_notification: "rgba(0, 0, 0, 0.07)",
     preview_border: "1px solid rgba(0, 0, 0, 0.23)",
     back_hover: "rgba(0, 0, 0, 0.35)",
+    location_btn_bg: "#E4E5EA",
+    location_btn_hover: "#D8DADE",
   },
 };
 
