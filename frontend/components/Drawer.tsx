@@ -12,6 +12,7 @@ import Drawer from "@mui/material/Drawer";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -32,8 +33,10 @@ import CalendarViewMonth from "@mui/icons-material/CalendarViewMonth";
 import CloseIcon from "@mui/icons-material/Close";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
+import FmdGoodIcon from "@mui/icons-material/FmdGood";
 import GroupSharpIcon from "@mui/icons-material/GroupSharp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import LanguageIcon from "@mui/icons-material/Language";
 import LockIcon from "@mui/icons-material/Lock";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import PublicRoundedIcon from "@mui/icons-material/PublicRounded";
@@ -96,6 +99,7 @@ export default function ImpishDrawer({
   const [invitable, setInvitable] = React.useState(true);
   const [showEndDate, setShowEndDate] = React.useState(false);
   const [eventDetails, setEventDetails] = React.useState(false);
+  const [eventStep, setEventStep] = React.useState(0);
   const [startDate, setStartDate] = React.useState<any>(null);
   const [endDate, setEndDate] = React.useState<any>(null);
   const [goToRoute, setGoToRoute] = React.useState("");
@@ -103,6 +107,7 @@ export default function ImpishDrawer({
   const [endTime, setEndTime] = React.useState(roundUpTimePlus3());
   const [values, setValues] = React.useState({
     eventName: "",
+    eventLocation: "",
   });
   const [openStart, setOpenStart] = React.useState(false);
   const [openEnd, setOpenEnd] = React.useState(false);
@@ -116,33 +121,36 @@ export default function ImpishDrawer({
   const warningText =
     "You have unsaved changes - are you sure you wish to leave this page?";
 
-  const handleBrowseAway = React.useCallback(() => {
-    if (!eventDetails) return;
-    if (discardModal) return;
-
-    if (
+  const changed = React.useCallback(() => {
+    return (
       startDate !== null ||
       endDate !== null ||
       startTime !== roundUpTime() ||
       endTime !== roundUpTimePlus3() ||
-      values.eventName !== ""
-    ) {
+      values.eventName !== "" ||
+      values.eventLocation !== ""
+    );
+  }, [
+    startDate,
+    endDate,
+    startTime,
+    endTime,
+    values.eventName,
+    values.eventLocation,
+  ]);
+
+  const handleBrowseAway = React.useCallback(() => {
+    if (!eventDetails) return;
+    if (discardModal) return;
+
+    if (changed()) {
       if (window.confirm(warningText)) return;
       router.events.emit("routeChangeError");
       throw "routeChange aborted.";
     }
 
     return;
-  }, [
-    discardModal,
-    endDate,
-    endTime,
-    eventDetails,
-    router.events,
-    startDate,
-    startTime,
-    values.eventName,
-  ]);
+  }, [discardModal, eventDetails, router.events, changed]);
 
   // prompt the user if they try and leave with unsaved changes
   React.useEffect(() => {
@@ -150,13 +158,7 @@ export default function ImpishDrawer({
       if (!eventDetails) return;
       if (discardModal) return;
 
-      if (
-        startDate !== null ||
-        endDate !== null ||
-        startTime !== roundUpTime() ||
-        endTime !== roundUpTimePlus3() ||
-        values.eventName !== ""
-      ) {
+      if (changed()) {
         e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
         // Chrome requires returnValue to be set
         e.returnValue = warningText;
@@ -172,17 +174,7 @@ export default function ImpishDrawer({
       window.removeEventListener("beforeunload", handleWindowClose);
       router.events.off("routeChangeStart", handleBrowseAway);
     };
-  }, [
-    discardModal,
-    endDate,
-    endTime,
-    eventDetails,
-    handleBrowseAway,
-    router.events,
-    startDate,
-    startTime,
-    values.eventName,
-  ]);
+  }, [discardModal, eventDetails, handleBrowseAway, router.events, changed]);
 
   const getStartDate = () => {
     const sDate = startDate || new Date();
@@ -257,6 +249,7 @@ export default function ImpishDrawer({
       if (query.createEvent) {
         if (query.createEvent === "true") {
           setEventDetails(true);
+          setEventStep(0);
         }
       } else {
         setEventDetails(false);
@@ -268,13 +261,7 @@ export default function ImpishDrawer({
   const CHARACTER_LIMIT = 99;
 
   const discard = () => {
-    if (
-      startDate !== null ||
-      endDate !== null ||
-      startTime !== roundUpTime() ||
-      endTime !== roundUpTimePlus3() ||
-      values.eventName !== ""
-    ) {
+    if (changed()) {
       setGoToRoute("/events");
       showDiscardModal(true);
     } else {
@@ -285,8 +272,12 @@ export default function ImpishDrawer({
   };
 
   const handleBack = () => {
-    router.events.off("routeChangeStart", handleBrowseAway);
-    router.push({ pathname: "/events/create" });
+    if (eventStep > 0) {
+      setEventStep(eventStep - 1);
+    } else {
+      router.events.off("routeChangeStart", handleBrowseAway);
+      router.push({ pathname: "/events/create" });
+    }
   };
 
   const goHome = () => {
@@ -430,7 +421,7 @@ export default function ImpishDrawer({
       setSignInEventsModal(true);
     }
   };
-  const handleEventNameChange = (eventName: any) => (event: any) => {
+  const handleEventInfoChange = (eventName: any) => (event: any) => {
     setValues({ ...values, [eventName]: event.target.value });
   };
   const handleClickEventPrivacy = (event: any) => {
@@ -937,7 +928,7 @@ export default function ImpishDrawer({
                   >
                     Create Event
                   </Typography>
-                ) : (
+                ) : eventStep === 0 ? (
                   <Typography
                     sx={{
                       paddingLeft: "16px",
@@ -949,8 +940,31 @@ export default function ImpishDrawer({
                   >
                     Event Details
                   </Typography>
+                ) : (
+                  <div>
+                    <Typography
+                      sx={{
+                        paddingLeft: "16px",
+                        fontSize: "1.6rem",
+                        fontWeight: 900,
+                        color: Colors[resolvedTheme].primary,
+                      }}
+                      variant="h6"
+                    >
+                      Location
+                    </Typography>
+                    <Typography
+                      sx={{
+                        paddingLeft: "16px",
+                        fontSize: "1.2rem",
+                        color: Colors[resolvedTheme].secondary,
+                      }}
+                      variant="h6"
+                    >
+                      Add a physical location for people to join your event.
+                    </Typography>
+                  </div>
                 )}
-
                 <List
                   sx={{
                     "&& .Mui-selected": {
@@ -967,62 +981,64 @@ export default function ImpishDrawer({
                     px: 2,
                   }}
                 >
-                  <ListItemButton
-                    disableRipple
-                    sx={{
-                      borderRadius: (theme) => theme.shape.borderRadius,
-                      ":hover": {
-                        backgroundColor: "transparent",
-                      },
-                    }}
-                    style={{
-                      margin: "0px 0",
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "center",
-                      padding: "12px",
-                      cursor: "default",
-                    }}
-                  >
-                    <Avatar
-                      avatarImage={user?.avatarImage}
-                      walletAddress={user?.walletAddress}
-                      size={36}
-                    />
-                    <Box
+                  {(!eventDetails || !eventStep) && (
+                    <ListItemButton
+                      disableRipple
                       sx={{
+                        borderRadius: (theme) => theme.shape.borderRadius,
+                        ":hover": {
+                          backgroundColor: "transparent",
+                        },
+                      }}
+                      style={{
+                        margin: "0px 0",
                         display: "flex",
-                        flexDirection: "column",
-                        alignItems: "start",
-                        marginLeft: "5%",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        padding: "12px",
+                        cursor: "default",
                       }}
                     >
-                      <ListItemText
-                        disableTypography
-                        style={{
-                          height: 16,
-                          overflow: "hidden",
-                          whiteSpace: "nowrap",
-                          textAlign: "left",
-                          textOverflow: "ellipsis",
-                          width: "130px",
-                          color: Colors[resolvedTheme].primary,
-                        }}
-                      >
-                        {user.name || shortenAddress(user.walletAddress)}
-                      </ListItemText>
-                      <Typography
-                        variant="subtitle1"
-                        component="span"
+                      <Avatar
+                        avatarImage={user?.avatarImage}
+                        walletAddress={user?.walletAddress}
+                        size={36}
+                      />
+                      <Box
                         sx={{
-                          fontSize: "0.6rem",
-                          color: Colors[resolvedTheme].secondary,
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "start",
+                          marginLeft: "5%",
                         }}
                       >
-                        Host - Your Profile
-                      </Typography>
-                    </Box>
-                  </ListItemButton>
+                        <ListItemText
+                          disableTypography
+                          style={{
+                            height: 16,
+                            overflow: "hidden",
+                            whiteSpace: "nowrap",
+                            textAlign: "left",
+                            textOverflow: "ellipsis",
+                            width: "130px",
+                            color: Colors[resolvedTheme].primary,
+                          }}
+                        >
+                          {user.name || shortenAddress(user.walletAddress)}
+                        </ListItemText>
+                        <Typography
+                          variant="subtitle1"
+                          component="span"
+                          sx={{
+                            fontSize: "0.6rem",
+                            color: Colors[resolvedTheme].secondary,
+                          }}
+                        >
+                          Host - Your Profile
+                        </Typography>
+                      </Box>
+                    </ListItemButton>
+                  )}
                   {!eventDetails ? (
                     <ListItemButton
                       sx={{
@@ -1066,7 +1082,7 @@ export default function ImpishDrawer({
                         Create Events
                       </ListItemText>
                     </ListItemButton>
-                  ) : (
+                  ) : eventStep === 0 ? (
                     <>
                       <form onSubmit={handleSubmit3(onSubmitCreateEvents)}>
                         <TextField
@@ -1098,7 +1114,7 @@ export default function ImpishDrawer({
                             },
                           }}
                           inputProps={{ maxLength: CHARACTER_LIMIT }}
-                          onChange={handleEventNameChange("eventName")}
+                          onChange={handleEventInfoChange("eventName")}
                           value={values["eventName"]}
                           helperText={`${values.eventName.length}/${CHARACTER_LIMIT}`}
                           error={!!errors3?.email}
@@ -2035,6 +2051,67 @@ export default function ImpishDrawer({
                         </Menu>
                       </form>
                     </>
+                  ) : (
+                    <>
+                      <TextField
+                        fullWidth
+                        label="Location"
+                        variant="outlined"
+                        autoFocus
+                        sx={{
+                          input: { color: Colors[resolvedTheme].primary },
+                          label: { color: Colors[resolvedTheme].secondary },
+                          "& .MuiOutlinedInput-root": {
+                            "& fieldset": {
+                              borderColor: Colors[resolvedTheme].input_border,
+                            },
+                            "&:hover fieldset": {
+                              borderColor: (theme) =>
+                                theme.palette.primary.main,
+                            },
+                          },
+
+                          marginBottom: "12px",
+                        }}
+                        onChange={handleEventInfoChange("eventLocation")}
+                        value={values["eventLocation"]}
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <FmdGoodIcon
+                                sx={{
+                                  backgroundColor:
+                                    Colors[resolvedTheme].location_btn_bg,
+                                  ":hover": {
+                                    backgroundColor:
+                                      Colors[resolvedTheme].location_btn_hover,
+                                  },
+                                }}
+                                style={{
+                                  padding: 10,
+                                  color: Colors[resolvedTheme].primary,
+                                  borderRadius: 5,
+                                  cursor: "pointer",
+                                }}
+                              />
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                      <Tooltip title="Time zone set by the location">
+                        <Typography
+                          component="span"
+                          sx={{
+                            alignItems: "center",
+                            color: Colors[resolvedTheme].secondary,
+                            display: "flex",
+                          }}
+                        >
+                          <LanguageIcon sx={{ fontSize: 16, mr: 1 }} />
+                          Pacific Daylight Time(PDT)
+                        </Typography>
+                      </Tooltip>
+                    </>
                   )}
                 </List>
               </>
@@ -2092,6 +2169,7 @@ export default function ImpishDrawer({
                 disabled={
                   values.eventName.length === 0 || privacy === "Privacy"
                 }
+                onClick={() => setEventStep(eventStep + 1)}
               >
                 Next
               </Button>
