@@ -65,12 +65,14 @@ export default function Layout({
 
   const [urlWithSignature, setUrlWithSignature] = useState("");
   React.useEffect(() => {
-    fetch("/api/moonpay-url")
-      .then((r) => r.json())
-      .then((data) => {
-        setUrlWithSignature(data.urlWithSignature);
-      });
-  }, []);
+    if (user && !loading) {
+      fetch("/api/moonpay-url")
+        .then((r) => r.json())
+        .then((data) => {
+          setUrlWithSignature(data.urlWithSignature);
+        });
+    }
+  }, [user, loading]);
 
   const modalClose = () => {
     setFindFrens(null);
