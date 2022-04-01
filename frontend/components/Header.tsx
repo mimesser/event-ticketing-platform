@@ -52,7 +52,7 @@ import { fetchPublicUser } from "lib/hooks";
 import { useUserInfo } from "lib/user-context";
 import { magic } from "lib/magic";
 import { shortenAddress, shortenText } from "lib/utils";
-import { supabase } from "lib/supabase";
+import { useNotifications } from "lib/supabase";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -88,20 +88,7 @@ export default function Header({
     router.pathname === "/events/create" ? true : false
   );
 
-  const [notifications, setNotifications] = useState(
-    user?.notifications ? user?.notifications : []
-  );
-  notifications.sort((firstItem: any, secondItem: any) => {
-    if (firstItem.createdAt < secondItem.createdAt) {
-      return 1;
-    }
-
-    if (firstItem.createdAt > secondItem.createdAt) {
-      return -1;
-    }
-    return 0;
-  });
-
+  const { notifications } = useNotifications(user);
   const totalUnread = notifications.filter((item: any) => !item.isRead).length;
   const newNotificationsLength = notifications.filter(
     (m: any) =>
@@ -112,44 +99,6 @@ export default function Header({
     (m: any) =>
       differenceInCalendarDays(new Date(m.createdAt), dateUTC) < -1 || m.isRead
   ).length;
-
-  useEffect(() => {
-    async function realtimeNotifications() {
-      supabase
-        .from(`notifications:userId=eq.${user.id}`)
-        .on("*", async (payload) => {
-          const { data: notifications, error } = await supabase
-            .from("notifications")
-            .select("*")
-            .eq("userId", `${user.id}`);
-          if (!error) {
-            setNotifications(notifications as any);
-          }
-        })
-        .subscribe();
-    }
-    if (user) {
-      realtimeNotifications();
-    }
-  }, [user]);
-
-  useEffect(() => {
-    async function getNotifications() {
-      const { data: notifications, error } = await supabase
-        .from("notifications")
-        .select("*")
-        .eq("userId", `${user.id}`);
-
-      if (!error) {
-        setNotifications(notifications as any);
-      } else {
-        console.log(error);
-      }
-    }
-    if (user) {
-      getNotifications();
-    }
-  }, [user]);
 
   const drawerWidth = events ? 340 : 240;
 
