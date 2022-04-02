@@ -20,7 +20,7 @@ export default async function updateProfile(
   const filteredUsername = username?.replace(/[^a-zA-Z_0-9]/g, "");
 
   try {
-    if (filteredUsername !== null) {
+    if (typeof filteredUsername === "string") {
       if (filteredUsername?.length !== 0) {
         const users = await prisma.user.findMany({
           where: {
@@ -35,7 +35,9 @@ export default async function updateProfile(
         const filteredUsers = users.find(
           (user) => user.email !== session.email
         );
-        if (filteredUsers) res.status(200).json({ error: true });
+        if (filteredUsers) {
+          return res.status(200).json({ error: true });
+        }
       }
     }
 

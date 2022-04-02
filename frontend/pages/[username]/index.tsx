@@ -249,6 +249,16 @@ function Profile() {
     }
   };
   const saveProfile = async () => {
+    if (
+      user.name === newName &&
+      user.username === newUsername &&
+      user.avatarImage === newAvatar &&
+      user.bannerImage === newBanner
+    ) {
+      showEditProfile(false);
+      return;
+    }
+
     if (invalidUsername) return;
     const response = await (
       await fetch("/api/update-profile", {
