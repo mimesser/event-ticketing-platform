@@ -3,7 +3,12 @@ import Router from "next/router";
 import { useUserInfo } from "./user-context";
 import { isBrowser } from "./utils";
 
-export function useUser({ redirectTo, redirectIfFound }: any = {}) {
+interface RedirectInfo {
+  redirectTo?: string,
+  redirectIfFound?: boolean
+}
+
+export function useUser({ redirectTo, redirectIfFound }: RedirectInfo = {}) {
   const { user, loading } = useUserInfo();
   const hasUser = Boolean(user);
 
@@ -18,7 +23,7 @@ export function useUser({ redirectTo, redirectIfFound }: any = {}) {
       // If redirectTo is set, redirect if the user was not found.
       (redirectTo && !redirectIfFound && !hasUser && !loading) ||
       // If redirectIfFound is also set, redirect if the user was found
-      (redirectIfFound && hasUser && !loading)
+      (redirectTo && redirectIfFound && hasUser && !loading)
     ) {
       Router.push(redirectTo, "/");
     }
@@ -27,7 +32,7 @@ export function useUser({ redirectTo, redirectIfFound }: any = {}) {
   return { user, loading };
 }
 
-export async function fetchPublicUser(username: any) {
+export async function fetchPublicUser(username: string | number) {
   const user =
     (
       await (
