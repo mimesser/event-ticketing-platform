@@ -284,6 +284,10 @@ export default function ImpishDrawer({
     }
   };
 
+  const handleNext = () => {
+    if (eventStep < 1) setEventStep(eventStep + 1);
+  };
+
   const goHome = () => {
     if (
       startDate !== null ||
@@ -2267,8 +2271,23 @@ export default function ImpishDrawer({
             <Divider
               sx={{
                 borderColor: Colors[resolvedTheme].divider,
+                marginBottom: 1.5,
               }}
             />
+            <div className={styles.stepper}>
+              {[-1, 0, 1, 2].map((value: number, index: number) => (
+                <Box
+                  key={index}
+                  sx={{
+                    bgcolor: (theme) =>
+                      value < eventStep
+                        ? theme.palette.primary.main
+                        : Colors[resolvedTheme].back_hover,
+                  }}
+                  className={styles.step}
+                />
+              ))}
+            </div>
             <Box
               sx={{
                 display: "flex",
@@ -2311,9 +2330,13 @@ export default function ImpishDrawer({
                   },
                 }}
                 disabled={
-                  values.eventName.length === 0 || privacy === "Privacy"
+                  !(
+                    eventStep === 0 &&
+                    values.eventName &&
+                    privacy !== "Privacy"
+                  )
                 }
-                onClick={() => setEventStep(eventStep + 1)}
+                onClick={handleNext}
               >
                 Next
               </Button>
