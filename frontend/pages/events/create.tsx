@@ -192,9 +192,9 @@ function Create() {
             component="div"
             style={{
               display: "flex",
-              alignItems: "center",
               justifyContent: "center",
               margin: "20px 0",
+              maxHeight: "calc(100% - 104px)",
             }}
           >
             <div
