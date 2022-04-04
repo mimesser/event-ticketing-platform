@@ -5,7 +5,7 @@ import prisma from "lib/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function login(req: NextApiRequest, res: NextApiResponse) {
-  const didToken = req.headers.authorization?.substr(7) || "";
+  const didToken = req.headers.authorization?.substring(7) || "";
 
   const metadata = await magic.users.getMetadataByToken(didToken);
 

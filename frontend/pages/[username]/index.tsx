@@ -378,11 +378,11 @@ function Profile() {
 
     const formData = new FormData();
     formData.append("file", file);
-    let upload;
+    formData.append("filename", filename);
 
     try {
-      upload = await (
-        await fetch(`/api/upload-to-supabase?filename=${filename}`, {
+      let upload = await (
+        await fetch(`/api/upload-image`, {
           method: "POST",
           body: formData,
           mode: isProduction ? undefined : "no-cors",

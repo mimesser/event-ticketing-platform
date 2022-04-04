@@ -20,7 +20,7 @@ apiRoute.post(async (req: any, res: NextApiResponse) => {
     return;
   }
 
-  const filename = req.query.filename;
+  const filename = req.body.filename;
 
   if (!filename.includes(session.publicAddress)) {
     res
