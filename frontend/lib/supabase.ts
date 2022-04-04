@@ -10,16 +10,16 @@ export const useNotifications = (user: any) => {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    fetchMessages(user.id, setNotifications);
+    fetchMessages(user?.id, setNotifications);
 
     const notificationsListener = supabase
       .from("notifications")
-      .on("*", () => fetchMessages(user.id, setNotifications))
+      .on("*", () => fetchMessages(user?.id, setNotifications))
       .subscribe();
     return () => {
       notificationsListener.unsubscribe();
     };
-  }, [user.id]);
+  }, [user?.id]);
 
   return { notifications };
 };
