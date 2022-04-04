@@ -13,6 +13,7 @@ import styles from "styles/components/Preview.module.scss";
 
 export default function Preview({
   eventName,
+  eventLocation,
   host,
   avatar,
   address,
@@ -23,6 +24,7 @@ export default function Preview({
   view,
 }: {
   eventName: any;
+  eventLocation: any;
   host: any;
   avatar: any;
   address: any;
@@ -66,7 +68,7 @@ export default function Preview({
             color: Colors[resolvedTheme].privacy_border,
           }}
         >
-          Location
+          {eventLocation || "Location"}
         </span>
         <div
           className={

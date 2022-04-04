@@ -20,6 +20,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import MenuList from "@mui/material/MenuList";
 import Modal from "@mui/material/Modal";
 import Radio from "@mui/material/Radio";
 import TextField from "@mui/material/TextField";
@@ -59,8 +60,10 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useTheme } from "next-themes";
 import React from "react";
+import useGoogleMap from "react-google-autocomplete/lib/usePlacesAutocompleteService";
 import { useForm } from "react-hook-form";
 import styles from "styles/components/Drawer.module.scss";
+import { Popover } from "@mui/material";
 
 export default function ImpishDrawer({
   variant,
@@ -74,6 +77,7 @@ export default function ImpishDrawer({
   const { resolvedTheme } = useTheme();
   const {
     setEventName,
+    setEventLocation,
     setStartDateAndTime,
     setEndDateAndTime,
     setEventPrivacy,
@@ -430,6 +434,63 @@ export default function ImpishDrawer({
   const handleCloseEventPrivacy = () => {
     setAnchorElPrivacy(null);
   };
+
+  const { placePredictions, getPlacePredictions, placesService } = useGoogleMap(
+    {
+      apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API,
+    }
+  );
+  const debounceTime = 500;
+  const [predictTImer, setPredictTimer] = React.useState<NodeJS.Timeout | null>(
+    null
+  );
+  const [places, setPlaces] = React.useState<any[]>([]);
+  const locSearchRef = React.useRef<HTMLElement | null>(null);
+  const [locationAnchor, setLocationAnchor] =
+    React.useState<HTMLElement | null>(null);
+
+  const searchPlaces = (search: string) => {};
+
+  const locationSearchUpdate = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (predictTImer) {
+      clearTimeout(predictTImer);
+    }
+
+    let timerID = setTimeout(
+      (search) => {
+        setPlaces([]);
+        getPlacePredictions({ input: search });
+      },
+      debounceTime,
+      event.target.value
+    );
+    setPredictTimer(timerID);
+
+    handleEventInfoChange("eventLocation")(event);
+  };
+
+  React.useEffect(() => {
+    placePredictions.map((place) => {
+      placesService?.getDetails(
+        {
+          placeId: place.place_id,
+        },
+        (placeDetails: any) => {
+          if (placeDetails) setPlaces((places) => [...places, placeDetails]);
+        }
+      );
+    });
+  }, [placePredictions, placesService]);
+
+  React.useEffect(() => {
+    if (places && places.length > 0) {
+      setLocationAnchor(locSearchRef?.current);
+    } else setLocationAnchor(null);
+  }, [places, setLocationAnchor, locSearchRef]);
+  const handleCloseLocationPopover = () => {
+    setLocationAnchor(null);
+  };
+  const locationPopoverOpen = Boolean(locationAnchor);
 
   return (
     <Drawer
@@ -2074,12 +2135,17 @@ export default function ImpishDrawer({
                                 theme.palette.primary.main,
                             },
                           },
-
                           marginBottom: "12px",
                         }}
-                        onChange={handleEventInfoChange("eventLocation")}
+                        onClick={() => {
+                          if (places && places.length > 0) {
+                            setLocationAnchor(locSearchRef?.current);
+                          }
+                        }}
+                        onChange={locationSearchUpdate}
                         value={values["eventLocation"]}
                         InputProps={{
+                          ref: locSearchRef,
                           endAdornment: (
                             <InputAdornment position="end">
                               <FmdGoodIcon
@@ -2102,6 +2168,75 @@ export default function ImpishDrawer({
                           ),
                         }}
                       />
+                      <Popover
+                        open={locationPopoverOpen}
+                        anchorEl={locationAnchor}
+                        anchorOrigin={{
+                          horizontal: "left",
+                          vertical: "bottom",
+                        }}
+                        onClose={handleCloseLocationPopover}
+                        disableAutoFocus
+                        PaperProps={{
+                          sx: {
+                            width: drawerWidth - 40,
+                            borderRadius: (theme) => theme.shape.borderRadius,
+                            boxShadow:
+                              Colors[resolvedTheme].account_menu_shadow,
+                            bgcolor: Colors[resolvedTheme].header_bg,
+                            color: Colors[resolvedTheme].primary,
+                          },
+                        }}
+                      >
+                        <MenuList>
+                          {places.map((place: any, index: any) => (
+                            <MenuItem
+                              key={index}
+                              sx={{
+                                ":hover": {
+                                  backgroundColor: Colors[resolvedTheme].hover,
+                                },
+                                borderRadius: "0.5rem",
+                              }}
+                            >
+                              <div
+                                className={styles.place}
+                                onClick={() => {
+                                  handleEventInfoChange("eventLocation")({
+                                    target: { value: place.name },
+                                  });
+                                  handleCloseLocationPopover();
+                                  setEventLocation(place.name);
+                                }}
+                              >
+                                <Image
+                                  src={place.icon}
+                                  alt="Loc"
+                                  width={32}
+                                  height={32}
+                                  layout="fixed"
+                                />
+                                <div className={styles.place_info}>
+                                  <span
+                                    className={styles.two_line_span}
+                                    style={{ fontWeight: "bold" }}
+                                  >
+                                    {place.name}
+                                  </span>
+                                  <span
+                                    className={styles.two_line_span}
+                                    style={{
+                                      color: Colors[resolvedTheme].secondary,
+                                    }}
+                                  >
+                                    {place.formatted_address}
+                                  </span>
+                                </div>
+                              </div>
+                            </MenuItem>
+                          ))}
+                        </MenuList>
+                      </Popover>
                       <Tooltip title="Time zone set by the location">
                         <Typography
                           component="span"
