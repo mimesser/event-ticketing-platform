@@ -24,7 +24,8 @@ function Create() {
   const { resolvedTheme } = useTheme();
 
   const { user } = useUserInfo();
-  const { eventName, startDate, endDate, privacy, invitable } = useNewEvent();
+  const { eventName, eventLocation, startDate, endDate, privacy, invitable } =
+    useNewEvent();
   const [eventDay, setEventDay] = useState<any>();
   const [eventPeriod, setEventPeriod] = useState<any>();
 
@@ -264,6 +265,7 @@ function Create() {
 
               <Preview
                 eventName={eventName}
+                eventLocation={eventLocation}
                 host={
                   user?.name || user?.username
                     ? `@${user?.username}`

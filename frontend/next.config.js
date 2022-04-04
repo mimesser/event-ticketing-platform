@@ -6,6 +6,7 @@ module.exports = {
       "pbs.twimg.com",
       "storage.googleapis.com",
       "osdblqwgkimtuiwdzsuo.supabase.co",
+      "maps.gstatic.com",
     ],
   },
 };
