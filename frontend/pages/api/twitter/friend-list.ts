@@ -17,10 +17,10 @@ export default async function linkUser(
     const twitterID = token.twitterProfile.id_str;
 
     const userClient = new TwitterApi({
-      appKey: process.env.TWITTER_KEY as any,
-      appSecret: process.env.TWITTER_SECRET as any,
-      accessToken: oauth_token as any,
-      accessSecret: oauth_token_secret as any,
+      appKey: process.env.TWITTER_KEY as string,
+      appSecret: process.env.TWITTER_SECRET as string,
+      accessToken: oauth_token as string,
+      accessSecret: oauth_token_secret as string,
     });
 
     const data = await userClient.v2.following(twitterID, {

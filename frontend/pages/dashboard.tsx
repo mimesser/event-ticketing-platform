@@ -22,7 +22,7 @@ function Dashboard() {
   const { query } = useRouter();
   const firstTimeUser = query.userExists === "false";
   const { user } = useUser({
-    redirectTo: firstTimeUser ? false : "/dashboard",
+    redirectTo: firstTimeUser ? "" : "/dashboard",
     redirectIfFound: true,
   });
   const [moonpayModalForBanner, setMoonpayModalForBanner] = useState(false); // buy crypto on moonpay modal for banner

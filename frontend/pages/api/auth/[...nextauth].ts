@@ -73,7 +73,7 @@ const auth = (req: NextApiRequest, res: NextApiResponse) =>
     // when an action is performed.
     // https://next-auth.js.org/configuration/callbacks
     callbacks: {
-      async signIn({ user, account, profile, email, credentials }) {
+      async signIn({ profile }) {
         const session = await getLoginSession(req);
 
         await prisma.user.update({
