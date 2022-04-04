@@ -514,7 +514,12 @@ export default function ImpishDrawer({
       }}
     >
       <div
-        style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          minHeight: "100vh",
+          height: "100%",
+        }}
       >
         {/*  Events signIn Modal */}
         <Modal
