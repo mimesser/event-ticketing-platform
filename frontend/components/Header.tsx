@@ -89,13 +89,13 @@ export default function Header({
   );
 
   const { notifications } = useNotifications(user);
-  const totalUnread = notifications.filter((item: any) => !item.isRead).length;
-  const newNotificationsLength = notifications.filter(
+  const totalUnread = notifications?.filter((item: any) => !item.isRead).length;
+  const newNotificationsLength = notifications?.filter(
     (m: any) =>
       differenceInCalendarDays(new Date(m.createdAt), dateUTC) >= -1 &&
       !m.isRead
   ).length;
-  const earlierNotificationsLength = notifications.filter(
+  const earlierNotificationsLength = notifications?.filter(
     (m: any) =>
       differenceInCalendarDays(new Date(m.createdAt), dateUTC) < -1 || m.isRead
   ).length;
