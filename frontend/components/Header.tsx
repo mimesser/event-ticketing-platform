@@ -800,7 +800,7 @@ export default function Header({
                       }
                     >
                       <MenuList>
-                        {notifications.map(
+                        {notifications?.map(
                           ({
                             id,
                             title,
