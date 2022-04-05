@@ -2218,13 +2218,15 @@ export default function ImpishDrawer({
                                   setEventLocation(place.name);
                                 }}
                               >
-                                <Image
-                                  src={place.icon}
-                                  alt="Loc"
-                                  width={32}
-                                  height={32}
-                                  layout="fixed"
-                                />
+                                <div style={{ margin: "0 6px 0 0" }}>
+                                  <Image
+                                    src={place.icon}
+                                    alt="Loc"
+                                    width={32}
+                                    height={32}
+                                    layout="fixed"
+                                  />
+                                </div>
                                 <div className={styles.place_info}>
                                   <span
                                     className={styles.two_line_span}
