@@ -953,6 +953,8 @@ export default function Header({
                               <MenuItem
                                 onClick={() => {
                                   goToFollower(followerUserId);
+                                  markNotificationAsRead([id]);
+
                                   notificationType === "Twitter" &&
                                     setTwitterModal(true);
 

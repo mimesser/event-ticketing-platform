@@ -7,7 +7,7 @@ export const supabase = createClient(
 );
 
 export const useNotifications = (user: any) => {
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState(user?.notifications);
 
   useEffect(() => {
     fetchMessages(user?.id, setNotifications);
