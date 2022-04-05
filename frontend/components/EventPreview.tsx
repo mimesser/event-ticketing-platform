@@ -1,11 +1,15 @@
 import Button from "@mui/material/Button";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import EmailIcon from "@mui/icons-material/Email";
+import FmdGoodIcon from "@mui/icons-material/FmdGood";
 import LockIcon from "@mui/icons-material/Lock";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import PublicIcon from "@mui/icons-material/Public";
+import RoomIcon from "@mui/icons-material/Room";
 import Avatar from "components/Avatar";
 import Typography from "@mui/material/Typography";
+import MapMarker from "components/MapMarker";
+import GoogleMapReact from "google-map-react";
 import Colors from "lib/colors";
 import { shortenAddress } from "lib/utils";
 import { useTheme } from "next-themes";
@@ -68,7 +72,7 @@ export default function Preview({
             color: Colors[resolvedTheme].privacy_border,
           }}
         >
-          {eventLocation || "Location"}
+          {eventLocation?.name || "Location"}
         </span>
         <div
           className={
@@ -153,7 +157,9 @@ export default function Preview({
           >
             <span style={{ fontWeight: "bold" }}>Details</span>
             <div className={styles.event_host}>
-              <PeopleAltIcon />
+              <PeopleAltIcon
+                style={{ color: Colors[resolvedTheme].secondary }}
+              />
               <div>
                 1 person
                 <span className={styles.mobile_hide}>
@@ -170,15 +176,25 @@ export default function Preview({
                 marginLeft: 30,
               }}
             />
+            {eventLocation && (
+              <div className={styles.event_host}>
+                <FmdGoodIcon
+                  style={{ color: Colors[resolvedTheme].secondary }}
+                />
+                <b>{eventLocation.name}</b>
+              </div>
+            )}
             {privacy === "Private" && (
               <div className={styles.event_host}>
-                <LockIcon />
+                <LockIcon style={{ color: Colors[resolvedTheme].secondary }} />
                 <span>Private &bull; Only people who are invited</span>
               </div>
             )}
             {privacy === "Public" && (
               <div className={styles.event_host}>
-                <PublicIcon />
+                <PublicIcon
+                  style={{ color: Colors[resolvedTheme].secondary }}
+                />
                 <span>Public &bull; Anyone on or off Impish</span>
               </div>
             )}
@@ -244,45 +260,90 @@ export default function Preview({
             </div>
           )}
         </div>
-        <div
-          className={styles.guest_list}
-          style={{
-            backgroundColor: Colors[resolvedTheme].header_bg,
-            boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
-          }}
-        >
-          <div className={styles.between}>
-            <span style={{ fontWeight: "bold" }}>Guest List</span>
-            <Typography color="primary" fontWeight={300} fontSize={14}>
-              See All
-            </Typography>
-          </div>
-          <div className={styles.between} style={{ margin: "0 30px" }}>
-            <div className={styles.col}>
-              <span style={{ fontWeight: "bold" }}>1</span>
-              <span
-                style={{
-                  color: Colors[resolvedTheme].secondary,
-                  fontSize: 14,
+        <div className={styles.event_info}>
+          {eventLocation && (
+            <div
+              className={styles.map_info}
+              style={{
+                backgroundColor: Colors[resolvedTheme].header_bg,
+                borderRadius: "8px",
+                overflow: "hidden",
+              }}
+            >
+              <GoogleMapReact
+                bootstrapURLKeys={{
+                  key: process.env.NEXT_PUBLIC_GOOGLE_MAP_API || "",
                 }}
+                center={{
+                  lat: eventLocation?.geometry?.location?.lat(),
+                  lng: eventLocation?.geometry?.location?.lng(),
+                }}
+                options={{
+                  draggable: false,
+                  fullscreenControl: false,
+                  keyboardShortcuts: false,
+                  streetViewControl: false,
+                  zoomControl: false,
+                }}
+                zoom={14}
               >
-                GOING
-              </span>
+                <MapMarker
+                  lat={eventLocation?.geometry?.location?.lat()}
+                  lng={eventLocation?.geometry?.location?.lng()}
+                >
+                  <RoomIcon
+                    style={{
+                      color: "red",
+                    }}
+                  />
+                </MapMarker>
+              </GoogleMapReact>
+              <span>{eventLocation?.name}</span>
             </div>
-          </div>
+          )}
           <div
-            className={styles.divider}
-            style={{ backgroundColor: Colors[resolvedTheme].hover }}
-          />
-          <div className={styles.row}>
-            <Avatar avatarImage={avatar} walletAddress={address} size={36} />
-            <div className={styles.col} style={{ alignItems: "start" }}>
-              <span>{host || shortenAddress(address)}</span>
-              <span
-                style={{ fontSize: 12, color: Colors[resolvedTheme].secondary }}
-              >
-                Host
-              </span>
+            className={styles.guest_list}
+            style={{
+              backgroundColor: Colors[resolvedTheme].header_bg,
+              boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
+            }}
+          >
+            <div className={styles.between}>
+              <span style={{ fontWeight: "bold" }}>Guest List</span>
+              <Typography color="primary" fontWeight={300} fontSize={14}>
+                See All
+              </Typography>
+            </div>
+            <div className={styles.between} style={{ margin: "0 30px" }}>
+              <div className={styles.col}>
+                <span style={{ fontWeight: "bold" }}>1</span>
+                <span
+                  style={{
+                    color: Colors[resolvedTheme].secondary,
+                    fontSize: 14,
+                  }}
+                >
+                  GOING
+                </span>
+              </div>
+            </div>
+            <div
+              className={styles.divider}
+              style={{ backgroundColor: Colors[resolvedTheme].hover }}
+            />
+            <div className={styles.row}>
+              <Avatar avatarImage={avatar} walletAddress={address} size={36} />
+              <div className={styles.col} style={{ alignItems: "start" }}>
+                <span>{host || shortenAddress(address)}</span>
+                <span
+                  style={{
+                    fontSize: 12,
+                    color: Colors[resolvedTheme].secondary,
+                  }}
+                >
+                  Host
+                </span>
+              </div>
             </div>
           </div>
         </div>

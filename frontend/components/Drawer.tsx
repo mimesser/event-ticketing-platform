@@ -2215,7 +2215,7 @@ export default function ImpishDrawer({
                                     target: { value: place.name },
                                   });
                                   handleCloseLocationPopover();
-                                  setEventLocation(place.name);
+                                  setEventLocation(place);
                                 }}
                               >
                                 <div style={{ margin: "0 6px 0 0" }}>
