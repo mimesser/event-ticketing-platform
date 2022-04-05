@@ -66,21 +66,31 @@ export default function Preview({
             </span>
           )}
         </div>
-        <span
-          style={{
-            marginTop: "5px",
-            color: Colors[resolvedTheme].privacy_border,
-          }}
-        >
-          {eventLocation?.name || "Location"}
-        </span>
+        <div style={{ marginTop: "5px" }}>
+          {eventLocation?.name ? (
+            <span>{eventLocation.name}</span>
+          ) : (
+            <span
+              style={{
+                color: Colors[resolvedTheme].privacy_border,
+              }}
+            >
+              Location
+            </span>
+          )}
+        </div>
         <div
           className={
             view === "Desktop" ? styles.desktop_info : styles.mobile_info
           }
           style={{
             backgroundColor:
-              privacy === "Public" ? "unset" : Colors[resolvedTheme].drawer_bg,
+              privacy === "Public"
+                ? "unset"
+                : resolvedTheme === "light"
+                ? Colors[resolvedTheme].drawer_bg
+                : "#3a3b3c99",
+            borderRadius: "8px",
           }}
         >
           {privacy === "Public" ? (
