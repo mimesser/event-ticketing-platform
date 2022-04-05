@@ -2197,7 +2197,7 @@ export default function ImpishDrawer({
                           },
                         }}
                       >
-                        <MenuList>
+                        <MenuList sx={{ paddingTop: 0, paddingBottom: 0 }}>
                           {places.map((place: any, index: any) => (
                             <MenuItem
                               key={index}
