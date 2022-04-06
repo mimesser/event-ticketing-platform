@@ -1,5 +1,5 @@
 import { Magic } from "magic-sdk";
-import { isBrowser, isProduction } from "lib/utils";
+import { isBrowser, isProduction, isTest } from "lib/utils";
 
 const customNodeOptions = {
   rpcUrl: "https://polygon-rpc.com",
@@ -9,6 +9,10 @@ const customNodeOptions = {
 export const magic = isBrowser
   ? new Magic(
       process.env.NEXT_PUBLIC_MAGIC_PUBLISHABLE_KEY ?? "",
-      isProduction ? { network: customNodeOptions } : { network: "ropsten" }
+      isProduction
+        ? { network: customNodeOptions }
+        : isTest
+        ? { testMode: true }
+        : { network: "ropsten" }
     )
   : undefined;

@@ -26,6 +26,9 @@ export const isBrowser = typeof window !== "undefined";
 
 export const isProduction = process.env.NODE_ENV === "production";
 
+export const isTest =
+  process.env.CYPRESS || (typeof window !== "undefined" && "Cypress" in window);
+
 export const checkUsernameEqual = (left: any, right: any) => {
   if (!left) left = "";
   if (!right) right = "";
