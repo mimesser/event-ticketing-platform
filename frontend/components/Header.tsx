@@ -931,7 +931,7 @@ export default function Header({
                         </ListSubheader>
                       }
                     >
-                      {notifications.map(
+                      {notifications?.map(
                         ({
                           id,
                           title,
