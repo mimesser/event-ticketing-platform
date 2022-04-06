@@ -5,9 +5,10 @@ import GroupSharpIcon from "@mui/icons-material/GroupSharp";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Layout from "components/Layout";
+import { getLoginSession } from "lib/auth";
 import Colors from "lib/colors";
 import { useRouter } from "next/router";
-import { getLoginSession } from "lib/auth";
+import { getLocalTimezone } from "lib/utils";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
@@ -24,8 +25,16 @@ function Create() {
   const { resolvedTheme } = useTheme();
 
   const { user } = useUserInfo();
-  const { eventName, eventLocation, startDate, endDate, privacy, invitable } =
-    useNewEvent();
+  const {
+    eventName,
+    eventLocation,
+    timezone,
+    startDate,
+    endDate,
+    privacy,
+    invitable,
+    setTimezone,
+  } = useNewEvent();
   const [eventDay, setEventDay] = useState<any>();
   const [eventPeriod, setEventPeriod] = useState<any>();
 
@@ -61,10 +70,6 @@ function Create() {
       }
       period += tDate.format("h:mm A");
     }
-    var zone = new Date()
-      .toLocaleTimeString("en-us", { timeZoneName: "short" })
-      .split(" ")[2];
-    period += " " + zone;
     setEventPeriod(period);
   }, [startDate, endDate, previewMode]);
 
@@ -82,12 +87,13 @@ function Create() {
       if (query.createEvent) {
         if (query.createEvent === "true") {
           setEventCreate(true);
+          setTimezone(getLocalTimezone());
         }
       } else {
         setEventCreate(false);
       }
     }
-  }, [router.isReady, router.query]);
+  }, [router.isReady, router.query, setTimezone]);
 
   return (
     <Layout>
@@ -266,6 +272,7 @@ function Create() {
               <Preview
                 eventName={eventName}
                 eventLocation={eventLocation}
+                timezone={timezone}
                 host={
                   user?.name || user?.username
                     ? `@${user?.username}`
