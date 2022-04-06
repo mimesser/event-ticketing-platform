@@ -90,3 +90,28 @@ export const roundUpTimePlus3 = () => {
   var strTime: string = hours + ":" + minutes + " " + ampm;
   return strTime.toString();
 };
+
+export const getTimezoneByLocation = async (lat: number, lng: number) => {
+  const tz = await fetch(
+    `https://maps.googleapis.com/maps/api/timezone/json?location=${lat}%2C${lng}&timestamp=${Math.floor(
+      Date.now() / 1000
+    )}&key=${process.env.NEXT_PUBLIC_GOOGLE_TIMEZONE_API}`
+  );
+  return await tz.json();
+};
+
+export const tzAbbreviation = (tz: string) => {
+  return tz.replace(/[^A-Z]/g, "");
+};
+
+export const getLocalTimezone = () => {
+  const longTimezone = new Date()
+    .toLocaleTimeString("en-us", { timeZoneName: "long" })
+    .split(" ")
+    .slice(2)
+    .join(" ");
+  return {
+    name: longTimezone,
+    abbr: tzAbbreviation(longTimezone),
+  };
+};

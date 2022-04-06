@@ -18,6 +18,7 @@ import styles from "styles/components/Preview.module.scss";
 export default function Preview({
   eventName,
   eventLocation,
+  timezone,
   host,
   avatar,
   address,
@@ -29,6 +30,7 @@ export default function Preview({
 }: {
   eventName: any;
   eventLocation: any;
+  timezone: any;
   host: any;
   avatar: any;
   address: any;
@@ -60,7 +62,9 @@ export default function Preview({
         >
           {eventDay}
         </div>
-        <span className={styles.period}>{eventPeriod}</span>
+        <span className={styles.period}>
+          {eventPeriod} {timezone.abbr}
+        </span>
         <div className={styles.name}>
           {eventName ? (
             <span>{eventName}</span>
@@ -275,7 +279,7 @@ export default function Preview({
           )}
         </div>
         <div className={styles.event_info}>
-          {eventLocation && (
+          {eventLocation.name && (
             <div
               className={styles.map_info}
               style={{
