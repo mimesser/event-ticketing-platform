@@ -79,6 +79,7 @@ export default function ImpishDrawer({
   const { resolvedTheme } = useTheme();
   const {
     setEventName,
+    eventLocation,
     setEventLocation,
     timezone,
     setTimezone,
@@ -457,8 +458,6 @@ export default function ImpishDrawer({
   const [locationAnchor, setLocationAnchor] =
     React.useState<HTMLElement | null>(null);
 
-  const searchPlaces = (search: string) => {};
-
   const locationSearchUpdate = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (predictTImer) {
       clearTimeout(predictTImer);
@@ -466,7 +465,21 @@ export default function ImpishDrawer({
 
     let timerID = setTimeout(
       (search) => {
-        setPlaces([]);
+        if (search)
+          setPlaces([
+            {
+              name: search,
+              icon: "/icons/marker.png",
+              geometry: {
+                location: {
+                  lat: () => 40,
+                  lng: () => -75,
+                },
+              },
+              hasLocation: false,
+            },
+          ]);
+        else setPlaces([]);
         getPlacePredictions({ input: search });
       },
       debounceTime,
@@ -475,6 +488,12 @@ export default function ImpishDrawer({
     setPredictTimer(timerID);
 
     handleEventInfoChange("eventLocation")(event);
+
+    setEventLocation({
+      ...eventLocation,
+      name: event.target.value,
+      hasLocation: false,
+    });
   };
 
   React.useEffect(() => {
@@ -484,7 +503,7 @@ export default function ImpishDrawer({
           placeId: place.place_id,
         },
         (placeDetails: any) => {
-          if (placeDetails) setPlaces((places) => [...places, placeDetails]);
+          if (placeDetails) setPlaces((places) => [placeDetails, ...places]);
         }
       );
     });
@@ -499,6 +518,30 @@ export default function ImpishDrawer({
     setLocationAnchor(null);
   };
   const locationPopoverOpen = Boolean(locationAnchor);
+
+  const selectPlace = (place: any) => {
+    handleEventInfoChange("eventLocation")({
+      target: { value: place.name },
+    });
+    handleCloseLocationPopover();
+    setEventLocation({
+      name: place.name,
+      location: {
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+      },
+      hasLocation: place.hasLocation === undefined ? true : place.hasLocation,
+    });
+    getTimezoneByLocation(
+      place.geometry.location.lat(),
+      place.geometry.location.lng()
+    ).then((tz) => {
+      setTimezone({
+        name: tz.timeZoneName,
+        abbr: tzAbbreviation(tz.timeZoneName),
+      });
+    });
+  };
 
   return (
     <Drawer
@@ -2156,6 +2199,11 @@ export default function ImpishDrawer({
                           }
                         }}
                         onChange={locationSearchUpdate}
+                        onKeyPress={(e) => {
+                          if (e.code === "Enter" && places.length > 0) {
+                            selectPlace(places[places.length - 1]);
+                          }
+                        }}
                         value={values["eventLocation"]}
                         InputProps={{
                           ref: locSearchRef,
@@ -2211,26 +2259,11 @@ export default function ImpishDrawer({
                                 },
                                 borderRadius: "0.5rem",
                               }}
+                              onClick={() => {
+                                selectPlace(place);
+                              }}
                             >
-                              <div
-                                className={styles.place}
-                                onClick={() => {
-                                  handleEventInfoChange("eventLocation")({
-                                    target: { value: place.name },
-                                  });
-                                  handleCloseLocationPopover();
-                                  setEventLocation(place);
-                                  getTimezoneByLocation(
-                                    place.geometry.location.lat(),
-                                    place.geometry.location.lng()
-                                  ).then((tz) => {
-                                    setTimezone({
-                                      name: tz.timeZoneName,
-                                      abbr: tzAbbreviation(tz.timeZoneName),
-                                    });
-                                  });
-                                }}
-                              >
+                              <div className={styles.place}>
                                 <div style={{ margin: "0 6px 0 0" }}>
                                   <Image
                                     src={place.icon}
