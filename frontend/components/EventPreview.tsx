@@ -52,6 +52,10 @@ export default function Preview({
           className={styles.calendar_bottom}
           style={{
             background: Colors[resolvedTheme].drawer_bg,
+            boxShadow:
+              resolvedTheme === "light"
+                ? "0px 0px 5px rgba(0, 0, 0, 0.2)"
+                : "0px 0px 12px rgba(255, 255, 255, 0.05)",
           }}
         >
           {eventDay}
