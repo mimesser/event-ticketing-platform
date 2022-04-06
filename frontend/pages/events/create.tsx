@@ -33,6 +33,7 @@ function Create() {
     endDate,
     privacy,
     invitable,
+    setEventLocation,
     setTimezone,
   } = useNewEvent();
   const [eventDay, setEventDay] = useState<any>();
@@ -88,12 +89,13 @@ function Create() {
         if (query.createEvent === "true") {
           setEventCreate(true);
           setTimezone(getLocalTimezone());
+          setEventLocation({});
         }
       } else {
         setEventCreate(false);
       }
     }
-  }, [router.isReady, router.query, setTimezone]);
+  }, [router.isReady, router.query, setEventLocation, setTimezone]);
 
   return (
     <Layout>
