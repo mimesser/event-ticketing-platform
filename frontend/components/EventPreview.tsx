@@ -197,7 +197,7 @@ export default function Preview({
                 marginLeft: 30,
               }}
             />
-            {eventLocation && (
+            {eventLocation.name && (
               <div className={styles.event_host}>
                 <FmdGoodIcon
                   style={{ color: Colors[resolvedTheme].secondary }}
@@ -282,7 +282,7 @@ export default function Preview({
           )}
         </div>
         <div className={styles.event_info}>
-          {eventLocation.name && (
+          {eventLocation.hasLocation && (
             <div
               className={styles.map_info}
               style={{
@@ -295,10 +295,7 @@ export default function Preview({
                 bootstrapURLKeys={{
                   key: process.env.NEXT_PUBLIC_GOOGLE_MAP_API || "",
                 }}
-                center={{
-                  lat: eventLocation?.geometry?.location?.lat(),
-                  lng: eventLocation?.geometry?.location?.lng(),
-                }}
+                center={eventLocation?.location}
                 options={{
                   draggable: false,
                   fullscreenControl: false,
@@ -309,8 +306,8 @@ export default function Preview({
                 zoom={14}
               >
                 <MapMarker
-                  lat={eventLocation?.geometry?.location?.lat()}
-                  lng={eventLocation?.geometry?.location?.lng()}
+                  lat={eventLocation?.location?.lat}
+                  lng={eventLocation?.location?.lng}
                 >
                   <RoomIcon
                     style={{
