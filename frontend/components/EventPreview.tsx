@@ -45,10 +45,14 @@ export default function Preview({
     <div
       className={styles.preview}
       style={{
+        backgroundColor: Colors[resolvedTheme].drawer_bg,
         border: Colors[resolvedTheme].preview_border,
       }}
     >
-      <div className={styles.upper}>
+      <div
+        className={styles.upper}
+        style={{ background: Colors[resolvedTheme].header_bg }}
+      >
         <div className={styles.calendar_top}></div>
         <div
           className={styles.calendar_bottom}
@@ -161,7 +165,6 @@ export default function Preview({
           view === "Desktop" ? styles.desktop_lower : styles.mobile_lower
         }
         style={{
-          backgroundColor: Colors[resolvedTheme].drawer_bg,
           minHeight: "45vh",
         }}
       >
@@ -324,6 +327,7 @@ export default function Preview({
             style={{
               backgroundColor: Colors[resolvedTheme].header_bg,
               boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
+              marginBottom: "12px",
             }}
           >
             <div className={styles.between}>
