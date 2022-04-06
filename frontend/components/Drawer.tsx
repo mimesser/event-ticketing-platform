@@ -53,6 +53,8 @@ import {
   eventTime,
   roundUpTime,
   roundUpTimePlus3,
+  getTimezoneByLocation,
+  tzAbbreviation,
 } from "lib/utils";
 import Image from "next/image";
 import moment from "moment";
@@ -78,6 +80,8 @@ export default function ImpishDrawer({
   const {
     setEventName,
     setEventLocation,
+    timezone,
+    setTimezone,
     setStartDateAndTime,
     setEndDateAndTime,
     setEventPrivacy,
@@ -2216,6 +2220,15 @@ export default function ImpishDrawer({
                                   });
                                   handleCloseLocationPopover();
                                   setEventLocation(place);
+                                  getTimezoneByLocation(
+                                    place.geometry.location.lat(),
+                                    place.geometry.location.lng()
+                                  ).then((tz) => {
+                                    setTimezone({
+                                      name: tz.timeZoneName,
+                                      abbr: tzAbbreviation(tz.timeZoneName),
+                                    });
+                                  });
                                 }}
                               >
                                 <div style={{ margin: "0 6px 0 0" }}>
@@ -2258,7 +2271,7 @@ export default function ImpishDrawer({
                           }}
                         >
                           <LanguageIcon sx={{ fontSize: 16, mr: 1 }} />
-                          Pacific Daylight Time(PDT)
+                          {timezone.name} ({timezone.abbr})
                         </Typography>
                       </Tooltip>
                     </>

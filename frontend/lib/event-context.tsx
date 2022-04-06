@@ -3,7 +3,8 @@ import { ReactElement, createContext, useContext, useState } from "react";
 
 const EventContext = createContext<{
   eventName?: string;
-  eventLocation?: string;
+  eventLocation?: any;
+  timezone?: any;
   startDate?: string;
   endDate?: string;
   privacy?: string;
@@ -11,6 +12,7 @@ const EventContext = createContext<{
 
   setEventName?: any;
   setEventLocation?: any;
+  setTimezone?: any;
   setStartDateAndTime?: any;
   setEndDateAndTime?: any;
   setEventPrivacy?: any;
@@ -25,7 +27,8 @@ export default function EventProvider({
   children: ReactElement | ReactElement[];
 }) {
   const [eventName, setEventName] = useState("");
-  const [eventLocation, setEventLocation] = useState("");
+  const [eventLocation, setEventLocation] = useState({});
+  const [timezone, setTimezone] = useState({});
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [privacy, setEventPrivacy] = useState("");
@@ -50,6 +53,7 @@ export default function EventProvider({
       value={{
         eventName,
         eventLocation,
+        timezone,
         startDate,
         endDate,
         privacy,
@@ -57,6 +61,7 @@ export default function EventProvider({
 
         setEventName,
         setEventLocation,
+        setTimezone,
         setStartDateAndTime,
         setEndDateAndTime,
         setEventPrivacy,
