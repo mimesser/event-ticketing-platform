@@ -520,12 +520,14 @@ export default function ImpishDrawer({
   const locationPopoverOpen = Boolean(locationAnchor);
 
   const selectPlace = (place: any) => {
+    const name =
+      place.hasLocation === undefined ? place.name : values["eventLocation"];
     handleEventInfoChange("eventLocation")({
-      target: { value: place.name },
+      target: { value: name },
     });
     handleCloseLocationPopover();
     setEventLocation({
-      name: place.name,
+      name: name,
       location: {
         lat: place.geometry.location.lat(),
         lng: place.geometry.location.lng(),
@@ -2241,6 +2243,8 @@ export default function ImpishDrawer({
                         PaperProps={{
                           sx: {
                             width: drawerWidth - 40,
+                            top: "268px !important",
+                            maxHeight: "calc(100% - 284px)",
                             borderRadius: (theme) => theme.shape.borderRadius,
                             boxShadow:
                               Colors[resolvedTheme].account_menu_shadow,
@@ -2278,7 +2282,9 @@ export default function ImpishDrawer({
                                     className={styles.two_line_span}
                                     style={{ fontWeight: "bold" }}
                                   >
-                                    {place.name}
+                                    {place.hasLocation === undefined
+                                      ? place.name
+                                      : values["eventLocation"]}
                                   </span>
                                   <span
                                     className={styles.two_line_span}
