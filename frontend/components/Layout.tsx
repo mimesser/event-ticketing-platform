@@ -29,6 +29,7 @@ import { useLocalStorage } from "lib/hooks";
 import Colors from "lib/colors";
 import { magic } from "lib/magic";
 import styles from "styles/components/Layout.module.scss";
+import { isTest } from "lib/utils";
 
 export default function Layout({
   children,
@@ -55,7 +56,7 @@ export default function Layout({
   );
 
   useEffect(() => {
-    const firstTimeUser = userExists === "false";
+    const firstTimeUser = userExists === "false" && !isTest;
     setSignupFlow(firstTimeUser);
   }, [userExists]);
   const [welcomeModal, setWelcomeModal] = useState(true); // Welcome modal

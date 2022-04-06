@@ -5,12 +5,20 @@ import { SessionProvider } from "next-auth/react"; // Session provider from Next
 import { ThemeProvider } from "next-themes";
 import EventProvider from "lib/event-context";
 import UserProvider from "lib/user-context";
+import React from "react";
 
 // Export application‚
 export default function MerkleAirdropStarter({
   Component,
   pageProps,
 }: AppProps) {
+  React.useEffect(() => {
+    // Remove the server-side injected CSS.
+    const jssStyles = document.querySelector("#jss-server-side");
+    if (jssStyles) {
+      jssStyles.parentElement!.removeChild(jssStyles);
+    }
+  }, []);
   return (
     // Wrap application in session provider
     <SessionProvider session={pageProps.session}>
