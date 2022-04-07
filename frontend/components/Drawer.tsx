@@ -901,6 +901,8 @@ export default function ImpishDrawer({
                       fullscreenControl: false,
                       keyboardShortcuts: false,
                       styles: mapStyle[resolvedTheme],
+                      minZoomOverride: true,
+                      minZoom: 1,
                     }}
                     onClick={({ lat, lng }) => {
                       setEditLocation({
@@ -1397,6 +1399,7 @@ export default function ImpishDrawer({
                     <Typography
                       sx={{
                         paddingLeft: "16px",
+                        paddingRight: "12px",
                         marginBottom: 1,
                         fontSize: "1.2rem",
                         fontWeight: 300,
@@ -1424,7 +1427,7 @@ export default function ImpishDrawer({
                       sx={{
                         marginBottom: 1,
                         paddingLeft: "16px",
-                        paddingRight: "8px",
+                        paddingRight: "12px",
                         fontWeight: 300,
                         fontSize: "1.2rem",
                         color: Colors[resolvedTheme].secondary,
