@@ -10,6 +10,7 @@ import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import LoadingButton from "@mui/lab/LoadingButton";
+import SearchIcon from "@mui/icons-material/Search";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Modal from "@mui/material/Modal";
@@ -1027,7 +1028,10 @@ function Profile() {
                   : ` ${shortenAddress(user.walletAddress)}`}
                 ?
               </Typography>
-              <Typography sx={{ marginBottom: "12px" }} variant="body1">
+              <Typography
+                sx={{ marginBottom: "12px", fontFamily: "sans-serif" }}
+                variant="body1"
+              >
                 Their activities will no longer show up in your home timeline.
                 You can still view their profile.
               </Typography>

@@ -20,7 +20,6 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import MenuList from "@mui/material/MenuList";
 import Modal from "@mui/material/Modal";
 import Radio from "@mui/material/Radio";
 import TextField from "@mui/material/TextField";
@@ -28,19 +27,22 @@ import Toolbar from "@mui/material/Toolbar";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import RoomIcon from "@mui/icons-material/Room";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import CalendarViewMonth from "@mui/icons-material/CalendarViewMonth";
 import CloseIcon from "@mui/icons-material/Close";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import FmdGoodIcon from "@mui/icons-material/FmdGood";
 import GroupSharpIcon from "@mui/icons-material/GroupSharp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import LanguageIcon from "@mui/icons-material/Language";
 import LockIcon from "@mui/icons-material/Lock";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import FmdGoodIcon from "@mui/icons-material/FmdGood";
 import PublicRoundedIcon from "@mui/icons-material/PublicRounded";
+import SearchIcon from "@mui/icons-material/Search";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Avatar from "components/Avatar";
 import IOSSwitch from "components/IOSSwitch";
@@ -62,10 +64,11 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useTheme } from "next-themes";
 import React from "react";
-import useGoogleMap from "react-google-autocomplete/lib/usePlacesAutocompleteService";
 import { useForm } from "react-hook-form";
+import GoogleMapReact from "google-map-react";
+import LocationSelector from "components/LocationSelector";
+import MapMarker from "./MapMarker";
 import styles from "styles/components/Drawer.module.scss";
-import { Popover } from "@mui/material";
 
 export default function ImpishDrawer({
   variant,
@@ -78,16 +81,15 @@ export default function ImpishDrawer({
 }) {
   const { resolvedTheme } = useTheme();
   const {
-    setEventName,
-    eventLocation,
-    setEventLocation,
     timezone,
-    setTimezone,
+    setEventLocation,
+    setEventName,
     setEventDescription,
     setStartDateAndTime,
     setEndDateAndTime,
     setEventPrivacy,
     setEventInvitable,
+    setTimezone,
   } = useNewEvent();
   const { user } = useUserInfo();
   const router = useRouter();
@@ -98,8 +100,6 @@ export default function ImpishDrawer({
   const [events] = React.useState(
     router.asPath.includes("/events") ? true : false
   );
-
-  const drawerWidth = events ? 340 : 240;
 
   const [open, setOpen] = React.useState(
     router.pathname === "/events/[username]" ? true : false
@@ -124,6 +124,7 @@ export default function ImpishDrawer({
   const [openEnd, setOpenEnd] = React.useState(false);
   const [times] = React.useState(eventTime() || []);
   const [discardModal, showDiscardModal] = React.useState(false);
+  const [locationSearchModal, showLocationSearchModal] = React.useState(false);
   const discardModalClose = () => {
     showDiscardModal(false);
   };
@@ -131,6 +132,8 @@ export default function ImpishDrawer({
   const [signingInEvents, setSigningInEvents] = React.useState(false);
   const warningText =
     "You have unsaved changes - are you sure you wish to leave this page?";
+
+  const drawerWidth = events ? 340 : 240;
 
   const changed = React.useCallback(() => {
     return (
@@ -454,89 +457,130 @@ export default function ImpishDrawer({
   const handleCloseEventPrivacy = () => {
     setAnchorElPrivacy(null);
   };
-
-  const { placePredictions, getPlacePredictions, placesService } = useGoogleMap(
-    {
-      apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API,
-    }
-  );
-  const debounceTime = 500;
-  const [predictTImer, setPredictTimer] = React.useState<NodeJS.Timeout | null>(
-    null
-  );
-  const [places, setPlaces] = React.useState<any[]>([]);
-  const locSearchRef = React.useRef<HTMLElement | null>(null);
-  const [locationAnchor, setLocationAnchor] =
-    React.useState<HTMLElement | null>(null);
-
-  const locationSearchUpdate = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (predictTImer) {
-      clearTimeout(predictTImer);
-    }
-
-    let timerID = setTimeout(
-      (search) => {
-        if (search)
-          setPlaces([
-            {
-              name: search,
-              icon: "/icons/marker.png",
-              geometry: {
-                location: {
-                  lat: () => 40,
-                  lng: () => -75,
-                },
-              },
-              hasLocation: false,
-            },
-          ]);
-        else setPlaces([]);
-        getPlacePredictions({ input: search });
+  // search modal
+  const [searchLocation, setSearchLocation] = React.useState("");
+  const searchModalStyle = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    bgcolor: Colors[resolvedTheme]?.header_bg,
+    borderRadius: "10px",
+    boxShadow: 24,
+    p: 4,
+    padding: "0px",
+  };
+  const closeSearchModal = () => showLocationSearchModal(false);
+  // for google map integration
+  const [mapCenter, setMapCenter] = React.useState({ lat: 0, lng: 0 });
+  const [mapZoom, setMapZoom] = React.useState(1);
+  // google map customisation is needed
+  const mapStyle: any = {
+    dark: [
+      { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
+      { elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
+      { elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
+      {
+        featureType: "administrative.locality",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#d59563" }],
       },
-      debounceTime,
-      event.target.value
-    );
-    setPredictTimer(timerID);
-
-    handleEventInfoChange("eventLocation")(event);
-
-    setEventLocation({
-      ...eventLocation,
-      name: event.target.value,
-      hasLocation: false,
-    });
+      {
+        featureType: "poi",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#d59563" }],
+      },
+      {
+        featureType: "poi.park",
+        elementType: "geometry",
+        stylers: [{ color: "#263c3f" }],
+      },
+      {
+        featureType: "poi.park",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#6b9a76" }],
+      },
+      {
+        featureType: "road",
+        elementType: "geometry",
+        stylers: [{ color: "#38414e" }],
+      },
+      {
+        featureType: "road",
+        elementType: "geometry.stroke",
+        stylers: [{ color: "#212a37" }],
+      },
+      {
+        featureType: "road",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#9ca5b3" }],
+      },
+      {
+        featureType: "road.highway",
+        elementType: "geometry",
+        stylers: [{ color: "#746855" }],
+      },
+      {
+        featureType: "road.highway",
+        elementType: "geometry.stroke",
+        stylers: [{ color: "#1f2835" }],
+      },
+      {
+        featureType: "road.highway",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#f3d19c" }],
+      },
+      {
+        featureType: "transit",
+        elementType: "geometry",
+        stylers: [{ color: "#2f3948" }],
+      },
+      {
+        featureType: "transit.station",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#d59563" }],
+      },
+      {
+        featureType: "water",
+        elementType: "geometry",
+        stylers: [{ color: "#17263c" }],
+      },
+      {
+        featureType: "water",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#515c6d" }],
+      },
+      {
+        featureType: "water",
+        elementType: "labels.text.stroke",
+        stylers: [{ color: "#17263c" }],
+      },
+      {
+        featureType: "poi",
+        elementType: "labels.icon",
+        stylers: [
+          {
+            visibility: "off",
+          },
+        ],
+      },
+    ],
+    light: [
+      {
+        featureType: "poi",
+        elementType: "labels.icon",
+        stylers: [
+          {
+            visibility: "off",
+          },
+        ],
+      },
+    ],
   };
-
-  React.useEffect(() => {
-    placePredictions.map((place) => {
-      placesService?.getDetails(
-        {
-          placeId: place.place_id,
-        },
-        (placeDetails: any) => {
-          if (placeDetails) setPlaces((places) => [placeDetails, ...places]);
-        }
-      );
-    });
-  }, [placePredictions, placesService]);
-
-  React.useEffect(() => {
-    if (places && places.length > 0) {
-      setLocationAnchor(locSearchRef?.current);
-    } else setLocationAnchor(null);
-  }, [places, setLocationAnchor, locSearchRef]);
-  const handleCloseLocationPopover = () => {
-    setLocationAnchor(null);
-  };
-  const locationPopoverOpen = Boolean(locationAnchor);
-
-  const selectPlace = (place: any) => {
+  const onSelectLocation = (place: any) => {
     const name =
       place.hasLocation === undefined ? place.name : values["eventLocation"];
-    handleEventInfoChange("eventLocation")({
-      target: { value: name },
-    });
-    handleCloseLocationPopover();
+    handleEventInfoChange("eventLocation")({ target: { value: name } });
     setEventLocation({
       name: name,
       location: {
@@ -554,6 +598,65 @@ export default function ImpishDrawer({
         abbr: tzAbbreviation(tz.timeZoneName),
       });
     });
+  };
+
+  const [editLocation, setEditLocation] = React.useState<any>({});
+  const [editTimeZone, setEditTimeZone] = React.useState<any>({});
+  const [locationName, setLocationName] = React.useState<string>("");
+
+  const getLocationString = (location: any) => {
+    let str = "Location: ";
+    str += location.lat?.toString();
+    str += ", ";
+    str += location.lng?.toString();
+    return str;
+  };
+
+  const maxZoom = 12;
+  const [isZooming, setZooming] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!isZooming) return;
+    if (mapZoom < maxZoom) setTimeout(() => setMapZoom(mapZoom + 1), 200);
+    else setZooming(false);
+  }, [mapZoom, setZooming, isZooming]);
+
+  const onSelectSearchPlace = (place: any) => {
+    const name = place.name;
+    setSearchLocation(name);
+    setLocationName(name);
+
+    const newLocation = {
+      lat: place.geometry.location.lat(),
+      lng: place.geometry.location.lng(),
+    };
+    setEditLocation({
+      name: name,
+      location: newLocation,
+      hasLocation: place.hasLocation === undefined ? true : place.hasLocation,
+    });
+
+    setMapCenter(newLocation);
+    setZooming(true);
+
+    getTimezoneByLocation(
+      place.geometry.location.lat(),
+      place.geometry.location.lng()
+    ).then((tz) => {
+      setEditTimeZone({
+        name: tz.timeZoneName,
+        abbr: tzAbbreviation(tz.timeZoneName),
+      });
+    });
+  };
+  const onSearchModalSave = () => {
+    handleEventInfoChange("eventLocation")({
+      target: { value: editLocation?.name },
+    });
+    setEventLocation(editLocation);
+    setTimezone(editTimeZone);
+
+    showLocationSearchModal(false);
   };
 
   return (
@@ -649,7 +752,7 @@ export default function ImpishDrawer({
                         borderColor: Colors[resolvedTheme].input_border,
                       },
                       "&:hover fieldset": {
-                        borderColor: (theme) => theme.palette.primary.main,
+                        borderColor: (theme: any) => theme.palette.primary.main,
                       },
                     },
                   }}
@@ -694,6 +797,211 @@ export default function ImpishDrawer({
             </span>
           </div>
         </Modal>
+        {
+          /* Search Location Modal */
+          <Modal
+            open={locationSearchModal}
+            closeAfterTransition
+            onClose={closeSearchModal}
+          >
+            <Box sx={searchModalStyle}>
+              <div style={{ padding: "10px 0px" }}>
+                <Typography
+                  style={{
+                    textAlign: "center",
+                    fontFamily: "sans-serif",
+                    fontSize: "20px",
+                    fontWeight: 550,
+                    textTransform: "none",
+                    padding: "20px 0px",
+                  }}
+                >
+                  Find a location
+                </Typography>
+                <IconButton
+                  onClick={closeSearchModal}
+                  sx={{
+                    backgroundColor: Colors[resolvedTheme].icon_bg,
+                    position: "absolute",
+                    right: "8px",
+                    top: "24px",
+                    ":hover": {
+                      background: Colors[resolvedTheme].close_hover,
+                    },
+                  }}
+                >
+                  <CloseIcon sx={{ color: Colors[resolvedTheme].secondary }} />
+                </IconButton>
+              </div>
+              <Divider
+                sx={{ borderColor: Colors[resolvedTheme].tab_divider }}
+              />
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  padding: "10px 15px",
+                  gap: "10px",
+                }}
+              >
+                <Typography
+                  style={{
+                    color: Colors[resolvedTheme].secondary,
+                    fontSize: "14px",
+                    padding: "5px",
+                  }}
+                >
+                  Search by city, neighborhood, or place name to move the map.
+                </Typography>
+                <LocationSelector
+                  isSearchModal={true}
+                  events
+                  editMode
+                  saveChanges={handleEventInfoChange}
+                  onSelectPlace={onSelectSearchPlace}
+                  textProps={{
+                    fullWidth: true,
+                    placeholder: "Search",
+                    variant: "standard",
+                    sx: {
+                      input: { color: Colors[resolvedTheme].primary },
+                      bgcolor: Colors[resolvedTheme].search_bg,
+                      borderRadius: "20px",
+                      padding: "5px 2px",
+                    },
+                    value: searchLocation,
+                  }}
+                  handleChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setSearchLocation(e.target.value)
+                  }
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon
+                          sx={{
+                            color: Colors[resolvedTheme].primary,
+                            marginLeft: 1,
+                          }}
+                        />
+                      </InputAdornment>
+                    ),
+                    disableUnderline: true,
+                  }}
+                />
+
+                <div className={styles.mapContainer}>
+                  <GoogleMapReact
+                    bootstrapURLKeys={{
+                      key: process.env.NEXT_PUBLIC_GOOGLE_MAP_API || "",
+                    }}
+                    center={mapCenter}
+                    zoom={mapZoom}
+                    options={{
+                      clickableIcons: false,
+                      fullscreenControl: false,
+                      keyboardShortcuts: false,
+                      styles: mapStyle[resolvedTheme],
+                    }}
+                    onClick={({ lat, lng }) => {
+                      setEditLocation({
+                        location: { lat, lng },
+                        hasLocation: true,
+                      });
+                    }}
+                  >
+                    <MapMarker
+                      lat={
+                        editLocation?.location?.lat !== undefined
+                          ? editLocation.location.lat
+                          : 0
+                      }
+                      lng={
+                        editLocation?.location?.lng !== undefined
+                          ? editLocation.location.lng
+                          : 0
+                      }
+                    >
+                      <RoomIcon
+                        style={{
+                          color: "red",
+                        }}
+                      />
+                    </MapMarker>
+                  </GoogleMapReact>
+                </div>
+                <span style={{ display: "flex", alignItems: "center" }}>
+                  <LocationOnIcon
+                    sx={{ color: Colors[resolvedTheme].secondary }}
+                  />
+                  <div
+                    style={{
+                      color: Colors[resolvedTheme].secondary,
+                      fontSize: "14px",
+                    }}
+                  >
+                    {editLocation?.hasLocation
+                      ? getLocationString(editLocation.location)
+                      : "Click on the map to select a specific location."}
+                  </div>
+                </span>
+                <TextField
+                  fullWidth
+                  placeholder="Location Name"
+                  variant="outlined"
+                  sx={{
+                    input: { color: Colors[resolvedTheme].primary },
+                  }}
+                  value={locationName}
+                  onChange={(e) => {
+                    setEditLocation({ ...editLocation, name: e.target.value });
+                    setLocationName(e.target.value);
+                  }}
+                ></TextField>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    padding: "20px 0px",
+                  }}
+                >
+                  <Button
+                    disableElevation
+                    sx={{
+                      borderRadius: (theme) =>
+                        Number(theme.shape.borderRadius) / 2,
+                      fontWeight: 600,
+                      marginRight: "10px",
+                      textTransform: "none",
+                      ":hover": {
+                        background: Colors[resolvedTheme].cancel_hover,
+                      },
+                    }}
+                    onClick={closeSearchModal}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    disableElevation
+                    color="primary"
+                    variant="contained"
+                    sx={{
+                      borderRadius: (theme) =>
+                        Number(theme.shape.borderRadius) / 2,
+                      color: "white",
+                      backgroundColor: "#1976d2",
+                      fontWeight: "600",
+                      textTransform: "none",
+                    }}
+                    onClick={onSearchModalSave}
+                  >
+                    Save
+                  </Button>
+                </div>
+              </div>
+            </Box>
+          </Modal>
+        }
         <Toolbar sx={{ display: showCreateEvent ? "none" : "flex" }} />
         {!events ? (
           <List
@@ -746,7 +1054,7 @@ export default function ImpishDrawer({
                     color: Colors[resolvedTheme].primary,
                   }}
                 >
-                  {user.name || shortenAddress(user.walletAddress)}
+                  {user?.name || shortenAddress(user?.walletAddress)}
                 </ListItemText>
               </ListItem>
             )}
@@ -2217,39 +2525,34 @@ export default function ImpishDrawer({
                     </>
                   ) : eventStep === 1 ? (
                     <>
-                      <TextField
-                        fullWidth
-                        label="Location"
-                        variant="outlined"
-                        autoFocus
-                        sx={{
-                          input: { color: Colors[resolvedTheme].primary },
-                          label: { color: Colors[resolvedTheme].secondary },
-                          "& .MuiOutlinedInput-root": {
-                            "& fieldset": {
-                              borderColor: Colors[resolvedTheme].input_border,
+                      <LocationSelector
+                        isSearchModal={false}
+                        saveChanges={handleEventInfoChange}
+                        events={events}
+                        onSelectPlace={onSelectLocation}
+                        editMode={false}
+                        textProps={{
+                          fullWidth: true,
+                          label: "Location",
+                          variant: "outlined",
+                          autoFocus: true,
+                          sx: {
+                            input: { color: Colors[resolvedTheme].primary },
+                            label: { color: Colors[resolvedTheme].secondary },
+                            "& .MuiOutlinedInput-root": {
+                              "& fieldset": {
+                                borderColor: Colors[resolvedTheme].input_border,
+                              },
+                              "&:hover fieldset": {
+                                borderColor: (theme: any) =>
+                                  theme.palette.primary.main,
+                              },
                             },
-                            "&:hover fieldset": {
-                              borderColor: (theme) =>
-                                theme.palette.primary.main,
-                            },
+                            marginBottom: "12px",
                           },
-                          marginBottom: "12px",
+                          value: values["eventLocation"],
                         }}
-                        onClick={() => {
-                          if (places && places.length > 0) {
-                            setLocationAnchor(locSearchRef?.current);
-                          }
-                        }}
-                        onChange={locationSearchUpdate}
-                        onKeyPress={(e) => {
-                          if (e.code === "Enter" && places.length > 0) {
-                            selectPlace(places[places.length - 1]);
-                          }
-                        }}
-                        value={values["eventLocation"]}
                         InputProps={{
-                          ref: locSearchRef,
                           endAdornment: (
                             <InputAdornment position="end">
                               <FmdGoodIcon
@@ -2267,80 +2570,22 @@ export default function ImpishDrawer({
                                   borderRadius: 5,
                                   cursor: "pointer",
                                 }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditTimeZone({});
+                                  setEditLocation({});
+                                  setMapCenter({ lat: 0, lng: 0 });
+                                  setMapZoom(1);
+                                  setSearchLocation("");
+                                  setLocationName("");
+                                  showLocationSearchModal(true);
+                                }}
                               />
                             </InputAdornment>
                           ),
                         }}
                       />
-                      <Popover
-                        open={locationPopoverOpen}
-                        anchorEl={locationAnchor}
-                        anchorOrigin={{
-                          horizontal: "left",
-                          vertical: "bottom",
-                        }}
-                        onClose={handleCloseLocationPopover}
-                        disableAutoFocus
-                        PaperProps={{
-                          sx: {
-                            width: drawerWidth - 40,
-                            top: "268px !important",
-                            maxHeight: "calc(100% - 284px)",
-                            borderRadius: (theme) => theme.shape.borderRadius,
-                            boxShadow:
-                              Colors[resolvedTheme].account_menu_shadow,
-                            bgcolor: Colors[resolvedTheme].header_bg,
-                            color: Colors[resolvedTheme].primary,
-                          },
-                        }}
-                      >
-                        <MenuList sx={{ paddingTop: 0, paddingBottom: 0 }}>
-                          {places.map((place: any, index: any) => (
-                            <MenuItem
-                              key={index}
-                              sx={{
-                                ":hover": {
-                                  backgroundColor: Colors[resolvedTheme].hover,
-                                },
-                                borderRadius: "0.5rem",
-                              }}
-                              onClick={() => {
-                                selectPlace(place);
-                              }}
-                            >
-                              <div className={styles.place}>
-                                <div style={{ margin: "0 6px 0 0" }}>
-                                  <Image
-                                    src={place.icon}
-                                    alt="Loc"
-                                    width={32}
-                                    height={32}
-                                    layout="fixed"
-                                  />
-                                </div>
-                                <div className={styles.place_info}>
-                                  <span
-                                    className={styles.two_line_span}
-                                    style={{ fontWeight: "bold" }}
-                                  >
-                                    {place.hasLocation === undefined
-                                      ? place.name
-                                      : values["eventLocation"]}
-                                  </span>
-                                  <span
-                                    className={styles.two_line_span}
-                                    style={{
-                                      color: Colors[resolvedTheme].secondary,
-                                    }}
-                                  >
-                                    {place.formatted_address}
-                                  </span>
-                                </div>
-                              </div>
-                            </MenuItem>
-                          ))}
-                        </MenuList>
-                      </Popover>
+
                       <Tooltip title="Time zone set by the location">
                         <Typography
                           component="span"
