@@ -83,6 +83,7 @@ export default function ImpishDrawer({
     setEventLocation,
     timezone,
     setTimezone,
+    setEventDescription,
     setStartDateAndTime,
     setEndDateAndTime,
     setEventPrivacy,
@@ -117,6 +118,7 @@ export default function ImpishDrawer({
   const [values, setValues] = React.useState({
     eventName: "",
     eventLocation: "",
+    eventDescription: "",
   });
   const [openStart, setOpenStart] = React.useState(false);
   const [openEnd, setOpenEnd] = React.useState(false);
@@ -238,7 +240,8 @@ export default function ImpishDrawer({
 
   React.useEffect(() => {
     setEventName(values.eventName);
-  }, [setEventName, values]);
+    setEventDescription(values.eventDescription);
+  }, [setEventName, setEventDescription, values]);
   React.useEffect(() => {
     setStartDateAndTime(startDate || new Date(), startTime);
   }, [setStartDateAndTime, startDate, startTime]);
@@ -290,7 +293,7 @@ export default function ImpishDrawer({
   };
 
   const handleNext = () => {
-    if (eventStep < 1) setEventStep(eventStep + 1);
+    if (eventStep < 2) setEventStep(eventStep + 1);
   };
 
   const goHome = () => {
@@ -1062,7 +1065,7 @@ export default function ImpishDrawer({
                   >
                     Event Details
                   </Typography>
-                ) : (
+                ) : eventStep === 1 ? (
                   <div>
                     <Typography
                       sx={{
@@ -1078,12 +1081,42 @@ export default function ImpishDrawer({
                     <Typography
                       sx={{
                         paddingLeft: "16px",
+                        marginBottom: 1,
                         fontSize: "1.2rem",
+                        fontWeight: 300,
                         color: Colors[resolvedTheme].secondary,
                       }}
                       variant="h6"
                     >
                       Add a physical location for people to join your event.
+                    </Typography>
+                  </div>
+                ) : (
+                  <div>
+                    <Typography
+                      sx={{
+                        paddingLeft: "16px",
+                        fontSize: "1.6rem",
+                        fontWeight: 900,
+                        color: Colors[resolvedTheme].primary,
+                      }}
+                      variant="h6"
+                    >
+                      Description
+                    </Typography>
+                    <Typography
+                      sx={{
+                        marginBottom: 1,
+                        paddingLeft: "16px",
+                        paddingRight: "8px",
+                        fontWeight: 300,
+                        fontSize: "1.2rem",
+                        color: Colors[resolvedTheme].secondary,
+                      }}
+                      variant="h6"
+                    >
+                      Provide more information about your event so guests know
+                      what to expect.
                     </Typography>
                   </div>
                 )}
@@ -2174,7 +2207,7 @@ export default function ImpishDrawer({
                         </Menu>
                       </form>
                     </>
-                  ) : (
+                  ) : eventStep === 1 ? (
                     <>
                       <TextField
                         fullWidth
@@ -2314,6 +2347,30 @@ export default function ImpishDrawer({
                         </Typography>
                       </Tooltip>
                     </>
+                  ) : (
+                    <TextField
+                      fullWidth
+                      label="Description"
+                      variant="outlined"
+                      autoFocus
+                      multiline
+                      rows={4}
+                      sx={{
+                        textarea: { color: Colors[resolvedTheme].primary },
+                        label: { color: Colors[resolvedTheme].secondary },
+                        "& .MuiOutlinedInput-root": {
+                          "& fieldset": {
+                            borderColor: Colors[resolvedTheme].input_border,
+                            borderRadius: "6px",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: (theme) => theme.palette.primary.main,
+                          },
+                        },
+                      }}
+                      onChange={handleEventInfoChange("eventDescription")}
+                      value={values["eventDescription"]}
+                    />
                   )}
                 </List>
               </>
@@ -2385,9 +2442,10 @@ export default function ImpishDrawer({
                 }}
                 disabled={
                   !(
-                    eventStep === 0 &&
-                    values.eventName &&
-                    privacy !== "Privacy"
+                    (eventStep === 0 &&
+                      values.eventName &&
+                      privacy !== "Privacy") ||
+                    (eventStep === 1 && values.eventLocation)
                   )
                 }
                 onClick={handleNext}

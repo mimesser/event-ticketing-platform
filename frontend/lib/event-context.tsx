@@ -5,6 +5,7 @@ const EventContext = createContext<{
   eventName?: string;
   eventLocation?: any;
   timezone?: any;
+  eventDescription?: string;
   startDate?: string;
   endDate?: string;
   privacy?: string;
@@ -13,6 +14,7 @@ const EventContext = createContext<{
   setEventName?: any;
   setEventLocation?: any;
   setTimezone?: any;
+  setEventDescription?: any;
   setStartDateAndTime?: any;
   setEndDateAndTime?: any;
   setEventPrivacy?: any;
@@ -29,6 +31,7 @@ export default function EventProvider({
   const [eventName, setEventName] = useState("");
   const [eventLocation, setEventLocation] = useState({});
   const [timezone, setTimezone] = useState({});
+  const [eventDescription, setEventDescription] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [privacy, setEventPrivacy] = useState("");
@@ -54,6 +57,7 @@ export default function EventProvider({
         eventName,
         eventLocation,
         timezone,
+        eventDescription,
         startDate,
         endDate,
         privacy,
@@ -62,6 +66,7 @@ export default function EventProvider({
         setEventName,
         setEventLocation,
         setTimezone,
+        setEventDescription,
         setStartDateAndTime,
         setEndDateAndTime,
         setEventPrivacy,
