@@ -139,16 +139,10 @@ export default function ImpishDrawer({
       startTime !== roundUpTime() ||
       endTime !== roundUpTimePlus3() ||
       values.eventName !== "" ||
-      values.eventLocation !== ""
+      values.eventLocation !== "" ||
+      values.eventDescription !== ""
     );
-  }, [
-    startDate,
-    endDate,
-    startTime,
-    endTime,
-    values.eventName,
-    values.eventLocation,
-  ]);
+  }, [startDate, endDate, startTime, endTime, values]);
 
   const handleBrowseAway = React.useCallback(() => {
     if (!eventDetails) return;
@@ -272,14 +266,13 @@ export default function ImpishDrawer({
   const openPrivacy = Boolean(anchorElPrivacy);
   const CHARACTER_LIMIT = 99;
 
-  const discard = () => {
+  const discard = (route: string) => {
+    setGoToRoute(route);
+
     if (changed()) {
-      setGoToRoute("/events");
       showDiscardModal(true);
     } else {
-      router.push({
-        pathname: "/events",
-      });
+      leavePage();
     }
   };
 
@@ -312,10 +305,25 @@ export default function ImpishDrawer({
       });
     }
   };
-  const leavePage = () => {
-    router.push({
+
+  const leavePage = async () => {
+    await router.push({
       pathname: goToRoute,
     });
+
+    showDiscardModal(false);
+    setValues({
+      eventName: "",
+      eventLocation: "",
+      eventDescription: "",
+    });
+    setStartTime(roundUpTime());
+    setEndTime(roundUpTimePlus3());
+    setStartDate(null);
+    setEndDate(null);
+    setShowEndDate(false);
+    setPrivacy("Privacy");
+    setInvitable(true);
   };
 
   const stayOnPage = () => {
@@ -324,7 +332,7 @@ export default function ImpishDrawer({
 
   const breadcrumbs = [
     <BreadcrumLink
-      onClick={discard}
+      onClick={() => discard("/events")}
       key="1"
       sx={{
         cursor: "pointer",
@@ -336,7 +344,7 @@ export default function ImpishDrawer({
       Event
     </BreadcrumLink>,
     <BreadcrumLink
-      onClick={handleBack}
+      onClick={() => discard("/events/create")}
       key="2"
       sx={{
         cursor: "pointer",
@@ -984,7 +992,7 @@ export default function ImpishDrawer({
                   >
                     <Tooltip title="close">
                       <IconButton
-                        onClick={discard}
+                        onClick={() => discard("/events")}
                         sx={{
                           backgroundColor: Colors[resolvedTheme].icon_bg,
                           marginRight: "8px",
