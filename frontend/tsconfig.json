@@ -15,7 +15,7 @@
     "jsx": "preserve",
     "baseUrl": "./",
     "incremental": true,
-    "types": ["cypress"]
+    "types": ["cypress", "cypress-file-upload"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
