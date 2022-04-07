@@ -122,3 +122,14 @@
     border-radius: 5px;
   }
 }
+
+.mapContainer {
+  height: 324px;
+  width: 516px;
+  margin: 0px;
+  padding: 0px;
+  @media screen and (max-width: 500px) {
+    height: 40vh;
+    width: 80vw;
+  }
+}

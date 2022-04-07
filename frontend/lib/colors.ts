@@ -31,6 +31,8 @@ const Colors: any = {
     back_hover: "rgba(255,255,255,0.3)",
     location_btn_bg: "#383939",
     location_btn_hover: "#40504F",
+    search_bg: "#383b3a",
+    cancel_hover: "rgba(255,255,255,0.1)",
   },
   light: {
     header_bg: "#FFFFFF",
@@ -58,6 +60,8 @@ const Colors: any = {
     back_hover: "rgba(0, 0, 0, 0.35)",
     location_btn_bg: "#E4E5EA",
     location_btn_hover: "#D8DADE",
+    search_bg: "#f0f2f4",
+    cancel_hover: "rgba(0, 0, 0, 0.1)",
   },
 };
 
