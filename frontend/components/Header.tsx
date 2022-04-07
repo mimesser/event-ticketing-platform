@@ -361,22 +361,18 @@ export default function Header({
                 <Typography id={styles.body1} variant="body1">
                   You can always log back in at any time.
                 </Typography>
-                <Link
-                  href={{
-                    pathname: "/api/logout",
-                    query: { route: router.asPath },
+                <Button
+                  id={styles.logoutButton}
+                  onClick={async () => {
+                    await fetch("/api/logout");
+                    router.reload();
                   }}
-                  passHref
+                  type="submit"
+                  size="large"
+                  variant="outlined"
                 >
-                  <Button
-                    id={styles.logoutButton}
-                    type="submit"
-                    size="large"
-                    variant="outlined"
-                  >
-                    Log out
-                  </Button>
-                </Link>
+                  Log out
+                </Button>
                 <Button
                   onClick={() => {
                     setLogoutModal(false);
