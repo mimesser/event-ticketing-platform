@@ -30,6 +30,7 @@ import { useUserInfo } from "lib/user-context";
 import {
   checkUsernameEqual,
   isProduction,
+  isTest,
   shortenAddress,
   stopPropagation,
 } from "lib/utils";
@@ -407,14 +408,14 @@ function Profile() {
   );
   const uploadBanner = () => {
     selectPhoto("banner");
-    bannerRef?.click();
+    !isTest && bannerRef?.click();
   };
   const [avatarRef, setAvatarRef] = React.useState<HTMLInputElement | null>(
     null
   );
   const uploadAvatar = () => {
     selectPhoto("avatar");
-    avatarRef?.click();
+    !isTest && avatarRef?.click();
   };
   const removeBanner = () => {
     setNewBanner("");
@@ -861,7 +862,11 @@ function Profile() {
               </IconButton>
               <span>Edit Profile</span>
             </div>
-            <div className={styles.save_btn} onClick={saveProfile}>
+            <div
+              className={styles.save_btn}
+              onClick={saveProfile}
+              id="saveProfile"
+            >
               Save
             </div>
           </div>
@@ -880,6 +885,7 @@ function Profile() {
               <CameraEnhanceIcon
                 className={styles.icon}
                 onClick={uploadBanner}
+                id="uploadBanner"
               />
               {newBanner && (
                 <CloseIcon className={styles.icon} onClick={removeBanner} />
@@ -910,6 +916,7 @@ function Profile() {
                 <CameraEnhanceIcon
                   className={styles.icon}
                   onClick={uploadAvatar}
+                  id="uploadAvatar"
                 />
                 <input
                   ref={(input) => setAvatarRef(input)}
