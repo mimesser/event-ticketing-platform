@@ -66,7 +66,7 @@ export default function Preview({
                 : "0px 0px 12px rgba(255, 255, 255, 0.05)",
           }}
         >
-          {eventDay}
+          {isNaN(eventDay) ? "" : eventDay}
         </div>
         <span className={styles.period}>
           {eventPeriod} {timezone.abbr}
