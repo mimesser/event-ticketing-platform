@@ -29,6 +29,7 @@ function Create() {
     eventName,
     eventLocation,
     timezone,
+    eventDescription,
     startDate,
     endDate,
     privacy,
@@ -275,6 +276,7 @@ function Create() {
                 eventName={eventName}
                 eventLocation={eventLocation}
                 timezone={timezone}
+                eventDescription={eventDescription}
                 host={
                   user?.name || user?.username
                     ? `@${user?.username}`

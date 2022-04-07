@@ -19,6 +19,7 @@ export default function Preview({
   eventName,
   eventLocation,
   timezone,
+  eventDescription,
   host,
   avatar,
   address,
@@ -31,6 +32,7 @@ export default function Preview({
   eventName: any;
   eventLocation: any;
   timezone: any;
+  eventDescription: any;
   host: any;
   avatar: any;
   address: any;
@@ -219,11 +221,27 @@ export default function Preview({
                 <span>Public &bull; Anyone on or off Impish</span>
               </div>
             )}
-            <span
-              style={{ fontSize: 12, color: Colors[resolvedTheme].secondary }}
-            >
-              No details yet
-            </span>
+            {eventDescription ? (
+              <span
+                style={{
+                  fontSize: 15,
+                  color: Colors[resolvedTheme].primary,
+                  whiteSpace: "pre-line",
+                }}
+              >
+                {eventDescription}
+              </span>
+            ) : (
+              <span
+                style={{
+                  fontSize: 15,
+                  color: Colors[resolvedTheme].secondary,
+                  whiteSpace: "pre-line",
+                }}
+              >
+                No details yet
+              </span>
+            )}
           </div>
           {privacy === "Public" && (
             <div
