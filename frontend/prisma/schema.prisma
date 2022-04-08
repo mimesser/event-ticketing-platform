@@ -39,7 +39,6 @@ model Follows {
   followingId Int
   createdAt   DateTime @default(now())
 
-
   @@id([followersId, followingId])
 }
 
