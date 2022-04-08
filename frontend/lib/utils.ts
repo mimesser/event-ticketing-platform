@@ -118,3 +118,7 @@ export const getLocalTimezone = () => {
     abbr: tzAbbreviation(longTimezone),
   };
 };
+
+export const getLocationString = ({ lat, lng }: { lat: number; lng: number; }) => {
+  return lat.toPrecision(6) + ", " + lng.toPrecision(6);
+}

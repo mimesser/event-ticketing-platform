@@ -57,13 +57,15 @@ import {
   roundUpTimePlus3,
   getTimezoneByLocation,
   tzAbbreviation,
+  getLocationString,
+  getLocalTimezone,
 } from "lib/utils";
 import Image from "next/image";
 import moment from "moment";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useTheme } from "next-themes";
-import React from "react";
+import React, { ChangeEvent } from "react";
 import { useForm } from "react-hook-form";
 import GoogleMapReact from "google-map-react";
 import LocationSelector from "components/LocationSelector";
@@ -463,8 +465,10 @@ export default function ImpishDrawer({
     setAnchorElPrivacy(null);
   };
   // location search textfield
+  const [locationInput, setLocationInput] = React.useState<string>("");
   const locationPopoverWidth = drawerWidth - 40;
   const onSelectLocation = (place: any) => {
+    console.log("select location: ", place);
     const name =
       place.hasLocation === undefined ? place.name : values["eventLocation"];
     handleEventInfoChange("eventLocation")({ target: { value: name } });
@@ -476,6 +480,7 @@ export default function ImpishDrawer({
       },
       hasLocation: place.hasLocation === undefined ? true : place.hasLocation,
     });
+    setLocationInput(name);
   };
   // time zone
   React.useEffect(() => {
@@ -484,10 +489,12 @@ export default function ImpishDrawer({
       eventLocation.location.lat,
       eventLocation.location.lng
     ).then((tz) => {
-      setTimezone({
-        name: tz.timeZoneName,
-        abbr: tzAbbreviation(tz.timeZoneName),
-      });
+      if (tz?.status === "ZERO_RESULTS") setTimezone(getLocalTimezone);
+      else
+        setTimezone({
+          name: tz.timeZoneName,
+          abbr: tzAbbreviation(tz.timeZoneName),
+        });
     });
   }, [eventLocation, setTimezone]);
   // for google map integration
@@ -520,14 +527,6 @@ export default function ImpishDrawer({
     padding: "0px",
   };
 
-  const getLocationString = (location: any) => {
-    let str = "Location: ";
-    str += location.lat?.toString();
-    str += ", ";
-    str += location.lng?.toString();
-    return str;
-  };
-
   const onSelectSearchPlace = (place: any) => {
     const name = place.name;
     setSearchLocation(name);
@@ -548,12 +547,11 @@ export default function ImpishDrawer({
   };
   const closeSearchModal = () => showLocationSearchModal(false);
   const onSearchModalSave = () => {
-    if (editLocation.name !== "") {
-      handleEventInfoChange("eventLocation")({
-        target: { value: editLocation?.name },
-      });
-      setEventLocation(editLocation);
-    }
+    handleEventInfoChange("eventLocation")({
+      target: { value: locationName },
+    });
+    setEventLocation({ ...editLocation, name: locationName });
+    setLocationInput(locationName);
     showLocationSearchModal(false);
   };
 
@@ -695,215 +693,209 @@ export default function ImpishDrawer({
             </span>
           </div>
         </Modal>
-        {
-          /* Search Location Modal */
-          <Modal
-            open={locationSearchModal}
-            closeAfterTransition
-            onClose={closeSearchModal}
-          >
-            <Box sx={searchModalStyle}>
-              <div style={{ padding: "10px 0px" }}>
-                <Typography
-                  style={{
-                    textAlign: "center",
-                    fontFamily: "sans-serif",
-                    fontSize: "20px",
-                    fontWeight: 550,
-                    textTransform: "none",
-                    padding: "20px 0px",
-                  }}
-                >
-                  Find a location
-                </Typography>
-                <IconButton
-                  onClick={closeSearchModal}
-                  sx={{
-                    backgroundColor: Colors[resolvedTheme].icon_bg,
-                    position: "absolute",
-                    right: "8px",
-                    top: "24px",
-                    ":hover": {
-                      background: Colors[resolvedTheme].close_hover,
-                    },
-                  }}
-                >
-                  <CloseIcon sx={{ color: Colors[resolvedTheme].secondary }} />
-                </IconButton>
-              </div>
-              <Divider
-                sx={{ borderColor: Colors[resolvedTheme].tab_divider }}
-              />
-              <div
+        {/* Search Location Modal */}
+        <Modal
+          open={locationSearchModal}
+          closeAfterTransition
+          onClose={closeSearchModal}
+        >
+          <Box sx={searchModalStyle}>
+            <div style={{ padding: "10px 0px" }}>
+              <Typography
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  padding: "10px 15px",
-                  gap: "10px",
+                  textAlign: "center",
+                  fontFamily: "sans-serif",
+                  fontSize: "20px",
+                  fontWeight: 550,
+                  textTransform: "none",
+                  padding: "20px 0px",
                 }}
               >
-                <Typography
+                Find a location
+              </Typography>
+              <IconButton
+                onClick={closeSearchModal}
+                sx={{
+                  backgroundColor: Colors[resolvedTheme].icon_bg,
+                  position: "absolute",
+                  right: "8px",
+                  top: "24px",
+                  ":hover": {
+                    background: Colors[resolvedTheme].close_hover,
+                  },
+                }}
+              >
+                <CloseIcon sx={{ color: Colors[resolvedTheme].secondary }} />
+              </IconButton>
+            </div>
+            <Divider sx={{ borderColor: Colors[resolvedTheme].tab_divider }} />
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                padding: "10px 15px",
+                gap: "10px",
+              }}
+            >
+              <Typography
+                style={{
+                  color: Colors[resolvedTheme].secondary,
+                  fontSize: "14px",
+                  padding: "5px",
+                }}
+              >
+                Search by city, neighborhood, or place name to move the map.
+              </Typography>
+              <LocationSelector
+                popOverWidth={searchModalPopoverWidth}
+                onSelectPlace={onSelectSearchPlace}
+                textProps={{
+                  fullWidth: true,
+                  placeholder: "Search",
+                  variant: "standard",
+                  sx: {
+                    input: { color: Colors[resolvedTheme].primary },
+                    bgcolor: Colors[resolvedTheme].search_bg,
+                    borderRadius: "20px",
+                    padding: "5px 2px",
+                  },
+                  value: searchLocation,
+                }}
+                handleChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setSearchLocation(e.target.value)
+                }
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon
+                        sx={{
+                          color: Colors[resolvedTheme].primary,
+                          marginLeft: 1,
+                        }}
+                      />
+                    </InputAdornment>
+                  ),
+                  disableUnderline: true,
+                }}
+              />
+
+              <div className={styles.mapContainer}>
+                <GoogleMapReact
+                  bootstrapURLKeys={{
+                    key: process.env.NEXT_PUBLIC_GOOGLE_MAP_API || "",
+                  }}
+                  center={mapCenter}
+                  zoom={mapZoom}
+                  options={{
+                    clickableIcons: false,
+                    fullscreenControl: false,
+                    keyboardShortcuts: false,
+                    styles: MapStyle[resolvedTheme],
+                    minZoomOverride: true,
+                    minZoom: 1,
+                  }}
+                  onClick={({ lat, lng }) => {
+                    setEditLocation({
+                      ...editLocation,
+                      location: { lat, lng },
+                      hasLocation: true,
+                    });
+                  }}
+                >
+                  {editLocation?.hasLocation && (
+                    <MapMarker
+                      lat={
+                        editLocation?.location?.lat !== undefined
+                          ? editLocation.location.lat
+                          : 0
+                      }
+                      lng={
+                        editLocation?.location?.lng !== undefined
+                          ? editLocation.location.lng
+                          : 0
+                      }
+                    >
+                      <RoomIcon
+                        style={{
+                          color: "red",
+                        }}
+                      />
+                    </MapMarker>
+                  )}
+                </GoogleMapReact>
+              </div>
+              <span style={{ display: "flex", alignItems: "center" }}>
+                <LocationOnIcon
+                  sx={{ color: Colors[resolvedTheme].secondary }}
+                />
+                <div
                   style={{
                     color: Colors[resolvedTheme].secondary,
                     fontSize: "14px",
-                    padding: "5px",
                   }}
                 >
-                  Search by city, neighborhood, or place name to move the map.
-                </Typography>
-                <LocationSelector
-                  popOverWidth={searchModalPopoverWidth}
-                  editMode
-                  saveChanges={handleEventInfoChange}
-                  onSelectPlace={onSelectSearchPlace}
-                  textProps={{
-                    fullWidth: true,
-                    placeholder: "Search",
-                    variant: "standard",
-                    sx: {
-                      input: { color: Colors[resolvedTheme].primary },
-                      bgcolor: Colors[resolvedTheme].search_bg,
-                      borderRadius: "20px",
-                      padding: "5px 2px",
-                    },
-                    value: searchLocation,
-                  }}
-                  handleChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setSearchLocation(e.target.value)
-                  }
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon
-                          sx={{
-                            color: Colors[resolvedTheme].primary,
-                            marginLeft: 1,
-                          }}
-                        />
-                      </InputAdornment>
-                    ),
-                    disableUnderline: true,
-                  }}
-                />
-
-                <div className={styles.mapContainer}>
-                  <GoogleMapReact
-                    bootstrapURLKeys={{
-                      key: process.env.NEXT_PUBLIC_GOOGLE_MAP_API || "",
-                    }}
-                    center={mapCenter}
-                    zoom={mapZoom}
-                    options={{
-                      clickableIcons: false,
-                      fullscreenControl: false,
-                      keyboardShortcuts: false,
-                      styles: MapStyle[resolvedTheme],
-                      minZoomOverride: true,
-                      minZoom: 1,
-                    }}
-                    onClick={({ lat, lng }) => {
-                      setEditLocation({
-                        ...editLocation,
-                        location: { lat, lng },
-                        hasLocation: true,
-                      });
-                    }}
-                  >
-                    {editLocation?.hasLocation && (
-                      <MapMarker
-                        lat={
-                          editLocation?.location?.lat !== undefined
-                            ? editLocation.location.lat
-                            : 0
-                        }
-                        lng={
-                          editLocation?.location?.lng !== undefined
-                            ? editLocation.location.lng
-                            : 0
-                        }
-                      >
-                        <RoomIcon
-                          style={{
-                            color: "red",
-                          }}
-                        />
-                      </MapMarker>
-                    )}
-                  </GoogleMapReact>
+                  {editLocation?.hasLocation
+                    ? "Location: " + getLocationString(editLocation.location)
+                    : "Click on the map to select a specific location."}
                 </div>
-                <span style={{ display: "flex", alignItems: "center" }}>
-                  <LocationOnIcon
-                    sx={{ color: Colors[resolvedTheme].secondary }}
-                  />
-                  <div
-                    style={{
-                      color: Colors[resolvedTheme].secondary,
-                      fontSize: "14px",
-                    }}
-                  >
-                    {editLocation?.hasLocation
-                      ? getLocationString(editLocation.location)
-                      : "Click on the map to select a specific location."}
-                  </div>
-                </span>
-                <TextField
-                  fullWidth
-                  placeholder="Location Name"
-                  variant="outlined"
+              </span>
+              <TextField
+                fullWidth
+                placeholder="Location Name"
+                variant="outlined"
+                sx={{
+                  input: { color: Colors[resolvedTheme].primary },
+                }}
+                value={locationName}
+                onChange={(e) => {
+                  setEditLocation({ ...editLocation, name: e.target.value });
+                  setLocationName(e.target.value);
+                }}
+              ></TextField>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "flex-end",
+                  padding: "20px 0px",
+                }}
+              >
+                <Button
+                  disableElevation
                   sx={{
-                    input: { color: Colors[resolvedTheme].primary },
+                    borderRadius: (theme) =>
+                      Number(theme.shape.borderRadius) / 2,
+                    fontWeight: 600,
+                    marginRight: "10px",
+                    textTransform: "none",
+                    ":hover": {
+                      background: Colors[resolvedTheme].cancel_hover,
+                    },
                   }}
-                  value={locationName}
-                  onChange={(e) => {
-                    setEditLocation({ ...editLocation, name: e.target.value });
-                    setLocationName(e.target.value);
-                  }}
-                ></TextField>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "flex-end",
-                    padding: "20px 0px",
-                  }}
+                  onClick={closeSearchModal}
                 >
-                  <Button
-                    disableElevation
-                    sx={{
-                      borderRadius: (theme) =>
-                        Number(theme.shape.borderRadius) / 2,
-                      fontWeight: 600,
-                      marginRight: "10px",
-                      textTransform: "none",
-                      ":hover": {
-                        background: Colors[resolvedTheme].cancel_hover,
-                      },
-                    }}
-                    onClick={closeSearchModal}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    disableElevation
-                    color="primary"
-                    variant="contained"
-                    sx={{
-                      borderRadius: (theme) =>
-                        Number(theme.shape.borderRadius) / 2,
-                      color: "white",
-                      backgroundColor: "#1976d2",
-                      fontWeight: "600",
-                      textTransform: "none",
-                    }}
-                    onClick={onSearchModalSave}
-                  >
-                    Save
-                  </Button>
-                </div>
+                  Cancel
+                </Button>
+                <Button
+                  disableElevation
+                  color="primary"
+                  variant="contained"
+                  sx={{
+                    borderRadius: (theme) =>
+                      Number(theme.shape.borderRadius) / 2,
+                    color: "white",
+                    backgroundColor: "#1976d2",
+                    fontWeight: "600",
+                    textTransform: "none",
+                  }}
+                  onClick={onSearchModalSave}
+                >
+                  Save
+                </Button>
               </div>
-            </Box>
-          </Modal>
-        }
+            </div>
+          </Box>
+        </Modal>
         <Toolbar sx={{ display: showCreateEvent ? "none" : "flex" }} />
         {!events ? (
           <List
@@ -2430,9 +2422,7 @@ export default function ImpishDrawer({
                     <>
                       <LocationSelector
                         popOverWidth={locationPopoverWidth}
-                        saveChanges={handleEventInfoChange}
                         onSelectPlace={onSelectLocation}
-                        editMode={false}
                         textProps={{
                           fullWidth: true,
                           label: "Location",
@@ -2452,7 +2442,11 @@ export default function ImpishDrawer({
                             },
                             marginBottom: "12px",
                           },
-                          value: values["eventLocation"],
+                          value: locationInput,
+                        }}
+                        handleChange={(e: ChangeEvent<HTMLInputElement>) => {
+                          setLocationInput(e.target.value);
+                          handleEventInfoChange("eventLocation")(e);
                         }}
                         InputProps={{
                           endAdornment: (
@@ -2607,7 +2601,8 @@ export default function ImpishDrawer({
                     (eventStep === 0 &&
                       values.eventName &&
                       privacy !== "Privacy") ||
-                    (eventStep === 1 && values.eventLocation)
+                    (eventStep === 1 && values.eventLocation) ||
+                    (eventStep == 2 && values.eventDescription)
                   )
                 }
                 onClick={handleNext}
