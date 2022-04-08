@@ -1,13 +1,3 @@
--- protect notifications table from unlimited access with the anon key --
--- enable RLS
-alter table notifications enable row level security;
-
--- grant limited column access to anon users
--- remove all privileges(`notifications` table) from anon users
-revoke all on notifications from anon;
--- grant read privileges for column 'id'
-grant select(id) on notifications to anon;
-
 -- protect events table from unlimited access with the anon key --
 -- enable RLS
 alter table events enable row level security;
