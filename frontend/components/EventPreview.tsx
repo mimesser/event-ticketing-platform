@@ -11,7 +11,7 @@ import Typography from "@mui/material/Typography";
 import MapMarker from "components/MapMarker";
 import GoogleMapReact from "google-map-react";
 import Colors from "lib/colors";
-import { shortenAddress } from "lib/utils";
+import { shortenAddress, getLocationString } from "lib/utils";
 import { useTheme } from "next-themes";
 import styles from "styles/components/Preview.module.scss";
 import MapStyle from "lib/mapstyle";
@@ -345,9 +345,7 @@ export default function Preview({
                   fontWeight: 500,
                 }}
               >
-                {eventLocation?.location?.lat +
-                  ", " +
-                  eventLocation?.location?.lng}
+                {getLocationString(eventLocation?.location)}
               </span>
             </div>
           )}

@@ -12,16 +12,12 @@ import Image from "next/image";
 export default function LocationSelector({
   textProps,
   InputProps,
-  saveChanges,
-  editMode,
   onSelectPlace,
   handleChange,
   popOverWidth,
 }: {
   textProps: any;
   InputProps: any;
-  saveChanges: any;
-  editMode: boolean;
   onSelectPlace: (place: any) => any;
   handleChange?: any;
   popOverWidth: number;
@@ -69,8 +65,6 @@ export default function LocationSelector({
       event.target.value
     );
     setPredictTimer(timerID);
-
-    if (!editMode) saveChanges("eventLocation")(event);
 
     setEventLocation({
       ...eventLocation,
