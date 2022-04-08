@@ -739,6 +739,7 @@ function View({ data, query }: { data: any; query: any }) {
 export default View;
 
 export async function getServerSideProps(context: any) {
+  const currentUser = context.params.username;
   const query = context.query;
   const session = await getLoginSession(context.req);
 
@@ -748,8 +749,10 @@ export async function getServerSideProps(context: any) {
       let following: any[] = [];
 
       try {
-        const user = await prisma.user.findUnique({
-          where: { email: session.email },
+        const user = await prisma.user.findFirst({
+          where: {
+            OR: [{ username: currentUser }, { walletAddress: currentUser }],
+          },
           select: { id: true, followers: true, following: true },
         });
 
