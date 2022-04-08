@@ -25,6 +25,7 @@ model User {
   bannerImage        String?
   nativeAssetBalance String?
   showWalletAddress  Boolean        @default(false)
+  events             Event[]
   notifications      Notification[]
   followers          Follows[]      @relation("followers")
   following          Follows[]      @relation("following")
@@ -55,4 +56,17 @@ model Notification {
   followerUserId   Int?
 
   @@map("notifications")
+}
+
+model Event {
+  id              Int      @id @default(autoincrement())
+  title           String?
+  description     String?
+  coverPhoto      String?
+  location        String?
+  createdAt       DateTime @default(now())
+  organizer       User?    @relation(fields: [organizerId], references: [id])
+  organizerId     Int?
+
+  @@map("events")
 }
