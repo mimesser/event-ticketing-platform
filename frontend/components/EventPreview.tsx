@@ -336,10 +336,13 @@ export default function Preview({
                   />
                 </MapMarker>
               </GoogleMapReact>
-              <span style={{ padding: "5px 10px" }}>{eventLocation?.name}</span>
+              <span style={{ padding: "5px 16px", marginTop: "8px" }}>
+                {eventLocation?.name}
+              </span>
               <span
                 style={{
-                  padding: "5px 10px",
+                  padding: "0px 16px 5px",
+                  marginBottom: "8px",
                   color: Colors[resolvedTheme].secondary,
                   fontSize: 14,
                   fontWeight: 500,
