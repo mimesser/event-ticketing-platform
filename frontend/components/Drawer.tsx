@@ -69,6 +69,7 @@ import GoogleMapReact from "google-map-react";
 import LocationSelector from "components/LocationSelector";
 import MapMarker from "./MapMarker";
 import styles from "styles/components/Drawer.module.scss";
+import MapStyle from "lib/mapstyle";
 
 export default function ImpishDrawer({
   variant,
@@ -82,6 +83,7 @@ export default function ImpishDrawer({
   const { resolvedTheme } = useTheme();
   const {
     timezone,
+    eventLocation,
     setEventLocation,
     setEventName,
     setEventDescription,
@@ -474,126 +476,28 @@ export default function ImpishDrawer({
       },
       hasLocation: place.hasLocation === undefined ? true : place.hasLocation,
     });
+  };
+  // time zone
+  React.useEffect(() => {
+    if (!(eventLocation.hasLocation === true)) return;
     getTimezoneByLocation(
-      place.geometry.location.lat(),
-      place.geometry.location.lng()
+      eventLocation.location.lat,
+      eventLocation.location.lng
     ).then((tz) => {
       setTimezone({
         name: tz.timeZoneName,
         abbr: tzAbbreviation(tz.timeZoneName),
       });
     });
-  };
+  }, [eventLocation, setTimezone]);
   // for google map integration
   const [mapCenter, setMapCenter] = React.useState({ lat: 0, lng: 0 });
   const [mapZoom, setMapZoom] = React.useState(1);
-  const mapStyle: any = {
-    dark: [
-      { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
-      { elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
-      { elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
-      {
-        featureType: "administrative.locality",
-        elementType: "labels.text.fill",
-        stylers: [{ color: "#d59563" }],
-      },
-      {
-        featureType: "poi",
-        elementType: "labels.text.fill",
-        stylers: [{ color: "#d59563" }],
-      },
-      {
-        featureType: "poi.park",
-        elementType: "geometry",
-        stylers: [{ color: "#263c3f" }],
-      },
-      {
-        featureType: "poi.park",
-        elementType: "labels.text.fill",
-        stylers: [{ color: "#6b9a76" }],
-      },
-      {
-        featureType: "road",
-        elementType: "geometry",
-        stylers: [{ color: "#38414e" }],
-      },
-      {
-        featureType: "road",
-        elementType: "geometry.stroke",
-        stylers: [{ color: "#212a37" }],
-      },
-      {
-        featureType: "road",
-        elementType: "labels.text.fill",
-        stylers: [{ color: "#9ca5b3" }],
-      },
-      {
-        featureType: "road.highway",
-        elementType: "geometry",
-        stylers: [{ color: "#746855" }],
-      },
-      {
-        featureType: "road.highway",
-        elementType: "geometry.stroke",
-        stylers: [{ color: "#1f2835" }],
-      },
-      {
-        featureType: "road.highway",
-        elementType: "labels.text.fill",
-        stylers: [{ color: "#f3d19c" }],
-      },
-      {
-        featureType: "transit",
-        elementType: "geometry",
-        stylers: [{ color: "#2f3948" }],
-      },
-      {
-        featureType: "transit.station",
-        elementType: "labels.text.fill",
-        stylers: [{ color: "#d59563" }],
-      },
-      {
-        featureType: "water",
-        elementType: "geometry",
-        stylers: [{ color: "#17263c" }],
-      },
-      {
-        featureType: "water",
-        elementType: "labels.text.fill",
-        stylers: [{ color: "#515c6d" }],
-      },
-      {
-        featureType: "water",
-        elementType: "labels.text.stroke",
-        stylers: [{ color: "#17263c" }],
-      },
-      {
-        featureType: "poi",
-        elementType: "labels.icon",
-        stylers: [
-          {
-            visibility: "off",
-          },
-        ],
-      },
-    ],
-    light: [
-      {
-        featureType: "poi",
-        elementType: "labels.icon",
-        stylers: [
-          {
-            visibility: "off",
-          },
-        ],
-      },
-    ],
-  };
+
   // search modal
   const [editLocation, setEditLocation] = React.useState<any>({});
-  const [editTimeZone, setEditTimeZone] = React.useState<any>({});
   const [locationName, setLocationName] = React.useState<string>("");
-  const maxZoom = 12;
+  const maxZoom = 14;
   const [isZooming, setZooming] = React.useState(false);
 
   React.useEffect(() => {
@@ -641,25 +545,15 @@ export default function ImpishDrawer({
 
     setMapCenter(newLocation);
     setZooming(true);
-
-    getTimezoneByLocation(
-      place.geometry.location.lat(),
-      place.geometry.location.lng()
-    ).then((tz) => {
-      setEditTimeZone({
-        name: tz.timeZoneName,
-        abbr: tzAbbreviation(tz.timeZoneName),
-      });
-    });
   };
   const closeSearchModal = () => showLocationSearchModal(false);
   const onSearchModalSave = () => {
-    handleEventInfoChange("eventLocation")({
-      target: { value: editLocation?.name },
-    });
-    setEventLocation(editLocation);
-    setTimezone(editTimeZone);
-
+    if (editLocation.name !== "") {
+      handleEventInfoChange("eventLocation")({
+        target: { value: editLocation?.name },
+      });
+      setEventLocation(editLocation);
+    }
     showLocationSearchModal(false);
   };
 
@@ -903,35 +797,38 @@ export default function ImpishDrawer({
                       clickableIcons: false,
                       fullscreenControl: false,
                       keyboardShortcuts: false,
-                      styles: mapStyle[resolvedTheme],
+                      styles: MapStyle[resolvedTheme],
                       minZoomOverride: true,
                       minZoom: 1,
                     }}
                     onClick={({ lat, lng }) => {
                       setEditLocation({
+                        ...editLocation,
                         location: { lat, lng },
                         hasLocation: true,
                       });
                     }}
                   >
-                    <MapMarker
-                      lat={
-                        editLocation?.location?.lat !== undefined
-                          ? editLocation.location.lat
-                          : 0
-                      }
-                      lng={
-                        editLocation?.location?.lng !== undefined
-                          ? editLocation.location.lng
-                          : 0
-                      }
-                    >
-                      <RoomIcon
-                        style={{
-                          color: "red",
-                        }}
-                      />
-                    </MapMarker>
+                    {editLocation?.hasLocation && (
+                      <MapMarker
+                        lat={
+                          editLocation?.location?.lat !== undefined
+                            ? editLocation.location.lat
+                            : 0
+                        }
+                        lng={
+                          editLocation?.location?.lng !== undefined
+                            ? editLocation.location.lng
+                            : 0
+                        }
+                      >
+                        <RoomIcon
+                          style={{
+                            color: "red",
+                          }}
+                        />
+                      </MapMarker>
+                    )}
                   </GoogleMapReact>
                 </div>
                 <span style={{ display: "flex", alignItems: "center" }}>
@@ -2576,13 +2473,20 @@ export default function ImpishDrawer({
                                   cursor: "pointer",
                                 }}
                                 onClick={(e) => {
+                                  const location = eventLocation?.hasLocation
+                                    ? eventLocation.location
+                                    : { lat: 0, lng: 0 };
                                   e.stopPropagation();
-                                  setEditTimeZone({});
-                                  setEditLocation({});
-                                  setMapCenter({ lat: 0, lng: 0 });
-                                  setMapZoom(1);
+                                  setEditLocation({
+                                    hasLocation: eventLocation.hasLocation,
+                                    location,
+                                  });
+                                  setMapCenter(location);
+                                  setMapZoom(
+                                    eventLocation?.hasLocation ? maxZoom : 1
+                                  );
                                   setSearchLocation("");
-                                  setLocationName("");
+                                  setLocationName(eventLocation?.name);
                                   showLocationSearchModal(true);
                                 }}
                               />
