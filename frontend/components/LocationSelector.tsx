@@ -10,25 +10,22 @@ import { useNewEvent } from "lib/event-context";
 import Image from "next/image";
 
 export default function LocationSelector({
-  isSearchModal,
   textProps,
-  events,
   InputProps,
   saveChanges,
   editMode,
   onSelectPlace,
   handleChange,
+  popOverWidth,
 }: {
-  isSearchModal: boolean;
   textProps: any;
-  events: boolean;
   InputProps: any;
   saveChanges: any;
   editMode: boolean;
   onSelectPlace: (place: any) => any;
   handleChange?: any;
+  popOverWidth: number;
 }) {
-  const drawerWidth = events ? 340 : 240;
   const { resolvedTheme } = useTheme();
   const { eventLocation, setEventLocation, setTimezone } = useNewEvent();
   const { placePredictions, getPlacePredictions, placesService } = useGoogleMap(
@@ -141,7 +138,7 @@ export default function LocationSelector({
         disableAutoFocus
         PaperProps={{
           sx: {
-            width: (!isSearchModal ? drawerWidth - 40 : 516) + "px",
+            width: popOverWidth + "px",
             borderRadius: (theme) => theme.shape.borderRadius,
             boxShadow: Colors[resolvedTheme].account_menu_shadow,
             bgcolor: Colors[resolvedTheme].header_bg,
