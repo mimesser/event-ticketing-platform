@@ -14,6 +14,7 @@ import Colors from "lib/colors";
 import { shortenAddress } from "lib/utils";
 import { useTheme } from "next-themes";
 import styles from "styles/components/Preview.module.scss";
+import MapStyle from "lib/mapstyle";
 
 export default function Preview({
   eventName,
@@ -320,6 +321,7 @@ export default function Preview({
                   keyboardShortcuts: false,
                   streetViewControl: false,
                   zoomControl: false,
+                  styles: MapStyle[resolvedTheme],
                 }}
                 zoom={14}
               >
@@ -334,7 +336,19 @@ export default function Preview({
                   />
                 </MapMarker>
               </GoogleMapReact>
-              <span>{eventLocation?.name}</span>
+              <span style={{ padding: "5px 10px" }}>{eventLocation?.name}</span>
+              <span
+                style={{
+                  padding: "5px 10px",
+                  color: Colors[resolvedTheme].secondary,
+                  fontSize: 14,
+                  fontWeight: 500,
+                }}
+              >
+                {eventLocation?.location?.lat +
+                  ", " +
+                  eventLocation?.location?.lng}
+              </span>
             </div>
           )}
           <div
