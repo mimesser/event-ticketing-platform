@@ -87,6 +87,14 @@ function View({ data, query }: { data: any; query: any }) {
         }}
         component="a"
         onClick={(event: any) => {
+          router.replace(
+            {
+              pathname: "/[username]/[view]",
+              query: { username: username, view: props.label.toLowerCase() },
+            },
+            undefined,
+            { shallow: true }
+          );
           event.preventDefault();
         }}
         {...props}
@@ -783,6 +791,7 @@ export async function getServerSideProps(context: any) {
         followers = [];
         following = [];
       }
+
       return {
         props: {
           data: {
