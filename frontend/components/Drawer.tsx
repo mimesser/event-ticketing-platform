@@ -184,6 +184,7 @@ export default function ImpishDrawer({
     };
   }, [discardModal, eventDetails, handleBrowseAway, router.events, changed]);
 
+  // event time functions
   const getStartDate = () => {
     const sDate = startDate || new Date();
     sDate.setHours(0, 0, 0, 0);
@@ -235,6 +236,7 @@ export default function ImpishDrawer({
     return sDate < tDate;
   };
 
+  // event info update
   React.useEffect(() => {
     setEventName(values.eventName);
     setEventDescription(values.eventDescription);
@@ -267,8 +269,14 @@ export default function ImpishDrawer({
   }, [router.isReady, router.query, router.pathname]);
 
   const openPrivacy = Boolean(anchorElPrivacy);
+  const handlePrivacyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPrivacy(event.target.value);
+    handleCloseEventPrivacy();
+  };
+
   const CHARACTER_LIMIT = 99;
 
+  // page navigation
   const discard = (route: string) => {
     setGoToRoute(route);
 
@@ -332,7 +340,22 @@ export default function ImpishDrawer({
   const stayOnPage = () => {
     showDiscardModal(false);
   };
-
+  const handleClick = () => {
+    router.push({
+      pathname: "/events/[username]",
+      query: { username: user.username || user.walletAddress },
+    });
+    setOpen(!open);
+  };
+  const createEvent = () => {
+    if (user) {
+      router.push({
+        pathname: "/events/create",
+      });
+    } else {
+      setSignInEventsModal(true);
+    }
+  };
   const breadcrumbs = [
     <BreadcrumLink
       onClick={() => discard("/events")}
@@ -428,26 +451,6 @@ export default function ImpishDrawer({
   };
   const onSubmitCreateEvents: any = async ({ email }: { email: any }) => {};
 
-  const handlePrivacyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPrivacy(event.target.value);
-    handleCloseEventPrivacy();
-  };
-  const handleClick = () => {
-    router.push({
-      pathname: "/events/[username]",
-      query: { username: user.username || user.walletAddress },
-    });
-    setOpen(!open);
-  };
-  const createEvent = () => {
-    if (user) {
-      router.push({
-        pathname: "/events/create",
-      });
-    } else {
-      setSignInEventsModal(true);
-    }
-  };
   const handleEventInfoChange = (eventName: any) => (event: any) => {
     setValues({ ...values, [eventName]: event.target.value });
   };
@@ -457,24 +460,33 @@ export default function ImpishDrawer({
   const handleCloseEventPrivacy = () => {
     setAnchorElPrivacy(null);
   };
-  // search modal
-  const [searchLocation, setSearchLocation] = React.useState("");
-  const searchModalStyle = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    bgcolor: Colors[resolvedTheme]?.header_bg,
-    borderRadius: "10px",
-    boxShadow: 24,
-    p: 4,
-    padding: "0px",
+  // location search textfield
+  const locationPopoverWidth = drawerWidth - 40;
+  const onSelectLocation = (place: any) => {
+    const name =
+      place.hasLocation === undefined ? place.name : values["eventLocation"];
+    handleEventInfoChange("eventLocation")({ target: { value: name } });
+    setEventLocation({
+      name: name,
+      location: {
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+      },
+      hasLocation: place.hasLocation === undefined ? true : place.hasLocation,
+    });
+    getTimezoneByLocation(
+      place.geometry.location.lat(),
+      place.geometry.location.lng()
+    ).then((tz) => {
+      setTimezone({
+        name: tz.timeZoneName,
+        abbr: tzAbbreviation(tz.timeZoneName),
+      });
+    });
   };
-  const closeSearchModal = () => showLocationSearchModal(false);
   // for google map integration
   const [mapCenter, setMapCenter] = React.useState({ lat: 0, lng: 0 });
   const [mapZoom, setMapZoom] = React.useState(1);
-  // google map customisation is needed
   const mapStyle: any = {
     dark: [
       { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
@@ -577,41 +589,10 @@ export default function ImpishDrawer({
       },
     ],
   };
-  const onSelectLocation = (place: any) => {
-    const name =
-      place.hasLocation === undefined ? place.name : values["eventLocation"];
-    handleEventInfoChange("eventLocation")({ target: { value: name } });
-    setEventLocation({
-      name: name,
-      location: {
-        lat: place.geometry.location.lat(),
-        lng: place.geometry.location.lng(),
-      },
-      hasLocation: place.hasLocation === undefined ? true : place.hasLocation,
-    });
-    getTimezoneByLocation(
-      place.geometry.location.lat(),
-      place.geometry.location.lng()
-    ).then((tz) => {
-      setTimezone({
-        name: tz.timeZoneName,
-        abbr: tzAbbreviation(tz.timeZoneName),
-      });
-    });
-  };
-
+  // search modal
   const [editLocation, setEditLocation] = React.useState<any>({});
   const [editTimeZone, setEditTimeZone] = React.useState<any>({});
   const [locationName, setLocationName] = React.useState<string>("");
-
-  const getLocationString = (location: any) => {
-    let str = "Location: ";
-    str += location.lat?.toString();
-    str += ", ";
-    str += location.lng?.toString();
-    return str;
-  };
-
   const maxZoom = 12;
   const [isZooming, setZooming] = React.useState(false);
 
@@ -620,6 +601,28 @@ export default function ImpishDrawer({
     if (mapZoom < maxZoom) setTimeout(() => setMapZoom(mapZoom + 1), 200);
     else setZooming(false);
   }, [mapZoom, setZooming, isZooming]);
+
+  const searchModalPopoverWidth = 516;
+  const [searchLocation, setSearchLocation] = React.useState("");
+  const searchModalStyle = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    bgcolor: Colors[resolvedTheme]?.header_bg,
+    borderRadius: "10px",
+    boxShadow: 24,
+    p: 4,
+    padding: "0px",
+  };
+
+  const getLocationString = (location: any) => {
+    let str = "Location: ";
+    str += location.lat?.toString();
+    str += ", ";
+    str += location.lng?.toString();
+    return str;
+  };
 
   const onSelectSearchPlace = (place: any) => {
     const name = place.name;
@@ -649,6 +652,7 @@ export default function ImpishDrawer({
       });
     });
   };
+  const closeSearchModal = () => showLocationSearchModal(false);
   const onSearchModalSave = () => {
     handleEventInfoChange("eventLocation")({
       target: { value: editLocation?.name },
@@ -854,8 +858,7 @@ export default function ImpishDrawer({
                   Search by city, neighborhood, or place name to move the map.
                 </Typography>
                 <LocationSelector
-                  isSearchModal={true}
-                  events
+                  popOverWidth={searchModalPopoverWidth}
                   editMode
                   saveChanges={handleEventInfoChange}
                   onSelectPlace={onSelectSearchPlace}
@@ -2529,9 +2532,8 @@ export default function ImpishDrawer({
                   ) : eventStep === 1 ? (
                     <>
                       <LocationSelector
-                        isSearchModal={false}
+                        popOverWidth={locationPopoverWidth}
                         saveChanges={handleEventInfoChange}
-                        events={events}
                         onSelectPlace={onSelectLocation}
                         editMode={false}
                         textProps={{
