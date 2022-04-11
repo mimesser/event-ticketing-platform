@@ -149,40 +149,33 @@ function Create() {
                       justifyContent: "center",
                     }}
                   >
-                    <IconButton
-                      disableRipple
+                    <GroupSharpIcon
                       sx={{
+                        color: Colors[resolvedTheme]?.primary,
                         margin: "auto",
+                        marginBottom: "10px",
+                        padding: "10px",
+                        borderRadius: "50%",
+                        width: "25px",
+                        height: "25px",
                         backgroundColor: Colors[resolvedTheme]?.icon_bg,
                         ":hover": {
                           backgroundColor: Colors[resolvedTheme]?.icon_bg,
                         },
                       }}
-                    >
-                      <GroupSharpIcon
-                        sx={{
-                          color: Colors[resolvedTheme]?.primary,
-                        }}
-                      />
-                    </IconButton>
+                    />
                   </Box>
-                  <IconButton
-                    disableRipple
+
+                  <Typography
+                    variant="body1"
                     sx={{
-                      display: "flex",
-                      margin: "auto",
+                      textAlign: "center",
+                      color: Colors[resolvedTheme]?.primary,
+                      marginBottom: "5px",
                     }}
                   >
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        textAlign: "center",
-                        color: Colors[resolvedTheme]?.primary,
-                      }}
-                    >
-                      In Person
-                    </Typography>
-                  </IconButton>
+                    In Person
+                  </Typography>
 
                   <Typography
                     variant="subtitle1"
