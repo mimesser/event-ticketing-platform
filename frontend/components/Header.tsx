@@ -1143,6 +1143,7 @@ export default function Header({
                       <ArrowForwardIosIcon style={{ marginLeft: "12%" }} />
                     </MenuItem>
                     <MenuItem
+                      id="display_menu_item"
                       onClick={() => setSelectedMenu("display")}
                       className={styles.menu_items}
                       sx={{
@@ -1160,6 +1161,7 @@ export default function Header({
                       <ArrowForwardIosIcon style={{ marginLeft: "49%" }} />
                     </MenuItem>
                     <MenuItem
+                      id="open_logout_modal"
                       onClick={() => {
                         handleCloseUserMenu();
                         setLogoutModal(true);
@@ -1367,6 +1369,7 @@ export default function Header({
                         style={{ marginTop: 10, marginLeft: 10, width: 180 }}
                       >
                         <FormControlLabel
+                          id="system_mode"
                           value="system"
                           control={
                             <Radio
@@ -1384,6 +1387,7 @@ export default function Header({
                           }}
                         />
                         <FormControlLabel
+                          id="light_mode"
                           value="light"
                           control={
                             <Radio
@@ -1401,6 +1405,7 @@ export default function Header({
                           }}
                         />
                         <FormControlLabel
+                          id="dark_mode"
                           value="dark"
                           control={
                             <Radio
