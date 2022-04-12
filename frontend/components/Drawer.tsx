@@ -516,11 +516,11 @@ export default function ImpishDrawer({
   React.useEffect(() => {
     if (!isZooming) return;
     // experimental
-    if (mapZoom < maxZoom) setTimeout(() => setMapZoom(mapZoom + 2), 200);
+    if (mapZoom < maxZoom) setTimeout(() => setMapZoom(mapZoom + 1), 200);
     else setZooming(false);
   }, [mapZoom, setZooming, isZooming]);
 
-  const searchModalPopoverWidth = 516;
+  const searchModalPopoverWidth = isMobile ? 330 : 516;
   const [searchLocation, setSearchLocation] = React.useState("");
   const searchModalStyle = {
     position: "absolute",
@@ -553,6 +553,7 @@ export default function ImpishDrawer({
     setZooming(true);
   };
   const openSearchModal = function (e: React.MouseEvent<HTMLElement>) {
+    e.stopPropagation();
     const location = eventLocation?.hasLocation
       ? eventLocation.location
       : { lat: 0, lng: 0 };
@@ -584,13 +585,7 @@ export default function ImpishDrawer({
   }, [validateInput, setLocationError, editLocation]);
   React.useEffect(() => {
     setValidationError(validateInput && (locationError || locationNameError));
-  }, [
-    validateInput,
-    setValidationError,
-    locationError,
-    locationNameError,
-    validationError,
-  ]);
+  }, [validateInput, setValidationError, locationError, locationNameError]);
   const onSearchModalSave = () => {
     if (!validateInput) {
       setInputValidation(true);
@@ -880,7 +875,6 @@ export default function ImpishDrawer({
                 Search by city, neighborhood, or place name to move the map.
               </Typography>
               <LocationSelector
-                popOverWidth={searchModalPopoverWidth}
                 onSelectPlace={onSelectSearchPlace}
                 textProps={{
                   fullWidth: true,
@@ -895,6 +889,17 @@ export default function ImpishDrawer({
                     padding: "5px 2px",
                   },
                   value: searchLocation,
+                }}
+                PaperProps={{
+                  sx: {
+                    width: searchModalPopoverWidth + "px",
+                    maxHeight: "calc(100% - 236px)",
+                    borderRadius: (theme: any) => theme.shape.borderRadius,
+                    boxShadow: Colors[resolvedTheme].account_menu_shadow,
+                    bgcolor: Colors[resolvedTheme].header_bg,
+                    color: Colors[resolvedTheme].primary,
+                    overflow: "scroll",
+                  },
                 }}
                 handleChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setSearchLocation(e.target.value)
@@ -2730,7 +2735,6 @@ export default function ImpishDrawer({
                   ) : eventStep === 1 ? (
                     <>
                       <LocationSelector
-                        popOverWidth={locationPopoverWidth}
                         onSelectPlace={onSelectLocation}
                         textProps={{
                           fullWidth: true,
@@ -2756,6 +2760,20 @@ export default function ImpishDrawer({
                             marginBottom: "12px",
                           },
                           value: locationInput,
+                        }}
+                        PaperProps={{
+                          sx: {
+                            width: locationPopoverWidth + "px",
+                            top: "268px !important",
+                            maxHeight: "calc(100% - 284px)",
+                            borderRadius: (theme: any) =>
+                              theme.shape.borderRadius,
+                            boxShadow:
+                              Colors[resolvedTheme].account_menu_shadow,
+                            bgcolor: Colors[resolvedTheme].header_bg,
+                            color: Colors[resolvedTheme].primary,
+                            overflow: "scroll",
+                          },
                         }}
                         handleChange={(e: ChangeEvent<HTMLInputElement>) => {
                           setLocationInput(e.target.value);
