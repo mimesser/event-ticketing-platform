@@ -6,7 +6,6 @@ import useGoogleMap from "react-google-autocomplete/lib/usePlacesAutocompleteSer
 import Colors from "lib/colors";
 import { useTheme } from "next-themes";
 import styles from "styles/components/Drawer.module.scss";
-import { useNewEvent } from "lib/event-context";
 import Image from "next/image";
 
 export default function LocationSelector({
@@ -14,16 +13,15 @@ export default function LocationSelector({
   InputProps,
   onSelectPlace,
   handleChange,
-  popOverWidth,
+  PaperProps,
 }: {
   textProps: any;
   InputProps: any;
   onSelectPlace: (place: any) => any;
   handleChange?: any;
-  popOverWidth: number;
+  PaperProps: any;
 }) {
   const { resolvedTheme } = useTheme();
-  const { eventLocation, setEventLocation, setTimezone } = useNewEvent();
   const { placePredictions, getPlacePredictions, placesService } = useGoogleMap(
     {
       apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API,
@@ -124,16 +122,7 @@ export default function LocationSelector({
         }}
         onClose={handleCloseLocationPopover}
         disableAutoFocus
-        PaperProps={{
-          sx: {
-            width: popOverWidth + "px",
-            borderRadius: (theme) => theme.shape.borderRadius,
-            boxShadow: Colors[resolvedTheme].account_menu_shadow,
-            bgcolor: Colors[resolvedTheme].header_bg,
-            color: Colors[resolvedTheme].primary,
-            overflow: "hidden",
-          },
-        }}
+        PaperProps={PaperProps}
       >
         <MenuList sx={{ paddingTop: 0, paddingBottom: 0 }}>
           {places.map((place: any, index: any) => (
