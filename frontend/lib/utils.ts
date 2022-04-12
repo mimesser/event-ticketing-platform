@@ -119,6 +119,20 @@ export const getLocalTimezone = () => {
   };
 };
 
-export const getLocationString = ({ lat, lng }: { lat: number; lng: number; }) => {
+export const getLocationString = ({
+  lat,
+  lng,
+}: {
+  lat: number;
+  lng: number;
+}) => {
   return lat.toPrecision(6) + ", " + lng.toPrecision(6);
-}
+};
+
+export const mockTestUserMetadata = {
+  issuer: "did:ethr:0x1e9FF803fFA22209A10A087cc8361d4aa3528c45",
+  publicAddress: "0x1e9FF803fFA22209A10A087cc8361d4aa3528c45",
+  email: "test+success@magic.link" as any,
+};
+
+export const mockTestTwitterUsername = "impish_test_twitter";

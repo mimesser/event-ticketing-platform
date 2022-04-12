@@ -2,7 +2,7 @@ import { User } from "@prisma/client";
 import { setLoginSession } from "lib/auth";
 import { magic } from "lib/magicAdmin";
 import prisma from "lib/prisma";
-import { isTest } from "lib/utils";
+import { isTest, mockTestUserMetadata } from "lib/utils";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function login(req: NextApiRequest, res: NextApiResponse) {
@@ -11,11 +11,7 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
 
     const metadata = !isTest
       ? await magic.users.getMetadataByToken(didToken)
-      : {
-          issuer: "did:ethr:0x1e9FF803fFA22209A10A087cc8361d4aa3528c45",
-          publicAddress: "0x1e9FF803fFA22209A10A087cc8361d4aa3528c45",
-          email: "test+success@magic.link" as any,
-        };
+      : mockTestUserMetadata;
 
     if (!metadata?.email || !metadata?.issuer || !metadata?.publicAddress) {
       res
