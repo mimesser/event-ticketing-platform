@@ -1,3 +1,5 @@
+const uuid = () => Cypress._.random(0, 1e6);
+
 describe("sample tests", () => {
   //Use the cy.fixture() method to pull data from fixture file
   beforeEach(function () {
@@ -52,6 +54,67 @@ describe("sample tests", () => {
     cy.request("POST", "http://localhost:3000/api/logout").then((response) => {
       expect(response.status).to.eq(200);
     });
+  });
+
+  it.only("Edit profile name & username test", function () {
+    const id = uuid();
+
+    // Match update-profile POST request as "update-profile"
+    cy.intercept("POST", "/api/update-profile").as("update-profile");
+
+    // Get drawer profile button and wait 3sec
+    cy.get("[id^=drawer_profile_button]");
+
+    cy.wait(3000);
+
+    // Click to drawer profile button
+    cy.get("[id^=drawer_profile_button]").click();
+
+    // Click to edit profile button
+    cy.get("[id^=edit_profile_button]").click();
+
+    // Click to edit name input and type "test123"
+    cy.get("[id^=edit_name_input]").eq(1).clear().type(`testname${id}`);
+
+    // Click to edit name input and type "test123"
+    cy.get("[id^=edit_username_input]").eq(1).clear().type(`testusername${id}`);
+
+    // Click to save button
+    cy.get("[id^=saveProfile]").click();
+
+    // Wait for update-profile status code: 200 response
+    cy.wait("@update-profile").then(({ response }: any) => {
+      expect(response.statusCode).to.eq(200);
+    });
+  });
+
+  it.only("Twitter link-unlink test", function () {
+    // Match twitter/link-user POST request as "link-user"
+    cy.intercept("POST", "/api/twitter/link-user").as("link-user");
+
+    // Click to top right account menu
+    cy.get('[aria-label="Account"]').click();
+
+    // Click to settings menu
+    cy.get("[id^=settings_menu]").click();
+
+    // Click to link Twitter button
+    cy.get("[id^=link_twitter_button]").click();
+
+    // Click to Find frens I follow button in Twitter modal
+    cy.get("#Header_twtButton__zVX9n").click();
+
+    // Wait for link-user status code: 200 response
+    cy.wait("@link-user").then(({ response }: any) => {
+      expect(response.statusCode).to.eq(200);
+    });
+
+    // Call logout endpoint and check response.status if it is equal to 200
+    cy.request("DELETE", "http://localhost:3000/api/twitter/link-user").then(
+      (response) => {
+        expect(response.status).to.eq(200);
+      }
+    );
   });
 });
 

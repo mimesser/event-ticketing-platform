@@ -51,7 +51,12 @@ import Colors from "lib/colors";
 import { fetchPublicUser } from "lib/hooks";
 import { useUserInfo } from "lib/user-context";
 import { magic } from "lib/magic";
-import { shortenAddress, shortenText } from "lib/utils";
+import {
+  isTest,
+  mockTestTwitterUsername,
+  shortenAddress,
+  shortenText,
+} from "lib/utils";
 import { useNotifications } from "lib/supabase";
 import Image from "next/image";
 import Link from "next/link";
@@ -439,11 +444,20 @@ export default function Header({
                 <Box className={styles.linkSocialButtons}>
                   <Button
                     onClick={() => {
-                      localStorage.setItem(
-                        `${user.id}/open-twitter-modal`,
-                        "true"
-                      );
-                      signIn("twitter");
+                      if (!isTest) {
+                        localStorage.setItem(
+                          `${user.id}/open-twitter-modal`,
+                          "true"
+                        );
+                        signIn("twitter");
+                      } else {
+                        fetch("/api/twitter/link-user", {
+                          method: "POST",
+                          body: JSON.stringify({
+                            twitterUsername: mockTestTwitterUsername,
+                          }),
+                        });
+                      }
                     }}
                     id={styles.twtButton}
                     type="submit"
@@ -1126,6 +1140,7 @@ export default function Header({
                     />
 
                     <MenuItem
+                      id="settings_menu"
                       onClick={() => setSelectedMenu("settings")}
                       className={styles.menu_items}
                       sx={{
@@ -1270,6 +1285,7 @@ export default function Header({
                       Privacy
                     </MenuItem>
                     <MenuItem
+                      id="link_twitter_button"
                       onClick={() => {
                         handleCloseUserMenu();
                         setTwitterModal(true);

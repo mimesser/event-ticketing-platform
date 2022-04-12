@@ -1065,6 +1065,7 @@ export default function ImpishDrawer({
           >
             {user && (
               <ListItem
+                id="drawer_profile_button"
                 button
                 onClick={() => {
                   router.push("/" + (user.username || user.walletAddress));
