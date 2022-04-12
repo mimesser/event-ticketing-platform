@@ -65,12 +65,6 @@ export default function LocationSelector({
       event.target.value
     );
     setPredictTimer(timerID);
-
-    setEventLocation({
-      ...eventLocation,
-      name: event.target.value,
-      hasLocation: false,
-    });
   };
   React.useEffect(() => {
     placePredictions.map((place) => {
