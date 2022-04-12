@@ -43,6 +43,9 @@ import FmdGoodIcon from "@mui/icons-material/FmdGood";
 import PublicRoundedIcon from "@mui/icons-material/PublicRounded";
 import SearchIcon from "@mui/icons-material/Search";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import MyLocationOutlinedIcon from "@mui/icons-material/MyLocationOutlined";
+import CircleIcon from "@mui/icons-material/Circle";
+import WarningIcon from "@mui/icons-material/Warning";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Avatar from "components/Avatar";
 import IOSSwitch from "components/IOSSwitch";
@@ -67,7 +70,7 @@ import { useRouter } from "next/router";
 import { useTheme } from "next-themes";
 import React, { ChangeEvent } from "react";
 import { useForm } from "react-hook-form";
-import GoogleMapReact from "google-map-react";
+import GoogleMapReact, { Maps, Props } from "google-map-react";
 import LocationSelector from "components/LocationSelector";
 import MapMarker from "./MapMarker";
 import styles from "styles/components/Drawer.module.scss";
@@ -509,7 +512,8 @@ export default function ImpishDrawer({
 
   React.useEffect(() => {
     if (!isZooming) return;
-    if (mapZoom < maxZoom) setTimeout(() => setMapZoom(mapZoom + 1), 200);
+    // experimental
+    if (mapZoom < maxZoom) setTimeout(() => setMapZoom(mapZoom + 2), 200);
     else setZooming(false);
   }, [mapZoom, setZooming, isZooming]);
 
@@ -545,14 +549,95 @@ export default function ImpishDrawer({
     setMapCenter(newLocation);
     setZooming(true);
   };
-  const closeSearchModal = () => showLocationSearchModal(false);
-  const onSearchModalSave = () => {
-    handleEventInfoChange("eventLocation")({
-      target: { value: locationName },
+  const openSearchModal = function (e: React.MouseEvent<HTMLElement>) {
+    const location = eventLocation?.hasLocation
+      ? eventLocation.location
+      : { lat: 0, lng: 0 };
+
+    setEditLocation({
+      ...editLocation,
+      hasLocation: eventLocation.hasLocation,
+      location,
     });
-    setEventLocation({ ...editLocation, name: locationName });
-    setLocationInput(locationName);
-    showLocationSearchModal(false);
+    setMapCenter(location);
+    setMapZoom(eventLocation?.hasLocation ? maxZoom : 1);
+    setSearchLocation("");
+    setLocationName(eventLocation?.name || "");
+    showLocationSearchModal(true);
+    setInputValidation(false);
+    showUserLocation(false);
+  };
+  const closeSearchModal = () => showLocationSearchModal(false);
+  const [validateInput, setInputValidation] = React.useState<boolean>(false);
+  const [locationError, setLocationError] = React.useState<boolean>(false);
+  const [locationNameError, setLocationNameError] =
+    React.useState<boolean>(false);
+  const [validationError, setValidationError] = React.useState<boolean>(false);
+  React.useEffect(() => {
+    setLocationNameError(validateInput && locationName === "");
+  }, [validateInput, locationName, setLocationNameError]);
+  React.useEffect(() => {
+    setLocationError(validateInput && !(editLocation.hasLocation === true));
+  }, [validateInput, setLocationError, editLocation]);
+  React.useEffect(() => {
+    setValidationError(validateInput && (locationError || locationNameError));
+  }, [
+    validateInput,
+    setValidationError,
+    locationError,
+    locationNameError,
+    validationError,
+  ]);
+  const onSearchModalSave = () => {
+    if (!validateInput) {
+      setInputValidation(true);
+    } else if (!validationError) {
+      handleEventInfoChange("eventLocation")({
+        target: { value: locationName },
+      });
+      setEventLocation({ ...editLocation, name: locationName });
+      setLocationInput(locationName);
+      showLocationSearchModal(false);
+    }
+  };
+
+  // user location sharing
+  const [currentLocation, setCurrentLocation] = React.useState<any>({
+    isSet: false,
+    loc: { lat: 0, lng: 0 },
+  });
+  const [userLocation, showUserLocation] = React.useState<boolean>(false);
+  const handleLocationError = (flag: boolean) => {
+    if (!flag) window.alert("The browser does not support geolocation");
+    else window.alert("Error occured getting user location");
+  };
+  const shareUserLocation = () => {
+    if (!currentLocation.isSet) {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            };
+            setCurrentLocation({
+              isSet: true,
+              loc: pos,
+            });
+            setMapCenter(pos);
+            showUserLocation(true);
+            setZooming(true);
+          },
+          () => {
+            console.log("getting location error");
+            handleLocationError(true);
+          }
+        );
+      } else {
+        console.log("not supported by browser");
+        handleLocationError(false);
+      }
+    }
   };
 
   return (
@@ -779,27 +864,44 @@ export default function ImpishDrawer({
                 }}
               />
 
-              <div className={styles.mapContainer}>
+              <div
+                className={styles.mapContainer}
+                style={
+                  locationError
+                    ? {
+                        border:
+                          "3px solid " + Colors[resolvedTheme].input_error,
+                        transition: "0.5s",
+                      }
+                    : {}
+                }
+              >
                 <GoogleMapReact
                   bootstrapURLKeys={{
                     key: process.env.NEXT_PUBLIC_GOOGLE_MAP_API || "",
                   }}
                   center={mapCenter}
                   zoom={mapZoom}
-                  options={{
+                  options={(maps: Maps) => ({
                     clickableIcons: false,
                     fullscreenControl: false,
                     keyboardShortcuts: false,
                     styles: MapStyle[resolvedTheme],
                     minZoomOverride: true,
                     minZoom: 1,
-                  }}
+                    zoomControlOptions: {
+                      position: maps.ControlPosition.TOP_LEFT,
+                    },
+                  })}
                   onClick={({ lat, lng }) => {
                     setEditLocation({
                       ...editLocation,
                       location: { lat, lng },
                       hasLocation: true,
                     });
+                  }}
+                  onChange={({ zoom }) => {
+                    setMapZoom(zoom);
                   }}
                 >
                   {editLocation?.hasLocation && (
@@ -822,15 +924,45 @@ export default function ImpishDrawer({
                       />
                     </MapMarker>
                   )}
+                  {currentLocation.isSet && userLocation && (
+                    <MapMarker
+                      lat={currentLocation.loc.lat}
+                      lng={currentLocation.loc.lng}
+                    >
+                      <CircleIcon color="primary" sx={{ fontSize: "small" }} />
+                    </MapMarker>
+                  )}
                 </GoogleMapReact>
+                <IconButton
+                  style={{
+                    position: "absolute",
+                    right: "10px",
+                    top: "10px",
+                    backgroundColor: Colors[resolvedTheme].mylocation_bg,
+                    borderRadius: "10px",
+                  }}
+                  onClick={shareUserLocation}
+                >
+                  <MyLocationOutlinedIcon
+                    color={
+                      !userLocation ? Colors[resolvedTheme].primary : "primary"
+                    }
+                  />
+                </IconButton>
               </div>
               <span style={{ display: "flex", alignItems: "center" }}>
                 <LocationOnIcon
-                  sx={{ color: Colors[resolvedTheme].secondary }}
+                  sx={{
+                    color: locationError
+                      ? Colors[resolvedTheme].input_error
+                      : Colors[resolvedTheme].secondary,
+                  }}
                 />
                 <div
                   style={{
-                    color: Colors[resolvedTheme].secondary,
+                    color: locationError
+                      ? Colors[resolvedTheme].input_error
+                      : Colors[resolvedTheme].secondary,
                     fontSize: "14px",
                   }}
                 >
@@ -841,15 +973,36 @@ export default function ImpishDrawer({
               </span>
               <TextField
                 fullWidth
-                placeholder="Location Name"
+                label="Location Name"
                 variant="outlined"
                 sx={{
                   input: { color: Colors[resolvedTheme].primary },
+                  fieldset: {
+                    transition: "0.6s",
+                  },
+                }}
+                style={{
+                  border: locationNameError
+                    ? "1px solid " + Colors[resolvedTheme].input_error
+                    : "none",
                 }}
                 value={locationName}
-                onChange={(e) => {
+                onChange={(e: any) => {
                   setEditLocation({ ...editLocation, name: e.target.value });
                   setLocationName(e.target.value);
+                }}
+                InputProps={{
+                  endAdornment: locationNameError && (
+                    <InputAdornment position="end">
+                      <WarningIcon
+                        style={{
+                          color: Colors[resolvedTheme].input_error,
+                          borderRadius: 5,
+                          cursor: "pointer",
+                        }}
+                      />
+                    </InputAdornment>
+                  ),
                 }}
               ></TextField>
               <div
@@ -889,6 +1042,7 @@ export default function ImpishDrawer({
                     textTransform: "none",
                   }}
                   onClick={onSearchModalSave}
+                  disabled={validationError}
                 >
                   Save
                 </Button>
@@ -2466,23 +2620,9 @@ export default function ImpishDrawer({
                                   borderRadius: 5,
                                   cursor: "pointer",
                                 }}
-                                onClick={(e) => {
-                                  const location = eventLocation?.hasLocation
-                                    ? eventLocation.location
-                                    : { lat: 0, lng: 0 };
-                                  e.stopPropagation();
-                                  setEditLocation({
-                                    hasLocation: eventLocation.hasLocation,
-                                    location,
-                                  });
-                                  setMapCenter(location);
-                                  setMapZoom(
-                                    eventLocation?.hasLocation ? maxZoom : 1
-                                  );
-                                  setSearchLocation("");
-                                  setLocationName(eventLocation?.name);
-                                  showLocationSearchModal(true);
-                                }}
+                                onClick={(e: React.MouseEvent<any, any>) =>
+                                  openSearchModal(e)
+                                }
                               />
                             </InputAdornment>
                           ),
