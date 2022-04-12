@@ -35,18 +35,22 @@ import CloseIcon from "@mui/icons-material/Close";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import GroupSharpIcon from "@mui/icons-material/GroupSharp";
+import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import LanguageIcon from "@mui/icons-material/Language";
 import LockIcon from "@mui/icons-material/Lock";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import FmdGoodIcon from "@mui/icons-material/FmdGood";
 import PublicRoundedIcon from "@mui/icons-material/PublicRounded";
+import SettingsIcon from "@mui/icons-material/Settings";
 import SearchIcon from "@mui/icons-material/Search";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import MyLocationOutlinedIcon from "@mui/icons-material/MyLocationOutlined";
 import CircleIcon from "@mui/icons-material/Circle";
 import WarningIcon from "@mui/icons-material/Warning";
 import useMediaQuery from "@mui/material/useMediaQuery";
+
 import Avatar from "components/Avatar";
 import IOSSwitch from "components/IOSSwitch";
 import Colors from "lib/colors";
@@ -75,6 +79,9 @@ import LocationSelector from "components/LocationSelector";
 import MapMarker from "./MapMarker";
 import styles from "styles/components/Drawer.module.scss";
 import MapStyle from "lib/mapstyle";
+import { styled } from "@mui/material/styles";
+import AvatarEditor from "react-avatar-editor";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function ImpishDrawer({
   variant,
@@ -89,6 +96,8 @@ export default function ImpishDrawer({
   const {
     timezone,
     eventLocation,
+    cover,
+
     setEventLocation,
     setEventName,
     setEventDescription,
@@ -97,6 +106,7 @@ export default function ImpishDrawer({
     setEventPrivacy,
     setEventInvitable,
     setTimezone,
+    setCover,
   } = useNewEvent();
   const { user } = useUserInfo();
   const router = useRouter();
@@ -304,17 +314,11 @@ export default function ImpishDrawer({
   };
 
   const handleNext = () => {
-    if (eventStep < 2) setEventStep(eventStep + 1);
+    if (eventStep < 3) setEventStep(eventStep + 1);
   };
 
   const goHome = () => {
-    if (
-      startDate !== null ||
-      endDate !== null ||
-      startTime !== roundUpTime() ||
-      endTime !== roundUpTimePlus3() ||
-      values.eventName !== ""
-    ) {
+    if (changed()) {
       setGoToRoute("/");
       showDiscardModal(true);
     } else {
@@ -471,7 +475,6 @@ export default function ImpishDrawer({
   const [locationInput, setLocationInput] = React.useState<string>("");
   const locationPopoverWidth = drawerWidth - 40;
   const onSelectLocation = (place: any) => {
-    console.log("select location: ", place);
     const name =
       place.hasLocation === undefined ? place.name : values["eventLocation"];
     handleEventInfoChange("eventLocation")({ target: { value: name } });
@@ -640,6 +643,37 @@ export default function ImpishDrawer({
     }
   };
 
+  // upload cover photo
+  const Input = styled("input")({
+    display: "none",
+  });
+  const [coverPhotoPath, setCoverPhotoPath] = React.useState<string>("");
+  const onSelectCoverPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const url = URL.createObjectURL(e.target.files[0]);
+      setCoverPhotoPath(url);
+      setCover({
+        url: url,
+        pos: {
+          x: 0.5,
+          y: 0.5,
+        },
+      });
+    }
+  };
+  const onDeleteCoverPhoto = () => {
+    setCoverPhotoPath("");
+    setCover({
+      url: "",
+    });
+  };
+  const onCoverPhotoMove = (pos: { x: number; y: number }) => {
+    setCover({
+      ...cover,
+      pos: pos,
+    });
+  };
+
   return (
     <Drawer
       variant={variant}
@@ -726,8 +760,12 @@ export default function ImpishDrawer({
                   helperText={errors2?.email ? errors2.email.message : null}
                   size="small"
                   sx={{
-                    input: { color: Colors[resolvedTheme].primary },
-                    label: { color: Colors[resolvedTheme].secondary },
+                    input: {
+                      color: Colors[resolvedTheme].primary,
+                    },
+                    label: {
+                      color: Colors[resolvedTheme].secondary,
+                    },
                     "& .MuiOutlinedInput-root": {
                       "& fieldset": {
                         borderColor: Colors[resolvedTheme].input_border,
@@ -763,7 +801,9 @@ export default function ImpishDrawer({
         >
           <div
             className={styles.discard_modal}
-            style={{ backgroundColor: Colors[resolvedTheme].header_bg }}
+            style={{
+              backgroundColor: Colors[resolvedTheme].header_bg,
+            }}
           >
             <span className={styles.title}>Leave Page?</span>
             <span className={styles.content}>
@@ -810,10 +850,18 @@ export default function ImpishDrawer({
                   },
                 }}
               >
-                <CloseIcon sx={{ color: Colors[resolvedTheme].secondary }} />
+                <CloseIcon
+                  sx={{
+                    color: Colors[resolvedTheme].secondary,
+                  }}
+                />
               </IconButton>
             </div>
-            <Divider sx={{ borderColor: Colors[resolvedTheme].tab_divider }} />
+            <Divider
+              sx={{
+                borderColor: Colors[resolvedTheme].tab_divider,
+              }}
+            />
             <div
               style={{
                 display: "flex",
@@ -839,7 +887,9 @@ export default function ImpishDrawer({
                   placeholder: "Search",
                   variant: "standard",
                   sx: {
-                    input: { color: Colors[resolvedTheme].primary },
+                    input: {
+                      color: Colors[resolvedTheme].primary,
+                    },
                     bgcolor: Colors[resolvedTheme].search_bg,
                     borderRadius: "20px",
                     padding: "5px 2px",
@@ -950,7 +1000,12 @@ export default function ImpishDrawer({
                   />
                 </IconButton>
               </div>
-              <span style={{ display: "flex", alignItems: "center" }}>
+              <span
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
                 <LocationOnIcon
                   sx={{
                     color: locationError
@@ -1359,7 +1414,9 @@ export default function ImpishDrawer({
                         }}
                       >
                         <CloseIcon
-                          sx={{ color: Colors[resolvedTheme].secondary }}
+                          sx={{
+                            color: Colors[resolvedTheme].secondary,
+                          }}
                         />
                       </IconButton>
                     </Tooltip>
@@ -1372,7 +1429,11 @@ export default function ImpishDrawer({
                         variant: "h6",
                         display: !events
                           ? { xs: "none", md: "flex" }
-                          : { xs: "flex", md: "flex", sm: "flex" },
+                          : {
+                              xs: "flex",
+                              md: "flex",
+                              sm: "flex",
+                            },
                         ":hover": {
                           borderRadius: (theme) =>
                             Number(theme.shape.borderRadius) * 2,
@@ -1398,7 +1459,9 @@ export default function ImpishDrawer({
                   sx={{ px: 2, marginTop: "12px" }}
                   separator={
                     <NavigateNextIcon
-                      sx={{ color: Colors[resolvedTheme].secondary }}
+                      sx={{
+                        color: Colors[resolvedTheme].secondary,
+                      }}
                       fontSize="small"
                     />
                   }
@@ -1457,7 +1520,7 @@ export default function ImpishDrawer({
                       Add a physical location for people to join your event.
                     </Typography>
                   </div>
-                ) : (
+                ) : eventStep === 2 ? (
                   <div>
                     <Typography
                       sx={{
@@ -1484,6 +1547,60 @@ export default function ImpishDrawer({
                       Provide more information about your event so guests know
                       what to expect.
                     </Typography>
+                  </div>
+                ) : (
+                  <div>
+                    <Typography
+                      sx={{
+                        paddingLeft: "16px",
+                        fontSize: "1.6rem",
+                        fontWeight: 900,
+                        color: Colors[resolvedTheme].primary,
+                      }}
+                      variant="h6"
+                    >
+                      Additional Details
+                    </Typography>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        padding: "0px 5px",
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          paddingLeft: "16px",
+                          marginTop: "auto",
+                          fontSize: ".9rem",
+                          fontWeight: 400,
+                          color: Colors[resolvedTheme].primary,
+                          flexGrow: 1,
+                        }}
+                        variant="caption"
+                      >
+                        Cover Photo
+                      </Typography>
+
+                      <Tooltip
+                        title="We recommend using a photo that is 1200 × 628 pixels."
+                        placement="top"
+                      >
+                        <IconButton
+                          size="small"
+                          sx={{
+                            marginBottom: "-5px",
+                            marginRight: "10px",
+                            color: Colors[resolvedTheme].secondary,
+                            ":hover": {
+                              backgroundColor: Colors[resolvedTheme].hover,
+                            },
+                          }}
+                        >
+                          <InfoRoundedIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </div>
                   </div>
                 )}
                 <List
@@ -1614,8 +1731,12 @@ export default function ImpishDrawer({
                           autoComplete="event"
                           autoFocus
                           sx={{
-                            input: { color: Colors[resolvedTheme].primary },
-                            label: { color: Colors[resolvedTheme].secondary },
+                            input: {
+                              color: Colors[resolvedTheme].primary,
+                            },
+                            label: {
+                              color: Colors[resolvedTheme].secondary,
+                            },
                             "& .MuiOutlinedInput-root": {
                               "& fieldset": {
                                 borderColor: Colors[resolvedTheme].input_border,
@@ -1635,7 +1756,9 @@ export default function ImpishDrawer({
                               color: Colors[resolvedTheme].secondary,
                             },
                           }}
-                          inputProps={{ maxLength: CHARACTER_LIMIT }}
+                          inputProps={{
+                            maxLength: CHARACTER_LIMIT,
+                          }}
                           onChange={handleEventInfoChange("eventName")}
                           value={values["eventName"]}
                           helperText={`${values.eventName.length}/${CHARACTER_LIMIT}`}
@@ -1647,7 +1770,11 @@ export default function ImpishDrawer({
                             marginBottom: showEndDate ? "12px" : undefined,
                           }}
                           container
-                          columnSpacing={{ xs: 2.3, sm: 2.3, md: 2.3 }}
+                          columnSpacing={{
+                            xs: 2.3,
+                            sm: 2.3,
+                            md: 2.3,
+                          }}
                         >
                           <Grid item xs={7}>
                             <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -1734,7 +1861,9 @@ export default function ImpishDrawer({
                                 InputAdornmentProps={{
                                   position: "start",
                                 }}
-                                OpenPickerButtonProps={{ disableRipple: true }}
+                                OpenPickerButtonProps={{
+                                  disableRipple: true,
+                                }}
                                 renderInput={(params) => (
                                   <TextField
                                     {...params}
@@ -1764,7 +1893,9 @@ export default function ImpishDrawer({
                                         },
                                       },
                                     }}
-                                    InputLabelProps={{ shrink: true }}
+                                    InputLabelProps={{
+                                      shrink: true,
+                                    }}
                                     error={!!errors3?.start_date}
                                     helperText={null}
                                   />
@@ -1905,7 +2036,11 @@ export default function ImpishDrawer({
                             <Grid
                               container
                               rowSpacing={1}
-                              columnSpacing={{ xs: 2.3, sm: 2.3, md: 2.3 }}
+                              columnSpacing={{
+                                xs: 2.3,
+                                sm: 2.3,
+                                md: 2.3,
+                              }}
                             >
                               <Grid item xs={7}>
                                 <LocalizationProvider
@@ -1937,7 +2072,9 @@ export default function ImpishDrawer({
                                     onClose={() => {
                                       setOpenEnd(false);
                                     }}
-                                    PopperProps={{ disablePortal: true }}
+                                    PopperProps={{
+                                      disablePortal: true,
+                                    }}
                                     PaperProps={{
                                       sx: {
                                         border: Colors[resolvedTheme].border,
@@ -2030,7 +2167,9 @@ export default function ImpishDrawer({
                                             },
                                           },
                                         }}
-                                        InputLabelProps={{ shrink: true }}
+                                        InputLabelProps={{
+                                          shrink: true,
+                                        }}
                                         {...params}
                                         error={!!errors3?.start_date}
                                         helperText={null}
@@ -2296,7 +2435,10 @@ export default function ImpishDrawer({
                             <>Privacy</>
                           ) : (
                             <Box
-                              sx={{ display: "flex", flexDirection: "column" }}
+                              sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                              }}
                             >
                               <Typography
                                 sx={{
@@ -2340,7 +2482,11 @@ export default function ImpishDrawer({
                                 }}
                               >
                                 <b>Guests Can Invite People</b>
-                                <span style={{ fontSize: 12 }}>
+                                <span
+                                  style={{
+                                    fontSize: 12,
+                                  }}
+                                >
                                   If this is on, guests can invite people to the
                                   event.
                                 </span>
@@ -2479,13 +2625,17 @@ export default function ImpishDrawer({
                                 ":hover": {
                                   backgroundColor: "transparent",
                                 },
-                                "&": { color: Colors[resolvedTheme].primary },
+                                "&": {
+                                  color: Colors[resolvedTheme].primary,
+                                },
                               }}
                               checked={privacy === "Private"}
                               onChange={handlePrivacyChange}
                               value="Private"
                               name="radio-buttons"
-                              inputProps={{ "aria-label": "A" }}
+                              inputProps={{
+                                "aria-label": "A",
+                              }}
                             />
                           </MenuItem>
                           <MenuItem
@@ -2561,13 +2711,17 @@ export default function ImpishDrawer({
                                 ":hover": {
                                   backgroundColor: "transparent",
                                 },
-                                "&": { color: Colors[resolvedTheme].primary },
+                                "&": {
+                                  color: Colors[resolvedTheme].primary,
+                                },
                               }}
                               checked={privacy === "Public"}
                               onChange={handlePrivacyChange}
                               value="Public"
                               name="radio-buttons"
-                              inputProps={{ "aria-label": "A" }}
+                              inputProps={{
+                                "aria-label": "A",
+                              }}
                             />
                           </MenuItem>
                         </Menu>
@@ -2584,8 +2738,12 @@ export default function ImpishDrawer({
                           variant: "outlined",
                           autoFocus: true,
                           sx: {
-                            input: { color: Colors[resolvedTheme].primary },
-                            label: { color: Colors[resolvedTheme].secondary },
+                            input: {
+                              color: Colors[resolvedTheme].primary,
+                            },
+                            label: {
+                              color: Colors[resolvedTheme].secondary,
+                            },
                             "& .MuiOutlinedInput-root": {
                               "& fieldset": {
                                 borderColor: Colors[resolvedTheme].input_border,
@@ -2639,12 +2797,17 @@ export default function ImpishDrawer({
                             display: "flex",
                           }}
                         >
-                          <LanguageIcon sx={{ fontSize: 16, mr: 1 }} />
+                          <LanguageIcon
+                            sx={{
+                              fontSize: 16,
+                              mr: 1,
+                            }}
+                          />
                           {timezone.name} ({timezone.abbr})
                         </Typography>
                       </Tooltip>
                     </>
-                  ) : (
+                  ) : eventStep === 2 ? (
                     <TextField
                       fullWidth
                       label="Description"
@@ -2653,8 +2816,12 @@ export default function ImpishDrawer({
                       multiline
                       rows={4}
                       sx={{
-                        textarea: { color: Colors[resolvedTheme].primary },
-                        label: { color: Colors[resolvedTheme].secondary },
+                        textarea: {
+                          color: Colors[resolvedTheme].primary,
+                        },
+                        label: {
+                          color: Colors[resolvedTheme].secondary,
+                        },
                         "& .MuiOutlinedInput-root": {
                           "& fieldset": {
                             borderColor: Colors[resolvedTheme].input_border,
@@ -2668,6 +2835,115 @@ export default function ImpishDrawer({
                       onChange={handleEventInfoChange("eventDescription")}
                       value={values["eventDescription"]}
                     />
+                  ) : (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "16px",
+                      }}
+                    >
+                      {coverPhotoPath !== "" ? (
+                        <div
+                          style={{
+                            position: "relative",
+                            cursor: "all-scroll",
+                            overflow: "hidden",
+                            borderRadius: 5,
+                            width: 300,
+                            height: 150,
+                          }}
+                        >
+                          <AvatarEditor
+                            image={coverPhotoPath}
+                            width={300}
+                            height={150}
+                            border={0}
+                            onPositionChange={onCoverPhotoMove}
+                          />
+                          <DeleteIcon
+                            className={styles.avatar_delete}
+                            sx={{
+                              backgroundColor: "#E3E6EA",
+                              ":hover": {
+                                backgroundColor: "#DAD9DF",
+                              },
+                            }}
+                            fontSize="small"
+                            onClick={onDeleteCoverPhoto}
+                          />
+                        </div>
+                      ) : (
+                        <div
+                          style={{
+                            background: "transparent",
+                            borderStyle: "solid",
+                            borderWidth: "1px",
+                            borderColor:
+                              resolvedTheme === "light"
+                                ? Colors[resolvedTheme].photo_btn_group_border
+                                : Colors[resolvedTheme].divider,
+                            borderRadius: "5px",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "space-between",
+                            padding: "30px 40px",
+                            gap: "10px",
+                          }}
+                        >
+                          <label htmlFor="upload-cover-photo">
+                            <Input
+                              accept="image/*"
+                              id="upload-cover-photo"
+                              multiple
+                              type="file"
+                              onChange={onSelectCoverPhoto}
+                            />
+                            <Button
+                              component="span"
+                              fullWidth
+                              sx={{
+                                backgroundColor: Colors[resolvedTheme].photoBtn,
+                                color: Colors[resolvedTheme].primary,
+                                textTransform: "none",
+                                fontWeight: "500",
+                                "&:hover": {
+                                  backgroundColor:
+                                    Colors[resolvedTheme].back_hover,
+                                },
+                              }}
+                              startIcon={<InsertPhotoIcon />}
+                            >
+                              Upload Cover Photo
+                            </Button>
+                          </label>
+                        </div>
+                      )}
+
+                      <Button
+                        disableRipple
+                        fullWidth
+                        startIcon={
+                          <SettingsIcon
+                            sx={{ marginLeft: 0, marginRight: "6px" }}
+                          />
+                        }
+                        sx={{
+                          background: "transparent",
+                          borderRadius: (theme) =>
+                            Number(theme.shape.borderRadius) / 2,
+                          color: Colors[resolvedTheme].primary,
+                          justifyContent: "flex-start",
+                          fontSize: "16px",
+                          textTransform: "none",
+                          ":hover": {
+                            backgroundColor: Colors[resolvedTheme].hover,
+                          },
+                        }}
+                      >
+                        Event Settings
+                      </Button>
+                    </div>
                   )}
                 </List>
               </>
@@ -2748,7 +3024,7 @@ export default function ImpishDrawer({
                 }
                 onClick={handleNext}
               >
-                Next
+                {eventStep < 3 ? "Next" : "Create Event"}
               </Button>
             </Box>
           </div>

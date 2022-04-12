@@ -134,3 +134,24 @@
     width: 80vw;
   }
 }
+
+
+.avatar_delete {
+  cursor: pointer;
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  padding: 7px;
+  border-radius: 50%;
+}
+.image_flow {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+
+  & > span {
+    flex: 1;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+}

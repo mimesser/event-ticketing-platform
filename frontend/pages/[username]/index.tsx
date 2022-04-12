@@ -10,7 +10,6 @@ import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import LoadingButton from "@mui/lab/LoadingButton";
-import SearchIcon from "@mui/icons-material/Search";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Modal from "@mui/material/Modal";
@@ -599,7 +598,9 @@ function Profile() {
               {user.username && (
                 <div
                   className={styles.username}
-                  style={{ color: Colors[resolvedTheme].secondary }}
+                  style={{
+                    color: Colors[resolvedTheme].secondary,
+                  }}
                 >{`@${user.username}`}</div>
               )}
             </>
@@ -694,7 +695,9 @@ function Profile() {
                 <Typography
                   component="span"
                   variant="body1"
-                  sx={{ color: Colors[resolvedTheme].secondary }}
+                  sx={{
+                    color: Colors[resolvedTheme].secondary,
+                  }}
                 >
                   &nbsp; Following
                 </Typography>
@@ -725,7 +728,9 @@ function Profile() {
                 <Typography
                   component="span"
                   variant="body1"
-                  sx={{ color: Colors[resolvedTheme].secondary }}
+                  sx={{
+                    color: Colors[resolvedTheme].secondary,
+                  }}
                 >
                   &nbsp; Followers
                 </Typography>
@@ -1039,7 +1044,10 @@ function Profile() {
                 ?
               </Typography>
               <Typography
-                sx={{ marginBottom: "12px", fontFamily: "sans-serif" }}
+                sx={{
+                  marginBottom: "12px",
+                  fontFamily: "sans-serif",
+                }}
                 variant="body1"
               >
                 Their activities will no longer show up in your home timeline.
@@ -1163,8 +1171,12 @@ function Profile() {
                   helperText={errors?.email ? errors.email.message : null}
                   size="small"
                   sx={{
-                    input: { color: Colors[resolvedTheme].primary },
-                    label: { color: Colors[resolvedTheme].secondary },
+                    input: {
+                      color: Colors[resolvedTheme].primary,
+                    },
+                    label: {
+                      color: Colors[resolvedTheme].secondary,
+                    },
                     "& .MuiOutlinedInput-root": {
                       "& fieldset": {
                         borderColor: Colors[resolvedTheme].input_border,
@@ -1248,8 +1260,12 @@ function Profile() {
                 helperText={errors?.email ? errors.email.message : null}
                 size="small"
                 sx={{
-                  input: { color: Colors[resolvedTheme].primary },
-                  label: { color: Colors[resolvedTheme].secondary },
+                  input: {
+                    color: Colors[resolvedTheme].primary,
+                  },
+                  label: {
+                    color: Colors[resolvedTheme].secondary,
+                  },
                   "& .MuiOutlinedInput-root": {
                     "& fieldset": {
                       borderColor: Colors[resolvedTheme].input_border,
