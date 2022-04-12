@@ -490,6 +490,7 @@ function Profile() {
         <div className={styles.menu}>
           <Tooltip title="Edit Profile">
             <Button
+              id="edit_profile_button"
               color="inherit"
               sx={(theme) => ({
                 borderRadius: theme.shape.borderRadius,
@@ -930,6 +931,7 @@ function Profile() {
           </div>
 
           <TextField
+            id="edit_name_input"
             label="Name"
             variant="outlined"
             className={styles.name}
@@ -950,6 +952,7 @@ function Profile() {
           />
 
           <TextField
+            id="edit_username_input"
             label="Username"
             error={invalidUsername || onlyAllowed}
             helperText={
