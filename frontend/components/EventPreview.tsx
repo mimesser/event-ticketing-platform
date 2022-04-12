@@ -15,6 +15,8 @@ import { shortenAddress, getLocationString } from "lib/utils";
 import { useTheme } from "next-themes";
 import styles from "styles/components/Preview.module.scss";
 import MapStyle from "lib/mapstyle";
+import AvatarEditor from "react-avatar-editor";
+import Image from "next/image";
 
 export default function Preview({
   eventName,
@@ -28,6 +30,7 @@ export default function Preview({
   eventPeriod,
   privacy,
   invitable,
+  cover,
   view,
 }: {
   eventName: any;
@@ -41,6 +44,7 @@ export default function Preview({
   eventPeriod: any;
   privacy: any;
   invitable: any;
+  cover: any;
   view: any;
 }) {
   const { resolvedTheme } = useTheme();
@@ -54,20 +58,69 @@ export default function Preview({
     >
       <div
         className={styles.upper}
-        style={{ background: Colors[resolvedTheme].header_bg }}
+        style={{
+          background: Colors[resolvedTheme].header_bg,
+        }}
       >
-        <div className={styles.calendar_top}></div>
+        {cover.url && (
+          <div
+            className={styles.cover}
+            style={{
+              height: 150,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              position: "relative",
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                left: 0,
+                top: 0,
+                width: "100%",
+                height: "100%",
+                filter: "blur(20px)",
+                opacity: 0.5,
+              }}
+            >
+              <Image src={cover.url} layout="fill" alt="" />
+            </div>
+            <div style={{ borderRadius: 10, overflow: "hidden" }}>
+              <AvatarEditor
+                image={cover.url}
+                width={300}
+                height={150}
+                border={0}
+                position={cover.pos}
+              />
+            </div>
+          </div>
+        )}
         <div
-          className={styles.calendar_bottom}
-          style={{
-            background: Colors[resolvedTheme].drawer_bg,
-            boxShadow:
-              resolvedTheme === "light"
-                ? "0px 0px 5px rgba(0, 0, 0, 0.2)"
-                : "0px 0px 12px rgba(255, 255, 255, 0.05)",
-          }}
+          className={styles.calendar}
+          style={
+            cover.url
+              ? {
+                  marginTop: -45,
+                  zIndex: 10,
+                }
+              : {}
+          }
         >
-          {isNaN(eventDay) ? "" : eventDay}
+          <div className={styles.calendar_top}></div>
+          <div
+            className={styles.calendar_bottom}
+            style={{
+              background: Colors[resolvedTheme].drawer_bg,
+              boxShadow:
+                resolvedTheme === "light"
+                  ? "0px 0px 5px rgba(0, 0, 0, 0.2)"
+                  : "0px 0px 12px rgba(255, 255, 255, 0.05)",
+            }}
+          >
+            {isNaN(eventDay) ? "" : eventDay}
+          </div>
         </div>
         <span className={styles.period}>
           {eventPeriod} {timezone.abbr}
@@ -76,7 +129,11 @@ export default function Preview({
           {eventName ? (
             <span>{eventName}</span>
           ) : (
-            <span style={{ color: Colors[resolvedTheme].privacy_border }}>
+            <span
+              style={{
+                color: Colors[resolvedTheme].privacy_border,
+              }}
+            >
               Event name
             </span>
           )}
@@ -182,7 +239,9 @@ export default function Preview({
             <span style={{ fontWeight: "bold" }}>Details</span>
             <div className={styles.event_host}>
               <PeopleAltIcon
-                style={{ color: Colors[resolvedTheme].secondary }}
+                style={{
+                  color: Colors[resolvedTheme].secondary,
+                }}
               />
               <div>
                 1 person
@@ -203,21 +262,29 @@ export default function Preview({
             {eventLocation.name && (
               <div className={styles.event_host}>
                 <FmdGoodIcon
-                  style={{ color: Colors[resolvedTheme].secondary }}
+                  style={{
+                    color: Colors[resolvedTheme].secondary,
+                  }}
                 />
                 <b>{eventLocation.name}</b>
               </div>
             )}
             {privacy === "Private" && (
               <div className={styles.event_host}>
-                <LockIcon style={{ color: Colors[resolvedTheme].secondary }} />
+                <LockIcon
+                  style={{
+                    color: Colors[resolvedTheme].secondary,
+                  }}
+                />
                 <span>Private &bull; Only people who are invited</span>
               </div>
             )}
             {privacy === "Public" && (
               <div className={styles.event_host}>
                 <PublicIcon
-                  style={{ color: Colors[resolvedTheme].secondary }}
+                  style={{
+                    color: Colors[resolvedTheme].secondary,
+                  }}
                 />
                 <span>Public &bull; Anyone on or off Impish</span>
               </div>
@@ -336,7 +403,12 @@ export default function Preview({
                   />
                 </MapMarker>
               </GoogleMapReact>
-              <span style={{ padding: "5px 16px", marginTop: "8px" }}>
+              <span
+                style={{
+                  padding: "5px 16px",
+                  marginTop: "8px",
+                }}
+              >
                 {eventLocation?.name}
               </span>
               <span
@@ -381,7 +453,9 @@ export default function Preview({
             </div>
             <div
               className={styles.divider}
-              style={{ backgroundColor: Colors[resolvedTheme].hover }}
+              style={{
+                backgroundColor: Colors[resolvedTheme].hover,
+              }}
             />
             <div className={styles.row}>
               <Avatar avatarImage={avatar} walletAddress={address} size={36} />

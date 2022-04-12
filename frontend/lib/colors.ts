@@ -35,6 +35,7 @@ const Colors: any = {
     cancel_hover: "rgba(255,255,255,0.1)",
     input_error: "#df2f2f",
     mylocation_bg: "#383b3a",
+    photoBtn: "rgba(58, 59, 60, 0.6)",
   },
   light: {
     header_bg: "#FFFFFF",
@@ -66,6 +67,8 @@ const Colors: any = {
     cancel_hover: "rgba(0, 0, 0, 0.1)",
     input_error: "#df2f2f",
     mylocation_bg: "#f0f2f4",
+    photo_btn_group_border: "rgba(0, 0, 0, 0.15)",
+    photoBtn: "rgba(0, 0, 0, 0.12)"
   },
 };
 
