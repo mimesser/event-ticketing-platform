@@ -343,6 +343,14 @@ export default function ImpishDrawer({
     setPrivacy("Privacy");
     setInvitable(true);
 
+    setSearchLocation("");
+    setLocationInput("");
+    setMapCenter({ lat: 0, lng: 0 });
+    setMapZoom(1);
+    setLocationName("");
+    setEditLocation({ hasLocation: false, location: { lat: 0, lng: 0 } });
+    setZooming(false);
+
     setEventName("");
     setEventLocation({
       hasLocation: false,
@@ -895,7 +903,7 @@ export default function ImpishDrawer({
                     boxShadow: Colors[resolvedTheme].account_menu_shadow,
                     bgcolor: Colors[resolvedTheme].header_bg,
                     color: Colors[resolvedTheme].primary,
-                    overflow: "scroll",
+                    overflow: "auto",
                   },
                 }}
                 handleChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -2771,13 +2779,13 @@ export default function ImpishDrawer({
                               Colors[resolvedTheme].account_menu_shadow,
                             bgcolor: Colors[resolvedTheme].header_bg,
                             color: Colors[resolvedTheme].primary,
-                            overflow: "scroll",
+                            overflow: "auto",
                           },
                         }}
                         handleChange={(e: ChangeEvent<HTMLInputElement>) => {
                           setLocationInput(e.target.value);
                           setEventLocation({
-                            ...eventLocation,
+                            hasLocation: false,
                             name: e.target.value,
                           });
                         }}
