@@ -567,6 +567,11 @@ export default function ImpishDrawer({
   };
   const openSearchModal = function (e: React.MouseEvent<HTMLElement>) {
     e.stopPropagation();
+
+    // reset all validation errors
+    setLocationError(false);
+    setShowError(false);
+
     const location = eventLocation?.hasLocation
       ? eventLocation.location
       : { lat: 0, lng: 0 };
