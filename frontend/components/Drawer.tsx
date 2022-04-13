@@ -577,19 +577,22 @@ export default function ImpishDrawer({
     setMapCenter(location);
     setMapZoom(eventLocation?.hasLocation ? maxZoom : 1);
     setSearchLocation("");
-    setLocationName(eventLocation?.name || "");
+    setLocationName(eventLocation?.name || undefined);
     showLocationSearchModal(true);
     showUserLocation(false);
   };
   const closeSearchModal = () => showLocationSearchModal(false);
-  const [showError, setErrorFlag] = React.useState<boolean>(true);
+  const showError = React.useCallback(
+    () => locationName !== undefined,
+    [locationName]
+  )();
 
   const locationError = React.useCallback(() => {
     return !(editLocation.hasLocation === true);
   }, [editLocation])();
 
   const locationNameError = React.useCallback(() => {
-    return locationName === "";
+    return !(locationName !== "");
   }, [locationName])();
 
   const validationError = React.useCallback(
@@ -1052,7 +1055,7 @@ export default function ImpishDrawer({
                   },
                 }}
                 error={showError && locationNameError}
-                value={locationName}
+                value={locationName || ""}
                 onChange={(e: any) => {
                   setEditLocation({ ...editLocation, name: e.target.value });
                   setLocationName(e.target.value);
