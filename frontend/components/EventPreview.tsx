@@ -66,11 +66,12 @@ export default function Preview({
           <div
             className={styles.cover}
             style={{
-              height: 240,
+              height: 250,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               position: "relative",
+              margin: "-10px -25px 0 -25px",
             }}
           >
             <div
@@ -86,11 +87,16 @@ export default function Preview({
             >
               <Image src={cover.url} layout="fill" alt="" />
             </div>
-            <div style={{ borderRadius: 10, overflow: "hidden", zIndex: 10 }}>
+            <div
+              style={{
+                overflow: "hidden",
+                zIndex: 10,
+              }}
+            >
               <AvatarEditor
                 image={cover.url}
-                width={480}
-                height={240}
+                width={500}
+                height={250}
                 border={0}
                 position={cover.pos}
               />
