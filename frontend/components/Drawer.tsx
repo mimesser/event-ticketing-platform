@@ -40,6 +40,7 @@ import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import LanguageIcon from "@mui/icons-material/Language";
 import LockIcon from "@mui/icons-material/Lock";
+import MouseIcon from "@mui/icons-material/Mouse";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import FmdGoodIcon from "@mui/icons-material/FmdGood";
 import PublicRoundedIcon from "@mui/icons-material/PublicRounded";
@@ -648,6 +649,7 @@ export default function ImpishDrawer({
     display: "none",
   });
   const [coverPhotoPath, setCoverPhotoPath] = React.useState<string>("");
+  const [coverPhotoReposition, setCoverPhotoReposition] = React.useState(false);
   const onSelectCoverPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const url = URL.createObjectURL(e.target.files[0]);
@@ -659,6 +661,7 @@ export default function ImpishDrawer({
           y: 0.5,
         },
       });
+      setCoverPhotoReposition(true);
     }
   };
   const onDeleteCoverPhoto = () => {
@@ -2877,7 +2880,6 @@ export default function ImpishDrawer({
                         <div
                           style={{
                             position: "relative",
-                            cursor: "all-scroll",
                             overflow: "hidden",
                             borderRadius: 5,
                             width: 300,
@@ -2890,7 +2892,21 @@ export default function ImpishDrawer({
                             height={150}
                             border={0}
                             onPositionChange={onCoverPhotoMove}
+                            onMouseMove={() => setCoverPhotoReposition(false)}
                           />
+                          {coverPhotoReposition && (
+                            <div
+                              className={styles.avatar_reposition}
+                              onClick={(e) => e.preventDefault()}
+                            >
+                              <MouseIcon />
+                              <span>
+                                Drag to
+                                <br />
+                                Reposition
+                              </span>
+                            </div>
+                          )}
                           <DeleteIcon
                             className={styles.avatar_delete}
                             sx={{
