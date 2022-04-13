@@ -97,7 +97,8 @@ export default function ImpishDrawer({
     timezone,
     eventLocation,
     cover,
-
+    eventName,
+    eventDescription,
     setEventLocation,
     setEventName,
     setEventDescription,
@@ -132,11 +133,6 @@ export default function ImpishDrawer({
   const [goToRoute, setGoToRoute] = React.useState("");
   const [startTime, setStartTime] = React.useState(roundUpTime());
   const [endTime, setEndTime] = React.useState(roundUpTimePlus3());
-  const [values, setValues] = React.useState({
-    eventName: "",
-    eventLocation: "",
-    eventDescription: "",
-  });
   const [openStart, setOpenStart] = React.useState(false);
   const [openEnd, setOpenEnd] = React.useState(false);
   const [times] = React.useState(eventTime() || []);
@@ -152,17 +148,26 @@ export default function ImpishDrawer({
 
   const drawerWidth = events ? 340 : 240;
 
+  // TODO: review needed
   const changed = React.useCallback(() => {
     return (
       startDate !== null ||
       endDate !== null ||
       startTime !== roundUpTime() ||
       endTime !== roundUpTimePlus3() ||
-      values.eventName !== "" ||
-      values.eventLocation !== "" ||
-      values.eventDescription !== ""
+      eventName !== "" ||
+      eventDescription !== "" ||
+      eventLocation !== {}
     );
-  }, [startDate, endDate, startTime, endTime, values]);
+  }, [
+    startDate,
+    endDate,
+    startTime,
+    endTime,
+    eventName,
+    eventLocation,
+    eventDescription,
+  ]);
 
   const handleBrowseAway = React.useCallback(() => {
     if (!eventDetails) return;
@@ -255,10 +260,6 @@ export default function ImpishDrawer({
 
   // event info update
   React.useEffect(() => {
-    setEventName(values.eventName);
-    setEventDescription(values.eventDescription);
-  }, [setEventName, setEventDescription, values]);
-  React.useEffect(() => {
     setStartDateAndTime(startDate || new Date(), startTime);
   }, [setStartDateAndTime, startDate, startTime]);
   React.useEffect(() => {
@@ -334,11 +335,6 @@ export default function ImpishDrawer({
     });
 
     showDiscardModal(false);
-    setValues({
-      eventName: "",
-      eventLocation: "",
-      eventDescription: "",
-    });
     setStartTime(roundUpTime());
     setEndTime(roundUpTimePlus3());
     setStartDate(null);
@@ -346,6 +342,17 @@ export default function ImpishDrawer({
     setShowEndDate(false);
     setPrivacy("Privacy");
     setInvitable(true);
+
+    setEventName("");
+    setEventLocation({
+      hasLocation: false,
+      location: {
+        lat: 0,
+        lng: 0,
+      },
+      name: "",
+    });
+    setEventDescription("");
   };
 
   const stayOnPage = () => {
@@ -462,9 +469,6 @@ export default function ImpishDrawer({
   };
   const onSubmitCreateEvents: any = async ({ email }: { email: any }) => {};
 
-  const handleEventInfoChange = (eventName: any) => (event: any) => {
-    setValues({ ...values, [eventName]: event.target.value });
-  };
   const handleClickEventPrivacy = (event: any) => {
     setAnchorElPrivacy(event.currentTarget);
   };
@@ -475,9 +479,7 @@ export default function ImpishDrawer({
   const [locationInput, setLocationInput] = React.useState<string>("");
   const locationPopoverWidth = drawerWidth - 40;
   const onSelectLocation = (place: any) => {
-    const name =
-      place.hasLocation === undefined ? place.name : values["eventLocation"];
-    handleEventInfoChange("eventLocation")({ target: { value: name } });
+    const name = place.hasLocation === undefined ? place.name : eventLocation;
     setEventLocation({
       name: name,
       location: {
@@ -568,31 +570,26 @@ export default function ImpishDrawer({
     setSearchLocation("");
     setLocationName(eventLocation?.name || "");
     showLocationSearchModal(true);
-    setInputValidation(false);
     showUserLocation(false);
   };
   const closeSearchModal = () => showLocationSearchModal(false);
-  const [validateInput, setInputValidation] = React.useState<boolean>(false);
-  const [locationError, setLocationError] = React.useState<boolean>(false);
-  const [locationNameError, setLocationNameError] =
-    React.useState<boolean>(false);
-  const [validationError, setValidationError] = React.useState<boolean>(false);
-  React.useEffect(() => {
-    setLocationNameError(validateInput && locationName === "");
-  }, [validateInput, locationName, setLocationNameError]);
-  React.useEffect(() => {
-    setLocationError(validateInput && !(editLocation.hasLocation === true));
-  }, [validateInput, setLocationError, editLocation]);
-  React.useEffect(() => {
-    setValidationError(validateInput && (locationError || locationNameError));
-  }, [validateInput, setValidationError, locationError, locationNameError]);
+  const [showError, setErrorFlag] = React.useState<boolean>(true);
+
+  const locationError = React.useCallback(() => {
+    return !(editLocation.hasLocation === true);
+  }, [editLocation])();
+
+  const locationNameError = React.useCallback(() => {
+    return locationName === "";
+  }, [locationName])();
+
+  const validationError = React.useCallback(
+    () => locationError || locationNameError,
+    [locationError, locationNameError]
+  )();
+
   const onSearchModalSave = () => {
-    if (!validateInput) {
-      setInputValidation(true);
-    } else if (!validationError) {
-      handleEventInfoChange("eventLocation")({
-        target: { value: locationName },
-      });
+    if (!validationError) {
       setEventLocation({ ...editLocation, name: locationName });
       setLocationInput(locationName);
       showLocationSearchModal(false);
@@ -922,7 +919,7 @@ export default function ImpishDrawer({
               <div
                 className={styles.mapContainer}
                 style={
-                  locationError
+                  showError && locationError
                     ? {
                         border:
                           "3px solid " + Colors[resolvedTheme].input_error,
@@ -1013,16 +1010,18 @@ export default function ImpishDrawer({
               >
                 <LocationOnIcon
                   sx={{
-                    color: locationError
-                      ? Colors[resolvedTheme].input_error
-                      : Colors[resolvedTheme].secondary,
+                    color:
+                      showError && locationError
+                        ? Colors[resolvedTheme].input_error
+                        : Colors[resolvedTheme].secondary,
                   }}
                 />
                 <div
                   style={{
-                    color: locationError
-                      ? Colors[resolvedTheme].input_error
-                      : Colors[resolvedTheme].secondary,
+                    color:
+                      showError && locationError
+                        ? Colors[resolvedTheme].input_error
+                        : Colors[resolvedTheme].secondary,
                     fontSize: "14px",
                   }}
                 >
@@ -1041,18 +1040,14 @@ export default function ImpishDrawer({
                     transition: "0.6s",
                   },
                 }}
-                style={{
-                  border: locationNameError
-                    ? "1px solid " + Colors[resolvedTheme].input_error
-                    : "none",
-                }}
+                error={showError && locationNameError}
                 value={locationName}
                 onChange={(e: any) => {
                   setEditLocation({ ...editLocation, name: e.target.value });
                   setLocationName(e.target.value);
                 }}
                 InputProps={{
-                  endAdornment: locationNameError && (
+                  endAdornment: showError && locationNameError && (
                     <InputAdornment position="end">
                       <WarningIcon
                         style={{
@@ -1764,9 +1759,13 @@ export default function ImpishDrawer({
                           inputProps={{
                             maxLength: CHARACTER_LIMIT,
                           }}
-                          onChange={handleEventInfoChange("eventName")}
-                          value={values["eventName"]}
-                          helperText={`${values.eventName.length}/${CHARACTER_LIMIT}`}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            setEventName(e.target.value)
+                          }
+                          value={eventName}
+                          helperText={`${
+                            eventName?.length || 0
+                          }/${CHARACTER_LIMIT}`}
                           error={!!errors3?.email}
                         />
 
@@ -2777,7 +2776,10 @@ export default function ImpishDrawer({
                         }}
                         handleChange={(e: ChangeEvent<HTMLInputElement>) => {
                           setLocationInput(e.target.value);
-                          handleEventInfoChange("eventLocation")(e);
+                          setEventLocation({
+                            ...eventLocation,
+                            name: e.target.value,
+                          });
                         }}
                         InputProps={{
                           endAdornment: (
@@ -2850,8 +2852,10 @@ export default function ImpishDrawer({
                           },
                         },
                       }}
-                      onChange={handleEventInfoChange("eventDescription")}
-                      value={values["eventDescription"]}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setEventDescription(e.target.value)
+                      }
+                      value={eventDescription}
                     />
                   ) : (
                     <div
@@ -3033,11 +3037,9 @@ export default function ImpishDrawer({
                 }}
                 disabled={
                   !(
-                    (eventStep === 0 &&
-                      values.eventName &&
-                      privacy !== "Privacy") ||
-                    (eventStep === 1 && values.eventLocation) ||
-                    (eventStep == 2 && values.eventDescription)
+                    (eventStep === 0 && eventName && privacy !== "Privacy") ||
+                    (eventStep === 1 && eventLocation) ||
+                    (eventStep == 2 && eventDescription)
                   )
                 }
                 onClick={handleNext}
