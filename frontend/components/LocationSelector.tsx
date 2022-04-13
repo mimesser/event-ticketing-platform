@@ -36,8 +36,8 @@ export default function LocationSelector({
   const [locationAnchor, setLocationAnchor] =
     React.useState<HTMLElement | null>(null);
   const [searchStr, setSearchStr] = React.useState<string>("");
-  const locationSearchUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchStr(e.target.value);
+  const locationSearchUpdate = (str: string) => {
+    setSearchStr(str);
     if (predictTimer) {
       clearTimeout(predictTimer);
     }
@@ -101,7 +101,7 @@ export default function LocationSelector({
         }}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           if (handleChange) handleChange(e);
-          locationSearchUpdate(e);
+          locationSearchUpdate(e.target.value);
         }}
         onKeyPress={(e) => {
           if (e.code === "Enter" && places.length > 0) {
@@ -141,7 +141,9 @@ export default function LocationSelector({
                     ? () => {
                         selectPlace(place);
                       }
-                    : () => {}
+                    : () => {
+                        locationSearchUpdate(searchStr);
+                      }
                 }
               >
                 <div className={styles.place}>
