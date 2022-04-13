@@ -562,6 +562,8 @@ export default function ImpishDrawer({
 
     setMapCenter(newLocation);
     setZooming(true);
+
+    setLocationError(false);
   };
   const openSearchModal = function (e: React.MouseEvent<HTMLElement>) {
     e.stopPropagation();
@@ -582,26 +584,32 @@ export default function ImpishDrawer({
     showUserLocation(false);
   };
   const closeSearchModal = () => showLocationSearchModal(false);
-  const showError = React.useCallback(
-    () => locationName !== undefined,
-    [locationName]
-  )();
 
-  const locationError = React.useCallback(() => {
-    return !(editLocation.hasLocation === true);
-  }, [editLocation])();
+  const [showError, setShowError] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    setShowError(locationName !== undefined);
+  }, [locationName, setShowError]);
+
+  const [locationError, setLocationError] = React.useState<boolean>(false);
 
   const locationNameError = React.useCallback(() => {
-    return !(locationName !== "");
+    return locationName === undefined || locationName === "";
   }, [locationName])();
 
   const validationError = React.useCallback(
-    () => locationError || locationNameError,
-    [locationError, locationNameError]
+    () => showError && (locationError || locationNameError),
+    [locationError, locationNameError, showError]
   )();
 
   const onSearchModalSave = () => {
-    if (!validationError) {
+    let locationInvalid = !(editLocation.hasLocation === true);
+
+    setLocationError(locationInvalid);
+    if (locationInvalid || locationNameError) {
+      setShowError(true);
+      return;
+    } else {
       setEventLocation({ ...editLocation, name: locationName });
       setLocationInput(locationName);
       showLocationSearchModal(false);
@@ -965,6 +973,7 @@ export default function ImpishDrawer({
                       location: { lat, lng },
                       hasLocation: true,
                     });
+                    setLocationError(false);
                   }}
                   onChange={({ zoom }) => {
                     setMapZoom(zoom);
