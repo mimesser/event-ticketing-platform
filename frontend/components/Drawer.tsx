@@ -147,6 +147,11 @@ export default function ImpishDrawer({
   const warningText =
     "You have unsaved changes - are you sure you wish to leave this page?";
 
+  const [drawerShow, showDrawer] = React.useState<boolean>(drawerOpen);
+  React.useEffect(() => {
+    showDrawer(drawerOpen);
+  }, [drawerOpen, showDrawer]);
+
   const drawerWidth = events ? 340 : 240;
 
   // TODO: review needed
@@ -278,6 +283,7 @@ export default function ImpishDrawer({
       const query = router.query;
       if (query.createEvent) {
         if (query.createEvent === "true") {
+          if (isMobile) showDrawer(true);
           setEventDetails(true);
           setEventStep(0);
         }
@@ -285,7 +291,7 @@ export default function ImpishDrawer({
         setEventDetails(false);
       }
     }
-  }, [router.isReady, router.query, router.pathname]);
+  }, [router.isReady, router.query, router.pathname, isMobile]);
 
   const openPrivacy = Boolean(anchorElPrivacy);
   const handlePrivacyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -696,7 +702,7 @@ export default function ImpishDrawer({
   return (
     <Drawer
       variant={variant}
-      open={drawerOpen}
+      open={drawerShow}
       onClose={onClose}
       ModalProps={{
         keepMounted: true,
@@ -3080,7 +3086,7 @@ export default function ImpishDrawer({
                   !(
                     (eventStep === 0 && eventName && privacy !== "Privacy") ||
                     (eventStep === 1 && eventLocation) ||
-                    (eventStep == 2 && eventDescription)
+                    (eventStep === 2 && eventDescription)
                   )
                 }
                 onClick={handleNext}
