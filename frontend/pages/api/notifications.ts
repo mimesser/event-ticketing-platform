@@ -1,5 +1,6 @@
 import { getLoginSession } from "lib/auth";
 import prisma from "lib/prisma";
+import { isTest } from "lib/utils";
 import { NextApiResponse, NextApiRequest } from "next";
 
 export default async function notifications(
@@ -38,6 +39,16 @@ export default async function notifications(
           isRead: true,
         },
       });
+
+      if (isTest) {
+        await prisma.notification.updateMany({
+          where: { id: { in: notifications }, userId: userId.id },
+
+          data: {
+            isRead: false,
+          },
+        });
+      }
 
       res.status(200).json({ status: "Mark notificatons as read success" });
     } catch (error) {

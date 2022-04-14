@@ -19,6 +19,85 @@ describe("sample tests", () => {
     });
   });
 
+  it("Privacy show wallet option test", function () {
+    // Match show-wallet POST request as "show-wallet"
+    cy.intercept("POST", "/api/show-wallet").as("show-wallet");
+
+    // Click to top right account menu button
+    cy.get('[aria-label="Account"]').wait(2000).click();
+
+    // Click Settings & privacy menu item button
+    cy.get(
+      ".MuiMenu-root > .MuiPaper-root > .MuiList-root > :nth-child(3)"
+    ).click();
+
+    // Click Privacy menu item button
+    cy.get(
+      ".MuiMenu-root > .MuiPaper-root > .MuiList-root > :nth-child(3)"
+    ).click();
+
+    // Should contains Show Wallet Address text then click
+    cy.get(".MuiFormControlLabel-root > .MuiTypography-root")
+      .contains("Show Wallet Address")
+      .click();
+
+    // Wait for show-wallet status code: 200 response
+    cy.wait("@show-wallet").then(({ response }: any) => {
+      expect(response.statusCode).to.eq(200);
+    });
+
+    // Should get Alert message contains Privacy settings updated!
+    cy.get(".MuiAlert-message").contains("Privacy settings updated!");
+  });
+
+  it("Upload-remove profile banner test", function () {
+    // Match upload-image POST request as "upload-image"
+    cy.intercept("POST", "/api/upload-image").as("upload-image");
+
+    // Match update-profile POST request as "update-profile"
+    cy.intercept("POST", "/api/update-profile").as("update-profile");
+
+    // Get drawer profile button, wait 3sec and click
+    cy.get("[id^=drawer_profile_button]").wait(3000).click();
+
+    // Click to edit profile button
+    cy.get("[id^=edit_profile_button]").click();
+
+    // Click to upload banner button
+    cy.get("[id^=uploadBanner]").click().wait(2000);
+
+    // Upload file
+    const filepath = "images/logo-dark.png";
+    cy.get('input[type="file"]').attachFile(filepath).wait(2000);
+
+    // Wait for upload-image status code: 200 response
+    cy.wait("@upload-image").then(({ response }: any) => {
+      expect(response.statusCode).to.eq(200);
+    });
+
+    // Click to save profile button
+    cy.get("[id^=saveProfile]").click();
+
+    // Wait for update-profile status code: 200 response
+    cy.wait("@update-profile").then(({ response }: any) => {
+      expect(response.statusCode).to.eq(200);
+    });
+
+    // Click to edit profile button
+    cy.get("[id^=edit_profile_button]").click();
+
+    // Click to remove banner button
+    cy.get("[id^=removeBanner]").click();
+
+    // Click to save profile button
+    cy.get("[id^=saveProfile]").click();
+
+    // Wait for update-profile status code: 200 response
+    cy.wait("@update-profile").then(({ response }: any) => {
+      expect(response.statusCode).to.eq(200);
+    });
+  });
+
   it("Dark mode test", function () {
     cy.get("html").then((html) => {
       // Click to top right account menu
@@ -56,19 +135,14 @@ describe("sample tests", () => {
     });
   });
 
-  it.only("Edit profile name & username test", function () {
+  it("Edit profile name & username test", function () {
     const id = uuid();
 
     // Match update-profile POST request as "update-profile"
     cy.intercept("POST", "/api/update-profile").as("update-profile");
 
-    // Get drawer profile button and wait 3sec
-    cy.get("[id^=drawer_profile_button]");
-
-    cy.wait(3000);
-
-    // Click to drawer profile button
-    cy.get("[id^=drawer_profile_button]").click();
+    // Get drawer profile button, wait 3sec and click
+    cy.get("[id^=drawer_profile_button]").wait(3000).click();
 
     // Click to edit profile button
     cy.get("[id^=edit_profile_button]").click();
@@ -88,7 +162,7 @@ describe("sample tests", () => {
     });
   });
 
-  it.only("Twitter link-unlink test", function () {
+  it("Twitter link-unlink test", function () {
     // Match twitter/link-user POST request as "link-user"
     cy.intercept("POST", "/api/twitter/link-user").as("link-user");
 
@@ -115,6 +189,83 @@ describe("sample tests", () => {
         expect(response.status).to.eq(200);
       }
     );
+  });
+
+  it("User follow-unfollow test", function () {
+    // Match follow request as follow
+    cy.intercept("/api/twitter/follow").as("follow");
+
+    // Get account menu before visit user
+    cy.get('[aria-label="Account"]');
+
+    // Go to user page
+    cy.visit(
+      "http://localhost:3000/0x94227F9e855F378001673c6862Bcc5b3F945Becc"
+    );
+
+    // Get follow_button then check text
+    cy.get("[id^=follow_button]").then(($btn) => {
+      if ($btn.contents().text() === "Follow") {
+        // Click to follow_button to follow
+        cy.get("[id^=follow_button]").click().wait(3000);
+
+        // Check follow_button contains "Following"
+        cy.get("[id^=follow_button]").contains("Following");
+      } else {
+        // Click to follow_button to unfollow
+        cy.get("[id^=follow_button]").click();
+
+        // Click to unfollow button in modal
+        cy.get("[id^=unfollow_button_modal]").click().wait(3000);
+
+        // Check follow_button contains "Follow"
+        cy.get("[id^=follow_button]").contains("Follow");
+      }
+
+      // Wait for follow status code: 200 response
+      cy.wait("@follow").then(({ response }: any) => {
+        expect(response.statusCode).to.eq(200);
+      });
+    });
+  });
+
+  it("Notifications test", function () {
+    // Match notifications DELETE request as "notifications"
+    cy.intercept("DELETE", "/api/notifications").as("notifications");
+
+    // Click to notifications menu button
+    cy.get("[id^=notifications_menu]").click();
+
+    // Click to mark notification as read button
+    cy.get("[id^=mark_notification_as_read]").click();
+
+    // Wait for notifications status code: 200 response
+    cy.wait("@notifications").then(({ response }: any) => {
+      expect(response.statusCode).to.eq(200);
+    });
+
+    // Check if EARLIER section visible
+    cy.contains("EARLIER").should("be.visible").wait(2000);
+
+    // Check contains "Link your Twitter" if it is exists and click
+    cy.contains("Link your Twitter").click();
+
+    // Wait for notifications status code: 200 response
+    cy.wait("@notifications").then(({ response }: any) => {
+      expect(response.statusCode).to.eq(200);
+    });
+
+    // Check contains "Find frens..." if it is exists and visible
+    cy.contains("Find frens you follow on Twitter").should("be.visible");
+
+    // Click to Header Twitter modal close button
+    cy.get("[id^=header_twitter_modal_close]").click();
+
+    // Check contains "To get started" if it is exists and click
+    cy.contains("To get started").click();
+
+    // Click to Header buy crypto modal close button
+    cy.get("[id^=header_crypto_modal_close]").wait(2000).click();
   });
 });
 
