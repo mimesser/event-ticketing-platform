@@ -299,6 +299,7 @@ export default function Header({
         <Box sx={modalStyle}>
           <div className={styles.modal_box}>
             <IconButton
+              id="header_crypto_modal_close"
               aria-label="close"
               onClick={modalClose}
               className={styles.close_button}
@@ -415,6 +416,7 @@ export default function Header({
         <Box sx={modalStyle}>
           <div className={styles.modal_box}>
             <IconButton
+              id="header_twitter_modal_close"
               aria-label="close"
               onClick={() => {
                 setTwitterModal(false);
@@ -661,6 +663,7 @@ export default function Header({
               <Box sx={{ flexGrow: 0 }}>
                 <Tooltip title="Notifications">
                   <IconButton
+                    id="notifications_menu"
                     size="large"
                     onClick={handleOpenNotification}
                     sx={{
@@ -767,6 +770,7 @@ export default function Header({
                       {totalUnread > 0 && (
                         <Tooltip title="Mark all as read">
                           <IconButton
+                            id="mark_notification_as_read"
                             color="primary"
                             onClick={() => {
                               markNotificationAsRead(

@@ -533,6 +533,7 @@ function Profile() {
 
           {!following && user && (
             <Button
+              id="follow_button"
               onClick={followUser}
               variant={"contained"}
               sx={(theme) => ({
@@ -556,6 +557,7 @@ function Profile() {
 
           {following && user && (
             <Button
+              id="follow_button"
               onClick={() => {
                 setUnFollowModal(true);
               }}
@@ -894,7 +896,11 @@ function Profile() {
                 id="uploadBanner"
               />
               {newBanner && (
-                <CloseIcon className={styles.icon} onClick={removeBanner} />
+                <CloseIcon
+                  className={styles.icon}
+                  onClick={removeBanner}
+                  id="removeBanner"
+                />
               )}
               <input
                 ref={(input) => setBannerRef(input)}
@@ -1055,6 +1061,7 @@ function Profile() {
               </Typography>
 
               <Button
+                id="unfollow_button_modal"
                 onClick={unfollowUser}
                 size="large"
                 color="inherit"
