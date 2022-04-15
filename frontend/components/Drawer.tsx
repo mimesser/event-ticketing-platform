@@ -76,6 +76,7 @@ import { useTheme } from "next-themes";
 import React, { ChangeEvent } from "react";
 import { useForm } from "react-hook-form";
 import GoogleMapReact, { Maps, Props } from "google-map-react";
+import HostSelector from "components/HostSelector";
 import LocationSelector from "components/LocationSelector";
 import MapMarker from "./MapMarker";
 import styles from "styles/components/Drawer.module.scss";
@@ -314,7 +315,8 @@ export default function ImpishDrawer({
 
   const handleBack = () => {
     if (eventStep > 0) {
-      setEventStep(eventStep - 1);
+      if (eventStep < 4) setEventStep(eventStep - 1);
+      else setEventStep(3);
     } else {
       router.events.off("routeChangeStart", handleBrowseAway);
       router.push({ pathname: "/events/create" });
@@ -323,6 +325,7 @@ export default function ImpishDrawer({
 
   const handleNext = () => {
     if (eventStep < 3) setEventStep(eventStep + 1);
+    if (eventStep > 3) setEventStep(3);
   };
 
   const goHome = () => {
@@ -1582,7 +1585,7 @@ export default function ImpishDrawer({
                       what to expect.
                     </Typography>
                   </div>
-                ) : (
+                ) : eventStep === 3 ? (
                   <div>
                     <Typography
                       sx={{
@@ -1635,6 +1638,20 @@ export default function ImpishDrawer({
                         </IconButton>
                       </Tooltip>
                     </div>
+                  </div>
+                ) : (
+                  <div>
+                    <Typography
+                      sx={{
+                        paddingLeft: "16px",
+                        fontSize: "1.6rem",
+                        fontWeight: 900,
+                        color: Colors[resolvedTheme].primary,
+                      }}
+                      variant="h6"
+                    >
+                      Event Settings
+                    </Typography>
                   </div>
                 )}
                 <List
@@ -2891,7 +2908,7 @@ export default function ImpishDrawer({
                       }
                       value={eventDescription}
                     />
-                  ) : (
+                  ) : eventStep === 3 ? (
                     <div
                       style={{
                         display: "flex",
@@ -3009,10 +3026,16 @@ export default function ImpishDrawer({
                             backgroundColor: Colors[resolvedTheme].hover,
                           },
                         }}
+                        onClick={() => setEventStep(4)}
                       >
                         Event Settings
                       </Button>
                     </div>
+                  ) : (
+                    <HostSelector
+                      onSelectHost={() => {}}
+                      width={searchModalPopoverWidth}
+                    />
                   )}
                 </List>
               </>
@@ -3065,7 +3088,7 @@ export default function ImpishDrawer({
                 }}
                 onClick={handleBack}
               >
-                Back
+                {eventStep < 4 ? "Back" : "Cancel"}
               </Button>
               <Button
                 disableElevation
@@ -3086,12 +3109,18 @@ export default function ImpishDrawer({
                   !(
                     (eventStep === 0 && eventName && privacy !== "Privacy") ||
                     (eventStep === 1 && eventLocation) ||
-                    (eventStep === 2 && eventDescription)
+                    (eventStep === 2 && eventDescription) ||
+                    (eventStep === 3 && coverPhotoPath) ||
+                    eventStep > 3
                   )
                 }
                 onClick={handleNext}
               >
-                {eventStep < 3 ? "Next" : "Create Event"}
+                {eventStep < 3
+                  ? "Next"
+                  : eventStep === 3
+                  ? "Create Event"
+                  : "Save"}
               </Button>
             </Box>
           </div>
