@@ -63,20 +63,6 @@
     flex-direction: column;
     align-items: center;
 
-    #logoutButton {
-      background-color: black;
-      color: white;
-      text-transform: none;
-      margin-bottom: 0.5rem;
-      margin-top: 2rem;
-      width: 15rem;
-      border: none;
-    }
-
-    #logoutButton:hover {
-      background-color: rgb(39, 44, 48);
-    }
-
     #cancelButton {
       text-transform: none;
       width: 15rem;

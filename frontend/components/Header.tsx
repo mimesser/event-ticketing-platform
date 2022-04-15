@@ -371,10 +371,25 @@ export default function Header({
                   You can always log back in at any time.
                 </Typography>
                 <Button
-                  id={styles.logoutButton}
+                  id="logout_button"
                   onClick={async () => {
-                    await fetch("/api/logout");
+                    await fetch("/api/logout", {
+                      method: "DELETE",
+                    });
                     router.reload();
+                  }}
+                  sx={{
+                    backgroundColor: "black",
+                    color: "white",
+                    textTransform: "none",
+                    marginBottom: "0.5rem",
+                    marginTop: "2rem",
+                    width: "15rem",
+                    border: "none",
+                    ":hover": {
+                      backgroundColor: "rgb(39, 44, 48)",
+                      border: "none",
+                    },
                   }}
                   type="submit"
                   size="large"

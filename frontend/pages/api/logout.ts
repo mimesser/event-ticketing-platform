@@ -11,12 +11,21 @@ export default async function logout(
   try {
     const session = await getLoginSession(req);
 
-    if (session) {
-      !isTest && (await magic?.users.logoutByIssuer(session.issuer));
-      removeTokenCookie(res);
+    if (!session) {
+      res.status(400).json({ error: "Missing session" });
+      return;
     }
 
-    res.status(200).json({ status: "User logged out" });
+    if (req.method === "DELETE") {
+      if (session) {
+        !isTest && (await magic?.users.logoutByIssuer(session.issuer));
+        removeTokenCookie(res);
+
+        return res.status(200).json({ status: "User logged out" });
+      }
+    }
+
+    return res.status(400).json({ error: "error logging out" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error });
