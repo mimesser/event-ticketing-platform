@@ -156,3 +156,9 @@
     display: none;
   }
 }
+
+[data-theme="dark"] .login_items {
+  button:disabled {
+    background-color: gray;
+  }
+}

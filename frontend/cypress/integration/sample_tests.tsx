@@ -19,6 +19,11 @@ describe("sample tests", () => {
     });
   });
 
+  it("Login test", function () {
+    // Get account menu button
+    cy.get('[aria-label="Account"]');
+  });
+
   it("Privacy show wallet option test", function () {
     // Match show-wallet POST request as "show-wallet"
     cy.intercept("POST", "/api/show-wallet").as("show-wallet");
