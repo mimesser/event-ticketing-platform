@@ -55,10 +55,14 @@ export default function Layout({
     `${user?.id}/open-twitter-modal`
   );
 
+  const [signupFlowKey, setSignupFlowKey] = useLocalStorage(
+    `${user?.email}/open-signup-flow`
+  );
+
   useEffect(() => {
     const firstTimeUser = userExists === "false" && !isTest;
-    setSignupFlow(firstTimeUser);
-  }, [userExists]);
+    setSignupFlow(firstTimeUser || Boolean(signupFlowKey));
+  }, [userExists, signupFlowKey]);
   const [welcomeModal, setWelcomeModal] = useState(true); // Welcome modal
   const [moonPayModal, setMoonPayModal] = useState(false); // buy crypto on moonpay modal
   const [twitterModal, setTwitterModal] = useState(false); // Find frens on Twitter modal
@@ -76,7 +80,12 @@ export default function Layout({
   }, [user, loading]);
 
   const modalClose = () => {
-    setFindFrens(null);
+    if (findFrens) {
+      setFindFrens(null);
+    }
+    if (signupFlowKey) {
+      setSignupFlowKey(null);
+    }
     // Create user signup notifications
     fetch("/api/signup-notifications", {
       method: "POST",
@@ -370,9 +379,13 @@ export default function Layout({
                       </Typography>
                       <Box className={styles.linkSocialButtons}>
                         <Button
-                          onClick={() =>
-                            signIn("twitter", { callbackUrl: "/twitter" })
-                          }
+                          onClick={() => {
+                            localStorage.setItem(
+                              `${user.id}/open-twitter-modal`,
+                              "true"
+                            );
+                            signIn("twitter");
+                          }}
                           id={styles.twtButton}
                           type="submit"
                           size="large"
@@ -439,9 +452,13 @@ export default function Layout({
                 </Typography>
                 <Box className={styles.linkSocialButtons}>
                   <Button
-                    onClick={() =>
-                      signIn("twitter", { callbackUrl: "/twitter" })
-                    }
+                    onClick={() => {
+                      localStorage.setItem(
+                        `${user.id}/open-twitter-modal`,
+                        "true"
+                      );
+                      signIn("twitter");
+                    }}
                     id={styles.twtButton}
                     type="submit"
                     size="large"

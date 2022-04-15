@@ -72,4 +72,10 @@
 }
 [data-theme="dark"] .login {
   background: #0f0f0f;
+
+  .login_items {
+    button:disabled {
+      background-color: gray;
+    }
+  }
 }

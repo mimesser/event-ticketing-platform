@@ -64,14 +64,11 @@ export default function Home() {
       });
 
       if (res.status === 200) {
+        // Set open-signup-flow "true" if user not exists
+        !userExists &&
+          localStorage.setItem(`${email}/open-signup-flow`, "true");
         // redirect
-        Router.push(
-          {
-            pathname: "/dashboard",
-            query: { userExists: JSON.stringify(userExists) },
-          },
-          "/"
-        );
+        Router.reload();
         setSigningIn(false);
       } else {
         // display an error
