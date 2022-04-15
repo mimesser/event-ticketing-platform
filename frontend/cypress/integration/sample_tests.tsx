@@ -2,13 +2,13 @@ const uuid = () => Cypress._.random(0, 1e6);
 
 describe("sample tests", () => {
   //Use the cy.fixture() method to pull data from fixture file
-  beforeEach(function () {
+  before(function () {
     // "this" points at the test context object
     cy.fixture("user").then((user) => {
       // "this" is still the test context object
       this.user = user;
 
-      // Start from the index page
+      // Visit the index page
       cy.visit("/");
 
       // Should enter your email
@@ -17,11 +17,14 @@ describe("sample tests", () => {
       // Should click to LOG IN / SIGN UP Button
       cy.get("#mui-1").click();
     });
+
+    // Check user account menu if successfully logged in
+    cy.get('[aria-label="Account"]');
   });
 
-  it("Login test", function () {
-    // Get account menu button
-    cy.get('[aria-label="Account"]');
+  beforeEach(function () {
+    // Start from the index page
+    cy.visit("/");
   });
 
   it("Privacy show wallet option test", function () {
@@ -124,19 +127,6 @@ describe("sample tests", () => {
         // Check theme again if it is dark
         cy.get("html").should("have.attr", "data-theme", "dark");
       }
-    });
-  });
-
-  it("Log out test", function () {
-    // Click to top right account menu
-    cy.get('[aria-label="Account"]').click();
-
-    // Click to open Log Out modal button
-    cy.get("[id^=open_logout_modal]").click();
-
-    // Call logout endpoint and check response.status if it is equal to 200
-    cy.request("POST", "http://localhost:3000/api/logout").then((response) => {
-      expect(response.status).to.eq(200);
     });
   });
 
@@ -271,6 +261,29 @@ describe("sample tests", () => {
 
     // Click to Header buy crypto modal close button
     cy.get("[id^=header_crypto_modal_close]").wait(2000).click();
+  });
+
+  // Log out test should be last because of preserve token cookie, add new test above
+  it("Log out test", function () {
+    // Match logout request as "logout"
+    cy.intercept("DELETE", "/api/logout").as("logout");
+
+    // Click to top right account menu
+    cy.get('[aria-label="Account"]').click();
+
+    // Click to open Log Out modal button
+    cy.get("[id^=open_logout_modal]").click();
+
+    // Click to Log Out button
+    cy.get("[id^=logout_button]").click();
+
+    // Wait for notifications status code: 200 response
+    cy.wait("@logout").then(({ response }: any) => {
+      expect(response.statusCode).to.eq(200);
+    });
+
+    // Get email input field to finish test
+    cy.get("#standard-basic");
   });
 });
 
