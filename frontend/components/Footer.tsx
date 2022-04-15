@@ -65,6 +65,9 @@ export default function Footer() {
       });
 
       if (res.status === 200) {
+        // Set open-signup-flow "true" if user not exists
+        !userExists &&
+          localStorage.setItem(`${email}/open-signup-flow`, "true");
         // redirect
         router.reload();
         setSigningIn(false);
