@@ -1,0 +1,31 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@5.0.0
+
+jobs:
+  test-e2e:
+    docker:
+      - image: 'cypress/base:14'
+    steps:
+      - checkout
+      - node/install:
+          install-yarn: false
+          node-version: '16.13.2'
+      - node/install-packages:
+          app-dir: "~/project/frontend"
+          cache-path: ~/project/node_modules
+          override-ci-command: npm ci
+      - run: cd frontend && npm run e2e
+      - store_artifacts:
+          path: frontend/cypress
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+workflows:
+  version: 2
+  test-e2e:
+    jobs:
+      - test-e2e
