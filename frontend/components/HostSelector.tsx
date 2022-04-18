@@ -10,9 +10,7 @@ import React from "react";
 import Avatar from "components/Avatar";
 import IOSSwitch from "components/IOSSwitch";
 import Colors from "lib/colors";
-import Image from "next/image";
 import { useTheme } from "next-themes";
-//import styles from "styles/components/HostSelector.module.scss";
 
 export default function HostSelector({
   width,
@@ -148,12 +146,16 @@ export default function HostSelector({
         sx={{
           marginTop: "5px",
           maxHeight: "calc(100% - 236px)",
-          borderRadius: (theme: any) => theme.shape.borderRadius,
-          boxShadow: Colors[resolvedTheme].account_menu_shadow,
           color: Colors[resolvedTheme].primary,
         }}
         PaperProps={{
-          sx: { width: 310 },
+          sx: {
+            width: 310,
+            border: Colors[resolvedTheme].border,
+            borderRadius: (theme: any) => theme.shape.borderRadius,
+            bgcolor: Colors[resolvedTheme].header_bg,
+            boxShadow: Colors[resolvedTheme].account_menu_shadow,
+          },
         }}
       >
         <MenuList sx={{ paddingTop: 0, paddingBottom: 0 }}>
@@ -166,6 +168,7 @@ export default function HostSelector({
                     backgroundColor: Colors[resolvedTheme].hover,
                   },
                   borderRadius: "0.5rem",
+                  color: Colors[resolvedTheme].primary,
                 }}
                 onClick={() => {
                   selectHost(host);
@@ -186,16 +189,24 @@ export default function HostSelector({
                     walletAddress={host.username || host.name}
                     size={36}
                   />
-                  <b
+                  <div
                     style={{
-                      textOverflow: "ellipsis",
-                      overflow: "hidden",
-                      whiteSpace: "nowrap",
+                      display: "flex",
+                      flexDirection: "column",
                       flex: 1,
                     }}
                   >
-                    {host.name || host.username}
-                  </b>
+                    <b
+                      style={{
+                        textOverflow: "ellipsis",
+                        overflow: "hidden",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {host.name}
+                    </b>
+                    {host.username && <span>@{host.username}</span>}
+                  </div>
                 </div>
               </MenuItem>
             );
