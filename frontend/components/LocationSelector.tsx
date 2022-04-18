@@ -91,7 +91,7 @@ export default function LocationSelector({
     onSelectPlace(place);
   };
   return (
-    <div>
+    <div style={{ display: "flex" }}>
       <TextField
         {...textProps}
         onClick={() => {

@@ -21,6 +21,10 @@ import ListItemText from "@mui/material/ListItemText";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Modal from "@mui/material/Modal";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 import Radio from "@mui/material/Radio";
 import TextField from "@mui/material/TextField";
 import Toolbar from "@mui/material/Toolbar";
@@ -319,6 +323,7 @@ export default function ImpishDrawer({
       else setEventStep(3);
     } else {
       router.events.off("routeChangeStart", handleBrowseAway);
+      resetState();
       router.push({ pathname: "/events/create" });
     }
   };
@@ -339,11 +344,7 @@ export default function ImpishDrawer({
     }
   };
 
-  const leavePage = async () => {
-    await router.push({
-      pathname: goToRoute,
-    });
-
+  const resetState = () => {
     showDiscardModal(false);
     setStartTime(roundUpTime());
     setEndTime(roundUpTimePlus3());
@@ -371,6 +372,13 @@ export default function ImpishDrawer({
       name: "",
     });
     setEventDescription("");
+  };
+
+  const leavePage = async () => {
+    resetState();
+    await router.push({
+      pathname: goToRoute,
+    });
   };
 
   const stayOnPage = () => {
@@ -542,18 +550,6 @@ export default function ImpishDrawer({
 
   const searchModalPopoverWidth = isMobile ? 330 : 516;
   const [searchLocation, setSearchLocation] = React.useState("");
-  const searchModalStyle = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    bgcolor: Colors[resolvedTheme]?.header_bg,
-    borderRadius: "10px",
-    boxShadow: 24,
-    p: 4,
-    padding: "0px",
-  };
-
   const onSelectSearchPlace = (place: any) => {
     const name = place.name;
     setSearchLocation(name);
@@ -728,7 +724,6 @@ export default function ImpishDrawer({
           display: "flex",
           flexDirection: "column",
           minHeight: "100vh",
-          height: "100%",
         }}
       >
         {/*  Events signIn Modal */}
@@ -847,54 +842,57 @@ export default function ImpishDrawer({
           </div>
         </Modal>
         {/* Search Location Modal */}
-        <Modal
+        <Dialog
           open={locationSearchModal}
           closeAfterTransition
           onClose={closeSearchModal}
+          scroll="body"
+          PaperProps={{
+            sx: {
+              margin: "0px",
+              borderRadius: "10px",
+              backgroundColor: Colors[resolvedTheme]?.header_bg,
+            },
+          }}
         >
-          <Box sx={searchModalStyle}>
-            <div style={{ padding: "10px 0px" }}>
-              <Typography
-                style={{
-                  textAlign: "center",
-                  fontFamily: "sans-serif",
-                  fontSize: "20px",
-                  fontWeight: 550,
-                  textTransform: "none",
-                  padding: "20px 0px",
-                }}
-              >
-                Find a location
-              </Typography>
-              <IconButton
-                onClick={closeSearchModal}
-                sx={{
-                  backgroundColor: Colors[resolvedTheme].icon_bg,
-                  position: "absolute",
-                  right: "8px",
-                  top: "24px",
-                  ":hover": {
-                    background: Colors[resolvedTheme].close_hover,
-                  },
-                }}
-              >
-                <CloseIcon
-                  sx={{
-                    color: Colors[resolvedTheme].secondary,
-                  }}
-                />
-              </IconButton>
-            </div>
-            <Divider
+          {/* header */}
+          <DialogTitle
+            sx={{ textAlign: "center", color: Colors[resolvedTheme].primary }}
+          >
+            Find a location
+            <IconButton
+              onClick={closeSearchModal}
               sx={{
-                borderColor: Colors[resolvedTheme].tab_divider,
+                backgroundColor: Colors[resolvedTheme].icon_bg,
+                position: "absolute",
+                right: "16px",
+                top: "12px",
+                padding: "4px",
+                ":hover": {
+                  background: Colors[resolvedTheme].close_hover,
+                },
               }}
-            />
+            >
+              <CloseIcon
+                sx={{
+                  color: Colors[resolvedTheme].secondary,
+                }}
+              />
+            </IconButton>
+          </DialogTitle>
+          {/* content */}
+          <DialogContent
+            sx={{
+              padding: "10px 16px",
+              borderTop: "1px solid " + Colors[resolvedTheme].tab_divider,
+              borderBottom: "1px solid" + Colors[resolvedTheme].tab_divider,
+            }}
+          >
             <div
               style={{
                 display: "flex",
                 flexDirection: "column",
-                padding: "10px 15px",
+
                 gap: "10px",
               }}
             >
@@ -958,8 +956,8 @@ export default function ImpishDrawer({
                   showError && locationError
                     ? {
                         border:
-                          "3px solid " + Colors[resolvedTheme].input_error,
-                        transition: "0.5s",
+                          "1px solid " + Colors[resolvedTheme].input_error,
+                        transition: "0.3s",
                       }
                     : {}
                 }
@@ -1043,6 +1041,7 @@ export default function ImpishDrawer({
                 style={{
                   display: "flex",
                   alignItems: "center",
+                  padding: "4px 0px",
                 }}
               >
                 <LocationOnIcon
@@ -1072,10 +1071,26 @@ export default function ImpishDrawer({
                 label="Location Name"
                 variant="outlined"
                 sx={{
-                  input: { color: Colors[resolvedTheme].primary },
-                  fieldset: {
-                    transition: "0.6s",
+                  input: {
+                    color: Colors[resolvedTheme].primary,
                   },
+                  label: {
+                    color: Colors[resolvedTheme].secondary,
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: Colors[resolvedTheme].input_border,
+                    },
+                    "&:hover fieldset": {
+                      borderColor: (theme: any) =>
+                        showError && locationNameError
+                          ? theme.palette.error.main
+                          : theme.palette.primary.main,
+                    },
+                    transition:
+                      showError && locationNameError ? "0.3s" : "0.0s",
+                  },
+                  marginBottom: "12px",
                 }}
                 error={showError && locationNameError}
                 value={locationName || ""}
@@ -1097,51 +1112,43 @@ export default function ImpishDrawer({
                   ),
                 }}
               ></TextField>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "flex-end",
-                  padding: "20px 0px",
-                }}
-              >
-                <Button
-                  disableElevation
-                  sx={{
-                    borderRadius: (theme) =>
-                      Number(theme.shape.borderRadius) / 2,
-                    fontWeight: 600,
-                    marginRight: "10px",
-                    textTransform: "none",
-                    ":hover": {
-                      background: Colors[resolvedTheme].cancel_hover,
-                    },
-                  }}
-                  onClick={closeSearchModal}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  disableElevation
-                  color="primary"
-                  variant="contained"
-                  sx={{
-                    borderRadius: (theme) =>
-                      Number(theme.shape.borderRadius) / 2,
-                    color: "white",
-                    backgroundColor: "#1976d2",
-                    fontWeight: "600",
-                    textTransform: "none",
-                  }}
-                  onClick={onSearchModalSave}
-                  disabled={validationError}
-                >
-                  Save
-                </Button>
-              </div>
             </div>
-          </Box>
-        </Modal>
+          </DialogContent>
+          {/* footer buttons */}
+          <DialogActions sx={{ padding: "10px 16px" }}>
+            <Button
+              disableElevation
+              sx={{
+                borderRadius: (theme) => Number(theme.shape.borderRadius) / 2,
+                fontWeight: 600,
+                marginRight: "10px",
+                textTransform: "none",
+                ":hover": {
+                  background: Colors[resolvedTheme].cancel_hover,
+                },
+              }}
+              onClick={closeSearchModal}
+            >
+              Cancel
+            </Button>
+            <Button
+              disableElevation
+              color="primary"
+              variant="contained"
+              sx={{
+                borderRadius: (theme) => Number(theme.shape.borderRadius) / 2,
+                color: "white",
+                fontWeight: "600",
+                textTransform: "none",
+              }}
+              onClick={onSearchModalSave}
+              disabled={validationError}
+            >
+              Save
+            </Button>
+          </DialogActions>
+        </Dialog>
+
         <Toolbar sx={{ display: showCreateEvent ? "none" : "flex" }} />
         {!events ? (
           <List
@@ -1714,7 +1721,7 @@ export default function ImpishDrawer({
                             color: Colors[resolvedTheme].primary,
                           }}
                         >
-                          {user.name || shortenAddress(user.walletAddress)}
+                          {user?.name || shortenAddress(user?.walletAddress)}
                         </ListItemText>
                         <Typography
                           variant="subtitle1"
@@ -3108,8 +3115,8 @@ export default function ImpishDrawer({
                 disabled={
                   !(
                     (eventStep === 0 && eventName && privacy !== "Privacy") ||
-                    (eventStep === 1 && eventLocation) ||
-                    (eventStep === 2 && eventDescription) ||
+                    eventStep === 1 ||
+                    eventStep === 2 ||
                     (eventStep === 3 && coverPhotoPath) ||
                     eventStep > 3
                   )
