@@ -1,10 +1,12 @@
 import {
   FormControlLabel,
+  IconButton,
   MenuItem,
   MenuList,
   Popover,
   TextField,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import React from "react";
 
 import Avatar from "components/Avatar";
@@ -13,11 +15,9 @@ import Colors from "lib/colors";
 import { useTheme } from "next-themes";
 
 export default function HostSelector({
-  width,
-  onSelectHost,
+  onUpdate,
 }: {
-  width: number;
-  onSelectHost: (host: any) => any;
+  onUpdate: (hosts: any) => any;
 }) {
   const { resolvedTheme } = useTheme();
 
@@ -27,11 +27,11 @@ export default function HostSelector({
     null
   );
   const [hosts, setHosts] = React.useState([]);
+
+  const [selected, setSelectedHosts] = React.useState<any[]>([]);
   React.useEffect(() => {
-    if (hosts && hosts.length > 0) {
-      setHostsAnchor(hostSearchRef?.current);
-    } else setHostsAnchor(null);
-  }, [hosts, setHostsAnchor, hostSearchRef]);
+    onUpdate(selected);
+  }, [selected, onUpdate]);
 
   const handleCloseHostsPopover = () => {
     setHostsAnchor(null);
@@ -39,8 +39,19 @@ export default function HostSelector({
   const hostsPopoverOpen = Boolean(hostsAnchor);
   const selectHost = (host: any) => {
     handleCloseHostsPopover();
-    onSelectHost(host);
+    setSelectedHosts([...selected, host]);
   };
+  const unselectHost = (host: any) => {
+    const filtered = selected.filter((x) => x.id !== host.id);
+    setSelectedHosts(filtered);
+  };
+  const hasCandidate = () => {
+    const filtered = hosts.filter(
+      (x: any) => selected.find((y) => x.id === y.id) === undefined
+    );
+    return filtered.length > 0;
+  };
+
   const [showGuest, ShowGuest] = React.useState(true);
 
   const debounceTime = 500;
@@ -64,10 +75,13 @@ export default function HostSelector({
         })
           .then((r) => r.json())
           .then((data) => {
-            setHosts(data.hosts);
+            const hosts = data.hosts;
+            setHosts(hosts);
+            setHostsAnchor(hostSearchRef?.current);
           });
       } else {
         setHosts([]);
+        setHostsAnchor(null);
       }
     }, debounceTime);
     setSearchTimer(timerID);
@@ -108,9 +122,7 @@ export default function HostSelector({
           ref: hostSearchRef,
         }}
         onClick={() => {
-          if (hosts && hosts.length > 0) {
-            setHostsAnchor(hostSearchRef?.current);
-          }
+          setHostsAnchor(hostSearchRef?.current);
         }}
         value={hostSearch}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -118,6 +130,94 @@ export default function HostSelector({
         }}
       />
       <span>Co-hosts can accept or decline once you publish your event.</span>
+      {selected.length > 0 && (
+        <div style={{ marginTop: 30 }}>
+          <b style={{ marginLeft: 30 }}>Pending</b>
+          <MenuList sx={{ paddingTop: 0, paddingBottom: 0 }}>
+            {selected?.map((host: any, index: any) => {
+              return (
+                <MenuItem
+                  key={index}
+                  sx={{
+                    cursor: "auto",
+                    color: Colors[resolvedTheme].primary,
+                    ":hover": {
+                      bgcolor: "transparent",
+                    },
+                  }}
+                  disableRipple
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      padding: 5,
+                      gap: 10,
+                      width: "100%",
+                    }}
+                  >
+                    <Avatar
+                      avatarImage={host.avatarImage}
+                      walletAddress={host.username || host.name}
+                      size={36}
+                    />
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        width: 0,
+                        flex: 1,
+                      }}
+                    >
+                      <b
+                        style={{
+                          textOverflow: "ellipsis",
+                          overflow: "hidden",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {host.name}
+                      </b>
+                      {host.username && (
+                        <span
+                          style={{
+                            textOverflow: "ellipsis",
+                            overflow: "hidden",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          @{host.username}
+                        </span>
+                      )}
+                    </div>
+
+                    <IconButton
+                      onClick={() => unselectHost(host)}
+                      sx={{
+                        padding: "8px",
+                        ":hover": {
+                          background: Colors[resolvedTheme].hover,
+                        },
+                      }}
+                    >
+                      <CloseIcon
+                        fontSize="small"
+                        sx={{
+                          backgroundColor: "#8B939D",
+                          color: Colors[resolvedTheme].contrast,
+                          padding: "3px",
+                          borderRadius: "50%",
+                        }}
+                      />
+                    </IconButton>
+                  </div>
+                </MenuItem>
+              );
+            })}
+          </MenuList>
+        </div>
+      )}
       <b style={{ marginTop: 30, fontSize: 20 }}>Event Options</b>
       <FormControlLabel
         control={
@@ -140,7 +240,7 @@ export default function HostSelector({
       />
       <Popover
         open={hostsPopoverOpen}
-        anchorEl={hostsAnchor}
+        anchorEl={hasCandidate() ? hostsAnchor : null}
         anchorOrigin={{
           horizontal: "left",
           vertical: "bottom",
@@ -164,6 +264,7 @@ export default function HostSelector({
       >
         <MenuList sx={{ paddingTop: 0, paddingBottom: 0 }}>
           {hosts?.map((host: any, index: any) => {
+            if (selected.find((x) => x.id === host.id)) return null;
             return (
               <MenuItem
                 key={index}
@@ -197,6 +298,7 @@ export default function HostSelector({
                     style={{
                       display: "flex",
                       flexDirection: "column",
+                      width: 0,
                       flex: 1,
                     }}
                   >
@@ -209,7 +311,17 @@ export default function HostSelector({
                     >
                       {host.name}
                     </b>
-                    {host.username && <span>@{host.username}</span>}
+                    {host.username && (
+                      <span
+                        style={{
+                          textOverflow: "ellipsis",
+                          overflow: "hidden",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        @{host.username}
+                      </span>
+                    )}
                   </div>
                 </div>
               </MenuItem>

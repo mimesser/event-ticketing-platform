@@ -3039,10 +3039,7 @@ export default function ImpishDrawer({
                       </Button>
                     </div>
                   ) : (
-                    <HostSelector
-                      onSelectHost={() => {}}
-                      width={searchModalPopoverWidth}
-                    />
+                    <HostSelector onUpdate={(hosts: any) => {}} />
                   )}
                 </List>
               </>
