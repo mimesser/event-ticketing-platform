@@ -117,7 +117,7 @@ export default function Layout({
 
     const balance = await provider.getBalance(user.walletAddress);
 
-    if (balance) {
+    if (balance && balance.toString() !== user.nativeAssetBalance) {
       try {
         await fetch("/api/update-balance", {
           method: "POST",
