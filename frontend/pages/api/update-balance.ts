@@ -9,8 +9,8 @@ export default async function updateBalance(
   const session = await getLoginSession(req);
   const { balance } = JSON.parse(req.body);
 
-  if (!session) {
-    res.status(400).json({ error: "Missing session" });
+  if (!session || !balance) {
+    res.status(400).json({ error: "Missing session or balance data" });
     return;
   }
 
