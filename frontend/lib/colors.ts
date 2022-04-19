@@ -3,6 +3,7 @@ const Colors: any = {
     header_bg: "#242526",
     drawer_bg: "#18191a",
     primary: "rgb(217, 217, 217)",
+    contrast: "black",
     secondary: "rgb(110, 118, 125)",
     event_drawer_bg: "#242526",
     input_border: "rgb(110, 118, 125)",
@@ -41,6 +42,7 @@ const Colors: any = {
     header_bg: "#FFFFFF",
     drawer_bg: "#F7F8FA",
     primary: "black",
+    contrast: "rgb(217, 217, 217)",
     secondary: "rgba(0, 0, 0, 0.6)",
     event_drawer_bg: "#FFFFFF",
     selected_event_menu: "#F0F2F5",
@@ -68,7 +70,7 @@ const Colors: any = {
     input_error: "#df2f2f",
     mylocation_bg: "#f0f2f4",
     photo_btn_group_border: "rgba(0, 0, 0, 0.15)",
-    photoBtn: "rgba(0, 0, 0, 0.12)"
+    photoBtn: "rgba(0, 0, 0, 0.12)",
   },
 };
 
