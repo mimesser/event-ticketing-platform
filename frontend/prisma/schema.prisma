@@ -29,6 +29,7 @@ model User {
   notifications      Notification[]
   followers          Follows[]      @relation("followers")
   following          Follows[]      @relation("following")
+  cohostedEvents     Event[]        @relation("coHosts")
 
   @@map("users")
 }
@@ -59,14 +60,20 @@ model Notification {
 }
 
 model Event {
-  id              Int      @id @default(autoincrement())
-  title           String?
-  description     String?
-  coverPhoto      String?
-  location        String?
-  createdAt       DateTime @default(now())
-  organizer       User?    @relation(fields: [organizerId], references: [id])
-  organizerId     Int?
+  id             Int       @id @default(autoincrement())
+  title          String?
+  description    String?
+  coverPhoto     String?
+  location       String?
+  createdAt      DateTime  @default(now())
+  organizer      User?     @relation(fields: [organizerId], references: [id])
+  organizerId    Int?
+  startTime      DateTime?
+  endTime        DateTime?
+  privacySetting String?
+  invitable      Boolean   @default(true)
+  showGuestList  Boolean   @default(true)
+  coHosts        User[]    @relation("coHosts")
 
   @@map("events")
 }
