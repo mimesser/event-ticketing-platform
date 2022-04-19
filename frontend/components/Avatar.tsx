@@ -1,4 +1,3 @@
-import Avatar from "boring-avatars";
 import Image from "next/image";
 
 export default function Preview({
@@ -20,6 +19,9 @@ export default function Preview({
   onClick?: any;
   children?: any;
 }) {
+  const imgSrc = avatarImage
+    ? avatarImage
+    : `https://source.boringavatars.com/pixel/${size}/${walletAddress}?colors=ffad08,edd75a,73b06f,0c8f8f,405059`;
   return (
     <div
       style={{
@@ -33,16 +35,7 @@ export default function Preview({
       id={id}
       onClick={onClick}
     >
-      {avatarImage ? (
-        <Image src={avatarImage} width={size} height={size} alt="Avatar" />
-      ) : (
-        <Avatar
-          size={size}
-          name={walletAddress}
-          variant="pixel"
-          colors={["#ffad08", "#edd75a", "#73b06f", "#0c8f8f", "#405059"]}
-        />
-      )}
+      <Image src={imgSrc} width={size} height={size} alt="Avatar" />
       {children}
     </div>
   );

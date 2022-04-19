@@ -27,7 +27,6 @@
     "@prisma/client": "^3.10.0",
     "@supabase/supabase-js": "^1.31.1",
     "bnc-onboard": "^1.37.0",
-    "boring-avatars": "^1.6.1",
     "cookie": "^0.4.1",
     "create-hmac": "^1.1.7",
     "date-fns": "^2.28.0",
