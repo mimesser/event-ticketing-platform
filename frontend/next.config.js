@@ -7,6 +7,7 @@ module.exports = {
       "storage.googleapis.com",
       "osdblqwgkimtuiwdzsuo.supabase.co",
       "maps.gstatic.com",
+      "source.boringavatars.com",
     ],
   },
 };
