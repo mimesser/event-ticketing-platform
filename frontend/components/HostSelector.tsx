@@ -55,16 +55,20 @@ export default function HostSelector({
     }
 
     let timerID = setTimeout(() => {
-      fetch("/api/get-hosts", {
-        method: "POST",
-        body: JSON.stringify({
-          search,
-        }),
-      })
-        .then((r) => r.json())
-        .then((data) => {
-          setHosts(data.hosts);
-        });
+      if (search) {
+        fetch("/api/get-hosts", {
+          method: "POST",
+          body: JSON.stringify({
+            search,
+          }),
+        })
+          .then((r) => r.json())
+          .then((data) => {
+            setHosts(data.hosts);
+          });
+      } else {
+        setHosts([]);
+      }
     }, debounceTime);
     setSearchTimer(timerID);
   };
