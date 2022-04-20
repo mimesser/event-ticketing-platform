@@ -773,6 +773,12 @@ export async function getServerSideProps(context: any) {
           },
         });
 
+        followers.filter((m) => {
+          if (m.username && !m.showWalletAddress) {
+            m.walletAddress = null;
+          }
+        });
+
         const followingIds = user?.following.map((m: any) => m.followersId);
 
         following = await prisma.user.findMany({
@@ -788,6 +794,12 @@ export async function getServerSideProps(context: any) {
             username: true,
             walletAddress: true,
           },
+        });
+
+        following.filter((m) => {
+          if (m.username && !m.showWalletAddress) {
+            m.walletAddress = null;
+          }
         });
       } catch (e) {
         console.log("error fetching tweet following info ", e);

@@ -62,6 +62,10 @@ export default async function publicUser(
       user.authenticated = true;
     }
 
+    if (user.username && !user.showWalletAddress) {
+      user.walletAddress = null;
+    }
+
     res.status(200).json({ user });
   } catch (e) {
     console.log(e);
