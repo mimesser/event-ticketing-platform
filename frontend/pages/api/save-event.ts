@@ -33,7 +33,7 @@ apiRoute.post(async (req: any, res: NextApiResponse) => {
 
   const coHosts = JSON.parse(req.body.coHosts);
 
-  let coverPhotoUrl: string | null = "";
+  let coverPhoto: string | null = "";
   if (req.file) {
     const coverPhotoPath = encodeURIComponent(
       session.publicAddress + "-" + "cover" + "-" + Date.now()
@@ -53,9 +53,14 @@ apiRoute.post(async (req: any, res: NextApiResponse) => {
       res.status(500).json(error);
       return;
     }
-    coverPhotoUrl = storage.getPublicUrl(coverPhotoPath).publicURL;
+    coverPhoto = storage.getPublicUrl(coverPhotoPath).publicURL;
+    const { pos } = req.body;
+    coverPhoto = JSON.stringify({
+      url: coverPhoto,
+      pos,
+    });
   }
-  if (!coverPhotoUrl) coverPhotoUrl = "";
+  if (!coverPhoto) coverPhoto = "";
 
   try {
     const user = await prisma.user.findUnique({
@@ -66,7 +71,7 @@ apiRoute.post(async (req: any, res: NextApiResponse) => {
       data: {
         title,
         description,
-        coverPhoto: coverPhotoUrl,
+        coverPhoto,
         location,
         hostId: user?.id,
         startTime: moment(startTime, "YYYY-MM-DD h:mm A").toDate(),
