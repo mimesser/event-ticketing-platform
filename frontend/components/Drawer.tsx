@@ -196,57 +196,49 @@ export default function ImpishDrawer({
   const [saveEventSettings, setSaveEventSettings] =
     React.useState<boolean>(false);
   const onSaveEvent = async () => {
-    const saveEvent = async () => {
-      try {
-        setSavingEvent(true);
+    try {
+      setSavingEvent(true);
 
-        const formData = new FormData();
+      const formData = new FormData();
 
-        formData.append("title", eventName || "");
-        formData.append("description", eventDescription || "");
-        formData.append("location", JSON.stringify(eventLocation));
-        formData.append("startTime", eventStartDate || "");
-        formData.append("endTime", eventEndDate || "");
-        formData.append("invitable", String(invitable));
-        formData.append("privacy", privacy);
-        formData.append("showGuestList", String(showGuestList));
-        formData.append(
-          "coHosts",
-          JSON.stringify(coHosts.map((item: any) => item.id))
-        );
+      formData.append("title", eventName || "");
+      formData.append("description", eventDescription || "");
+      formData.append("location", JSON.stringify(eventLocation));
+      formData.append("startTime", eventStartDate || "");
+      formData.append("endTime", eventEndDate || "");
+      formData.append("invitable", String(invitable));
+      formData.append("privacy", privacy);
+      formData.append("showGuestList", String(showGuestList));
+      formData.append(
+        "coHosts",
+        JSON.stringify(coHosts.map((item: any) => item.id))
+      );
 
-        if (coverPhotoBlob) formData.append("file", coverPhotoBlob);
-
-        const result = await (
-          await fetch("/api/save-event", {
-            method: "POST",
-            body: formData,
-          })
-        ).json();
-
-        setSavingEvent(false);
-        if (result?.status !== "ok") {
-          alert("Save event failed!");
-          console.log(result);
-          return;
-        }
-        setEventSaved(true);
-        resetState();
-        router.push({
-          pathname: "/events",
-        });
-      } catch (error) {
-        alert(error);
+      if (coverPhotoFile) {
+        formData.append("file", coverPhotoFile);
+        formData.append("pos", JSON.stringify(cover.pos));
       }
-    };
-    if (coverPhotoRef) {
-      coverPhotoRef.getImage().toBlob(async (blob: any) => {
-        coverPhotoBlob = blob;
-        await saveEvent();
+
+      const result = await (
+        await fetch("/api/save-event", {
+          method: "POST",
+          body: formData,
+        })
+      ).json();
+
+      setSavingEvent(false);
+      if (result?.status !== "ok") {
+        alert("Save event failed!");
+        console.log(result);
+        return;
+      }
+      setEventSaved(true);
+      resetState();
+      router.push({
+        pathname: "/events",
       });
-    } else {
-      coverPhotoBlob = "";
-      await saveEvent();
+    } catch (error) {
+      alert(error);
     }
   };
 
@@ -753,10 +745,6 @@ export default function ImpishDrawer({
 
   // event settings
   const onEventSettings = () => {
-    coverPhotoRef &&
-      coverPhotoRef.getImage().toBlob((blob: string | Blob) => {
-        coverPhotoBlob = blob;
-      });
     setSaveEventSettings(false);
     setEventStep(4);
   };
@@ -768,10 +756,11 @@ export default function ImpishDrawer({
   const [coverPhotoPath, setCoverPhotoPath] = React.useState<string>("");
   const [coverPhotoRef, setCoverPhotoRef] = React.useState<any>(null);
   const [coverPhotoReposition, setCoverPhotoReposition] = React.useState(false);
-  let coverPhotoBlob: string | Blob = "";
+  const [coverPhotoFile, setCoverPhotoFile] = React.useState<Blob | null>(null);
   const onSelectCoverPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const url = URL.createObjectURL(e.target.files[0]);
+      setCoverPhotoFile(e.target.files[0]);
       setCoverPhotoPath(url);
       setCover({
         url: url,
