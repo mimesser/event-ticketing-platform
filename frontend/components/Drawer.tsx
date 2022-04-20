@@ -1,6 +1,7 @@
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import DatePicker from "@mui/lab/DatePicker";
 import LoadingButton from "@mui/lab/LoadingButton";
+import { CircularProgress } from "@mui/material";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import Box from "@mui/material/Box";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
@@ -100,11 +101,15 @@ export default function ImpishDrawer({
 }) {
   const { resolvedTheme } = useTheme();
   const {
-    timezone,
-    eventLocation,
-    cover,
     eventName,
+    eventLocation,
+    timezone,
     eventDescription,
+    eventStartDate,
+    eventEndDate,
+    cover,
+    showGuestList,
+    coHosts,
     setEventLocation,
     setEventName,
     setEventDescription,
@@ -114,6 +119,8 @@ export default function ImpishDrawer({
     setEventInvitable,
     setTimezone,
     setCover,
+    setShowGuestList,
+    setCoHosts,
   } = useNewEvent();
   const { user } = useUserInfo();
   const router = useRouter();
@@ -159,18 +166,23 @@ export default function ImpishDrawer({
 
   const drawerWidth = events ? 340 : 240;
 
+  const [isSavingEvent, setSavingEvent] = React.useState<boolean>(false);
+  const [eventSaved, setEventSaved] = React.useState<boolean>(false);
+
   // TODO: review needed
   const changed = React.useCallback(() => {
     return (
-      startDate !== null ||
-      endDate !== null ||
-      startTime !== roundUpTime() ||
-      endTime !== roundUpTimePlus3() ||
-      eventName !== "" ||
-      eventDescription !== "" ||
-      eventLocation !== {}
+      !eventSaved &&
+      (startDate !== null ||
+        endDate !== null ||
+        startTime !== roundUpTime() ||
+        endTime !== roundUpTimePlus3() ||
+        eventName !== "" ||
+        eventDescription !== "" ||
+        eventLocation.hasLocation)
     );
   }, [
+    eventSaved,
     startDate,
     endDate,
     startTime,
@@ -179,6 +191,69 @@ export default function ImpishDrawer({
     eventLocation,
     eventDescription,
   ]);
+
+  // save event
+  const [saveEventSettings, setSaveEventSettings] =
+    React.useState<boolean>(false);
+  const onSaveEvent = async () => {
+    const saveEvent = async () => {
+      try {
+        setSavingEvent(true);
+
+        const formData = new FormData();
+
+        formData.append("title", eventName || "");
+        formData.append("description", eventDescription || "");
+        formData.append("location", JSON.stringify(eventLocation));
+        formData.append("startTime", eventStartDate || "");
+        formData.append("endTime", eventEndDate || "");
+        formData.append("invitable", String(invitable));
+        formData.append("privacy", privacy);
+        formData.append("showGuestList", String(showGuestList));
+        formData.append(
+          "coHosts",
+          JSON.stringify(coHosts.map((item: any) => item.id))
+        );
+
+        if (coverPhotoBlob) formData.append("file", coverPhotoBlob);
+
+        const result = await (
+          await fetch("/api/save-event", {
+            method: "POST",
+            body: formData,
+          })
+        ).json();
+
+        setSavingEvent(false);
+        if (result?.status !== "ok") {
+          alert("Save event failed!");
+          console.log(result);
+          return;
+        }
+        setEventSaved(true);
+        resetState();
+        router.push({
+          pathname: "/events",
+        });
+      } catch (error) {
+        alert(error);
+      }
+    };
+    if (coverPhotoRef) {
+      coverPhotoRef.getImage().toBlob(async (blob: any) => {
+        coverPhotoBlob = blob;
+        await saveEvent();
+      });
+    } else {
+      coverPhotoBlob = "";
+      await saveEvent();
+    }
+  };
+
+  const onSaveEventSettings = () => {
+    setSaveEventSettings(true);
+    setEventStep(3);
+  };
 
   const handleBrowseAway = React.useCallback(() => {
     if (!eventDetails) return;
@@ -215,7 +290,14 @@ export default function ImpishDrawer({
       window.removeEventListener("beforeunload", handleWindowClose);
       router.events.off("routeChangeStart", handleBrowseAway);
     };
-  }, [discardModal, eventDetails, handleBrowseAway, router.events, changed]);
+  }, [
+    discardModal,
+    eventDetails,
+    handleBrowseAway,
+    router.events,
+    changed,
+    eventSaved,
+  ]);
 
   // event time functions
   const getStartDate = () => {
@@ -361,6 +443,8 @@ export default function ImpishDrawer({
     setLocationName("");
     setEditLocation({ hasLocation: false, location: { lat: 0, lng: 0 } });
     setZooming(false);
+    setSavingEvent(false);
+    setEventSaved(false);
 
     setEventName("");
     setEventLocation({
@@ -372,6 +456,9 @@ export default function ImpishDrawer({
       name: "",
     });
     setEventDescription("");
+    setCover({});
+    setShowGuestList(true);
+    setCoHosts([]);
   };
 
   const leavePage = async () => {
@@ -494,7 +581,6 @@ export default function ImpishDrawer({
     }
   };
   const onSubmitCreateEvents: any = async ({ email }: { email: any }) => {};
-
   const handleClickEventPrivacy = (event: any) => {
     setAnchorElPrivacy(event.currentTarget);
   };
@@ -505,14 +591,14 @@ export default function ImpishDrawer({
   const [locationInput, setLocationInput] = React.useState<string>("");
   const locationPopoverWidth = drawerWidth - 40;
   const onSelectLocation = (place: any) => {
-    const name = place.hasLocation === undefined ? place.name : eventLocation;
+    const name = place.name;
     setEventLocation({
       name: name,
       location: {
         lat: place.geometry.location.lat(),
         lng: place.geometry.location.lng(),
       },
-      hasLocation: place.hasLocation === undefined ? true : place.hasLocation,
+      hasLocation: true,
     });
     setLocationInput(name);
   };
@@ -665,12 +751,24 @@ export default function ImpishDrawer({
     }
   };
 
+  // event settings
+  const onEventSettings = () => {
+    coverPhotoRef &&
+      coverPhotoRef.getImage().toBlob((blob: string | Blob) => {
+        coverPhotoBlob = blob;
+      });
+    setSaveEventSettings(false);
+    setEventStep(4);
+  };
+
   // upload cover photo
   const Input = styled("input")({
     display: "none",
   });
   const [coverPhotoPath, setCoverPhotoPath] = React.useState<string>("");
+  const [coverPhotoRef, setCoverPhotoRef] = React.useState<any>(null);
   const [coverPhotoReposition, setCoverPhotoReposition] = React.useState(false);
+  let coverPhotoBlob: string | Blob = "";
   const onSelectCoverPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const url = URL.createObjectURL(e.target.files[0]);
@@ -2915,131 +3013,139 @@ export default function ImpishDrawer({
                       }
                       value={eventDescription}
                     />
-                  ) : eventStep === 3 ? (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "16px",
-                      }}
-                    >
-                      {coverPhotoPath !== "" ? (
-                        <div
-                          style={{
-                            position: "relative",
-                            overflow: "hidden",
-                            borderRadius: 5,
-                            width: 300,
-                            height: 150,
-                          }}
-                        >
-                          <AvatarEditor
-                            image={coverPhotoPath}
-                            width={300}
-                            height={150}
-                            border={0}
-                            onPositionChange={onCoverPhotoMove}
-                            onMouseMove={() => setCoverPhotoReposition(false)}
-                          />
-                          {coverPhotoReposition && (
-                            <div
-                              className={styles.avatar_reposition}
-                              onClick={(e) => e.preventDefault()}
-                            >
-                              <MouseIcon />
-                              <span>
-                                Drag to
-                                <br />
-                                Reposition
-                              </span>
-                            </div>
-                          )}
-                          <DeleteIcon
-                            className={styles.avatar_delete}
-                            sx={{
-                              backgroundColor: "#E3E6EA",
-                              ":hover": {
-                                backgroundColor: "#DAD9DF",
-                              },
+                  ) : (
+                    <div>
+                      <div
+                        style={{
+                          display: eventStep === 3 ? "flex" : "none",
+                          flexDirection: "column",
+                          gap: "16px",
+                        }}
+                      >
+                        {coverPhotoPath !== "" ? (
+                          <div
+                            style={{
+                              position: "relative",
+                              overflow: "hidden",
+                              borderRadius: 5,
+                              width: 300,
+                              height: 150,
                             }}
-                            fontSize="small"
-                            onClick={onDeleteCoverPhoto}
-                          />
-                        </div>
-                      ) : (
-                        <div
-                          style={{
-                            background: "transparent",
-                            borderStyle: "solid",
-                            borderWidth: "1px",
-                            borderColor:
-                              resolvedTheme === "light"
-                                ? Colors[resolvedTheme].photo_btn_group_border
-                                : Colors[resolvedTheme].divider,
-                            borderRadius: "5px",
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "space-between",
-                            padding: "30px 40px",
-                            gap: "10px",
-                          }}
-                        >
-                          <label htmlFor="upload-cover-photo">
-                            <Input
-                              accept="image/*"
-                              id="upload-cover-photo"
-                              multiple
-                              type="file"
-                              onChange={onSelectCoverPhoto}
+                          >
+                            <AvatarEditor
+                              ref={setCoverPhotoRef}
+                              image={coverPhotoPath}
+                              width={300}
+                              height={150}
+                              border={0}
+                              onPositionChange={onCoverPhotoMove}
+                              onMouseMove={() => setCoverPhotoReposition(false)}
                             />
-                            <Button
-                              component="span"
-                              fullWidth
+                            {coverPhotoReposition && (
+                              <div
+                                className={styles.avatar_reposition}
+                                onClick={(e) => e.preventDefault()}
+                              >
+                                <MouseIcon />
+                                <span>
+                                  Drag to
+                                  <br />
+                                  Reposition
+                                </span>
+                              </div>
+                            )}
+                            <DeleteIcon
+                              className={styles.avatar_delete}
                               sx={{
-                                backgroundColor: Colors[resolvedTheme].photoBtn,
-                                color: Colors[resolvedTheme].primary,
-                                textTransform: "none",
-                                fontWeight: "500",
-                                "&:hover": {
-                                  backgroundColor:
-                                    Colors[resolvedTheme].back_hover,
+                                backgroundColor: "#E3E6EA",
+                                ":hover": {
+                                  backgroundColor: "#DAD9DF",
                                 },
                               }}
-                              startIcon={<InsertPhotoIcon />}
-                            >
-                              Upload Cover Photo
-                            </Button>
-                          </label>
-                        </div>
-                      )}
+                              fontSize="small"
+                              onClick={onDeleteCoverPhoto}
+                            />
+                          </div>
+                        ) : (
+                          <div
+                            style={{
+                              background: "transparent",
+                              borderStyle: "solid",
+                              borderWidth: "1px",
+                              borderColor:
+                                resolvedTheme === "light"
+                                  ? Colors[resolvedTheme].photo_btn_group_border
+                                  : Colors[resolvedTheme].divider,
+                              borderRadius: "5px",
+                              display: "flex",
+                              flexDirection: "column",
+                              justifyContent: "space-between",
+                              padding: "30px 40px",
+                              gap: "10px",
+                            }}
+                          >
+                            <label htmlFor="upload-cover-photo">
+                              <Input
+                                accept="image/*"
+                                id="upload-cover-photo"
+                                multiple
+                                type="file"
+                                onChange={onSelectCoverPhoto}
+                              />
+                              <Button
+                                component="span"
+                                fullWidth
+                                sx={{
+                                  backgroundColor:
+                                    Colors[resolvedTheme].photoBtn,
+                                  color: Colors[resolvedTheme].primary,
+                                  textTransform: "none",
+                                  fontWeight: "500",
+                                  "&:hover": {
+                                    backgroundColor:
+                                      Colors[resolvedTheme].back_hover,
+                                  },
+                                }}
+                                startIcon={<InsertPhotoIcon />}
+                              >
+                                Upload Cover Photo
+                              </Button>
+                            </label>
+                          </div>
+                        )}
 
-                      <Button
-                        disableRipple
-                        fullWidth
-                        startIcon={
-                          <SettingsIcon
-                            sx={{ marginLeft: 0, marginRight: "6px" }}
-                          />
-                        }
-                        sx={{
-                          background: "transparent",
-                          borderRadius: (theme) =>
-                            Number(theme.shape.borderRadius) / 2,
-                          color: Colors[resolvedTheme].primary,
-                          justifyContent: "flex-start",
-                          fontSize: "16px",
-                          textTransform: "none",
-                          ":hover": {
-                            backgroundColor: Colors[resolvedTheme].hover,
-                          },
-                        }}
-                        onClick={() => setEventStep(4)}
+                        <Button
+                          disableRipple
+                          fullWidth
+                          startIcon={
+                            <SettingsIcon
+                              sx={{ marginLeft: 0, marginRight: "6px" }}
+                            />
+                          }
+                          sx={{
+                            background: "transparent",
+                            borderRadius: (theme) =>
+                              Number(theme.shape.borderRadius) / 2,
+                            color: Colors[resolvedTheme].primary,
+                            justifyContent: "flex-start",
+                            fontSize: "16px",
+                            textTransform: "none",
+                            ":hover": {
+                              backgroundColor: Colors[resolvedTheme].hover,
+                            },
+                          }}
+                          onClick={onEventSettings}
+                          disabled={isSavingEvent}
+                        >
+                          Event Settings
+                        </Button>
+                      </div>
+                      <div
+                        style={{ display: eventStep === 4 ? "block" : "none" }}
                       >
-                        Event Settings
-                      </Button>
+                        <HostSelector saveSettings={saveEventSettings} />
+                      </div>
                     </div>
-                  ) : (
-                    <HostSelector onUpdate={(hosts: any) => {}} />
                   )}
                 </List>
               </>
@@ -3114,12 +3220,27 @@ export default function ImpishDrawer({
                     (eventStep === 0 && eventName && privacy !== "Privacy") ||
                     eventStep === 1 ||
                     eventStep === 2 ||
-                    (eventStep === 3 && coverPhotoPath) ||
-                    eventStep > 3
-                  )
+                    eventStep >= 3
+                  ) || isSavingEvent
                 }
-                onClick={handleNext}
+                onClick={
+                  eventStep < 3
+                    ? handleNext
+                    : eventStep == 3
+                    ? onSaveEvent
+                    : onSaveEventSettings
+                }
               >
+                {eventStep >= 3 && isSavingEvent && (
+                  <CircularProgress
+                    color="inherit"
+                    size="1.2rem"
+                    variant="indeterminate"
+                    sx={{
+                      marginRight: "10px",
+                    }}
+                  />
+                )}
                 {eventStep < 3
                   ? "Next"
                   : eventStep === 3

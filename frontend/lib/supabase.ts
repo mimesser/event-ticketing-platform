@@ -13,7 +13,7 @@ export const useNotifications = (user: any) => {
     fetchMessages(user?.id, setNotifications);
 
     const notificationsListener = supabase
-      .from("notifications")
+      .from("Notifications")
       .on("*", () => fetchMessages(user?.id, setNotifications))
       .subscribe();
     return () => {
@@ -30,7 +30,7 @@ const fetchMessages = async (
 ) => {
   try {
     let { body } = await supabase
-      .from("notifications")
+      .from("Notifications")
       .select(`*`)
       .eq("userId", userId)
       .order("createdAt", { ascending: false });

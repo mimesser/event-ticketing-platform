@@ -146,7 +146,7 @@ export default function Preview({
         </div>
         <div style={{ marginTop: "5px" }}>
           {eventLocation?.name ? (
-            <span>{eventLocation.name}</span>
+            <span>{eventLocation?.name}</span>
           ) : (
             <span
               style={{
@@ -265,14 +265,14 @@ export default function Preview({
                 marginLeft: 30,
               }}
             />
-            {eventLocation.name && (
+            {eventLocation?.name && (
               <div className={styles.event_host}>
                 <FmdGoodIcon
                   style={{
                     color: Colors[resolvedTheme].secondary,
                   }}
                 />
-                <b>{eventLocation.name}</b>
+                <b>{eventLocation?.name}</b>
               </div>
             )}
             {privacy === "Private" && (
@@ -374,7 +374,7 @@ export default function Preview({
           )}
         </div>
         <div className={styles.event_info}>
-          {eventLocation.hasLocation && (
+          {eventLocation?.hasLocation && (
             <div
               className={styles.map_info}
               style={{
