@@ -105,7 +105,7 @@ export default function LocationSelector({
         }}
         onKeyPress={(e) => {
           if (e.code === "Enter" && places.length > 0) {
-            selectPlace(places[places.length - 1]);
+            handleCloseLocationPopover();
           }
         }}
         InputProps={{

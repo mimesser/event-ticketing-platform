@@ -13,13 +13,17 @@ import Avatar from "components/Avatar";
 import IOSSwitch from "components/IOSSwitch";
 import Colors from "lib/colors";
 import { useTheme } from "next-themes";
+import { useNewEvent } from "lib/event-context";
 
 export default function HostSelector({
-  onUpdate,
+  saveSettings,
 }: {
-  onUpdate: (hosts: any) => any;
+  saveSettings: boolean;
 }) {
   const { resolvedTheme } = useTheme();
+
+  const { coHosts, showGuestList, setShowGuestList, setCoHosts } =
+    useNewEvent();
 
   const [hostSearch, setHostSearch] = React.useState("");
   const hostSearchRef = React.useRef<HTMLElement | null>(null);
@@ -28,10 +32,7 @@ export default function HostSelector({
   );
   const [hosts, setHosts] = React.useState([]);
 
-  const [selected, setSelectedHosts] = React.useState<any[]>([]);
-  React.useEffect(() => {
-    onUpdate(selected);
-  }, [selected, onUpdate]);
+  const [selected, setSelectedHosts] = React.useState<any[]>(coHosts);
 
   const handleCloseHostsPopover = () => {
     setHostsAnchor(null);
@@ -52,7 +53,13 @@ export default function HostSelector({
     return filtered.length > 0;
   };
 
-  const [showGuest, ShowGuest] = React.useState(true);
+  const [showGuest, ShowGuest] = React.useState(showGuestList);
+
+  React.useEffect(() => {
+    if (!saveSettings) return;
+    setShowGuestList(showGuest);
+    setCoHosts(selected);
+  }, [saveSettings, selected, setCoHosts, setShowGuestList, showGuest]);
 
   const debounceTime = 500;
   const [searchTimer, setSearchTimer] = React.useState<NodeJS.Timeout | null>(
