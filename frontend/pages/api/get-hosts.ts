@@ -7,7 +7,6 @@ export default async function getHosts(
   res: NextApiResponse
 ) {
   const session = await getLoginSession(req);
-
   if (!session) {
     res.status(400).json({ error: "Missing session" });
     return;
@@ -32,6 +31,9 @@ export default async function getHosts(
             },
           },
         ],
+        email: {
+          not: session.email,
+        },
       },
       select: {
         id: true,
