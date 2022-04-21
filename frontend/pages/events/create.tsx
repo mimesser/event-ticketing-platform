@@ -126,6 +126,7 @@ function Create() {
                 Create Event
               </Typography>
               <IconButton
+                id="create_event_card"
                 onClick={createEvent}
                 sx={{
                   ":hover": {
