@@ -1296,6 +1296,7 @@ export default function ImpishDrawer({
 
             <Link href="/events" passHref>
               <ListItem
+                id="go_events_homepage"
                 button
                 sx={{
                   borderRadius: (theme) => theme.shape.borderRadius,
@@ -1493,6 +1494,7 @@ export default function ImpishDrawer({
                   )}
                   <Box sx={{ marginTop: "12px " }}>
                     <Button
+                      id="create_new_event"
                       fullWidth
                       onClick={createEvent}
                       sx={{
@@ -1870,6 +1872,7 @@ export default function ImpishDrawer({
                     <>
                       <form onSubmit={handleSubmit3(onSubmitCreateEvents)}>
                         <TextField
+                          id="event_name_input"
                           fullWidth
                           label="Event name"
                           variant="outlined"
@@ -2489,6 +2492,7 @@ export default function ImpishDrawer({
                           </>
                         ) : (
                           <IconButton
+                            id="show_end_date_time"
                             onClick={() => {
                               adjustEndDate();
                               setShowEndDate(true);
@@ -2514,6 +2518,7 @@ export default function ImpishDrawer({
                           </IconButton>
                         )}
                         <Button
+                          id="event_privacy_menu"
                           disableRipple
                           fullWidth
                           sx={{
@@ -2742,6 +2747,7 @@ export default function ImpishDrawer({
                                 />
                               </ListItemIcon>
                               <Box
+                                id="event_privacy_select"
                                 sx={{
                                   display: "flex",
                                   flexDirection: "column",
@@ -2881,6 +2887,7 @@ export default function ImpishDrawer({
                       <LocationSelector
                         onSelectPlace={onSelectLocation}
                         textProps={{
+                          id: "event_location_input",
                           fullWidth: true,
                           label: "Location",
                           variant: "outlined",
@@ -2974,6 +2981,7 @@ export default function ImpishDrawer({
                     </>
                   ) : eventStep === 2 ? (
                     <TextField
+                      id="event_description_input"
                       fullWidth
                       label="Description"
                       variant="outlined"
@@ -3044,6 +3052,7 @@ export default function ImpishDrawer({
                               </div>
                             )}
                             <DeleteIcon
+                              id="delete_event_cover_photo"
                               className={styles.avatar_delete}
                               sx={{
                                 backgroundColor: "#E3E6EA",
@@ -3190,6 +3199,7 @@ export default function ImpishDrawer({
                 {eventStep < 4 ? "Back" : "Cancel"}
               </Button>
               <Button
+                id="event_next_button"
                 disableElevation
                 variant="contained"
                 sx={{
