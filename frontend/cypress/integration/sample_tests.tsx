@@ -72,14 +72,15 @@ describe("sample tests", () => {
     cy.get("[id^=edit_profile_button]").click();
 
     // Click to upload banner button
-    cy.get("[id^=uploadBanner]").click().wait(2000);
+    cy.get("[id^=uploadBanner]").click();
 
     // Upload file
     const filepath = "images/logo-dark.png";
-    cy.get('input[type="file"]').attachFile(filepath).wait(2000);
+    cy.get('input[type="file"]').attachFile(filepath);
 
     // Wait for upload-image status code: 200 response
     cy.wait("@upload-image").then(({ response }: any) => {
+      expect(response.body).property("url");
       expect(response.statusCode).to.eq(200);
     });
 
@@ -90,6 +91,9 @@ describe("sample tests", () => {
     cy.wait("@update-profile").then(({ response }: any) => {
       expect(response.statusCode).to.eq(200);
     });
+
+    // Check save profile button not exist
+    cy.get("[id^=saveProfile]").should("not.exist");
 
     // Click to edit profile button
     cy.get("[id^=edit_profile_button]").click();
@@ -239,8 +243,7 @@ describe("sample tests", () => {
       expect(response.statusCode).to.eq(200);
     });
 
-    // Check if EARLIER section visible
-    cy.contains("EARLIER").should("be.visible").wait(2000);
+    cy.wait(2000);
 
     // Check contains "Link your Twitter" if it is exists and click
     cy.contains("Link your Twitter").click();
