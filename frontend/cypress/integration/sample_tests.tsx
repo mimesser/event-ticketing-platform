@@ -266,6 +266,67 @@ describe("sample tests", () => {
     cy.get("[id^=header_crypto_modal_close]").wait(2000).click();
   });
 
+  it("Create Event flow test", function () {
+    const id = uuid();
+
+    // Match save-event request as save-event
+    cy.intercept("/api/save-event").as("save-event");
+
+    // Get Event button at homepage, wait 3sec then click
+    cy.get("[id^=go_events_homepage]").wait(3000).click();
+
+    // Click to Create new event button
+    cy.get("[id^=create_new_event]").click();
+
+    // Click to create event button card
+    cy.get("[id^=create_event_card]").click();
+
+    // Type to Event name input
+    cy.get("[id^=event_name_input]").eq(1).type(`Test Event Name ${id}`);
+
+    // Click to "+ End Date and Time"
+    cy.get("[id^=show_end_date_time]").click();
+
+    // Open event privacy menu
+    cy.get("[id^=event_privacy_menu]").click();
+
+    // Select privacy
+    cy.get("[id^=event_privacy_select]").click();
+
+    // Click to next button
+    cy.get("[id^=event_next_button]").click();
+
+    // Type to location input
+    cy.get("[id^=event_location_input]").eq(1).type("San Francisco, CA, USA");
+
+    // Click to next button
+    cy.get("[id^=event_next_button]").click();
+
+    // Type to event description input
+    cy.get("[id^=event_description_input]")
+      .eq(1)
+      .type(`Test event description ${id}`);
+
+    // Click to next button
+    cy.get("[id^=event_next_button]").click();
+
+    // Attach file to event cover photo
+    const filepath = "images/logo-dark.png";
+    cy.get("[id^=upload-cover-photo]").attachFile(filepath);
+
+    // Check delete event cover photo button if visible
+    cy.get("[id^=delete_event_cover_photo]").should("be.visible");
+
+    // Click to next button as "Create Event"
+    cy.get("[id^=event_next_button]").click();
+
+    // Wait for save-event status code: 200 response
+    cy.wait("@save-event").then(({ response }: any) => {
+      expect(response.body).property("status");
+      expect(response.statusCode).to.eq(200);
+    });
+  });
+
   // Log out test should be last because of preserve token cookie, add new test above
   it("Log out test", function () {
     // Match logout request as "logout"
