@@ -45,6 +45,10 @@ import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import LanguageIcon from "@mui/icons-material/Language";
 import LockIcon from "@mui/icons-material/Lock";
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+import EmailRoundedIcon from "@mui/icons-material/EmailRounded";
+import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
+import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
 import MouseIcon from "@mui/icons-material/Mouse";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import FmdGoodIcon from "@mui/icons-material/FmdGood";
@@ -133,7 +137,7 @@ export default function ImpishDrawer({
   );
 
   const [open, setOpen] = React.useState(
-    router.pathname === "/events/[username]" ? true : false
+    router.asPath === "/events/calendar" ? true : false
   );
   const [signInEventsModal, setSignInEventsModal] = React.useState(false);
   const [privacy, setPrivacy] = React.useState("Privacy");
@@ -465,10 +469,10 @@ export default function ImpishDrawer({
   };
   const handleClick = () => {
     router.push({
-      pathname: "/events/[username]",
-      query: { username: user.username || user.walletAddress },
+      pathname: "/events/calendar",
     });
     setOpen(!open);
+    setEventFilter(-1);
   };
   const createEvent = () => {
     if (user) {
@@ -784,6 +788,31 @@ export default function ImpishDrawer({
       pos: pos,
     });
   };
+
+  // event filtering
+  const eventFilterList = [
+    {
+      name: "Going",
+      icon: <CheckCircleRoundedIcon />,
+      route: "going",
+    },
+    {
+      name: "Invites",
+      icon: <EmailRoundedIcon />,
+      route: "invites",
+    },
+    {
+      name: "Hosting",
+      icon: <HomeRoundedIcon />,
+      route: "hosting",
+    },
+    {
+      name: "Past Events",
+      icon: <HistoryOutlinedIcon />,
+      route: "past",
+    },
+  ];
+  const [eventFilter, setEventFilter] = React.useState<number>(-1);
 
   return (
     <Drawer
@@ -1440,14 +1469,17 @@ export default function ImpishDrawer({
                           alignItems: "center",
                           padding: "12px",
                         }}
-                        selected={router.pathname === "/events/[username]"}
+                        selected={
+                          router.asPath === "/events/calendar" &&
+                          eventFilter === -1
+                        }
                       >
                         <ListItemIcon sx={{ minWidth: "auto" }}>
                           <AccountCircleIcon
                             fontSize="large"
                             sx={{
                               color: (theme) =>
-                                router.pathname === "/events/[username]"
+                                router.asPath === "/events/calendar" && open
                                   ? theme.palette.primary.main
                                   : Colors[resolvedTheme].primary,
                             }}
@@ -1484,10 +1516,58 @@ export default function ImpishDrawer({
                       </ListItemButton>
 
                       <Collapse in={open} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                          <ListItemButton sx={{ pl: 4 }}>
+                        <List
+                          component="div"
+                          sx={{ color: Colors[resolvedTheme].secodary }}
+                        >
+                          {/* <ListItemButton sx={{ pl: 4 }}>
                             <ListItemText>No events</ListItemText>
-                          </ListItemButton>
+                          </ListItemButton> */}
+                          {eventFilterList.map((filter: any, index: number) => {
+                            const iconColor = (theme: any) =>
+                              eventFilter === index ? "white" : "inherit";
+                            const backColor = (theme: any) =>
+                              eventFilter === index
+                                ? theme.palette.primary.main
+                                : "#dedede";
+                            return (
+                              <ListItemButton
+                                key={filter.name}
+                                onClick={() => {
+                                  setEventFilter(index);
+                                  router.push({
+                                    pathname: "/events/" + filter.route,
+                                  });
+                                }}
+                                selected={eventFilter === index}
+                                sx={{
+                                  borderRadius: "16px",
+                                  ml: 3,
+                                }}
+                              >
+                                {{
+                                  ...filter.icon,
+                                  props: {
+                                    sx: {
+                                      mr: 2,
+                                      color: iconColor,
+                                      borderColor: backColor,
+                                      borderWidth: "5px",
+                                      borderStyle: "solid",
+                                      borderRadius: "50%",
+                                      padding: "0px",
+                                      backgroundColor: backColor,
+                                    },
+                                  },
+                                }}
+                                <ListItemText
+                                  sx={{ color: Colors[resolvedTheme].primary }}
+                                >
+                                  {filter.name}
+                                </ListItemText>
+                              </ListItemButton>
+                            );
+                          })}
                         </List>
                       </Collapse>
                     </>
