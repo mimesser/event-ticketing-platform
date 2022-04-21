@@ -61,8 +61,11 @@ export default async function publicUser(
     if (user && session && user.email === session.email) {
       user.authenticated = true;
     }
-
-    if (user.username && !user.showWalletAddress) {
+    if (
+      user.username &&
+      !user.showWalletAddress &&
+      session?.publicAddress !== user.walletAddress
+    ) {
       user.walletAddress = null;
     }
 
