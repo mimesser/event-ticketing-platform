@@ -246,8 +246,8 @@ function View({ data, query }: { data: any; query: any }) {
               value={value}
               onChange={handleChange}
             >
-              <LinkTab label="Followers" disableRipple />
-              <LinkTab label="Following" disableRipple />
+              <LinkTab id="followers_tab" label="Followers" disableRipple />
+              <LinkTab id="following_tab" label="Following" disableRipple />
             </Tabs>
           </Box>
           <Box>

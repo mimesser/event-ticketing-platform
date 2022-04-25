@@ -674,6 +674,7 @@ function Profile() {
             alignItems="center"
           >
             <Button
+              id="gotofollowing"
               onClick={goToFollowing}
               color="inherit"
               sx={{
@@ -707,6 +708,7 @@ function Profile() {
             </Button>
 
             <Button
+              id="gotofollowers"
               onClick={goToFollowers}
               color="inherit"
               sx={{
