@@ -187,6 +187,70 @@ describe("sample tests", () => {
     });
   });
 
+  it("Follow list test", function () {
+    // Match public-user POST request as "public-user"
+    cy.intercept("POST", "/api/public-user").as("public-user");
+
+    // Go to user page
+    cy.visit(
+      "http://localhost:3000/0x94227F9e855F378001673c6862Bcc5b3F945Becc"
+    );
+
+    // Wait for public-user status code: 200 response then check user following-followers numbers
+    cy.wait("@public-user").then(({ response }: any) => {
+      expect(response.body).property("user");
+      expect(response.statusCode).to.eq(200);
+
+      const followingNumber = `${response.body.user.following.length} Following`;
+      const followersNumber = `${response.body.user.followers.length} Followers`;
+
+      cy.contains(followingNumber).should("be.visible");
+      cy.contains(followersNumber).should("be.visible");
+    });
+
+    // Click to Following button
+    cy.get("[id^=gotofollowers]").click();
+
+    // Check pathname if contain /followers
+    cy.location("pathname").should("include", "/followers");
+
+    cy.window()
+      .its("__NEXT_DATA__")
+      .then((data) => {
+        const followers = data.props.pageProps.data.followers;
+        const following = data.props.pageProps.data.following;
+
+        // Check followers list user's username and walletAddress
+        followers.map((m: any) => {
+          if (!m.username) {
+            cy.contains(m.walletAddress).should("be.visible");
+          } else {
+            cy.contains(m.username).should("be.visible");
+          }
+
+          if (m.name) {
+            cy.contains("p", m.name).should("be.visible");
+          }
+        });
+
+        // Click to Following button
+        cy.get("[id^=following_tab]").click();
+
+        // Check following list user's username and walletAddress
+        following.map((m: any) => {
+          if (!m.username) {
+            cy.contains(m.walletAddress).should("be.visible");
+          } else {
+            cy.contains(m.username).should("be.visible");
+          }
+
+          if (m.name) {
+            cy.contains("p", m.name).should("be.visible");
+          }
+        });
+      });
+  });
+
   // Log out test should be last because of preserve token cookie, add new test above
   it("Log out test", function () {
     // Match logout request as "logout"
