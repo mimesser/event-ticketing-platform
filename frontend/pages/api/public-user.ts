@@ -58,6 +58,11 @@ export default async function publicUser(
     });
 
     let user: any = users && users.length > 0 ? users[0] : null;
+
+    if (!user) {
+      return res.status(400).json({ error: "not exists user" });
+    }
+
     if (user && session && user.email === session.email) {
       user.authenticated = true;
     }
