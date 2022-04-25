@@ -479,11 +479,13 @@ export default function Header({
                         });
                       }
                     }}
-                    id={styles.twtButton}
+                    id="twt_link_unlink_btn"
                     type="submit"
                     size="large"
                     variant="outlined"
                     sx={{
+                      color: "white",
+                      textTransform: "none",
                       backgroundColor: "rgb(29, 161, 242)",
                       ":hover": {
                         backgroundColor: "rgb(26, 140, 216)",
@@ -506,6 +508,7 @@ export default function Header({
                 </Typography>
                 <Box>
                   <Button
+                    id="twt_link_unlink_btn"
                     sx={{ textTransform: "none", marginTop: "20px" }}
                     onClick={() => unlinkUser()}
                     type="submit"
@@ -1307,7 +1310,7 @@ export default function Header({
                       Privacy
                     </MenuItem>
                     <MenuItem
-                      id="link_twitter_button"
+                      id="open_twitter_modal"
                       onClick={() => {
                         handleCloseUserMenu();
                         setTwitterModal(true);
