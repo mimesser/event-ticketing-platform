@@ -124,6 +124,9 @@ describe("sample tests", () => {
     // Match twitter/link-user POST request as "link-user"
     cy.intercept("POST", "/api/twitter/link-user").as("link-user");
 
+    // Match twitter/link-user DELETE request as "link-user"
+    cy.intercept("DELETE", "/api/twitter/link-user").as("unlink-user");
+
     // Click to top right account menu
     cy.get('[aria-label="Account"]').click();
 
@@ -131,22 +134,34 @@ describe("sample tests", () => {
     cy.get("[id^=settings_menu]").click();
 
     // Click to link Twitter button
-    cy.get("[id^=link_twitter_button]").click();
+    cy.get("[id^=open_twitter_modal]").click();
 
     // Click to Find frens I follow button in Twitter modal
-    cy.get("#Header_twtButton__zVX9n").click();
+    cy.get("[id^=twt_link_unlink_btn]").then(($btn) => {
+      if ($btn.contents().text() === "Find frens I follow") {
+        cy.get("[id^=twt_link_unlink_btn]").click();
 
-    // Wait for link-user status code: 200 response
-    cy.wait("@link-user").then(({ response }: any) => {
-      expect(response.statusCode).to.eq(200);
-    });
+        // Wait for link-user status code: 200 response
+        cy.wait("@link-user").then(({ response }: any) => {
+          expect(response.statusCode).to.eq(200);
+        });
 
-    // Call logout endpoint and check response.status if it is equal to 200
-    cy.request("DELETE", "http://localhost:3000/api/twitter/link-user").then(
-      (response) => {
-        expect(response.status).to.eq(200);
+        // Call DELETE link-user endpoint and check response.status if it is equal to 200
+        cy.request(
+          "DELETE",
+          "http://localhost:3000/api/twitter/link-user"
+        ).then((response) => {
+          expect(response.status).to.eq(200);
+        });
+      } else {
+        cy.get("[id^=twt_link_unlink_btn]").click();
+
+        // Wait for unlink-user status code: 200 response
+        cy.wait("@unlink-user").then(({ response }: any) => {
+          expect(response.statusCode).to.eq(200);
+        });
       }
-    );
+    });
   });
 
   it("User follow-unfollow test", function () {
