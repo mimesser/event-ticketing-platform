@@ -74,11 +74,7 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-export default function Header({
-  urlWithSignature,
-}: {
-  urlWithSignature: string;
-}) {
+export default function Header() {
   var dateUTC = new Date(
     new Date().getTime() + new Date().getTimezoneOffset() * 60000
   );
@@ -325,7 +321,7 @@ export default function Header({
                   frameBorder="0"
                   height="100%"
                   id="moonPayFrame"
-                  src={urlWithSignature}
+                  src={user?.moonpayUrl}
                   width="100%"
                 >
                   <p>Your browser does not support iframes.</p>
