@@ -68,17 +68,6 @@ export default function Layout({
   const [twitterModal, setTwitterModal] = useState(false); // Find frens on Twitter modal
   const [twitterButton, setTwitterButton] = useState(false);
 
-  const [urlWithSignature, setUrlWithSignature] = useState("");
-  React.useEffect(() => {
-    if (user && !loading) {
-      fetch("/api/moonpay-url")
-        .then((r) => r.json())
-        .then((data) => {
-          setUrlWithSignature(data.urlWithSignature);
-        });
-    }
-  }, [user, loading]);
-
   const modalClose = () => {
     if (findFrens) {
       setFindFrens(null);
@@ -259,7 +248,7 @@ export default function Layout({
           {/* Site meta */}
           <Meta />
 
-          <Header urlWithSignature={urlWithSignature} />
+          <Header />
           {/* Injected child content */}
           <Box
             component="main"
@@ -346,7 +335,7 @@ export default function Layout({
                         frameBorder="0"
                         height="100%"
                         id="moonPayFrame"
-                        src={urlWithSignature}
+                        src={user?.moonpayUrl}
                         width="100%"
                       >
                         <p>Your browser does not support iframes.</p>

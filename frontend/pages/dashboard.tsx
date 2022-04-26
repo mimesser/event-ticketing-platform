@@ -37,15 +37,6 @@ function Dashboard() {
       : false
   );
 
-  const [urlWithSignature, setUrlWithSignature] = useState("");
-  React.useEffect(() => {
-    fetch("/api/moonpay-url")
-      .then((r) => r.json())
-      .then((data) => {
-        setUrlWithSignature(data.urlWithSignature);
-      });
-  }, []);
-
   const modalStyle = {
     position: "absolute",
     top: "50%",
@@ -100,7 +91,7 @@ function Dashboard() {
                   frameBorder="0"
                   height="100%"
                   id="moonPayFrame"
-                  src={urlWithSignature}
+                  src={user?.moonpayUrl}
                   width="100%"
                 >
                   <p>Your browser does not support iframes.</p>
