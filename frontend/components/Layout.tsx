@@ -129,7 +129,7 @@ export default function Layout({
         console.log(error);
       }
     }
-  }, [user?.walletAddress]);
+  }, [user?.nativeAssetBalance, user?.walletAddress]);
 
   useEffect(() => {
     if (user) {
