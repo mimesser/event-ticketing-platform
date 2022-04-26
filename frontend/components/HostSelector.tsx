@@ -74,7 +74,7 @@ export default function HostSelector({
 
     let timerID = setTimeout(() => {
       if (search) {
-        fetch("/api/get-hosts", {
+        fetch("/api/event/get-hosts", {
           method: "POST",
           body: JSON.stringify({
             search,
