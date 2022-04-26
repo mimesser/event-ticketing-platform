@@ -266,6 +266,36 @@ describe("sample tests", () => {
       });
   });
 
+  it("Buy Crypto modal test", function () {
+    // Match moonpay-verify POST request as "moonpay-verify"
+    cy.intercept(
+      "POST",
+      "https://api.moonpay.com/v3/verify_widget_signature"
+    ).as("moonpay-verify");
+
+    // Click to Buy Crypto button at header
+    cy.get("[id^=buy_crypto_header]").click();
+
+    // Wait for moonpay-verify status code: 200 response
+    cy.wait("@moonpay-verify").then(({ response }: any) => {
+      expect(response.statusCode).to.eq(200);
+    });
+
+    // Click to Header buy crypto modal close button
+    cy.get("[id^=header_crypto_modal_close]").click();
+
+    // Click to Purchase MATIC text which is dashboard Moonpay banner
+    cy.contains("Purchase MATIC").click();
+
+    // Wait for moonpay-verify status code: 200 response
+    cy.wait("@moonpay-verify").then(({ response }: any) => {
+      expect(response.statusCode).to.eq(200);
+    });
+
+    // Click to Dashboard buy crypto modal close button
+    cy.get("[id^=dashboard_crypto_modal_close]").click();
+  });
+
   // Log out test should be last because of preserve token cookie, add new test above
   it("Log out test", function () {
     // Match logout request as "logout"

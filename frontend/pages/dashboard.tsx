@@ -67,6 +67,7 @@ function Dashboard() {
         <Box sx={modalStyle}>
           <div className={styles.modal_box}>
             <IconButton
+              id="dashboard_crypto_modal_close"
               aria-label="close"
               onClick={() => {
                 setMoonpayModalForBanner(false);
