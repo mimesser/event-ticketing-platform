@@ -214,6 +214,8 @@ function Event() {
                     className={styles.desktop_info}
                     style={{
                       justifyContent: "flex-end",
+                      marginTop: "0px",
+                      padding: "0px",
                     }}
                   >
                     <div className={styles.row}>
@@ -338,7 +340,7 @@ function Event() {
                               marginLeft: 4,
                             }}
                           >
-                            going, including
+                            going, including{" "}
                             {event.name
                               ? event.name
                               : event.username
@@ -368,7 +370,6 @@ function Event() {
                         sx={{
                           fontWeight: "bold",
                           ":hover": { textDecoration: "underline" },
-                          marginTop: "3px",
                           cursor: "pointer",
                         }}
                       >
