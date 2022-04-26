@@ -195,17 +195,7 @@ function Event() {
                     )}
                   </div>
                   <div style={{ marginTop: "5px" }}>
-                    {eventLocation?.name ? (
-                      <span>{eventLocation?.name}</span>
-                    ) : (
-                      <span
-                        style={{
-                          color: Colors[resolvedTheme].privacy_border,
-                        }}
-                      >
-                        Location
-                      </span>
-                    )}
+                    {eventLocation?.name && <span>{eventLocation?.name}</span>}
                   </div>
                   <Divider
                     sx={{ borderBottom: Colors[resolvedTheme].border }}
