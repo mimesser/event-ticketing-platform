@@ -4,8 +4,8 @@ import { useUserInfo } from "./user-context";
 import { isBrowser } from "./utils";
 
 interface RedirectInfo {
-  redirectTo?: string,
-  redirectIfFound?: boolean
+  redirectTo?: string;
+  redirectIfFound?: boolean;
 }
 
 export function useUser({ redirectTo, redirectIfFound }: RedirectInfo = {}) {
@@ -84,4 +84,34 @@ export function useLocalStorage(key: string) {
   }, [key, setValue]);
 
   return [state, setValue] as const;
+}
+
+export function useEvent(eventId: number) {
+  const [event, setEvent] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isNaN(eventId) || eventId === null) return;
+
+    setLoading(true);
+    fetch("/api/event/event-by-id", {
+      method: "POST",
+      body: JSON.stringify({
+        eventId,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("response from server: ", data);
+        setLoading(false);
+        if (!data.event) {
+          Router.push("/events");
+          console.log("Invalid Event Id");
+          return;
+        }
+        setEvent(data.event);
+      });
+  }, [eventId]);
+
+  return { event, loading };
 }
