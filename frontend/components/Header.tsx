@@ -705,6 +705,7 @@ export default function Header() {
 
                 <Tooltip title="Buy Crypto">
                   <IconButton
+                    id="buy_crypto_header"
                     size="large"
                     sx={{
                       color: (theme) =>
