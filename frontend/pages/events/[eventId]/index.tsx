@@ -5,6 +5,9 @@ import {
   CircularProgress,
   Divider,
   IconButton,
+  ListItem,
+  ListItemText,
+  Modal,
   Typography,
   useMediaQuery,
 } from "@mui/material";
@@ -65,6 +68,19 @@ function Event() {
   };
 
   const [fullCover, showFullCover] = React.useState(false);
+  const [guestModal, showGuestModal] = React.useState(false);
+
+  const modalStyle = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 320,
+    bgcolor: Colors[resolvedTheme]?.header_bg,
+    borderRadius: "25px",
+    boxShadow: 24,
+    p: 4,
+  };
 
   return (
     <>
@@ -314,6 +330,7 @@ function Event() {
                         margin: "0 -15px",
                         padding: "15px",
                       }}
+                      onClick={() => showGuestModal(true)}
                     >
                       <div className={styles.event_host}>
                         <PeopleAlt
@@ -370,6 +387,11 @@ function Event() {
                           ":hover": { textDecoration: "underline" },
                           cursor: "pointer",
                         }}
+                        onClick={() =>
+                          router.push(
+                            "/" + (event.username || event.walletAddress)
+                          )
+                        }
                       >
                         {event.name
                           ? event.name
@@ -589,6 +611,7 @@ function Event() {
                             cursor: "pointer",
                           },
                         }}
+                        onClick={() => showGuestModal(true)}
                       >
                         See All
                       </Typography>
@@ -607,6 +630,7 @@ function Event() {
                           cursor: "pointer",
                           borderRadius: "5px",
                         }}
+                        onClick={() => showGuestModal(true)}
                       >
                         <span style={{ fontWeight: "bold" }}>1</span>
                         <span
@@ -618,40 +642,6 @@ function Event() {
                           GOING
                         </span>
                       </Box>
-                    </div>
-                    <div
-                      className={styles.divider}
-                      style={{
-                        backgroundColor: Colors[resolvedTheme].hover,
-                      }}
-                    />
-                    <div className={styles.row}>
-                      <Avatar
-                        avatarImage={event.avatarImage}
-                        walletAddress={event.walletAddress}
-                        size={36}
-                      />
-                      <div
-                        className={styles.col}
-                        style={{ alignItems: "start" }}
-                      >
-                        <span>
-                          {" "}
-                          {event.name
-                            ? event.name
-                            : event.username
-                            ? `@${event.username}`
-                            : shortenAddress(event.walletAddress)}
-                        </span>
-                        <span
-                          style={{
-                            fontSize: 12,
-                            color: Colors[resolvedTheme].secondary,
-                          }}
-                        >
-                          Host
-                        </span>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -702,6 +692,112 @@ function Event() {
               </div>
             </Backdrop>
           )}
+
+          <Modal
+            BackdropProps={{
+              timeout: 500,
+            }}
+            closeAfterTransition
+            onClose={() => {
+              showGuestModal(false);
+            }}
+            open={guestModal}
+            aria-labelledby="transition-modal-title"
+            aria-describedby="transition-modal-description"
+          >
+            <Box sx={modalStyle}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  margin: "0 -32px",
+                }}
+              >
+                <div
+                  style={{
+                    margin: "-12px 0px 12px 0px",
+                  }}
+                >
+                  <b>Guests</b>
+                  <IconButton
+                    aria-label="close"
+                    onClick={() => {
+                      showGuestModal(false);
+                    }}
+                    style={{
+                      position: "absolute",
+                      right: 10,
+                      top: 10,
+                    }}
+                    size="small"
+                    sx={{
+                      ":hover": {
+                        backgroundColor: Colors[resolvedTheme].hover,
+                      },
+                    }}
+                  >
+                    <Close
+                      sx={{
+                        color: Colors[resolvedTheme]?.primary,
+                      }}
+                    />
+                  </IconButton>
+                </div>
+                <Divider
+                  sx={{
+                    width: "100%",
+                    borderBottom: Colors[resolvedTheme].border,
+                  }}
+                />
+                <div
+                  style={{ marginTop: "8px", width: "300px", height: "60vh" }}
+                >
+                  <ListItem
+                    id="drawer_profile_button"
+                    button
+                    sx={{
+                      borderRadius: "10px",
+                      ":hover": {
+                        backgroundColor: Colors[resolvedTheme].hover,
+                      },
+                    }}
+                    style={{
+                      margin: "0px 0",
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      padding: "12px",
+                    }}
+                  >
+                    <Avatar
+                      avatarImage={event.avatarImage}
+                      walletAddress={event.walletAddress}
+                      size={36}
+                    />
+                    <ListItemText
+                      disableTypography
+                      style={{
+                        marginLeft: "6%",
+                        overflow: "hidden",
+                        whiteSpace: "nowrap",
+                        textAlign: "left",
+                        textOverflow: "ellipsis",
+                        color: Colors[resolvedTheme].primary,
+                      }}
+                    >
+                      {event.name
+                        ? event.name
+                        : event.username
+                        ? `@${event.username}`
+                        : shortenAddress(event.walletAddress)}
+                    </ListItemText>
+                  </ListItem>
+                </div>
+              </div>
+            </Box>
+          </Modal>
         </Layout>
       )}
     </>
