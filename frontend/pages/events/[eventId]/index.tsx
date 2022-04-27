@@ -1,12 +1,15 @@
 import {
+  Backdrop,
   Box,
   Button,
   CircularProgress,
   Divider,
+  IconButton,
   Typography,
   useMediaQuery,
 } from "@mui/material";
 import {
+  Close,
   EditRounded,
   Email,
   FmdGood,
@@ -20,6 +23,7 @@ import moment from "moment";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useTheme } from "next-themes";
+import React from "react";
 import AvatarEditor from "react-avatar-editor";
 
 import Avatar from "components/Avatar";
@@ -59,6 +63,8 @@ function Event() {
       sDate.format("dddd, MMMM DD, YYYY") + " AT " + sDate.format("h:mm A")
     );
   };
+
+  const [fullCover, showFullCover] = React.useState(false);
 
   return (
     <>
@@ -140,6 +146,7 @@ function Event() {
                           overflow: "hidden",
                           zIndex: 10,
                         }}
+                        onClick={() => showFullCover(true)}
                       >
                         <AvatarEditor
                           image={cover.url}
@@ -149,6 +156,7 @@ function Event() {
                           position={cover.pos}
                           style={{
                             borderRadius: "10px",
+                            cursor: "pointer",
                           }}
                         />
                       </div>
@@ -650,6 +658,50 @@ function Event() {
               </div>
             </div>
           </div>
+
+          {cover.url && (
+            <Backdrop
+              sx={{
+                background: "rgba(61, 64, 51, 0.9)",
+                zIndex: (theme) => theme.zIndex.drawer + 1,
+                padding: "50px",
+                cursor: "pointer",
+              }}
+              open={fullCover}
+              onClick={() => showFullCover(false)}
+            >
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  backgroundImage: `url(${cover.url})`,
+                  backgroundRepeat: "no-repeat",
+                  backgroundSize: "contain",
+                  backgroundPosition: "center",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  right: 16,
+                  top: 16,
+                  cursor: "pointer",
+                }}
+              >
+                <IconButton
+                  aria-label="close"
+                  sx={{
+                    backgroundColor: "rgba(61, 64, 51, 0.75)",
+                    color: "white",
+                    width: "36px",
+                    height: "36px",
+                  }}
+                >
+                  <Close />
+                </IconButton>
+              </div>
+            </Backdrop>
+          )}
         </Layout>
       )}
     </>
