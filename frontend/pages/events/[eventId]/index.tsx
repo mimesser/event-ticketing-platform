@@ -770,6 +770,9 @@ function Event() {
                       alignItems: "center",
                       padding: "12px",
                     }}
+                    onClick={() =>
+                      router.push("/" + (event.username || event.walletAddress))
+                    }
                   >
                     <Avatar
                       avatarImage={event.avatarImage}
@@ -785,6 +788,11 @@ function Event() {
                         textAlign: "left",
                         textOverflow: "ellipsis",
                         color: Colors[resolvedTheme].primary,
+                      }}
+                      sx={{
+                        ":hover": {
+                          textDecoration: "underline",
+                        },
                       }}
                     >
                       {event.name
