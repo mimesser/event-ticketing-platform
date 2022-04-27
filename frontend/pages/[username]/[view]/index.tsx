@@ -104,7 +104,7 @@ function View({ data, query }: { data: any; query: any }) {
 
   async function unfollowUser(id: string) {
     try {
-      const res = await fetch("/api/twitter/follow", {
+      const res = await fetch("/api/follow", {
         method: "DELETE",
         body: JSON.stringify({
           follow: [id],
@@ -125,7 +125,7 @@ function View({ data, query }: { data: any; query: any }) {
 
   async function followUser(id: string) {
     try {
-      const res = await fetch("/api/twitter/follow", {
+      const res = await fetch("/api/follow", {
         method: "POST",
         body: JSON.stringify({
           follow: [id],
