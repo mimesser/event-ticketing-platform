@@ -90,7 +90,7 @@ apiRoute.post(async (req: any, res: NextApiResponse) => {
     await prisma.coHosts.createMany({
       data: coHostInfo,
     });
-    res.status(200).json({ status: "ok" });
+    res.status(200).json({ status: "ok", eventId: eventId });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error });
