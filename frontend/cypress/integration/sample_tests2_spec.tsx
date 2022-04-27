@@ -163,7 +163,20 @@ describe("sample tests", () => {
     // Wait for save-event status code: 200 response
     cy.wait("@save-event").then(({ response }: any) => {
       expect(response.body).property("status");
+      expect(response.body).property("eventId");
       expect(response.statusCode).to.eq(200);
+
+      // Check pathname if contain event ID
+      cy.location("pathname").should("include", `/${response.body.eventId}`);
+
+      // Check event name if visible
+      cy.contains(`Test Event Name ${id}`).should("be.visible");
+
+      // Check location if visible
+      cy.contains("San Francisco, CA, USA").should("be.visible");
+
+      // Check event description if visible
+      cy.contains(`Test event description ${id}`).should("be.visible");
     });
   });
 
