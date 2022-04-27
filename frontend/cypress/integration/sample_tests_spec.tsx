@@ -166,7 +166,7 @@ describe("sample tests", () => {
 
   it("User follow-unfollow test", function () {
     // Match follow request as follow
-    cy.intercept("/api/twitter/follow").as("follow");
+    cy.intercept("/api/follow").as("follow");
 
     // Get account menu before visit user
     cy.get('[aria-label="Account"]');

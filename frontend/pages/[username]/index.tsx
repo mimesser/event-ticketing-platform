@@ -98,7 +98,7 @@ function Profile() {
 
   const unfollowUser = async () => {
     try {
-      const res = await fetch("/api/twitter/follow", {
+      const res = await fetch("/api/follow", {
         method: "DELETE",
         body: JSON.stringify({
           follow: [user.id],
@@ -118,7 +118,7 @@ function Profile() {
   const followUser = async () => {
     if (currentUser.user !== null) {
       try {
-        const res = await fetch("/api/twitter/follow", {
+        const res = await fetch("/api/follow", {
           method: "POST",
           body: JSON.stringify({
             follow: [user.id],
