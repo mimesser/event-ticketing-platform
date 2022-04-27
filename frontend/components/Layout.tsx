@@ -151,7 +151,7 @@ export default function Layout({
       modalClose();
     } else {
       try {
-        await fetch("/api/twitter/follow", {
+        await fetch("/api/follow", {
           method: "POST",
           body: JSON.stringify({
             follow: selectedFrenz,
