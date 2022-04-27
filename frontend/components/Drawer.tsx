@@ -238,9 +238,15 @@ export default function ImpishDrawer({
       }
       setEventSaved(true);
       resetState();
-      router.push({
-        pathname: "/events",
-      });
+      if (result?.eventId) {
+        router.push({
+          pathname: `/events/${result.eventId}`,
+        });
+      } else {
+        router.push({
+          pathname: "/events",
+        });
+      }
     } catch (error) {
       alert(error);
     }
