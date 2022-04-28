@@ -249,10 +249,18 @@ export default function GoingEvents() {
                           style={{ fontSize: 14, fontWeight: 600 }}
                         >{`${event.going} Going`}</span>
                       </div>
-                      <div style={{ display: "flex", paddingTop: "20px" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
                         <Button
                           onClick={(e) => onClickDetails(e)}
                           sx={{
+                            alignItems: "baseline",
                             background:
                               Colors[resolvedTheme].eventDetailsBtn_bg,
                             borderRadius: "5px",
@@ -260,9 +268,12 @@ export default function GoingEvents() {
                             fontSize: 16,
                             color: Colors[resolvedTheme].primary,
                             fontWeight: 900,
-                            width: "36px",
-                            height: "32px",
+                            position: "inherit",
+                            margin: "16px",
+                            width: "48px",
+                            height: "36px",
                             minWidth: "32px",
+                            bottom: "20px",
                           }}
                         >
                           ...
