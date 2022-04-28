@@ -7,25 +7,43 @@ export default async function follow(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { follow }: any = JSON.parse(req.body);
-  const session = await getLoginSession(req);
-
-  if (!session || !follow) {
-    res.status(400).json({ error: "Missing session or follow object" });
-    return;
-  }
-
-  if (
-    !Array.isArray(follow) ||
-    !follow.every((id: any) => typeof id === "number")
-  ) {
-    res
-      .status(400)
-      .json({ error: "Wrong type for follow, only number objects" });
-    return;
-  }
-
   try {
+    if (req.method !== "POST" && req.method !== "DELETE") {
+      res.status(400).json({ error: "Wrong method! Only POST or DELETE" });
+      return;
+    }
+
+    const session = await getLoginSession(req);
+
+    if (!session) {
+      res.status(400).json({ error: "Missing session" });
+      return;
+    }
+
+    if (!req.body) {
+      res.status(400).json({ error: "Missing request body" });
+      return;
+    }
+
+    const { follow } = JSON.parse(req.body);
+
+    if (!follow) {
+      res.status(400).json({
+        error: "Missing follow in request body",
+      });
+      return;
+    }
+
+    if (
+      !Array.isArray(follow) ||
+      !follow.every((id: any) => typeof id === "number")
+    ) {
+      res
+        .status(400)
+        .json({ error: "Wrong type for follow, only number objects" });
+      return;
+    }
+
     const user = await prisma.user.findUnique({
       where: { email: session.email },
       select: {
