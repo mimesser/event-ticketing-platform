@@ -59,6 +59,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import MyLocationOutlinedIcon from "@mui/icons-material/MyLocationOutlined";
 import CircleIcon from "@mui/icons-material/Circle";
 import WarningIcon from "@mui/icons-material/Warning";
+import DeleteIcon from "@mui/icons-material/Delete";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 import Avatar from "components/Avatar";
@@ -76,6 +77,7 @@ import {
   tzAbbreviation,
   getLocationString,
   getLocalTimezone,
+  eventFilters,
 } from "lib/utils";
 import Image from "next/image";
 import moment from "moment";
@@ -92,7 +94,6 @@ import styles from "styles/components/Drawer.module.scss";
 import MapStyle from "lib/mapstyle";
 import { styled } from "@mui/material/styles";
 import AvatarEditor from "react-avatar-editor";
-import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function ImpishDrawer({
   variant,
@@ -134,10 +135,6 @@ export default function ImpishDrawer({
   );
   const [events] = React.useState(
     router.asPath.includes("/events") ? true : false
-  );
-
-  const [open, setOpen] = React.useState(
-    router.asPath === "/events/calendar" ? true : false
   );
   const [signInEventsModal, setSignInEventsModal] = React.useState(false);
   const [privacy, setPrivacy] = React.useState("Privacy");
@@ -475,10 +472,9 @@ export default function ImpishDrawer({
   };
   const handleClick = () => {
     router.push({
-      pathname: "/events/calendar",
+      pathname: !open ? "/events/calendar" : "/events/",
     });
-    setOpen(!open);
-    setEventFilter(-1);
+    setEventFilterIndex(!open ? 0 : -1);
   };
   const createEvent = () => {
     if (user) {
@@ -764,7 +760,7 @@ export default function ImpishDrawer({
     display: "none",
   });
   const [coverPhotoPath, setCoverPhotoPath] = React.useState<string>("");
-  const [coverPhotoRef, setCoverPhotoRef] = React.useState<any>(null);
+  const [, setCoverPhotoRef] = React.useState<any>(null);
   const [coverPhotoReposition, setCoverPhotoReposition] = React.useState(false);
   const [coverPhotoFile, setCoverPhotoFile] = React.useState<Blob | null>(null);
   const onSelectCoverPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -818,8 +814,11 @@ export default function ImpishDrawer({
       route: "past",
     },
   ];
-  const [eventFilter, setEventFilter] = React.useState<number>(-1);
-
+  const filter = router.query?.filter?.toString();
+  const [eventFilterIndex, setEventFilterIndex] = React.useState<number>(
+    eventFilters.indexOf(filter)
+  );
+  const open = eventFilterIndex != -1;
   return (
     <Drawer
       variant={variant}
@@ -1477,7 +1476,7 @@ export default function ImpishDrawer({
                         }}
                         selected={
                           router.asPath === "/events/calendar" &&
-                          eventFilter === -1
+                          eventFilterIndex === 0
                         }
                       >
                         <ListItemIcon sx={{ minWidth: "auto" }}>
@@ -1531,21 +1530,23 @@ export default function ImpishDrawer({
                           </ListItemButton> */}
                           {eventFilterList.map((filter: any, index: number) => {
                             const iconColor = (theme: any) =>
-                              eventFilter === index ? "white" : "inherit";
+                              eventFilterIndex === index + 1
+                                ? "white"
+                                : "inherit";
                             const backColor = (theme: any) =>
-                              eventFilter === index
+                              eventFilterIndex === index + 1
                                 ? theme.palette.primary.main
                                 : "#dedede";
                             return (
                               <ListItemButton
                                 key={filter.name}
                                 onClick={() => {
-                                  setEventFilter(index);
+                                  setEventFilterIndex(index + 1);
                                   router.push({
                                     pathname: "/events/" + filter.route,
                                   });
                                 }}
-                                selected={eventFilter === index}
+                                selected={eventFilterIndex === index + 1}
                                 sx={{
                                   borderRadius: "16px",
                                   ml: 3,
@@ -3217,6 +3218,9 @@ export default function ImpishDrawer({
                             textTransform: "none",
                             ":hover": {
                               backgroundColor: Colors[resolvedTheme].hover,
+                            },
+                            ":disabled": {
+                              color: Colors[resolvedTheme].primary,
                             },
                           }}
                           onClick={onEventSettings}

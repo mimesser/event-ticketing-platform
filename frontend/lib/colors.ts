@@ -37,6 +37,10 @@ const Colors: any = {
     input_error: "#df2f2f",
     mylocation_bg: "#383b3a",
     photoBtn: "rgba(58, 59, 60, 0.6)",
+    eventItem_bg: "rgb(38, 37, 40)",
+    eventDetailsBtn_bg: "rgb(80, 79, 83)",
+    eventItem_hover: "rgb(60, 59, 63)",
+    no_cover_photo_bg: "rgb(60, 62, 64)",
   },
   light: {
     header_bg: "#FFFFFF",
@@ -71,6 +75,10 @@ const Colors: any = {
     mylocation_bg: "#f0f2f4",
     photo_btn_group_border: "rgba(0, 0, 0, 0.15)",
     photoBtn: "rgba(0, 0, 0, 0.12)",
+    eventItem_bg: "white",
+    eventDetailsBtn_bg: "rgb(228, 229, 235)",
+    eventItem_hover: "rgb(243, 242, 243)",
+    no_cover_photo_bg: "rgb(228, 230, 234)",
   },
 };
 

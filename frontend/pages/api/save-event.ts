@@ -54,7 +54,7 @@ apiRoute.post(async (req: any, res: NextApiResponse) => {
       return;
     }
     coverPhoto = storage.getPublicUrl(coverPhotoPath).publicURL;
-    const { pos } = req.body;
+    const pos = JSON.parse(req.body.pos);
     coverPhoto = JSON.stringify({
       url: coverPhoto,
       pos,

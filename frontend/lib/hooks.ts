@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Router from "next/router";
 import { useUserInfo } from "./user-context";
 import { isBrowser } from "./utils";
+import { EventDetails } from "./types";
 
 interface RedirectInfo {
   redirectTo?: string;
@@ -102,11 +103,9 @@ export function useEvent(eventId: number) {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("response from server: ", data);
         setLoading(false);
         if (!data.event) {
           Router.push("/events");
-          console.log("Invalid Event Id");
           return;
         }
         setEvent(data.event);
@@ -114,4 +113,22 @@ export function useEvent(eventId: number) {
   }, [eventId]);
 
   return { event, loading };
+}
+
+export function useEventsFilter(filter: string) {
+  const [events, setEvents] = useState<EventDetails[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  useEffect(() => {
+    setLoading(true);
+    fetch("/api/get-events", {
+      method: "POST",
+      body: JSON.stringify({ filter: "going" }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setEvents(data.events);
+        setLoading(false);
+      });
+  }, [filter]);
+  return { loading, events };
 }

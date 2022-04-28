@@ -1,3 +1,7 @@
+import moment, { Moment, MomentInput } from "moment";
+import Events from "pages/events";
+import { EventDetails } from "./types";
+
 export const shortenAddress = (address: string) => {
   if (!address) return "";
   if (address.startsWith("0x")) {
@@ -129,6 +133,85 @@ export const getLocationString = ({
   return lat.toPrecision(6) + ", " + lng.toPrecision(6);
 };
 
+export const groupEventsByMonth = (events: EventDetails[]) => {
+  let lastYear = -1,
+    lastMonth = -1;
+  let startIdx = -1,
+    endIdx = -1;
+  let groupedEvents: any[] = [];
+  let monthName: string = "";
+  let eventsToday: EventDetails[] = [];
+
+  const friendlyTime = (dateTime: string) => {
+    const defaultFormat = "ddd, D MMM [AT] h A";
+    return moment(dateTime)
+      .calendar(null, {
+        sameDay: "[TODAY AT] h A",
+        nextDay: "[TOMORROW AT] h A",
+        nextWeek: `${
+          moment(dateTime).week() === moment().week() ||
+          moment(dateTime).day() === 0
+            ? "[THIS] dddd [AT] h A"
+            : defaultFormat
+        }`,
+        sameElse: defaultFormat,
+      })
+      .toUpperCase();
+  };
+
+  const pushGroup = () => {
+    if (endIdx != -1) {
+      groupedEvents.push({
+        monthName,
+        events: events.slice(startIdx, endIdx + 1).map((event) => ({
+          ...event,
+          startTime: friendlyTime(event.startTime),
+        })),
+      });
+    }
+  };
+
+  events.forEach((event: EventDetails, index: number) => {
+    const startTime = moment(event.startTime);
+    const now = moment();
+    if (startTime.isSame(now, "day")) {
+      eventsToday.push({
+        ...event,
+        startTime: startTime.calendar(null, {
+          sameDay: startTime.isAfter(now)
+            ? "[TODAY AT] h:mm A"
+            : "[HAPPENING NOW]",
+        }),
+      });
+    } else {
+      const year = startTime.year();
+      const month = startTime.month() + 1;
+
+      if (year != lastYear || month != lastMonth) {
+        pushGroup();
+        lastYear = year;
+        lastMonth = month;
+        startIdx = index;
+      }
+      endIdx = index;
+
+      monthName = startTime.format("MMMM YYYY");
+      if (index === events.length - 1) {
+        pushGroup();
+      }
+    }
+  });
+  if (eventsToday.length !== 0) {
+    groupedEvents.unshift({
+      monthName: "Today",
+      dayStr: moment().format("ddd, MMM D"),
+      events: eventsToday,
+    });
+  }
+
+  return groupedEvents;
+};
+
 export const mockTestUserMetadata = {
   issuer: "did:ethr:0x1e9FF803fFA22209A10A087cc8361d4aa3528c45",
   publicAddress: "0x1e9FF803fFA22209A10A087cc8361d4aa3528c45",
@@ -136,3 +219,5 @@ export const mockTestUserMetadata = {
 };
 
 export const mockTestTwitterUsername = "impish_test_twitter";
+
+export const eventFilters = ["calendar", "going", "invites", "hosting", "past"];
