@@ -15,6 +15,7 @@ export type CoverPhotoInfo = {
 };
 export type EventDetails = {
   id: number;
+  hostId: number;
   title: string;
   description: string;
   startTime: string | "";

@@ -1,35 +1,55 @@
 import React from "react";
 import {
+  Box,
   Button,
   CircularProgress,
   Divider,
-  MenuList,
-  MenuItem,
-  Typography,
-  Box,
   Grid,
+  Link,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  MenuList,
+  Typography,
 } from "@mui/material";
 import { useTheme } from "next-themes";
 import Image from "next/image";
-import Colors from "lib/colors";
-import CalendarViewMonthIcon from "@mui/icons-material/CalendarViewMonth";
-import { EventDetails } from "lib/types";
-import { useEventsFilter } from "lib/hooks";
-import { groupEventsByMonth } from "lib/utils";
 import { useRouter } from "next/router";
+import CalendarViewMonthIcon from "@mui/icons-material/CalendarViewMonth";
+import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
+import GetAppOutlinedIcon from "@mui/icons-material/GetAppOutlined";
+import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
+import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
+import Colors from "lib/colors";
+import { useEventsFilter } from "lib/hooks";
+import { EventDetails } from "lib/types";
+import { groupEventsByMonth } from "lib/utils";
+import { useUserInfo } from "lib/user-context";
 
 export default function GoingEvents() {
+  const { user } = useUserInfo();
   const { resolvedTheme } = useTheme();
   const { loading, events } = useEventsFilter("going");
   const groupedEvents = groupEventsByMonth(events);
   const router = useRouter();
+
+  if (user === null) {
+    router.push("/");
+  }
+
   const viewEvent = (eventId: number) => {
     router.push("/events/" + eventId);
   };
-
-  const onClickDetails = (e: React.MouseEvent<HTMLElement>) => {
-    e.stopPropagation();
+  const [anchorElMenu, setAnchorElMenu] = React.useState<HTMLElement | null>(
+    null
+  );
+  const handleCloseMenu = () => {
+    setAnchorElMenu(null);
   };
+
+  const [hostOnly, showHostOnly] = React.useState<boolean>(false);
+  const [eventLink, setEventLink] = React.useState<string>("");
 
   return (
     <>
@@ -73,6 +93,126 @@ export default function GoingEvents() {
             maxWidth: "75%",
           }}
         >
+          <Menu
+            anchorEl={anchorElMenu}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            keepMounted
+            open={Boolean(anchorElMenu)}
+            onClose={handleCloseMenu}
+            MenuListProps={{ sx: { padding: "0" } }}
+            PaperProps={{
+              sx: {
+                borderRadius: "5px",
+                bgcolor: Colors[resolvedTheme].header_bg,
+                color: Colors[resolvedTheme].primary,
+                boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
+                fontWeight: 600,
+                fontSize: "16px",
+                padding: "8px",
+              },
+            }}
+          >
+            <MenuItem
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                gap: "8px",
+                ":hover": {
+                  backgroundColor: Colors[resolvedTheme].hover,
+                  borderRadius: "5px",
+                },
+              }}
+            >
+              <div>
+                <LinkOutlinedIcon
+                  sx={{
+                    color: Colors[resolvedTheme].primary,
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <span>
+                  <Link
+                    href={"https://" + eventLink}
+                    color="inherit"
+                    underline="none"
+                  >
+                    {eventLink}
+                  </Link>
+                </span>
+                <span
+                  style={{
+                    color: Colors[resolvedTheme].secondary,
+                    fontSize: "14px",
+                    fontWeight: 500,
+                  }}
+                >
+                  Your guests can use this link to join
+                </span>
+              </div>
+            </MenuItem>
+            <MenuItem
+              sx={{
+                ":hover": {
+                  backgroundColor: Colors[resolvedTheme].hover,
+                  borderRadius: "5px",
+                },
+              }}
+            >
+              <ListItemIcon>
+                <GetAppOutlinedIcon
+                  sx={{ color: Colors[resolvedTheme].primary }}
+                />
+              </ListItemIcon>
+              <ListItemText>Add to Calendar</ListItemText>
+            </MenuItem>
+            {hostOnly && (
+              <div>
+                <MenuItem
+                  sx={{
+                    ":hover": {
+                      backgroundColor: Colors[resolvedTheme].hover,
+                      borderRadius: "5px",
+                    },
+                  }}
+                >
+                  <ListItemIcon>
+                    <PersonOutlineOutlinedIcon
+                      sx={{ color: Colors[resolvedTheme].primary }}
+                    />
+                  </ListItemIcon>
+                  <ListItemText>Export guest list</ListItemText>
+                </MenuItem>
+                <MenuItem
+                  sx={{
+                    ":hover": {
+                      backgroundColor: Colors[resolvedTheme].hover,
+                      borderRadius: "5px",
+                    },
+                  }}
+                >
+                  <ListItemIcon>
+                    <CloseOutlinedIcon
+                      sx={{ color: Colors[resolvedTheme].primary }}
+                    />
+                  </ListItemIcon>
+                  <ListItemText>Delete Event</ListItemText>
+                </MenuItem>
+              </div>
+            )}
+          </Menu>
           <div>
             <Typography
               gutterBottom
@@ -258,7 +398,12 @@ export default function GoingEvents() {
                         }}
                       >
                         <Button
-                          onClick={(e) => onClickDetails(e)}
+                          onClick={(e) => {
+                            showHostOnly(user?.id === event.hostId);
+                            setEventLink("impish.fun/" + event.id);
+                            e.stopPropagation();
+                            setAnchorElMenu(e.currentTarget);
+                          }}
                           sx={{
                             alignItems: "baseline",
                             background:

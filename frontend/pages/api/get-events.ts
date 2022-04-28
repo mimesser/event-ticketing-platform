@@ -47,6 +47,7 @@ export default async function getEvents(
       }
       eventDetails.push({
         id: event.id,
+        hostId: event.hostId || -1,
         title: event.title || "",
         description: event.description || "",
         startTime: event.startTime ? event.startTime.toUTCString() : "",
