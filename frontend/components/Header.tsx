@@ -1080,7 +1080,10 @@ export default function Header() {
                     </List>
                   )}
                   <Divider
-                    sx={{ borderBottom: Colors[resolvedTheme].border }}
+                    sx={{
+                      borderBottom: Colors[resolvedTheme].border,
+                      marginTop: "8px",
+                    }}
                   />
                   <Box sx={{ p: 1 }}>
                     <Button
