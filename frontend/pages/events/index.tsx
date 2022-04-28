@@ -11,25 +11,23 @@ function Events() {
 
   return (
     <Layout>
-      <>
-        <Box sx={{ p: 4 }}>
-          <Grid
-            container
-            direction="column"
-            justifyContent="center"
-            alignItems="center"
+      <Box sx={{ p: 4 }}>
+        <Grid
+          container
+          direction="column"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Typography
+            sx={{
+              color: Colors[resolvedTheme]?.secondary,
+            }}
+            variant="body1"
           >
-            <Typography
-              sx={{
-                color: Colors[resolvedTheme]?.secondary,
-              }}
-              variant="body1"
-            >
-              No events found.
-            </Typography>
-          </Grid>
-        </Box>
-      </>
+            No events found.
+          </Typography>
+        </Grid>
+      </Box>
     </Layout>
   );
 }

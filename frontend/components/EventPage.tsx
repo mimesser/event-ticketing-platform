@@ -38,11 +38,10 @@ import MapStyle from "lib/mapstyle";
 import { shortenAddress, getLocationString } from "lib/utils";
 import styles from "styles/components/Preview.module.scss";
 
-function Event() {
+function Event({ eventId }: { eventId: number }) {
+  const router = useRouter();
   const { resolvedTheme } = useTheme();
   const isMobile = useMediaQuery("(max-width:599px)");
-  const router = useRouter();
-  const eventId = parseInt(router.query.eventId as string);
   const { event, loading } = useEvent(eventId);
   const cover = event?.coverPhoto
     ? JSON.parse(event?.coverPhoto)
