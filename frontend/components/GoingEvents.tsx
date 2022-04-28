@@ -71,7 +71,6 @@ export default function GoingEvents() {
             alignItems: "flex-start",
             marginLeft: "15%",
             maxWidth: "75%",
-            maxHeight: "calc(100% - 100px)",
           }}
         >
           <div>
