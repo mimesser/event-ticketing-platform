@@ -9,6 +9,11 @@ export default async function logout(
   res: NextApiResponse
 ) {
   try {
+    if (req.method !== "DELETE") {
+      res.status(400).json({ error: "Wrong method! Only DELETE" });
+      return;
+    }
+
     const session = await getLoginSession(req);
 
     if (!session) {

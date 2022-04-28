@@ -11,7 +11,19 @@ export default async function publicUser(
   try {
     const session = await getLoginSession(req);
 
+    if (!req.body) {
+      res.status(400).json({ error: "Missing request body" });
+      return;
+    }
+
     const { username } = JSON.parse(req.body);
+
+    if (!username) {
+      res.status(400).json({
+        error: "Missing username in request body",
+      });
+      return;
+    }
 
     let whereCondition: Prisma.UserWhereInput;
     if (typeof username === "number") {

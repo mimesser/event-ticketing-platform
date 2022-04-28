@@ -7,19 +7,24 @@ export default async function updateProfile(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getLoginSession(req);
-
-  if (!session) {
-    res.status(400).json({ error: "Missing session" });
-    return;
-  }
-
-  const { name, username, avatarImage, bannerImage }: User = JSON.parse(
-    req.body
-  );
-  const filteredUsername = username?.replace(/[^a-zA-Z_0-9]/g, "");
-
   try {
+    const session = await getLoginSession(req);
+
+    if (!session) {
+      res.status(400).json({ error: "Missing session" });
+      return;
+    }
+
+    if (!req.body) {
+      res.status(400).json({ error: "Missing request body" });
+      return;
+    }
+
+    const { name, username, avatarImage, bannerImage }: User = JSON.parse(
+      req.body
+    );
+    const filteredUsername = username?.replace(/[^a-zA-Z_0-9]/g, "");
+
     if (typeof filteredUsername === "string") {
       if (filteredUsername?.length !== 0) {
         const users = await prisma.user.findMany({

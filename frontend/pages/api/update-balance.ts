@@ -7,10 +7,23 @@ export default async function updateBalance(
   res: NextApiResponse
 ) {
   const session = await getLoginSession(req);
+
+  if (!session) {
+    res.status(400).json({ error: "Missing session" });
+    return;
+  }
+
+  if (!req.body) {
+    res.status(400).json({ error: "Missing request body" });
+    return;
+  }
+
   const { balance } = JSON.parse(req.body);
 
-  if (!session || !balance) {
-    res.status(400).json({ error: "Missing session or balance data" });
+  if (!balance) {
+    res.status(400).json({
+      error: "Missing balance in request body",
+    });
     return;
   }
 
