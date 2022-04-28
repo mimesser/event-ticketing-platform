@@ -2025,7 +2025,7 @@ export default function ImpishDrawer({
                                 label="Start Date"
                                 views={["day"]}
                                 value={getStartDate()}
-                                maxDate={getEndtDate()}
+                                maxDate={endDate ? getEndtDate() : null}
                                 onChange={(newValue: any) => {
                                   if (
                                     !showEndDate ||
@@ -2555,6 +2555,7 @@ export default function ImpishDrawer({
                             <IconButton
                               onClick={() => {
                                 setShowEndDate(false);
+                                setEndDate(null);
                               }}
                               sx={{
                                 ":hover": {
