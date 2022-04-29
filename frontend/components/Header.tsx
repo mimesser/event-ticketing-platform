@@ -112,7 +112,6 @@ export default function Header() {
     setAnchorElNotification(null);
   };
   const [buyOpen, setBuyOpen] = useState(false);
-  const [moonPayModal, setMoonPayModal] = useState(false);
 
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
@@ -156,16 +155,6 @@ export default function Header() {
       setErrorSnackShow(true);
     }
   }
-
-  const buyModal = () => {
-    setBuyOpen(true);
-    setMoonPayModal(true);
-  };
-
-  const modalClose = () => {
-    setBuyOpen(false);
-    setMoonPayModal(false);
-  };
 
   const markNotificationAsRead = (notificationIds: Array<any>) => {
     fetch("/api/notifications", {
@@ -290,7 +279,9 @@ export default function Header() {
           timeout: 500,
         }}
         closeAfterTransition
-        onClose={modalClose}
+        onClick={() => {
+          setBuyOpen(false);
+        }}
         open={buyOpen}
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
@@ -300,7 +291,9 @@ export default function Header() {
             <IconButton
               id="header_crypto_modal_close"
               aria-label="close"
-              onClick={modalClose}
+              onClick={() => {
+                setBuyOpen(false);
+              }}
               className={styles.close_button}
               sx={{
                 ":hover": {
@@ -314,20 +307,18 @@ export default function Header() {
                 }}
               />
             </IconButton>
-            {moonPayModal && (
-              <div style={{ height: "60vh", margin: "12px" }}>
-                <iframe
-                  allow="accelerometer; autoplay; camera; gyroscope; payment"
-                  frameBorder="0"
-                  height="100%"
-                  id="moonPayFrame"
-                  src={user?.moonpayUrl}
-                  width="100%"
-                >
-                  <p>Your browser does not support iframes.</p>
-                </iframe>
-              </div>
-            )}
+            <div style={{ height: "60vh", margin: "12px" }}>
+              <iframe
+                allow="accelerometer; autoplay; camera; gyroscope; payment"
+                frameBorder="0"
+                height="100%"
+                id="moonPayFrame"
+                src={user?.moonpayUrl}
+                width="100%"
+              >
+                <p>Your browser does not support iframes.</p>
+              </iframe>
+            </div>
           </div>
         </Box>
       </Modal>
@@ -716,7 +707,9 @@ export default function Header() {
                         backgroundColor: Colors[resolvedTheme].hover,
                       },
                     }}
-                    onClick={buyModal}
+                    onClick={() => {
+                      setBuyOpen(true);
+                    }}
                   >
                     <CreditCardIcon />
                   </IconButton>
@@ -859,7 +852,8 @@ export default function Header() {
                                     notificationType === "Twitter" &&
                                       setTwitterModal(true);
 
-                                    notificationType === "Matic" && buyModal();
+                                    notificationType === "Matic" &&
+                                      setBuyOpen(true);
                                   }}
                                   sx={{
                                     ...(!isRead && {
@@ -990,7 +984,8 @@ export default function Header() {
                                   notificationType === "Twitter" &&
                                     setTwitterModal(true);
 
-                                  notificationType === "Matic" && buyModal();
+                                  notificationType === "Matic" &&
+                                    setBuyOpen(true);
                                 }}
                                 sx={{
                                   ...(!isRead && {
@@ -1087,6 +1082,10 @@ export default function Header() {
                   />
                   <Box sx={{ p: 1 }}>
                     <Button
+                      id="view_all_notifications_button"
+                      onClick={() => {
+                        router.push("/notifications");
+                      }}
                       sx={{
                         borderRadius: (theme) => theme.shape.borderRadius,
                         textTransform: "none",
