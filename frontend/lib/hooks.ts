@@ -132,3 +132,20 @@ export function useEventsFilter(filter: string) {
   }, [filter]);
   return { loading, events };
 }
+
+export function useFollowers() {
+  const [followers, setFollowers] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  useEffect(() => {
+    setLoading(true);
+    fetch("/api/get-followers", {
+      method: "POST",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setFollowers(data.followers);
+        setLoading(false);
+      });
+  }, []);
+  return { loading, followers };
+}
