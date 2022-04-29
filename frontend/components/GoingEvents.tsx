@@ -3,40 +3,50 @@ import {
   Box,
   Button,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
   Grid,
-  Link,
+  IconButton,
   ListItemIcon,
   ListItemText,
   Menu,
   MenuItem,
   MenuList,
+  Radio,
+  Snackbar,
   Typography,
 } from "@mui/material";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import CalendarViewMonthIcon from "@mui/icons-material/CalendarViewMonth";
+import CloseIcon from "@mui/icons-material/Close";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import GetAppOutlinedIcon from "@mui/icons-material/GetAppOutlined";
 import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
+import copy from "copy-to-clipboard";
 import Colors from "lib/colors";
 import { useEventsFilter } from "lib/hooks";
 import { EventDetails } from "lib/types";
 import { groupEventsByMonth } from "lib/utils";
 import { useUserInfo } from "lib/user-context";
+import { createEvent } from "ics";
+import moment from "moment";
+import fileDownload from "js-file-download";
 
 export default function GoingEvents() {
+  const router = useRouter();
   const { user } = useUserInfo();
   const { resolvedTheme } = useTheme();
   const { loading, events } = useEventsFilter("going");
-  const groupedEvents = groupEventsByMonth(events);
-  const router = useRouter();
-
-  if (user === null) {
+  if (user === null || events === undefined) {
     router.push("/");
   }
+  const groupedEvents = groupEventsByMonth(events);
 
   const viewEvent = (eventId: number) => {
     router.push("/events/" + eventId);
@@ -50,6 +60,67 @@ export default function GoingEvents() {
 
   const [hostOnly, showHostOnly] = React.useState<boolean>(false);
   const [eventLink, setEventLink] = React.useState<string>("");
+  const getEventLink = (id: number) => {
+    return `impish.fun/${id}`;
+  };
+
+  const onCopyEventLink = async () => {
+    copy(eventLink);
+    showSnackBar(true);
+  };
+
+  const [currentIndex, selectEvent] = React.useState<number>(-1);
+
+  const [snackBar, showSnackBar] = React.useState<boolean>(false);
+  const [exportEventDialog, showExportEventDialog] =
+    React.useState<boolean>(false);
+
+  const exportEvent = (e: EventDetails) => {
+    const startTime = moment(e.startTime);
+    let event: any = {
+      start: [
+        startTime.get("year") || 0,
+        startTime.get("month") + 1 || 0,
+        startTime.get("day") || 0,
+        startTime.get("hour") || 0,
+        startTime.get("minute") || 0,
+      ],
+      title: e.title,
+      description: e.description,
+      url: "https://" + getEventLink(e.id),
+    };
+    const endTime = e.endTime ? moment(e.endTime) : startTime;
+    if (!e.endTime) {
+      endTime.set("hour", 23);
+      endTime.set("minute", 30);
+    }
+    event = {
+      ...event,
+      end: [
+        endTime.get("year") || 0,
+        endTime.get("month") + 1 || 0,
+        endTime.get("day") || 0,
+        endTime.get("hour") || 0,
+        endTime.get("minute") || 0,
+      ],
+    };
+    const loc = e.location;
+    if (loc.hasLocation)
+      event = {
+        ...event,
+        location: loc?.name,
+        geo: {
+          lat: loc?.location?.lat,
+          lon: loc?.location?.lng,
+        },
+      };
+    const { value, error } = createEvent(event);
+    if (error) {
+      console.log("Error exporting events");
+    } else {
+      fileDownload(value?.toString() || "", `e${Date.now()}.ics`);
+    }
+  };
 
   return (
     <>
@@ -58,7 +129,7 @@ export default function GoingEvents() {
           style={{
             display: "flex",
             width: "100%",
-            height: "100%",
+            height: "calc(100% - 64px)",
             alignItems: "center",
             justifyContent: "center",
           }}
@@ -129,6 +200,7 @@ export default function GoingEvents() {
                   borderRadius: "5px",
                 },
               }}
+              onClick={onCopyEventLink}
             >
               <div>
                 <LinkOutlinedIcon
@@ -143,15 +215,7 @@ export default function GoingEvents() {
                   flexDirection: "column",
                 }}
               >
-                <span>
-                  <Link
-                    href={"https://" + eventLink}
-                    color="inherit"
-                    underline="none"
-                  >
-                    {eventLink}
-                  </Link>
-                </span>
+                <span>{eventLink}</span>
                 <span
                   style={{
                     color: Colors[resolvedTheme].secondary,
@@ -170,6 +234,7 @@ export default function GoingEvents() {
                   borderRadius: "5px",
                 },
               }}
+              onClick={() => showExportEventDialog(true)}
             >
               <ListItemIcon>
                 <GetAppOutlinedIcon
@@ -213,6 +278,104 @@ export default function GoingEvents() {
               </div>
             )}
           </Menu>
+          <Snackbar
+            open={snackBar}
+            autoHideDuration={1000}
+            onClose={() => showSnackBar(false)}
+            message="Link copied"
+            ContentProps={{
+              sx: {
+                fontWeight: 700,
+              },
+            }}
+          />
+          <Dialog
+            open={exportEventDialog}
+            PaperProps={{
+              sx: {
+                minWidth: "480px",
+                borderRadius: "10px",
+                backgroundColor: Colors[resolvedTheme]?.header_bg,
+              },
+            }}
+          >
+            {/* header */}
+            <DialogTitle
+              sx={{
+                textAlign: "center",
+                color: Colors[resolvedTheme].primary,
+              }}
+            >
+              Export Event
+              <IconButton
+                onClick={() => showExportEventDialog(false)}
+                sx={{
+                  backgroundColor: Colors[resolvedTheme].icon_bg,
+                  position: "absolute",
+                  right: "16px",
+                  top: "12px",
+                  padding: "4px",
+                  ":hover": {
+                    background: Colors[resolvedTheme].close_hover,
+                  },
+                }}
+              >
+                <CloseIcon
+                  sx={{
+                    color: Colors[resolvedTheme].secondary,
+                  }}
+                />
+              </IconButton>
+            </DialogTitle>
+            <DialogContent
+              sx={{
+                padding: "10px 16px",
+                borderTop: "1px solid " + Colors[resolvedTheme].tab_divider,
+                color: Colors[resolvedTheme].primary,
+                ".MuiDialogTitle-root + &": {
+                  paddingTop: "10px",
+                },
+              }}
+            >
+              <Radio checked={true} />
+              <span style={{ fontWeight: 500 }}>Add to Calendar</span>
+            </DialogContent>
+            <DialogActions sx={{ padding: "10px 16px" }}>
+              <Button
+                disableElevation
+                sx={{
+                  borderRadius: (theme) => Number(theme.shape.borderRadius) / 2,
+                  fontWeight: 600,
+                  marginRight: "10px",
+                  textTransform: "none",
+                  ":hover": {
+                    background: Colors[resolvedTheme].cancel_hover,
+                  },
+                }}
+                onClick={() => showExportEventDialog(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                disableElevation
+                color="primary"
+                variant="contained"
+                sx={{
+                  borderRadius: (theme) => Number(theme.shape.borderRadius) / 2,
+                  color: "white",
+                  fontWeight: "600",
+                  textTransform: "none",
+                }}
+                onClick={() => {
+                  if (currentIndex != -1 && currentIndex < events.length)
+                    exportEvent(events[currentIndex]);
+                  showExportEventDialog(false);
+                }}
+              >
+                Export
+              </Button>
+            </DialogActions>
+          </Dialog>
           <div>
             <Typography
               gutterBottom
@@ -401,8 +564,9 @@ export default function GoingEvents() {
                       </MenuItem>
                       <Button
                         onClick={(e) => {
+                          selectEvent(index);
                           showHostOnly(user?.id === event.hostId);
-                          setEventLink("impish.fun/" + event.id);
+                          setEventLink(getEventLink(event.id));
                           e.stopPropagation();
                           setAnchorElMenu(e.currentTarget);
                         }}
