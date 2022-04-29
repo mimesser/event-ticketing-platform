@@ -1,5 +1,5 @@
 import Button from "@mui/material/Button";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import EmailIcon from "@mui/icons-material/Email";
 import FmdGoodIcon from "@mui/icons-material/FmdGood";
 import LockIcon from "@mui/icons-material/Lock";
@@ -207,8 +207,8 @@ export default function Preview({
                 fontWeight: 500,
               }}
             >
-              <CheckCircleOutlineIcon fontSize="small" />
-              Going
+              <ConfirmationNumberIcon fontSize="small" />
+              Claim Ticket
             </div>
             {invitable && (
               <div
