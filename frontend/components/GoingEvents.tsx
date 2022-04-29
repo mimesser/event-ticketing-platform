@@ -314,117 +314,121 @@ export default function GoingEvents() {
                     ) : (
                       <div></div>
                     )}
-                    <MenuItem
-                      key={index}
-                      sx={{
-                        display: "flex",
-                        flexDirection: "row",
-                        padding: "10px",
-                        border: "none",
-                        ":hover": {
-                          backgroundColor:
-                            Colors[resolvedTheme].eventItem_hover,
-                          borderRadius: "5px",
-                        },
-                      }}
-                      onClick={() => viewEvent(event.id)}
-                    >
-                      <div
-                        style={{
+                    <div style={{ position: "relative" }}>
+                      <MenuItem
+                        key={index}
+                        sx={{
                           display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          width: 200,
-                          height: 150,
-                          borderRadius: 15,
-                          overflow: "hidden",
-                          background: Colors[resolvedTheme].no_cover_photo_bg,
-                        }}
-                      >
-                        {event.coverPhoto.url ? (
-                          <Image
-                            src={event.coverPhoto.url}
-                            key={index}
-                            alt="Cover photo"
-                            width={200}
-                            height={150}
-                          />
-                        ) : (
-                          <CalendarViewMonthIcon
-                            sx={{
-                              width: "48px",
-                              height: "48px",
-                              color: Colors[resolvedTheme]?.primary,
-                            }}
-                          />
-                        )}
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "center",
-                          marginLeft: 15,
-                          flex: 1,
-                          gap: "2px",
-                        }}
-                      >
-                        <span style={{ fontWeight: 600 }}>
-                          {event.startTime}
-                        </span>
-                        <span style={{ fontWeight: "bold", fontSize: 20 }}>
-                          {event.title}
-                        </span>
-
-                        {event.location.hasLocation ? (
-                          <span style={{ fontWeight: 500 }}>
-                            {event.location.name}
-                          </span>
-                        ) : (
-                          <br />
-                        )}
-
-                        <span
-                          style={{ fontSize: 14, fontWeight: 600 }}
-                        >{`${event.going} Going`}</span>
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Button
-                          onClick={(e) => {
-                            showHostOnly(user?.id === event.hostId);
-                            setEventLink("impish.fun/" + event.id);
-                            e.stopPropagation();
-                            setAnchorElMenu(e.currentTarget);
-                          }}
-                          sx={{
-                            alignItems: "baseline",
-                            background:
-                              Colors[resolvedTheme].eventDetailsBtn_bg,
+                          flexDirection: "row",
+                          padding: "10px",
+                          border: "none",
+                          ":hover": {
+                            backgroundColor:
+                              Colors[resolvedTheme].eventItem_hover,
                             borderRadius: "5px",
-                            padding: "0px",
-                            fontSize: 16,
-                            color: Colors[resolvedTheme].primary,
-                            fontWeight: 900,
-                            position: "inherit",
-                            margin: "16px",
-                            width: "48px",
-                            height: "36px",
-                            minWidth: "32px",
-                            bottom: "20px",
+                          },
+                        }}
+                        onClick={() => viewEvent(event.id)}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: 200,
+                            height: 150,
+                            borderRadius: 15,
+                            overflow: "hidden",
+                            background: Colors[resolvedTheme].no_cover_photo_bg,
                           }}
                         >
-                          ...
-                        </Button>
-                      </div>
-                    </MenuItem>
+                          {event.coverPhoto.url ? (
+                            <Image
+                              src={event.coverPhoto.url}
+                              key={index}
+                              alt="Cover photo"
+                              width={200}
+                              height={150}
+                            />
+                          ) : (
+                            <CalendarViewMonthIcon
+                              sx={{
+                                width: "48px",
+                                height: "48px",
+                                color: Colors[resolvedTheme]?.primary,
+                              }}
+                            />
+                          )}
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            marginLeft: 15,
+                            flex: 1,
+                            gap: "2px",
+                          }}
+                        >
+                          <span style={{ fontWeight: 600 }}>
+                            {event.startTime}
+                          </span>
+                          <span style={{ fontWeight: "bold", fontSize: 20 }}>
+                            {event.title}
+                          </span>
+
+                          {event.location.hasLocation ? (
+                            <span style={{ fontWeight: 500 }}>
+                              {event.location.name}
+                            </span>
+                          ) : (
+                            <br />
+                          )}
+
+                          <span
+                            style={{ fontSize: 14, fontWeight: 600 }}
+                          >{`${event.going} Going`}</span>
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        ></div>
+                      </MenuItem>
+                      <Button
+                        onClick={(e) => {
+                          showHostOnly(user?.id === event.hostId);
+                          setEventLink("impish.fun/" + event.id);
+                          e.stopPropagation();
+                          setAnchorElMenu(e.currentTarget);
+                        }}
+                        sx={{
+                          position: "absolute",
+                          alignItems: "baseline",
+                          background: Colors[resolvedTheme].eventDetailsBtn_bg,
+                          borderRadius: "5px",
+                          padding: "0px",
+                          fontSize: 16,
+                          color: Colors[resolvedTheme].primary,
+                          fontWeight: 900,
+                          top: "32px",
+                          right: "16px",
+                          width: "48px",
+                          height: "36px",
+                          minWidth: "32px",
+                          ":hover": {
+                            background:
+                              Colors[resolvedTheme].eventDetailsBtn_hover,
+                          },
+                        }}
+                      >
+                        ...
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </MenuList>
