@@ -61,11 +61,16 @@ export default function GoingEvents() {
   const [hostOnly, showHostOnly] = React.useState<boolean>(false);
   const [eventLink, setEventLink] = React.useState<string>("");
   const getEventLink = (id: number) => {
+    if (process.env.NODE_ENV === "production")
+      return `https://impish.fun/${id}`;
+    return `http://localhost:3000/events/${id}`;
+  };
+  const getEventLinkString = (id: number) => {
     return `impish.fun/${id}`;
   };
 
   const onCopyEventLink = async () => {
-    copy(eventLink);
+    copy(getEventLink(events[currentIndex].id));
     showSnackBar(true);
   };
 
@@ -87,7 +92,7 @@ export default function GoingEvents() {
       ],
       title: e.title,
       description: e.description,
-      url: "https://" + getEventLink(e.id),
+      url: getEventLink(e.id),
     };
     const endTime = e.endTime ? moment(e.endTime) : startTime;
     if (!e.endTime) {
@@ -566,7 +571,7 @@ export default function GoingEvents() {
                         onClick={(e) => {
                           selectEvent(index);
                           showHostOnly(user?.id === event.hostId);
-                          setEventLink(getEventLink(event.id));
+                          setEventLink(getEventLinkString(event.id));
                           e.stopPropagation();
                           setAnchorElMenu(e.currentTarget);
                         }}
