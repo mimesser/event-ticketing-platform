@@ -43,7 +43,7 @@ export default async function getEvents(
       const startTime = moment(event.startTime);
       const now = moment();
       if (startTime.dayOfYear() === now.dayOfYear()) {
-        if (event.endTime && moment(event.endTime).isAfter(now)) return;
+        if (event.endTime && moment(event.endTime).isBefore(now)) return;
       }
       eventDetails.push({
         id: event.id,
