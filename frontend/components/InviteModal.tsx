@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Checkbox,
+  CircularProgress,
   Divider,
   IconButton,
   InputAdornment,
@@ -17,7 +18,6 @@ import {
   Close,
   Search,
 } from "@mui/icons-material";
-import { useRouter } from "next/router";
 import { useTheme } from "next-themes";
 import React from "react";
 
@@ -27,9 +27,8 @@ import { useFollowers } from "lib/hooks";
 import { shortenAddress } from "lib/utils";
 
 export default function InviteModal({ onClose }: { onClose?: () => any }) {
-  const router = useRouter();
   const { resolvedTheme } = useTheme();
-  const { followers } = useFollowers();
+  const { followers, loading } = useFollowers();
 
   const [filter, setFilter] = React.useState("");
   const [invited, setInvited] = React.useState<any>({});
@@ -148,6 +147,7 @@ export default function InviteModal({ onClose }: { onClose?: () => any }) {
               style={{
                 display: "flex",
                 flexDirection: "row",
+                gap: "16px",
               }}
             >
               <div style={{ width: 150 }}>
@@ -169,7 +169,9 @@ export default function InviteModal({ onClose }: { onClose?: () => any }) {
                     }}
                     selected
                   >
-                    <ListItemText>Search Results</ListItemText>
+                    <ListItemText sx={{ textAlign: "center" }}>
+                      Search Results
+                    </ListItemText>
                   </ListItem>
                 )}
                 <ListItem
@@ -190,12 +192,26 @@ export default function InviteModal({ onClose }: { onClose?: () => any }) {
                   onClick={() => filterUpdate("")}
                   selected={filter === ""}
                 >
-                  <ListItemText>All Followers</ListItemText>
+                  <ListItemText sx={{ textAlign: "center" }}>
+                    All Followers
+                  </ListItemText>
                 </ListItem>
               </div>
               <div style={{ flex: 1 }}>
+                {loading && (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <CircularProgress />
+                  </div>
+                )}
                 {followers.length > 0 && (
-                  <Typography
+                  <Button
+                    fullWidth
                     sx={{
                       borderRadius: "5px",
                       color: (theme: any) => theme.palette.primary.main,
@@ -215,7 +231,7 @@ export default function InviteModal({ onClose }: { onClose?: () => any }) {
                     }}
                   >
                     Select all
-                  </Typography>
+                  </Button>
                 )}
                 {followers.map((follower, index) => {
                   if (
@@ -275,7 +291,7 @@ export default function InviteModal({ onClose }: { onClose?: () => any }) {
                             : shortenAddress(follower.walletAddress)}
                         </ListItemText>
                         <Checkbox
-                          checked={invited[follower.id]}
+                          checked={invited[follower.id] || false}
                           icon={
                             <CircleOutlined
                               sx={{ color: Colors[resolvedTheme].primary }}
