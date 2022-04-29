@@ -30,6 +30,7 @@ import React from "react";
 import AvatarEditor from "react-avatar-editor";
 
 import Avatar from "components/Avatar";
+import InviteModal from "components/InviteModal";
 import Layout from "components/Layout";
 import MapMarker from "components/MapMarker";
 import Colors from "lib/colors";
@@ -68,6 +69,7 @@ function Event({ eventId }: { eventId: number }) {
 
   const [fullCover, showFullCover] = React.useState(false);
   const [guestModal, showGuestModal] = React.useState(false);
+  const [inviteModal, showInviteModal] = React.useState(false);
 
   const modalStyle = {
     position: "absolute",
@@ -245,6 +247,7 @@ function Event({ eventId }: { eventId: number }) {
                           fontWeight: 500,
                         }}
                         disableRipple
+                        onClick={() => showInviteModal(true)}
                       >
                         <Email
                           fontSize="small"
@@ -805,6 +808,10 @@ function Event({ eventId }: { eventId: number }) {
               </div>
             </Box>
           </Modal>
+
+          {inviteModal && (
+            <InviteModal onClose={() => showInviteModal(false)} />
+          )}
         </Layout>
       )}
     </>
