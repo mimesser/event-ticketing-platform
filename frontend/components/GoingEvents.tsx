@@ -278,7 +278,7 @@ export default function GoingEvents() {
                       sx={{ color: Colors[resolvedTheme].primary }}
                     />
                   </ListItemIcon>
-                  <ListItemText>Delete Event</ListItemText>
+                  <ListItemText>Cancel Event</ListItemText>
                 </MenuItem>
               </div>
             )}
