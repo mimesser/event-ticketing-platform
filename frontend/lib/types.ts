@@ -23,4 +23,5 @@ export type EventDetails = {
   location: LocationInfo;
   going: number;
   coverPhoto: CoverPhotoInfo;
+  privacy: string;
 };

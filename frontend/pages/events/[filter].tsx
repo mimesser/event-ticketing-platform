@@ -1,11 +1,8 @@
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
-
 import Layout from "components/Layout";
 import GoingEvents from "components/GoingEvents";
 import EventPage from "components/EventPage";
 import { eventFilters } from "lib/utils";
+import { getLoginSession } from "lib/auth";
 
 function Events({ filter, eventId }: { filter: string; eventId: number }) {
   return filter ? (
@@ -18,8 +15,10 @@ function Events({ filter, eventId }: { filter: string; eventId: number }) {
 }
 
 export async function getServerSideProps(context: any) {
+  const session = await getLoginSession(context.req);
   const { filter } = context.query;
-  if (eventFilters.indexOf(filter) !== -1) return { props: { filter } };
+  if (eventFilters.indexOf(filter) !== -1 && session)
+    return { props: { filter } };
   if (filter.match(/^[0-9]*$/))
     return {
       props: {
@@ -29,7 +28,7 @@ export async function getServerSideProps(context: any) {
   return {
     redirect: {
       permanent: false,
-      destination: "/",
+      destination: "/events/",
     },
   };
 }

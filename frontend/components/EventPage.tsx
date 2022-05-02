@@ -34,16 +34,31 @@ import InviteModal from "components/InviteModal";
 import Layout from "components/Layout";
 import MapMarker from "components/MapMarker";
 import Colors from "lib/colors";
-import { useEvent } from "lib/hooks";
-import MapStyle from "lib/mapstyle";
+import { useEvent, useUser } from "lib/hooks";
 import { shortenAddress, getLocationString } from "lib/utils";
 import styles from "styles/components/Preview.module.scss";
+import MapStyle from "lib/mapstyle";
 
 function Event({ eventId }: { eventId: number }) {
-  const router = useRouter();
   const { resolvedTheme } = useTheme();
   const isMobile = useMediaQuery("(max-width:599px)");
+
+  const router = useRouter();
+  const { user, loading: loadingUser } = useUser();
   const { event, loading } = useEvent(eventId);
+
+  React.useEffect(() => {
+    if (
+      !loading &&
+      !loadingUser &&
+      (!event || (!user && event?.privacySetting !== "Public"))
+    ) {
+      router.push({
+        pathname: "/events/",
+      });
+    }
+  }, [user, event, router, loading, loadingUser]);
+
   const cover = event?.coverPhoto
     ? JSON.parse(event?.coverPhoto)
     : { url: "", pos: {} };
@@ -85,7 +100,7 @@ function Event({ eventId }: { eventId: number }) {
 
   return (
     <>
-      {loading || !event ? (
+      {loading || loadingUser ? (
         <div
           style={{
             display: "flex",
@@ -97,6 +112,8 @@ function Event({ eventId }: { eventId: number }) {
         >
           <CircularProgress size={120} />
         </div>
+      ) : !event ? (
+        <></>
       ) : (
         <Layout>
           <div
@@ -113,7 +130,7 @@ function Event({ eventId }: { eventId: number }) {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                backgroundColor: Colors[resolvedTheme].header_bg,
+                backgroundColor: Colors[resolvedTheme]?.header_bg,
                 margin: "0 -20px",
                 position: "relative",
               }}
@@ -314,7 +331,7 @@ function Event({ eventId }: { eventId: number }) {
                   <div
                     className={styles.event_details}
                     style={{
-                      backgroundColor: Colors[resolvedTheme].header_bg,
+                      backgroundColor: Colors[resolvedTheme]?.header_bg,
                       boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
                     }}
                   >
@@ -466,7 +483,7 @@ function Event({ eventId }: { eventId: number }) {
                     <div
                       className={styles.event_details}
                       style={{
-                        backgroundColor: Colors[resolvedTheme].header_bg,
+                        backgroundColor: Colors[resolvedTheme]?.header_bg,
                         boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
                       }}
                     >
@@ -528,7 +545,7 @@ function Event({ eventId }: { eventId: number }) {
                     <div
                       className={styles.map_info}
                       style={{
-                        backgroundColor: Colors[resolvedTheme].header_bg,
+                        backgroundColor: Colors[resolvedTheme]?.header_bg,
                         borderRadius: "8px",
                         overflow: "hidden",
                       }}
@@ -596,7 +613,7 @@ function Event({ eventId }: { eventId: number }) {
                   <div
                     className={styles.guest_list}
                     style={{
-                      backgroundColor: Colors[resolvedTheme].header_bg,
+                      backgroundColor: Colors[resolvedTheme]?.header_bg,
                       boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
                       marginBottom: "12px",
                     }}
