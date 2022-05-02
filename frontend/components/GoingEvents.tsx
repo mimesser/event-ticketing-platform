@@ -19,24 +19,28 @@ import {
   Snackbar,
   Typography,
 } from "@mui/material";
-import { useTheme } from "next-themes";
-import Image from "next/image";
-import { useRouter } from "next/router";
 import CalendarViewMonthIcon from "@mui/icons-material/CalendarViewMonth";
 import CloseIcon from "@mui/icons-material/Close";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import GetAppOutlinedIcon from "@mui/icons-material/GetAppOutlined";
 import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
-import copy from "copy-to-clipboard";
+
+import { useTheme } from "next-themes";
+import Image from "next/image";
+import { useRouter } from "next/router";
+
 import Colors from "lib/colors";
 import { useEventsFilter } from "lib/hooks";
 import { EventDetails } from "lib/types";
 import { groupEventsByMonth } from "lib/utils";
 import { useUserInfo } from "lib/user-context";
+
 import { createEvent } from "ics";
 import moment from "moment";
+import copy from "copy-to-clipboard";
 import fileDownload from "js-file-download";
+import { stringify } from "csv-stringify/sync";
 
 export default function GoingEvents() {
   const router = useRouter();
@@ -56,6 +60,8 @@ export default function GoingEvents() {
   };
 
   const [hostOnly, showHostOnly] = React.useState<boolean>(false);
+
+  // copy event link
   const [eventLink, setEventLink] = React.useState<string>("");
   const getEventLink = (id: number) => {
     if (process.env.NODE_ENV === "production")
@@ -65,15 +71,14 @@ export default function GoingEvents() {
   const getEventLinkString = (id: number) => {
     return `impish.fun/${id}`;
   };
-
   const onCopyEventLink = async () => {
     copy(getEventLink(events[currentIndex].id));
     showSnackBar(true);
   };
-
-  const [currentIndex, selectEvent] = React.useState<number>(-1);
-
   const [snackBar, showSnackBar] = React.useState<boolean>(false);
+
+  // export event
+  const [currentIndex, selectEvent] = React.useState<number>(-1);
   const [exportEventDialog, showExportEventDialog] =
     React.useState<boolean>(false);
 
@@ -122,6 +127,22 @@ export default function GoingEvents() {
     } else {
       fileDownload(value?.toString() || "", `e${Date.now()}.ics`);
     }
+  };
+
+  // export guest list
+  const onExportGuestList = async () => {
+    const { guests } = await (
+      await fetch("/api/event/get-guests", {
+        method: "POST",
+        body: JSON.stringify({ eventId: events[currentIndex].id }),
+      })
+    ).json();
+    const guestList = stringify(guests, {
+      columns: ["name", "username", "status"],
+      quoted: true,
+    });
+    const header = "Name, Username, Status";
+    fileDownload(header + "\n" + guestList, "GuestList.csv");
   };
 
   return (
@@ -254,6 +275,7 @@ export default function GoingEvents() {
                       borderRadius: "5px",
                     },
                   }}
+                  onClick={onExportGuestList}
                 >
                   <ListItemIcon>
                     <PersonOutlineOutlinedIcon
