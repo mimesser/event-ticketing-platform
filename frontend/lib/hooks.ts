@@ -103,12 +103,8 @@ export function useEvent(eventId: number) {
     })
       .then((response) => response.json())
       .then((data) => {
-        setLoading(false);
-        if (!data.event) {
-          Router.push("/events");
-          return;
-        }
         setEvent(data.event);
+        setLoading(false);
       });
   }, [eventId]);
 

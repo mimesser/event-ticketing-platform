@@ -6,31 +6,29 @@ export default async function getHosts(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  let condition: any[] = [
+    {
+      privacySetting: "Public",
+    },
+  ];
   const session = await getLoginSession(req);
-  if (!session) {
-    res.status(400).json({ error: "Missing session" });
-    return;
+  if (session) {
+    const user = await prisma.user.findUnique({
+      where: { email: session.email },
+      select: { id: true },
+    });
+    condition.push({
+      privacySetting: "Private",
+      hostId: user?.id,
+    });
   }
-
-  const user = await prisma.user.findUnique({
-    where: { email: session.email },
-    select: { id: true },
-  });
 
   const { eventId } = JSON.parse(req.body);
 
   try {
     const events = await prisma.event.findMany({
       where: {
-        OR: [
-          {
-            privacySetting: "Public",
-          },
-          {
-            privacySetting: "Private",
-            hostId: user?.id,
-          },
-        ],
+        OR: condition,
         id: eventId,
       },
     });

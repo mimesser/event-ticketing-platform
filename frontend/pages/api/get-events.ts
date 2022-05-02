@@ -15,7 +15,7 @@ export default async function getEvents(
   try {
     const session = await getLoginSession(req);
     if (!session) {
-      res.status(500).json("should log in");
+      res.status(200).json({ events: [] });
       return;
     }
     const user = await prisma.user.findUnique({
@@ -55,6 +55,7 @@ export default async function getEvents(
         location,
         going: 1, // TODO:
         coverPhoto,
+        privacy: event.privacySetting || "",
       });
     });
     res.status(200).json({ events: eventDetails });
