@@ -110,7 +110,7 @@ describe("sample tests", () => {
     const id = uuid();
 
     // Match save-event request as save-event
-    cy.intercept("/api/save-event").as("save-event");
+    cy.intercept("/api/event/save-event").as("save-event");
 
     // Get Event button at homepage, wait 3sec then click
     cy.get("[id^=go_events_homepage]").wait(3000).click();

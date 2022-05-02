@@ -6,6 +6,7 @@ export default async function getHosts(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+if (req.method === "POST") {
   let condition: any[] = [
     {
       privacySetting: "Public",
@@ -33,25 +34,28 @@ export default async function getHosts(
       },
     });
 
-    if (!events || events.length !== 1) return res.status(200).json({});
+      if (!events || events.length !== 1) return res.status(200).json({});
 
-    const owner = await prisma.user.findUnique({
-      where: { id: events[0].hostId as number },
-      select: {
-        avatarImage: true,
-        walletAddress: true,
-        username: true,
-        name: true,
-      },
-    });
+      const owner = await prisma.user.findUnique({
+        where: { id: events[0].hostId as number },
+        select: {
+          avatarImage: true,
+          walletAddress: true,
+          username: true,
+          name: true,
+        },
+      });
 
-    return res.status(200).json({
-      event: {
-        ...events[0],
-        ...owner,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({ error });
+      return res.status(200).json({
+        event: {
+          ...events[0],
+          ...owner,
+        },
+      });
+    } catch (error) {
+      res.status(500).json({ error });
+    }
+  } else {
+    res.status(403);
   }
 }

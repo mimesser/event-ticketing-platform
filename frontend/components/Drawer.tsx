@@ -221,7 +221,7 @@ export default function ImpishDrawer({
       }
 
       const result = await (
-        await fetch("/api/save-event", {
+        await fetch("/api/event/save-event", {
           method: "POST",
           body: formData,
         })

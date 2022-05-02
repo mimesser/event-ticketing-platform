@@ -116,7 +116,7 @@ export function useEventsFilter(filter: string) {
   const [loading, setLoading] = useState<boolean>(false);
   useEffect(() => {
     setLoading(true);
-    fetch("/api/get-events", {
+    fetch("/api/event/get-events", {
       method: "POST",
       body: JSON.stringify({ filter: "going" }),
     })

@@ -29,6 +29,7 @@
     "bnc-onboard": "^1.37.0",
     "cookie": "^0.4.1",
     "create-hmac": "^1.1.7",
+    "csv-stringify": "^6.0.5",
     "date-fns": "^2.28.0",
     "ethereumjs-abi": "^0.6.8",
     "ethers": "^5.5.2",
