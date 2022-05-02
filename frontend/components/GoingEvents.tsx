@@ -43,9 +43,6 @@ export default function GoingEvents() {
   const { user } = useUserInfo();
   const { resolvedTheme } = useTheme();
   const { loading, events } = useEventsFilter("going");
-  if (user === null || events === undefined) {
-    router.push("/");
-  }
   const groupedEvents = groupEventsByMonth(events);
 
   const viewEvent = (eventId: number) => {
