@@ -6,45 +6,49 @@ export default async function getHosts(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getLoginSession(req);
-  if (!session) {
-    res.status(400).json({ error: "Missing session" });
-    return;
-  }
+  if (req.method === "POST") {
+    const session = await getLoginSession(req);
+    if (!session) {
+      res.status(400).json({ error: "Missing session" });
+      return;
+    }
 
-  const { search } = JSON.parse(req.body);
+    const { search } = JSON.parse(req.body);
 
-  try {
-    const users = await prisma.user.findMany({
-      where: {
-        OR: [
-          {
-            username: {
-              contains: search,
-              mode: "insensitive",
+    try {
+      const users = await prisma.user.findMany({
+        where: {
+          OR: [
+            {
+              username: {
+                contains: search,
+                mode: "insensitive",
+              },
             },
-          },
-          {
-            name: {
-              contains: search,
-              mode: "insensitive",
+            {
+              name: {
+                contains: search,
+                mode: "insensitive",
+              },
             },
+          ],
+          email: {
+            not: session.email,
           },
-        ],
-        email: {
-          not: session.email,
         },
-      },
-      select: {
-        id: true,
-        username: true,
-        name: true,
-        avatarImage: true,
-      },
-    });
+        select: {
+          id: true,
+          username: true,
+          name: true,
+          avatarImage: true,
+        },
+      });
 
-    res.status(200).json({ hosts: users });
-  } catch (error) {
-    res.status(500).json({ error });
+      res.status(200).json({ hosts: users });
+    } catch (error) {
+      res.status(500).json({ error });
+    }
+  } else {
+    res.status(403);
   }
 }
