@@ -716,6 +716,7 @@ export default function Header() {
                 </Tooltip>
                 <Tooltip title="Account">
                   <IconButton
+                    aria-label="Account"
                     size="large"
                     sx={{
                       color: (theme) =>
