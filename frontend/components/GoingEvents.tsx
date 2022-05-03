@@ -74,13 +74,13 @@ export default function GoingEvents() {
     return `impish.fun/${id}`;
   };
   const onCopyEventLink = async () => {
-    copy(getEventLink(events[currentIndex].id));
+    copy(getEventLink(selEventId));
     showSnackBar(true);
   };
   const [snackBar, showSnackBar] = React.useState<boolean>(false);
 
   // export event
-  const [currentIndex, selectEvent] = React.useState<number>(-1);
+  const [selEventId, selectEvent] = React.useState<number>(-1);
   const [exportEventDialog, showExportEventDialog] =
     React.useState<boolean>(false);
 
@@ -136,7 +136,7 @@ export default function GoingEvents() {
     const { guests } = await (
       await fetch("/api/event/get-guests", {
         method: "POST",
-        body: JSON.stringify({ eventId: events[currentIndex].id }),
+        body: JSON.stringify({ eventId: selEventId }),
       })
     ).json();
     const guestList = stringify(guests, {
@@ -151,15 +151,27 @@ export default function GoingEvents() {
   const [cancelEventDialog, showCancelEventDialog] =
     React.useState<boolean>(false);
   const [cancelDelete, setCancelDelete] = React.useState<boolean>(false); // false for cancel, true for delete
+  const [isRemovingEvent, setRemovingEvent] = React.useState<boolean>(false);
+
   const onCancelEvent = () => {
     setCancelDelete(false);
     showCancelEventDialog(true);
   };
+
   const cancelEvent = (eventId: number) => {
     console.log("cancel event: ", eventId);
   };
-  const deleteEvent = (eventId: number) => {
-    console.log("delete event: ", eventId);
+
+  const deleteEvent = async (eventId: number) => {
+    const res = await fetch("/api/event/delete-event", {
+      method: "DELETE",
+      body: JSON.stringify({ eventId }),
+    });
+    if (res.status !== 200) {
+      console.log("request failed");
+      return false;
+    }
+    return true;
   };
 
   return (
@@ -412,8 +424,8 @@ export default function GoingEvents() {
                   textTransform: "none",
                 }}
                 onClick={() => {
-                  if (currentIndex != -1 && currentIndex < events.length)
-                    exportEvent(events[currentIndex]);
+                  const selEvent = events.find((e) => e.id === selEventId);
+                  if (selEvent != null) exportEvent(selEvent);
                   showExportEventDialog(false);
                 }}
               >
@@ -610,6 +622,7 @@ export default function GoingEvents() {
               <Button
                 disableElevation
                 color="primary"
+                disabled={isRemovingEvent}
                 variant="contained"
                 sx={{
                   borderRadius: (theme) => Number(theme.shape.borderRadius) / 2,
@@ -617,13 +630,32 @@ export default function GoingEvents() {
                   fontWeight: "600",
                   textTransform: "none",
                 }}
-                onClick={() => {
-                  const eventId = events[currentIndex].id;
-                  if (cancelDelete) deleteEvent(eventId);
-                  else cancelEvent(eventId);
+                onClick={async () => {
+                  if (cancelDelete) {
+                    setRemovingEvent(true);
+                    const bSuccess = await deleteEvent(selEventId);
+                    setRemovingEvent(false);
+                    if (bSuccess) {
+                      handleCloseMenu();
+                      const index = events.findIndex(
+                        (e: EventDetails) => e.id === selEventId
+                      );
+                      if (index != -1) events.splice(index, 1);
+                    }
+                  } else cancelEvent(selEventId);
                   showCancelEventDialog(false);
                 }}
               >
+                {isRemovingEvent && (
+                  <CircularProgress
+                    color="inherit"
+                    size="1.2rem"
+                    variant="indeterminate"
+                    sx={{
+                      marginRight: "10px",
+                    }}
+                  />
+                )}
                 Confirm
               </Button>
             </DialogActions>
@@ -816,7 +848,7 @@ export default function GoingEvents() {
                       </MenuItem>
                       <Button
                         onClick={(e) => {
-                          selectEvent(index);
+                          selectEvent(event.id);
                           showHostOnly(user?.id === event.hostId);
                           setEventLink(getEventLinkString(event.id));
                           e.stopPropagation();

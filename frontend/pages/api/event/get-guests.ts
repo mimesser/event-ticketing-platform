@@ -17,7 +17,7 @@ export default async function getEvents(
       },
     });
 
-    const guests = [];
+    const guests: Guest[] = [];
     if (event) {
       const hostId = event?.hostId;
       const user = await prisma.user.findUnique({
@@ -32,7 +32,8 @@ export default async function getEvents(
       });
       if (user) {
         guests.push({
-          username: user?.username ? user?.username : user?.walletAddress,
+          username:
+            (user?.username ? user?.username : user?.walletAddress) || "",
           name: user?.name ? user?.name : "",
           status: "Going",
         });
