@@ -51,7 +51,7 @@ function Event({ eventId }: { eventId: number }) {
     if (
       !loading &&
       !loadingUser &&
-      (!event || (!user && event?.privacySetting !== "Public"))
+      (event === undefined || (!user && event?.privacySetting !== "Public"))
     ) {
       router.push({
         pathname: "/events/",
