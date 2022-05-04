@@ -16,7 +16,7 @@ export default async function getEvents(
     try {
       const session = await getLoginSession(req);
       if (!session) {
-        res.status(500).json("should log in");
+        res.status(500).json({ error: "should log in" });
         return;
       }
       const user = await prisma.user.findUnique({
@@ -24,17 +24,31 @@ export default async function getEvents(
         select: { id: true },
       });
       const today = new Date(moment().format("YYYY-MM-DD") + " 00:00:00");
-      const events = await prisma.event.findMany({
-        where: {
-          hostId: user?.id,
-          startTime: {
-            gte: today,
+      let events: any[] = [];
+      if (filter === "going")
+        events = await prisma.event.findMany({
+          where: {
+            hostId: user?.id,
+            startTime: {
+              gte: today,
+            },
           },
-        },
-        orderBy: {
-          startTime: "asc",
-        },
-      });
+          orderBy: {
+            startTime: "asc",
+          },
+        });
+      else if (filter === "past")
+        events = await prisma.event.findMany({
+          where: {
+            hostId: user?.id,
+            startTime: {
+              lt: today,
+            },
+          },
+          orderBy: {
+            startTime: "desc",
+          },
+        });
 
       let eventDetails: EventDetails[] = [];
 
@@ -54,7 +68,7 @@ export default async function getEvents(
           startTime: event.startTime ? event.startTime.toUTCString() : "",
           endTime: event.endTime ? event.endTime.toUTCString() : "",
           location,
-          going: 1, // TODO:
+          count: 1, // TODO:
           coverPhoto,
           privacy: event.privacySetting || "Public",
         });

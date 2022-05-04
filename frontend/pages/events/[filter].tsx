@@ -1,5 +1,5 @@
 import Layout from "components/Layout";
-import GoingEvents from "components/GoingEvents";
+import FilteredEvents from "components/FilteredEvents";
 import EventPage from "components/EventPage";
 import { eventFilters } from "lib/utils";
 import { getLoginSession } from "lib/auth";
@@ -7,7 +7,23 @@ import { getLoginSession } from "lib/auth";
 function Events({ filter, eventId }: { filter: string; eventId: number }) {
   return filter ? (
     <Layout>
-      {filter === "going" ? <GoingEvents /> : <div>{filter} </div>}
+      {filter === "going" ? (
+        <FilteredEvents
+          title="Going"
+          filter="going"
+          showDetailsMenu={true}
+          status="Going"
+        />
+      ) : filter === "past" ? (
+        <FilteredEvents
+          title="Your Past Events"
+          filter="past"
+          showDetailsMenu={false}
+          status="Went"
+        />
+      ) : (
+        <div>{filter} </div>
+      )}
     </Layout>
   ) : (
     <EventPage eventId={eventId} />

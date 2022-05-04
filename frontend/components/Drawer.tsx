@@ -36,6 +36,7 @@ import RoomIcon from "@mui/icons-material/Room";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import CalendarViewMonth from "@mui/icons-material/CalendarViewMonth";
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CloseIcon from "@mui/icons-material/Close";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
@@ -45,7 +46,6 @@ import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import LanguageIcon from "@mui/icons-material/Language";
 import LockIcon from "@mui/icons-material/Lock";
-import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import EmailRoundedIcon from "@mui/icons-material/EmailRounded";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
@@ -795,7 +795,7 @@ export default function ImpishDrawer({
   const eventFilterList = [
     {
       name: "Going",
-      icon: <ConfirmationNumberIcon />,
+      icon: <CheckCircleRoundedIcon />,
       route: "going",
     },
     {
