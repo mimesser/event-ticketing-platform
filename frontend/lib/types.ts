@@ -21,7 +21,7 @@ export type EventDetails = {
   startTime: string | "";
   endTime: string | "";
   location: LocationInfo;
-  going: number;
+  count: number;
   coverPhoto: CoverPhotoInfo;
   privacy: string;
 };

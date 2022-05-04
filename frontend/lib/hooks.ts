@@ -118,7 +118,7 @@ export function useEventsFilter(filter: string) {
     setLoading(true);
     fetch("/api/event/get-events", {
       method: "POST",
-      body: JSON.stringify({ filter: "going" }),
+      body: JSON.stringify({ filter }),
     })
       .then((response) => response.json())
       .then((data) => {

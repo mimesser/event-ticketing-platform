@@ -1,5 +1,4 @@
 import moment, { Moment, MomentInput } from "moment";
-import Events from "pages/events";
 import { EventDetails } from "./types";
 
 export const shortenAddress = (address: string) => {
@@ -143,7 +142,12 @@ export const groupEventsByMonth = (events: EventDetails[]) => {
   let eventsToday: EventDetails[] = [];
 
   const friendlyTime = (dateTime: string) => {
-    const defaultFormat = "ddd, D MMM [AT] h A";
+    const fmt4Future: string = "ddd, D MMM [AT] h A";
+    const fmt4Past: string = "ddd, MMM D";
+    const defaultFormat = (m?: MomentInput, _now?: Moment | undefined) => {
+      const now = _now ? _now : moment();
+      return now.isBefore(m) ? fmt4Future : fmt4Past;
+    };
     return moment(dateTime)
       .calendar(null, {
         sameDay: "[TODAY AT] h A",
@@ -152,8 +156,10 @@ export const groupEventsByMonth = (events: EventDetails[]) => {
           moment(dateTime).week() === moment().week() ||
           moment(dateTime).day() === 0
             ? "[THIS] dddd [AT] h A"
-            : defaultFormat
+            : fmt4Future
         }`,
+        lastDay: defaultFormat,
+        lastWeek: defaultFormat,
         sameElse: defaultFormat,
       })
       .toUpperCase();
