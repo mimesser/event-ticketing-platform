@@ -19,6 +19,7 @@ import {
   MenuList,
   Radio,
   Snackbar,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import CalendarViewMonthIcon from "@mui/icons-material/CalendarViewMonth";
@@ -840,9 +841,30 @@ export default function FilteredEventsList({
                           <span style={{ fontWeight: 600 }}>
                             {event.startTime}
                           </span>
-                          <span style={{ fontWeight: "bold", fontSize: 20 }}>
-                            {event.title}
-                          </span>
+
+                          <Tooltip
+                            title={
+                              <React.Fragment>
+                                <Typography sx={{ margin: "5px" }}>
+                                  <b>{event.title}</b>
+                                </Typography>
+                              </React.Fragment>
+                            }
+                          >
+                            <Typography
+                              sx={{
+                                fontWeight: "bold",
+                                fontSize: 20,
+                                width: "fit-content",
+                                ":hover": {
+                                  textDecoration: "underline",
+                                },
+                              }}
+                              variant="body1"
+                            >
+                              {event.title}
+                            </Typography>
+                          </Tooltip>
 
                           {event.location.hasLocation ? (
                             <span style={{ fontWeight: 500 }}>
