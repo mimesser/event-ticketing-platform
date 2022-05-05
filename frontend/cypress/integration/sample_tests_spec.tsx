@@ -296,6 +296,81 @@ describe("sample tests", () => {
     cy.get("[id^=dashboard_crypto_modal_close]").click();
   });
 
+  it("Going and Past Events view test", function () {
+    // Match get-events POST request as "get-events"
+    cy.intercept("POST", "/api/event/get-events").as("get-events");
+
+    // Get Event button at homepage, wait 3sec then click
+    cy.get("[id^=go_events_homepage]").wait(3000).click();
+
+    // Click to Your Events list button
+    cy.get("[id^=your_events_button]").click();
+
+    // Click to Going button
+    cy.get("[id^=going]").click();
+
+    // Check pathname if contain events/going
+    cy.location("pathname").should("include", "/events/going");
+
+    // Check get-events api call response.status
+    cy.wait("@get-events", { timeout: 30000 }).then(({ response }: any) => {
+      expect(response.statusCode).to.eq(200);
+    });
+
+    // Call get-events api
+    cy.request({
+      method: "POST",
+      url: "/api/event/get-events",
+      body: {
+        filter: "going",
+      },
+      headers: {
+        "Content-Type": "text/plain;charset=UTF-8",
+      },
+    }).as("get-going-events");
+
+    // Check status code and find events title on page
+    cy.get("@get-going-events").then((response: any) => {
+      expect(response.status).to.eq(200);
+
+      response.body.events.map((m: any) => {
+        cy.contains(m.title);
+      });
+    });
+
+    // Click to Past button
+    cy.get("[id^=past]").click();
+
+    // Check pathname if contain events/past
+    cy.location("pathname").should("include", "/events/past");
+
+    // Check get-events api call response.status
+    cy.wait("@get-events", { timeout: 30000 }).then(({ response }: any) => {
+      expect(response.statusCode).to.eq(200);
+    });
+
+    // Call get-events api
+    cy.request({
+      method: "POST",
+      url: "/api/event/get-events",
+      body: {
+        filter: "past",
+      },
+      headers: {
+        "Content-Type": "text/plain;charset=UTF-8",
+      },
+    }).as("get-past-events");
+
+    // Check status code and find events title on page
+    cy.get("@get-past-events").then((response: any) => {
+      expect(response.status).to.eq(200);
+
+      response.body.events.map((m: any) => {
+        cy.contains(m.title);
+      });
+    });
+  });
+
   // Log out test should be last because of preserve token cookie, add new test above
   it("Log out test", function () {
     // Match logout request as "logout"

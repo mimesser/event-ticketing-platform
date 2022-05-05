@@ -1463,6 +1463,7 @@ export default function ImpishDrawer({
                   {user && (
                     <>
                       <ListItemButton
+                        id="your_events_button"
                         onClick={handleClick}
                         sx={{
                           borderRadius: (theme) => theme.shape.borderRadius,
@@ -1539,6 +1540,7 @@ export default function ImpishDrawer({
                                 : "#dedede";
                             return (
                               <ListItemButton
+                                id={filter.route}
                                 key={filter.name}
                                 onClick={() => {
                                   setEventFilterIndex(index + 1);
