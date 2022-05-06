@@ -29,7 +29,7 @@ import { useLocalStorage } from "lib/hooks";
 import Colors from "lib/colors";
 import { magic } from "lib/magic";
 import styles from "styles/components/Layout.module.scss";
-import { isTest } from "lib/utils";
+import { isTest, modalStyleUtil } from "lib/utils";
 
 export default function Layout({
   children,
@@ -211,17 +211,7 @@ export default function Layout({
     }, 250);
   };
 
-  const modalStyle = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 320,
-    bgcolor: Colors[resolvedTheme]?.header_bg,
-    borderRadius: "25px",
-    boxShadow: 24,
-    p: 4,
-  };
+  const modalStyle = modalStyleUtil(resolvedTheme);
 
   return (
     <>

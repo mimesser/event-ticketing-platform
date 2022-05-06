@@ -15,6 +15,7 @@ import { useTheme } from "next-themes";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import styles from "styles/components/Footer.module.scss"; // Component styles
+import { modalStyleUtil } from "lib/utils";
 
 export default function Footer() {
   const isMobile = useMediaQuery("(max-width:599px)");
@@ -80,17 +81,7 @@ export default function Footer() {
     }
   };
 
-  const modalStyle = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 320,
-    bgcolor: Colors[resolvedTheme]?.header_bg,
-    borderRadius: "25px",
-    boxShadow: 24,
-    p: 4,
-  };
+  const modalStyle = modalStyleUtil(resolvedTheme);
 
   return !user ? (
     <>

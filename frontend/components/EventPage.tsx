@@ -35,7 +35,7 @@ import Layout from "components/Layout";
 import MapMarker from "components/MapMarker";
 import Colors from "lib/colors";
 import { useEvent, useUser } from "lib/hooks";
-import { shortenAddress, getLocationString } from "lib/utils";
+import { shortenAddress, getLocationString, modalStyleUtil } from "lib/utils";
 import styles from "styles/components/Preview.module.scss";
 import MapStyle from "lib/mapstyle";
 
@@ -86,17 +86,7 @@ function Event({ eventId }: { eventId: number }) {
   const [guestModal, showGuestModal] = React.useState(false);
   const [inviteModal, showInviteModal] = React.useState(false);
 
-  const modalStyle = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 320,
-    bgcolor: Colors[resolvedTheme]?.header_bg,
-    borderRadius: "25px",
-    boxShadow: 24,
-    p: 4,
-  };
+  const modalStyle = modalStyleUtil(resolvedTheme);
 
   return (
     <>

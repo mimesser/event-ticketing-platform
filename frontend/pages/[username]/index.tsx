@@ -30,6 +30,7 @@ import {
   checkUsernameEqual,
   isProduction,
   isTest,
+  modalStyleUtil,
   shortenAddress,
   stopPropagation,
 } from "lib/utils";
@@ -420,17 +421,7 @@ function Profile() {
     setNewBanner("");
   };
 
-  const modalStyle = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 320,
-    bgcolor: Colors[resolvedTheme]?.header_bg,
-    borderRadius: "25px",
-    boxShadow: 24,
-    p: 4,
-  };
+  const modalStyle = modalStyleUtil(resolvedTheme);
 
   if (loading) {
     return (

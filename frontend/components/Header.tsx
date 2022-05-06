@@ -54,6 +54,7 @@ import { magic } from "lib/magic";
 import {
   isTest,
   mockTestTwitterUsername,
+  modalStyleUtil,
   shortenAddress,
   shortenText,
 } from "lib/utils";
@@ -179,17 +180,7 @@ export default function Header() {
     }
   };
 
-  const modalStyle = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 320,
-    bgcolor: Colors[resolvedTheme]?.header_bg,
-    borderRadius: "25px",
-    boxShadow: 24,
-    p: 4,
-  };
+  const modalStyle = modalStyleUtil(resolvedTheme);
 
   async function unlinkUser() {
     if (user) {
