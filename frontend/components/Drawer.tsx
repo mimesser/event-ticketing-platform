@@ -1,3 +1,4 @@
+import { styled } from "@mui/material/styles";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import DatePicker from "@mui/lab/DatePicker";
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -93,7 +94,6 @@ import LocationSelector from "components/LocationSelector";
 import MapMarker from "./MapMarker";
 import styles from "styles/components/Drawer.module.scss";
 import MapStyle from "lib/mapstyle";
-import { styled } from "@mui/material/styles";
 import AvatarEditor from "react-avatar-editor";
 
 export default function ImpishDrawer({
@@ -1458,6 +1458,7 @@ export default function ImpishDrawer({
                         onClick={handleClick}
                         sx={{
                           borderRadius: (theme) => theme.shape.borderRadius,
+                          paddingBottom: "0px",
                         }}
                         style={{
                           margin: "0px 0",
@@ -1515,7 +1516,10 @@ export default function ImpishDrawer({
                       <Collapse in={open} timeout="auto" unmountOnExit>
                         <List
                           component="div"
-                          sx={{ color: Colors[resolvedTheme].secodary }}
+                          sx={{
+                            color: Colors[resolvedTheme].secodary,
+                            padding: "0px",
+                          }}
                         >
                           {/* <ListItemButton sx={{ pl: 4 }}>
                             <ListItemText>No events</ListItemText>
