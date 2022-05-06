@@ -78,6 +78,7 @@ import {
   getLocationString,
   getLocalTimezone,
   eventFilters,
+  modalStyleUtil,
 } from "lib/utils";
 import Image from "next/image";
 import moment from "moment";
@@ -511,17 +512,7 @@ export default function ImpishDrawer({
       Create Event
     </BreadcrumLink>,
   ];
-  const modalStyle = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 320,
-    bgcolor: Colors[resolvedTheme]?.header_bg,
-    borderRadius: "25px",
-    boxShadow: 24,
-    p: 4,
-  };
+  const modalStyle = modalStyleUtil(resolvedTheme);
 
   const {
     register: register2,
