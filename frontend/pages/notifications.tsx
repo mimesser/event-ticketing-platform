@@ -27,7 +27,12 @@ import { useTheme } from "next-themes";
 import Avatar from "components/Avatar";
 import { differenceInCalendarDays, formatDistance } from "date-fns";
 import { useNotifications } from "lib/supabase";
-import { isTest, mockTestTwitterUsername, shortenAddress } from "lib/utils";
+import {
+  isTest,
+  mockTestTwitterUsername,
+  modalStyleUtil,
+  shortenAddress,
+} from "lib/utils";
 import styles from "styles/pages/Notifications.module.scss";
 
 function Notifications() {
@@ -96,17 +101,7 @@ function Notifications() {
     }
   }
 
-  const modalStyle = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 320,
-    bgcolor: Colors[resolvedTheme]?.header_bg,
-    borderRadius: "25px",
-    boxShadow: 24,
-    p: 4,
-  };
+  const modalStyle = modalStyleUtil(resolvedTheme);
 
   return user && notifications ? (
     <>

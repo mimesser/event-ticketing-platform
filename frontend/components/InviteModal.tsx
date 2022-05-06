@@ -24,7 +24,7 @@ import React from "react";
 import Avatar from "components/Avatar";
 import Colors from "lib/colors";
 import { useFollowers } from "lib/hooks";
-import { shortenAddress } from "lib/utils";
+import { modalStyleUtil, shortenAddress } from "lib/utils";
 
 export default function InviteModal({ onClose }: { onClose?: () => any }) {
   const { resolvedTheme } = useTheme();
@@ -33,18 +33,7 @@ export default function InviteModal({ onClose }: { onClose?: () => any }) {
   const [filter, setFilter] = React.useState("");
   const [invited, setInvited] = React.useState<any>({});
 
-  const modalStyle = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: "100%",
-    maxWidth: "640px",
-    bgcolor: Colors[resolvedTheme]?.header_bg,
-    borderRadius: "25px",
-    boxShadow: 24,
-    p: 4,
-  };
+  const modalStyle = modalStyleUtil(resolvedTheme);
 
   const filterUpdate = (text: string) => {
     setFilter(text);

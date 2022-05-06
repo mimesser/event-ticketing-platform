@@ -16,6 +16,7 @@ import React, { useState } from "react";
 import styles from "styles/pages/Dashboard.module.scss";
 import { Tooltip } from "@mui/material";
 import { useTheme } from "next-themes";
+import { modalStyleUtil } from "lib/utils";
 
 function Dashboard() {
   const { resolvedTheme } = useTheme();
@@ -37,17 +38,7 @@ function Dashboard() {
       : false
   );
 
-  const modalStyle = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 320,
-    bgcolor: Colors[resolvedTheme]?.header_bg,
-    borderRadius: "25px",
-    boxShadow: 24,
-    p: 4,
-  };
+  const modalStyle = modalStyleUtil(resolvedTheme);
 
   return user ? (
     <>

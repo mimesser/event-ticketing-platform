@@ -1,4 +1,5 @@
 import moment, { Moment, MomentInput } from "moment";
+import Colors from "./colors";
 import { EventDetails } from "./types";
 
 export const shortenAddress = (address: string) => {
@@ -227,3 +228,17 @@ export const mockTestUserMetadata = {
 export const mockTestTwitterUsername = "impish_test_twitter";
 
 export const eventFilters = ["calendar", "going", "invites", "hosting", "past"];
+
+export const modalStyleUtil = (resolvedTheme: string) => {
+  return {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 320,
+    bgcolor: Colors[resolvedTheme]?.header_bg as any,
+    borderRadius: "25px",
+    boxShadow: 24,
+    p: 4,
+  };
+};

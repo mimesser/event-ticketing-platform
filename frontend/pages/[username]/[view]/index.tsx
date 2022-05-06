@@ -19,7 +19,7 @@ import Colors from "lib/colors";
 import { fetchPublicUser } from "lib/hooks";
 import prisma from "lib/prisma";
 import { useUserInfo } from "lib/user-context";
-import { shortenAddress } from "lib/utils";
+import { modalStyleUtil, shortenAddress } from "lib/utils";
 import React from "react";
 import styles from "styles/pages/View.module.scss";
 import { useTheme } from "next-themes";
@@ -144,17 +144,7 @@ function View({ data, query }: { data: any; query: any }) {
     }
   }
 
-  const modalStyle = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 320,
-    bgcolor: Colors[resolvedTheme]?.header_bg,
-    borderRadius: "25px",
-    boxShadow: 24,
-    p: 4,
-  };
+  const modalStyle = modalStyleUtil(resolvedTheme);
 
   return (
     <Layout>
