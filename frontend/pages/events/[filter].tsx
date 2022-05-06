@@ -8,18 +8,20 @@ function Events({ filter, eventId }: { filter: string; eventId: number }) {
   return filter ? (
     <Layout>
       {filter === "going" ? (
-        <FilteredEvents
-          title="Going"
-          filter="going"
-          showDetailsMenu={true}
-          status="Going"
-        />
+        <FilteredEvents title="Going" filter="going" showDetailsMenu={true} />
       ) : filter === "past" ? (
         <FilteredEvents
           title="Your Past Events"
           filter="past"
           showDetailsMenu={false}
-          status="Went"
+        />
+      ) : filter === "calendar" ? (
+        <FilteredEvents
+          layout="horizontal"
+          title="Going"
+          filter="going"
+          showDetailsMenu={true}
+          groupEvents={false}
         />
       ) : (
         <div>{filter} </div>
