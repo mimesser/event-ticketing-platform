@@ -133,29 +133,26 @@ export const getLocationString = ({
   return lat.toPrecision(6) + ", " + lng.toPrecision(6);
 };
 
-export const groupEventsByMonth = (events: EventDetails[]) => {
-  let lastYear = -1,
-    lastMonth = -1;
-  let startIdx = -1,
-    endIdx = -1;
-  let groupedEvents: any[] = [];
-  let monthName: string = "";
-  let eventsToday: EventDetails[] = [];
-
-  const friendlyTime = (dateTime: string) => {
+export const formatTimeString = (time: string) => {
+  const mtime = moment(time);
+  const now = moment();
+  if (now.isSame(mtime, "day"))
+    return mtime.calendar(null, {
+      sameDay: mtime.isAfter(now) ? "[TODAY AT] h:mm A" : "[HAPPENING NOW]",
+    });
+  else {
     const fmt4Future: string = "ddd, D MMM [AT] h A";
     const fmt4Past: string = "ddd, MMM D";
     const defaultFormat = (m?: MomentInput, _now?: Moment | undefined) => {
       const now = _now ? _now : moment();
       return now.isBefore(m) ? fmt4Future : fmt4Past;
     };
-    return moment(dateTime)
+    return mtime
       .calendar(null, {
         sameDay: "[TODAY AT] h A",
         nextDay: "[TOMORROW AT] h A",
         nextWeek: `${
-          moment(dateTime).week() === moment().week() ||
-          moment(dateTime).day() === 0
+          moment(time).week() === moment().week() || moment(time).day() === 0
             ? "[THIS] dddd [AT] h A"
             : fmt4Future
         }`,
@@ -164,16 +161,24 @@ export const groupEventsByMonth = (events: EventDetails[]) => {
         sameElse: defaultFormat,
       })
       .toUpperCase();
-  };
+  }
+};
+
+export const groupEventsByMonth = (events: EventDetails[]) => {
+  if (!events) return [];
+  let lastYear = -1,
+    lastMonth = -1;
+  let startIdx = -1,
+    endIdx = -1;
+  let groupedEvents: any[] = [];
+  let monthName: string = "";
+  let eventsToday: any[] = [];
 
   const pushGroup = () => {
     if (endIdx != -1) {
       groupedEvents.push({
         monthName,
-        events: events.slice(startIdx, endIdx + 1).map((event) => ({
-          ...event,
-          startTime: friendlyTime(event.startTime),
-        })),
+        events: events.slice(startIdx, endIdx + 1),
       });
     }
   };
@@ -182,14 +187,7 @@ export const groupEventsByMonth = (events: EventDetails[]) => {
     const startTime = moment(event.startTime);
     const now = moment();
     if (startTime.isSame(now, "day")) {
-      eventsToday.push({
-        ...event,
-        startTime: startTime.calendar(null, {
-          sameDay: startTime.isAfter(now)
-            ? "[TODAY AT] h:mm A"
-            : "[HAPPENING NOW]",
-        }),
-      });
+      eventsToday.push(event);
     } else {
       const year = startTime.year();
       const month = startTime.month() + 1;

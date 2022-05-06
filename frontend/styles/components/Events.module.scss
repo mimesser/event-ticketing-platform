@@ -1,0 +1,11 @@
+.carousel_container {
+  display: flex;
+  margin-top: 20px;
+  overflow: hidden;
+}
+
+.carousel_item {
+  padding-left: 8px;
+  padding-right: 8px;
+  width: auto !important;
+}

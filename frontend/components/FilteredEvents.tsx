@@ -22,22 +22,15 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import CalendarViewMonthIcon from "@mui/icons-material/CalendarViewMonth";
 import CloseIcon from "@mui/icons-material/Close";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import GetAppOutlinedIcon from "@mui/icons-material/GetAppOutlined";
 import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 import { useTheme } from "next-themes";
-import Image from "next/image";
 import { useRouter } from "next/router";
-
-import Colors from "lib/colors";
-import { useEventsFilter } from "lib/hooks";
-import { EventDetails } from "lib/types";
-import { groupEventsByMonth } from "lib/utils";
-import { useUserInfo } from "lib/user-context";
 
 import { createEvent } from "ics";
 import moment from "moment";
@@ -45,26 +38,37 @@ import copy from "copy-to-clipboard";
 import fileDownload from "js-file-download";
 import { stringify } from "csv-stringify/sync";
 
+import Carousel from "react-multi-carousel";
+import "react-multi-carousel/lib/styles.css";
+import styles from "styles/components/Events.module.scss";
+
+import Colors from "lib/colors";
+import { useEventsFilter } from "lib/hooks";
+import { EventDetails } from "lib/types";
+import { groupEventsByMonth } from "lib/utils";
+import { useUserInfo } from "lib/user-context";
+
+import EventCell from "components/EventCell";
+
 export default function FilteredEventsList({
   filter,
   showDetailsMenu,
   title,
-  status,
+  groupEvents = true,
+  layout = "vertical",
 }: {
   filter: string;
   showDetailsMenu: boolean;
   title: string;
-  status: "Going" | "Went";
+  groupEvents?: boolean;
+  layout?: "vertical" | "horizontal";
 }) {
   const router = useRouter();
   const { user } = useUserInfo();
   const { resolvedTheme } = useTheme();
   const { loading, events } = useEventsFilter(filter);
-  const groupedEvents = groupEventsByMonth(events);
+  const eventsGroup = groupEvents ? groupEventsByMonth(events) : events;
 
-  const viewEvent = (eventId: number) => {
-    router.push("/events/" + eventId);
-  };
   const [anchorElMenu, setAnchorElMenu] = React.useState<HTMLElement | null>(
     null
   );
@@ -125,6 +129,7 @@ export default function FilteredEventsList({
         endTime.get("minute") || 0,
       ],
     };
+
     const loc = e.location;
     if (loc.hasLocation)
       event = {
@@ -186,6 +191,27 @@ export default function FilteredEventsList({
     return true;
   };
 
+  // carousel
+  const responsive = {
+    superLargeDesktop: {
+      // the naming can be any, depends on you.
+      breakpoint: { max: 4000, min: 1600 },
+      items: 3,
+    },
+    desktop: {
+      breakpoint: { max: 1600, min: 1200 },
+      items: 2,
+    },
+    tablet: {
+      breakpoint: { max: 1200, min: 800 },
+      items: 1,
+    },
+  };
+  const itemWidth = 400;
+  const item3 = useMediaQuery(`(min-width:${itemWidth * 4}px)`);
+  const item2 = useMediaQuery(`(min-width:${itemWidth * 3}px)`);
+  const items = item3 ? 3 : item2 ? 2 : 1;
+  console.log("items: ", items);
   return (
     <>
       {loading || !events ? (
@@ -220,13 +246,22 @@ export default function FilteredEventsList({
         </Box>
       ) : (
         <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            marginLeft: "15%",
-            maxWidth: "75%",
-          }}
+          style={
+            layout === "vertical"
+              ? {
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  marginLeft: "15%",
+                  maxWidth: "75%",
+                }
+              : {
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  marginLeft: "10%",
+                }
+          }
         >
           {/* Event Item Menu */}
           {showDetailsMenu && (
@@ -707,225 +742,147 @@ export default function FilteredEventsList({
                 : events.length + " Events"}
             </Typography>
           </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              overflow: "auto",
-              width: "100%",
-            }}
-          >
-            {groupedEvents.map(({ monthName, events, dayStr }, index) => (
-              <MenuList
-                sx={{
-                  width: "100%",
-                  borderRadius: "10px",
-                  marginTop: "20px",
-                  backgroundColor: Colors[resolvedTheme].eventItem_bg,
-                  color: Colors[resolvedTheme].primary,
-                  boxShadow:
-                    "0 2px 4px rgb(0 0 0 / 10%), 0 8px 16px rgb(0 0 0 / 10%)",
-                }}
-                key={index}
-              >
-                <MenuItem
+
+          {layout === "vertical" ? (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                marginTop: "20px",
+                overflow: "auto",
+                width: "100%",
+              }}
+            >
+              {eventsGroup.map(({ monthName, events, dayStr }, index) => (
+                <MenuList
                   sx={{
                     display: "flex",
-                    flexDirection: "column",
-                    border: "none",
-                    ":hover": { background: "transparent" },
+                    flexDirection: layout === "vertical" ? "column" : "row",
+                    flexGrow: 1,
+                    width: "100%",
+                    borderRadius: "10px",
+                    marginTop: "20px",
+                    backgroundColor: Colors[resolvedTheme].eventItem_bg,
+                    color: Colors[resolvedTheme].primary,
+                    boxShadow:
+                      "0 2px 4px rgb(0 0 0 / 10%), 0 8px 16px rgb(0 0 0 / 10%)",
                   }}
+                  key={index}
                 >
-                  <Typography
-                    gutterBottom
-                    variant="h5"
-                    sx={{
-                      color: Colors[resolvedTheme]?.primary,
-                      backgroundColor: Colors[resolvedTheme].eventItem_bg,
-                      textAlign: "left",
-                      fontWeight: 900,
-                      alignSelf: "start",
-                    }}
-                  >
-                    {monthName}
-                  </Typography>
-                  {monthName === "Today" ? (
-                    <Typography
-                      gutterBottom
-                      variant="h5"
+                  {
+                    <MenuItem
                       sx={{
-                        color: Colors[resolvedTheme]?.secondary,
-                        backgroundColor: Colors[resolvedTheme].eventItem_bg,
-                        textAlign: "left",
-                        fontWeight: 600,
-                        fontSize: "15px",
-                        alignSelf: "start",
+                        display: "flex",
+                        flexDirection: "column",
+                        border: "none",
+                        ":hover": { background: "transparent" },
                       }}
                     >
-                      {dayStr}
-                    </Typography>
-                  ) : (
-                    <></>
-                  )}
-                </MenuItem>
-                {events.map((event: EventDetails, index: number) => (
-                  <div key={index}>
-                    {index ? (
-                      <Divider
+                      <Typography
+                        gutterBottom
+                        variant="h5"
                         sx={{
-                          margin: "0px 10px",
-                          padding: "0px",
-                          borderColor: Colors[resolvedTheme].divider,
+                          color: Colors[resolvedTheme]?.primary,
+                          backgroundColor: Colors[resolvedTheme].eventItem_bg,
+                          textAlign: "left",
+                          fontWeight: 900,
+                          alignSelf: "start",
+                        }}
+                      >
+                        {monthName}
+                      </Typography>
+                      {monthName === "Today" ? (
+                        <Typography
+                          gutterBottom
+                          variant="h5"
+                          sx={{
+                            color: Colors[resolvedTheme]?.secondary,
+                            backgroundColor: Colors[resolvedTheme].eventItem_bg,
+                            textAlign: "left",
+                            fontWeight: 600,
+                            fontSize: "15px",
+                            alignSelf: "start",
+                          }}
+                        >
+                          {dayStr}
+                        </Typography>
+                      ) : (
+                        <></>
+                      )}
+                    </MenuItem>
+                  }
+                  {events.map((event: EventDetails, index: number) => (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexGrow: 1,
+                        flexDirection: "column",
+                      }}
+                      key={index}
+                    >
+                      {index ? (
+                        <Divider
+                          sx={{
+                            margin: "0px 10px",
+                            padding: "0px",
+                            borderColor: Colors[resolvedTheme].divider,
+                          }}
+                        />
+                      ) : (
+                        <></>
+                      )}
+                      <EventCell
+                        layout={"horizontal"}
+                        event={event}
+                        showDetailsMenu={showDetailsMenu}
+                        showMenu={setAnchorElMenu}
+                        onDetails={(e: EventDetails) => {
+                          selectEvent(e.id);
+                          showHostOnly(user?.id === event.hostId);
+                          setEventLink(getEventLinkString(event.id));
                         }}
                       />
-                    ) : (
-                      <div></div>
-                    )}
-                    <div style={{ position: "relative" }}>
-                      <MenuItem
-                        key={index}
-                        sx={{
-                          display: "flex",
-                          flexDirection: "row",
-                          padding: "10px",
-                          border: "none",
-                          ":hover": {
-                            backgroundColor:
-                              Colors[resolvedTheme].eventItem_hover,
-                            borderRadius: "5px",
-                          },
-                        }}
-                        onClick={() => viewEvent(event.id)}
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            width: 200,
-                            height: 150,
-                            borderRadius: 15,
-                            overflow: "hidden",
-                            background: Colors[resolvedTheme].no_cover_photo_bg,
-                          }}
-                        >
-                          {event.coverPhoto.url ? (
-                            <Image
-                              src={event.coverPhoto.url}
-                              key={index}
-                              alt="Cover photo"
-                              width={200}
-                              height={150}
-                            />
-                          ) : (
-                            <CalendarViewMonthIcon
-                              sx={{
-                                width: "48px",
-                                height: "48px",
-                                color: Colors[resolvedTheme]?.primary,
-                              }}
-                            />
-                          )}
-                        </div>
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "center",
-                            marginLeft: 15,
-                            flex: 1,
-                            gap: "2px",
-                          }}
-                        >
-                          <span style={{ fontWeight: 600 }}>
-                            {event.startTime}
-                          </span>
-
-                          <Tooltip
-                            title={
-                              <React.Fragment>
-                                <Typography sx={{ margin: "5px" }}>
-                                  <b>{event.title}</b>
-                                </Typography>
-                              </React.Fragment>
-                            }
-                          >
-                            <Typography
-                              sx={{
-                                fontWeight: "bold",
-                                fontSize: 20,
-                                width: "fit-content",
-                                ":hover": {
-                                  textDecoration: "underline",
-                                },
-                              }}
-                              variant="body1"
-                            >
-                              {event.title}
-                            </Typography>
-                          </Tooltip>
-
-                          {event.location.hasLocation ? (
-                            <span style={{ fontWeight: 500 }}>
-                              {event.location.name}
-                            </span>
-                          ) : (
-                            <br />
-                          )}
-
-                          <span
-                            style={{ fontSize: 14, fontWeight: 600 }}
-                          >{`${event.count} ${status}`}</span>
-                        </div>
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        ></div>
-                      </MenuItem>
-                      {showDetailsMenu && (
-                        <Button
-                          onClick={(e) => {
-                            selectEvent(event.id);
-                            showHostOnly(user?.id === event.hostId);
-                            setEventLink(getEventLinkString(event.id));
-                            e.stopPropagation();
-                            setAnchorElMenu(e.currentTarget);
-                          }}
-                          sx={{
-                            position: "absolute",
-                            alignItems: "baseline",
-                            background:
-                              Colors[resolvedTheme].eventDetailsBtn_bg,
-                            borderRadius: "5px",
-                            padding: "0px",
-                            fontSize: 16,
-                            color: Colors[resolvedTheme].primary,
-                            fontWeight: 900,
-                            top: "32px",
-                            right: "16px",
-                            width: "48px",
-                            height: "36px",
-                            minWidth: "32px",
-                            ":hover": {
-                              background:
-                                Colors[resolvedTheme].eventDetailsBtn_hover,
-                            },
-                          }}
-                        >
-                          ...
-                        </Button>
-                      )}
                     </div>
-                  </div>
-                ))}
-              </MenuList>
-            ))}
-          </div>
+                  ))}
+                </MenuList>
+              ))}
+            </div>
+          ) : (
+            <div className={styles.carousel_container}>
+              <div
+                style={{ display: "block", width: `${items * itemWidth}px` }}
+              >
+                <Carousel
+                  swipeable={false}
+                  autoPlay={false}
+                  shouldResetAutoplay={false}
+                  containerClass="carousel-container"
+                  responsive={responsive}
+                  slidesToSlide={1}
+                  arrows={true}
+                  showDots={false}
+                  itemClass={styles.carousel_item}
+                  renderButtonGroupOutside={true}
+                >
+                  {events.map((event: EventDetails, index: number) => (
+                    <React.Fragment key={index}>
+                      <EventCell
+                        layout="vertical"
+                        event={event}
+                        showDetailsMenu={showDetailsMenu}
+                        showMenu={setAnchorElMenu}
+                        onDetails={(e: EventDetails) => {
+                          selectEvent(e.id);
+                          showHostOnly(user?.id === event.hostId);
+                          setEventLink(getEventLinkString(event.id));
+                        }}
+                      />
+                    </React.Fragment>
+                  ))}
+                </Carousel>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </>
