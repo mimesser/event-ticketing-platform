@@ -25,8 +25,14 @@ export type EventDetails = {
   coverPhoto: CoverPhotoInfo;
   privacy: string;
 };
+export type EventDetailsOption = {
+  showDetailsMenu: boolean;
+  showMenu: any;
+  onDetails: any;
+};
 export type Guest = {
   username: string;
   name: string;
   status: "Going";
 };
+
