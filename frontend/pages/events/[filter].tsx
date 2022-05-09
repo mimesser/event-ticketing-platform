@@ -1,5 +1,6 @@
 import Layout from "components/Layout";
-import FilteredEvents from "components/FilteredEvents";
+import FilteredEvents from "components/events/FilteredEvents";
+import HostingEvents from "components/events/HostingEvents";
 import EventPage from "components/EventPage";
 import { eventFilters } from "lib/utils";
 import { getLoginSession } from "lib/auth";
@@ -21,8 +22,9 @@ function Events({ filter, eventId }: { filter: string; eventId: number }) {
           title="Going"
           filter="going"
           showDetailsMenu={true}
-          groupEvents={false}
         />
+      ) : filter === "hosting" ? (
+        <HostingEvents />
       ) : (
         <div>{filter} </div>
       )}

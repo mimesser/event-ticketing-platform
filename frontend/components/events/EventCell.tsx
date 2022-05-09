@@ -6,22 +6,18 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import moment from "moment";
 import Colors from "lib/colors";
-import { EventDetails } from "lib/types";
+import { EventDetails, EventDetailsOption } from "lib/types";
 import { formatTimeString } from "lib/utils";
 import { Box } from "@mui/system";
 
 export default function EventCell({
   layout,
   event,
-  showDetailsMenu,
-  showMenu,
-  onDetails,
+  options,
 }: {
   layout: "vertical" | "horizontal";
   event: EventDetails;
-  showDetailsMenu: boolean;
-  showMenu: any;
-  onDetails: any;
+  options: EventDetailsOption;
 }) {
   const router = useRouter();
   const { resolvedTheme } = useTheme();
@@ -165,11 +161,11 @@ export default function EventCell({
           } ${isEventGoing(event) ? "Going" : "Went"}`}</p>
         </div>
       </MenuItem>
-      {showDetailsMenu && (
+      {options.showDetailsMenu && (
         <Button
           onClick={(e) => {
-            onDetails(event);
-            showMenu(e.currentTarget);
+            options.onDetails(event);
+            options.showMenu(e.currentTarget);
           }}
           sx={
             layout === "horizontal"
