@@ -217,6 +217,53 @@ export const groupEventsByMonth = (events: EventDetails[]) => {
   return groupedEvents;
 };
 
+export const getEventLink = (id: number) => {
+  if (process.env.NODE_ENV === "production") return `https://impish.fun/${id}`;
+  return `http://localhost:3000/events/${id}`;
+};
+
+export const getEventLinkString = (id: number) => {
+  return `impish.fun/${id}`;
+};
+
+export const eventObjectFromDetails = (e: EventDetails) => {
+  const startTime = moment(e.startTime);
+  const moment2time = (m: Moment) => [
+    m.get("year") || 0,
+    m.get("month") + 1 || 0,
+    m.get("date") || 0,
+    m.get("hour") || 0,
+    m.get("minute") || 0,
+  ];
+  let event: any = {
+    start: moment2time(startTime),
+    title: e.title,
+    description: e.description,
+    url: getEventLink(e.id),
+  };
+  const endTime = e.endTime ? moment(e.endTime) : startTime;
+  if (!e.endTime) {
+    endTime.set("hour", 23);
+    endTime.set("minute", 30);
+  }
+  event = {
+    ...event,
+    end: moment2time(endTime),
+  };
+
+  const loc = e.location;
+  if (loc.hasLocation)
+    event = {
+      ...event,
+      location: loc?.name,
+      geo: {
+        lat: loc?.location?.lat,
+        lon: loc?.location?.lng,
+      },
+    };
+  return event;
+};
+
 export const mockTestUserMetadata = {
   issuer: "did:ethr:0x1e9FF803fFA22209A10A087cc8361d4aa3528c45",
   publicAddress: "0x1e9FF803fFA22209A10A087cc8361d4aa3528c45",

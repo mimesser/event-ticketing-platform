@@ -10,7 +10,11 @@ function Events({ filter, eventId }: { filter: string; eventId: number }) {
   return filter ? (
     <Layout>
       {filter === "going" ? (
-        <FilteredEvents title="Going" filter="going" showDetailsMenu={true} />
+        <FilteredEvents
+          title="Going"
+          filter="going"
+          showDetailsMenu={true}
+        />
       ) : filter === "past" ? (
         <FilteredEvents
           title="Your Past Events"
@@ -23,9 +27,10 @@ function Events({ filter, eventId }: { filter: string; eventId: number }) {
           title="Going"
           filter="going"
           showDetailsMenu={true}
+          showExportButton={true}
         />
       ) : filter === "invites" ? (
-        <InvitesView/>
+        <InvitesView />
       ) : filter === "hosting" ? (
         <HostingEvents />
       ) : (
