@@ -34,6 +34,11 @@ import { stringify } from "csv-stringify/sync";
 
 import Colors from "lib/colors";
 import { EventDetails, EventDetailsOption } from "lib/types";
+import {
+  eventObjectFromDetails,
+  getEventLink,
+  getEventLinkString,
+} from "lib/utils";
 
 export default function EventDetailsMenu({
   events,
@@ -55,15 +60,6 @@ export default function EventDetailsMenu({
 
   // copy event link
   const [eventLink] = React.useState<string>("");
-  const getEventLink = (id: number) => {
-    if (process.env.NODE_ENV === "production")
-      return `https://impish.fun/${id}`;
-    return `http://localhost:3000/events/${id}`;
-  };
-
-  const getEventLinkString = (id: number) => {
-    return `impish.fun/${id}`;
-  };
   const onCopyEventLink = () => {
     copy(getEventLink(selEventId));
     showSnackBar(true);
@@ -75,45 +71,7 @@ export default function EventDetailsMenu({
     React.useState<boolean>(false);
 
   const exportEvent = (e: EventDetails) => {
-    const startTime = moment(e.startTime);
-    let event: any = {
-      start: [
-        startTime.get("year") || 0,
-        startTime.get("month") + 1 || 0,
-        startTime.get("day") || 0,
-        startTime.get("hour") || 0,
-        startTime.get("minute") || 0,
-      ],
-      title: e.title,
-      description: e.description,
-      url: getEventLink(e.id),
-    };
-    const endTime = e.endTime ? moment(e.endTime) : startTime;
-    if (!e.endTime) {
-      endTime.set("hour", 23);
-      endTime.set("minute", 30);
-    }
-    event = {
-      ...event,
-      end: [
-        endTime.get("year") || 0,
-        endTime.get("month") + 1 || 0,
-        endTime.get("day") || 0,
-        endTime.get("hour") || 0,
-        endTime.get("minute") || 0,
-      ],
-    };
-
-    const loc = e.location;
-    if (loc.hasLocation)
-      event = {
-        ...event,
-        location: loc?.name,
-        geo: {
-          lat: loc?.location?.lat,
-          lon: loc?.location?.lng,
-        },
-      };
+    const event = eventObjectFromDetails(e);
     const { value, error } = createEvent(event);
     if (error) {
       console.log("Error exporting events");

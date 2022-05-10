@@ -1,43 +1,14 @@
 import React from "react";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Grid,
-  IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-  Radio,
-  Snackbar,
-  Typography,
-} from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
-import GetAppOutlinedIcon from "@mui/icons-material/GetAppOutlined";
-import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
-import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
-
+import { Box, Button, CircularProgress, Grid, Typography } from "@mui/material";
 import { useTheme } from "next-themes";
 
-import { createEvent } from "ics";
-import moment from "moment";
-import copy from "copy-to-clipboard";
+import { createEvents } from "ics";
 import fileDownload from "js-file-download";
-import { stringify } from "csv-stringify/sync";
 
 import Colors from "lib/colors";
 import { useEventsFilter } from "lib/hooks";
 import { EventDetails, EventDetailsOption } from "lib/types";
-import { groupEventsByMonth } from "lib/utils";
-import { useUserInfo } from "lib/user-context";
+import { eventObjectFromDetails, groupEventsByMonth } from "lib/utils";
 
 import VerticalEventsView from "./VerticalEventsView";
 import EventsCarousel from "./EventsCarousel";
@@ -48,11 +19,13 @@ export default function FilteredEventsList({
   showDetailsMenu,
   title,
   layout = "vertical",
+  showExportButton = false,
 }: {
   filter: string;
   showDetailsMenu: boolean;
   title: string;
   layout?: "vertical" | "horizontal";
+  showExportButton?: boolean;
 }) {
   const { resolvedTheme } = useTheme();
   const { loading, events } = useEventsFilter(filter);
@@ -78,6 +51,20 @@ export default function FilteredEventsList({
     onDetails: (event: EventDetails) => {
       selectEvent(event.id);
     },
+  };
+
+  // export events
+  const onExportEvents = () => {
+    const eventList: any[] = [];
+    events.forEach((e) => {
+      eventList.push(eventObjectFromDetails(e));
+    });
+    const { value, error } = createEvents(eventList);
+    if (error) {
+      console.log("Error exporting events");
+    } else {
+      fileDownload(value?.toString() || "", `e${Date.now()}.ics`);
+    }
   };
   return (
     <>
@@ -113,22 +100,14 @@ export default function FilteredEventsList({
         </Box>
       ) : (
         <div
-          style={
-            layout === "vertical"
-              ? {
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  marginLeft: "15%",
-                  maxWidth: "75%",
-                }
-              : {
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  marginLeft: "10%",
-                }
-          }
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            marginTop: "16px",
+            marginLeft: "15%",
+            marginRight: "1.5%",
+          }}
         >
           <EventDetailsMenu
             events={events}
@@ -137,6 +116,15 @@ export default function FilteredEventsList({
             selEventId={selEventId}
             onDeleteEvent={onDeleteEvent}
           />
+          {showExportButton && (
+            <Button
+              variant="contained"
+              sx={{ textTransform: "none", alignSelf: "flex-end" }}
+              onClick={onExportEvents}
+            >
+              Add To Calendar
+            </Button>
+          )}
           <div>
             <Typography
               gutterBottom
