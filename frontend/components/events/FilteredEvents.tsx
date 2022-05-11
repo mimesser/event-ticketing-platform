@@ -1,5 +1,12 @@
 import React from "react";
-import { Box, Button, CircularProgress, Grid, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Grid,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import { useTheme } from "next-themes";
 
 import { createEvents } from "ics";
@@ -29,6 +36,8 @@ export default function FilteredEventsList({
 }) {
   const { resolvedTheme } = useTheme();
   const { loading, events } = useEventsFilter(filter);
+
+  const isMobile = useMediaQuery("(max-width:899px)");
 
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const showMenu = (e: HTMLElement) => setAnchorEl(e);
@@ -66,6 +75,7 @@ export default function FilteredEventsList({
       fileDownload(value?.toString() || "", `e${Date.now()}.ics`);
     }
   };
+
   return (
     <>
       {loading || !events ? (
@@ -156,7 +166,15 @@ export default function FilteredEventsList({
           {layout === "vertical" ? (
             <VerticalEventsView events={events} options={cellOptions} />
           ) : (
-            <EventsCarousel events={events} options={cellOptions} />
+            <div
+              style={{
+                width: !isMobile
+                  ? "calc((100vw - 380px) * 0.835)"
+                  : "calc((100vw - 40px) * 0.835)",
+              }}
+            >
+              <EventsCarousel events={events} options={cellOptions} />
+            </div>
           )}
         </div>
       )}
