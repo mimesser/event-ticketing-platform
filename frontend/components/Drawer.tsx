@@ -473,7 +473,7 @@ export default function ImpishDrawer({
   };
   const handleClick = () => {
     router.push({
-      pathname: !open ? "/events/calendar" : "/events/",
+      pathname: "/events/calendar",
     });
     setEventFilterIndex(!open ? 0 : -1);
   };
