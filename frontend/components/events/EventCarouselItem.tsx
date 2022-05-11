@@ -124,7 +124,7 @@ export default function EventCarouselItem({
           <Tooltip
             title={
               <React.Fragment>
-                <Typography sx={{ marginLeft: "15px" }}>
+                <Typography sx={{ margin: "5px" }}>
                   <b>{event.title}</b>
                 </Typography>
               </React.Fragment>
