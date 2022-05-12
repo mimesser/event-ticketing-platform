@@ -1,45 +1,10 @@
 import React from "react";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Grid,
-  IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-  Radio,
-  Snackbar,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
-} from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
-import GetAppOutlinedIcon from "@mui/icons-material/GetAppOutlined";
-import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
-import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
-
+import { Box, Button, CircularProgress, Grid, Typography } from "@mui/material";
 import { useTheme } from "next-themes";
 
-import { createEvent } from "ics";
-import moment from "moment";
-import copy from "copy-to-clipboard";
-import fileDownload from "js-file-download";
-import { stringify } from "csv-stringify/sync";
-
 import Colors from "lib/colors";
-import { useEventsFilter } from "lib/hooks";
+import { useEventsFilter, useForceUpdate } from "lib/hooks";
 import { EventDetails, EventDetailsOption } from "lib/types";
-import { groupEventsByMonth } from "lib/utils";
-import { useUserInfo } from "lib/user-context";
 
 import VerticalEventsView from "./VerticalEventsView";
 import EventDetailsMenu from "./EventDetailsMenu";
@@ -60,9 +25,13 @@ export default function HostingEvents() {
   const showMenu = (e: HTMLElement) => setAnchorEl(e);
   const closeMenu = () => setAnchorEl(null);
   const [selEventId, selectEvent] = React.useState<number>(-1);
+  const forceUpdate = useForceUpdate();
   const onDeleteEvent = () => {
     const index = events.findIndex((e: EventDetails) => e.id === selEventId);
-    if (index != -1) events.splice(index, 1);
+    if (index != -1) {
+      events.splice(index, 1);
+      forceUpdate();
+    }
   };
   // TODO
   // const { user } = useUserInfo();
@@ -149,18 +118,19 @@ export default function HostingEvents() {
                   sx={{
                     color:
                       mode === index
-                        ? "rgb(25, 118, 210, 0.8)"
+                        ? Colors[resolvedTheme].active_btn_color
                         : Colors[resolvedTheme].primary,
                     backgroundColor:
                       mode === index
-                        ? "rgb(231, 243, 255)"
+                        ? Colors[resolvedTheme].active_btn_back
                         : Colors[resolvedTheme].eventDetailsBtn_bg,
                     borderRadius: "16px",
                     fontWeight: 600,
+                    textTransform: "none",
                     ":hover": {
                       backgroundColor:
                         mode === index
-                          ? "rgba(25, 118, 210, 0.2)"
+                          ? Colors[resolvedTheme].active_btn_hover
                           : Colors[resolvedTheme].eventDetailsBtn_hover,
                     },
                   }}

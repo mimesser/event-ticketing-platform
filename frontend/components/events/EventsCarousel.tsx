@@ -4,7 +4,7 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 
 import { EventDetails, EventDetailsOption } from "lib/types";
-import EventCarouselItem from "./EventCarouselItem";
+import EventCarouselItem from "./EventCellVert";
 
 export default function EventsCarousel({
   events,

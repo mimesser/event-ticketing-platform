@@ -1,23 +1,36 @@
 import React from "react";
-import { Button, MenuItem, Tooltip, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  MenuItem,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import CalendarViewMonthIcon from "@mui/icons-material/CalendarViewMonth";
+import ReplyOutlinedIcon from "@mui/icons-material/ReplyOutlined";
+
 import { useTheme } from "next-themes";
 import { useRouter } from "next/router";
 import Image from "next/image";
+
 import moment from "moment";
 import Colors from "lib/colors";
 import { EventDetails, EventDetailsOption } from "lib/types";
 import { formatTimeString } from "lib/utils";
-import { Box } from "@mui/system";
 
-export default function EventCarouselItem({
+export default function EventCellVert({
   layout,
   event,
   options,
+  showShareArrow = false,
+  onShare = null,
 }: {
   layout: "vertical" | "horizontal";
   event: EventDetails;
   options: EventDetailsOption;
+  showShareArrow?: boolean;
+  onShare?: any;
 }) {
   const router = useRouter();
   const { resolvedTheme } = useTheme();
@@ -112,19 +125,19 @@ export default function EventCarouselItem({
             flexGrow: 1,
             justifyContent: "center",
             marginTop: "16px",
-            paddingBottom: "50px",
+            paddingBottom: showShareArrow ? "10px" : "50px",
             overflowWrap: "break-word",
             width: "100%",
             gap: "8px",
           }}
         >
-          <span style={{ fontWeight: 600, marginLeft: "15px" }}>
+          <span style={{ fontWeight: 600, marginLeft: "15px", height: "30px" }}>
             {formatTimeString(event.startTime)}
           </span>
           <Tooltip
             title={
               <React.Fragment>
-                <Typography sx={{ margin: "5px" }}>
+                <Typography sx={{ margin: "5px", height: "30px" }}>
                   <b>{event.title}</b>
                 </Typography>
               </React.Fragment>
@@ -139,6 +152,7 @@ export default function EventCarouselItem({
                 ":hover": {
                   textDecoration: "underline",
                 },
+                height: "30px",
               }}
               variant="body1"
             >
@@ -146,14 +160,45 @@ export default function EventCarouselItem({
             </Typography>
           </Tooltip>
 
-          <span style={{ fontWeight: 500, marginLeft: "15px" }}>
+          <span style={{ fontWeight: 500, marginLeft: "15px", height: "30px" }}>
             {event.location?.hasLocation ? event.location.name : ""}
           </span>
 
           <span
-            style={{ fontSize: 14, fontWeight: 600, marginLeft: "15px" }}
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              marginLeft: "15px",
+              height: "30px",
+            }}
           >{`${event.count} ${isEventGoing(event) ? "Going" : "Went"}`}</span>
         </div>
+        {/* Share Event Button */}
+        {showShareArrow && (
+          <IconButton
+            onClick={(e) => {
+              e.stopPropagation();
+              onShare && onShare(e.currentTarget);
+            }}
+            sx={{
+              backgroundColor: Colors[resolvedTheme].icon_bg,
+              padding: "4px",
+              ":hover": {
+                background: Colors[resolvedTheme].close_hover,
+              },
+              alignSelf: "flex-end",
+              marginBottom: "16px",
+              marginRight: "8px",
+              transform: "scaleX(-1)",
+            }}
+          >
+            <ReplyOutlinedIcon
+              sx={{
+                color: Colors[resolvedTheme].secondary,
+              }}
+            />
+          </IconButton>
+        )}
       </Box>
       {options.showDetailsMenu && (
         <Button

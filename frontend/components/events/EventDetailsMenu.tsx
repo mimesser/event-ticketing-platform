@@ -27,7 +27,6 @@ import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined
 import { useTheme } from "next-themes";
 
 import { createEvent } from "ics";
-import moment from "moment";
 import copy from "copy-to-clipboard";
 import fileDownload from "js-file-download";
 import { stringify } from "csv-stringify/sync";
@@ -59,7 +58,6 @@ export default function EventDetailsMenu({
   };
 
   // copy event link
-  const [eventLink] = React.useState<string>("");
   const onCopyEventLink = () => {
     copy(getEventLink(selEventId));
     showSnackBar(true);
