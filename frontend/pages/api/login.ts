@@ -7,7 +7,17 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function login(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const didToken = req.headers.authorization?.substring(7) || "";
+    if (!req.headers) {
+      res.status(400).json({ error: "Missing request headers" });
+      return;
+    }
+
+    const didToken: any = req.headers.authorization?.substring(7);
+
+    if (!didToken) {
+      res.status(400).json({ error: "Missing didToken" });
+      return;
+    }
 
     const metadata = !isTest
       ? await magic.users.getMetadataByToken(didToken)
@@ -62,13 +72,9 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
 
       res.status(200).json({ status: "login success" });
     } catch (e) {
-      console.log(e);
-
       res.status(500).json({ e });
     }
   } catch (e) {
-    console.log(e);
-
     res.status(500).json({ e });
   }
 }

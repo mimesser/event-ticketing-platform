@@ -20,6 +20,11 @@ apiRoute.post(async (req: any, res: NextApiResponse) => {
     return;
   }
 
+  if (!req.body) {
+    res.status(400).json({ error: "Missing request body" });
+    return;
+  }
+
   const {
     title,
     description,
