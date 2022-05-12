@@ -9,14 +9,24 @@ export default async function getEvents(
   res: NextApiResponse
 ) {
   if (req.method === "POST") {
+    if (!req.body) {
+      res.status(400).json({ error: "Missing request body" });
+      return;
+    }
+
     const { filter } = JSON.parse(req.body);
+
+    if (!filter) {
+      res.status(400).json({ error: "Missing filter in request body" });
+      return;
+    }
 
     // TODO: filter events
     // filter: going, host, invites, past, ...
     try {
       const session = await getLoginSession(req);
       if (!session) {
-        res.status(500).json({ error: "should log in" });
+        res.status(400).json({ error: "Missing session" });
         return;
       }
       const user = await prisma.user.findUnique({
@@ -79,6 +89,7 @@ export default async function getEvents(
       res.status(500).json(error);
     }
   } else {
-    res.status(403);
+    res.status(400).json({ error: "Wrong method" });
+    return;
   }
 }

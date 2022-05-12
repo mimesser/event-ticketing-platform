@@ -7,7 +7,18 @@ export default async function getEvents(
   res: NextApiResponse
 ) {
   if (req.method === "POST") {
+    if (!req.body) {
+      res.status(400).json({ error: "Missing request body" });
+      return;
+    }
+
     const { eventId } = JSON.parse(req.body);
+
+    if (!eventId) {
+      res.status(400).json({ error: "Missing eventId in request body" });
+      return;
+    }
+
     const event = await prisma.event.findUnique({
       where: {
         id: eventId,
@@ -41,6 +52,7 @@ export default async function getEvents(
     }
     res.status(200).json({ guests });
   } else {
-    res.status(403);
+    res.status(400).json({ error: "Wrong method" });
+    return;
   }
 }
