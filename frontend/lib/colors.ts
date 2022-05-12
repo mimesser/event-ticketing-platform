@@ -44,6 +44,9 @@ const Colors: any = {
     eventDetailsBtn_hover2: "rgb(100, 100, 100)",
     eventItem_hover: "rgb(60, 59, 63)",
     no_cover_photo_bg: "rgb(60, 62, 64)",
+    active_btn_color: "rgb(25, 118, 210, 0.8)",
+    active_btn_back: "rgb(231, 243, 255)",
+    active_btn_hover: "rgba(25, 118, 210, 0.2)",
   },
   light: {
     header_bg: "#FFFFFF",
@@ -85,6 +88,9 @@ const Colors: any = {
     eventDetailsBtn_hover2: "rgba(80, 79, 83, 0.8)",
     eventItem_hover: "rgb(243, 242, 243)",
     no_cover_photo_bg: "rgb(228, 230, 234)",
+    active_btn_color: "rgb(25, 118, 210, 0.8)",
+    active_btn_back: "rgb(231, 243, 255)",
+    active_btn_hover: "rgba(25, 118, 210, 0.2)",
   },
 };
 
