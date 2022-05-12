@@ -7,7 +7,18 @@ export default async function getEvents(
   res: NextApiResponse
 ) {
   if (req.method === "DELETE") {
+    if (!req.body) {
+      res.status(400).json({ error: "Missing request body" });
+      return;
+    }
+
     const { eventId } = JSON.parse(req.body);
+
+    if (!eventId) {
+      res.status(400).json({ error: "Missing eventId in request body" });
+      return;
+    }
+
     const event = await prisma.event.findUnique({
       where: {
         id: eventId,

@@ -6,33 +6,49 @@ export default async function getHosts(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-if (req.method === "POST") {
-  let condition: any[] = [
-    {
-      privacySetting: "Public",
-    },
-  ];
-  const session = await getLoginSession(req);
-  if (session) {
-    const user = await prisma.user.findUnique({
-      where: { email: session.email },
-      select: { id: true },
-    });
-    condition.push({
-      privacySetting: "Private",
-      hostId: user?.id,
-    });
-  }
-
-  const { eventId } = JSON.parse(req.body);
-
-  try {
-    const events = await prisma.event.findMany({
-      where: {
-        OR: condition,
-        id: eventId,
+  if (req.method === "POST") {
+    let condition: any[] = [
+      {
+        privacySetting: "Public",
       },
-    });
+    ];
+    const session = await getLoginSession(req);
+
+    if (!session) {
+      res.status(400).json({ error: "Missing session" });
+      return;
+    }
+
+    if (session) {
+      const user = await prisma.user.findUnique({
+        where: { email: session.email },
+        select: { id: true },
+      });
+      condition.push({
+        privacySetting: "Private",
+        hostId: user?.id,
+      });
+    }
+
+    if (!req.body) {
+      res.status(400).json({ error: "Missing request body" });
+      return;
+    }
+
+    const { eventId } = JSON.parse(req.body);
+
+    if (!eventId) {
+      res.status(400).json({ error: "Missing eventId in request body" });
+      return;
+    }
+
+    try {
+      const events = await prisma.event.findMany({
+        where: {
+          OR: condition,
+          id: eventId,
+        },
+      });
 
       if (!events || events.length !== 1) return res.status(200).json({});
 
@@ -56,6 +72,7 @@ if (req.method === "POST") {
       res.status(500).json({ error });
     }
   } else {
-    res.status(403);
+    res.status(403).json({ error: "Wrong method" });
+    return;
   }
 }

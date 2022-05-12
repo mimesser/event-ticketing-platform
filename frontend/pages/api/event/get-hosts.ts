@@ -13,7 +13,17 @@ export default async function getHosts(
       return;
     }
 
+    if (!req.body) {
+      res.status(400).json({ error: "Missing request body" });
+      return;
+    }
+
     const { search } = JSON.parse(req.body);
+
+    if (!search) {
+      res.status(400).json({ error: "Missing search in request body" });
+      return;
+    }
 
     try {
       const users = await prisma.user.findMany({
@@ -49,6 +59,7 @@ export default async function getHosts(
       res.status(500).json({ error });
     }
   } else {
-    res.status(403);
+    res.status(400).json({ error: "Wrong method" });
+    return;
   }
 }

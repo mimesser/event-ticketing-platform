@@ -6,14 +6,14 @@ export default async function getFollowers(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getLoginSession(req);
-
-  if (!session) {
-    res.status(400).json({ error: "Missing session" });
-    return;
-  }
-
   try {
+    const session = await getLoginSession(req);
+
+    if (!session) {
+      res.status(400).json({ error: "Missing session" });
+      return;
+    }
+
     const user = await prisma.user.findUnique({
       where: { email: session.email },
       select: { id: true, followers: true, following: true },
