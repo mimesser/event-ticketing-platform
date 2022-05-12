@@ -6,7 +6,7 @@ import Colors from "lib/colors";
 import { EventDetails, EventDetailsOption } from "lib/types";
 import { groupEventsByMonth } from "lib/utils";
 
-import EventCell from "components/events/EventCell";
+import EventCell from "components/events/EventCellHorz";
 
 export default function GroupedEvents({
   events,
@@ -62,7 +62,7 @@ export default function GroupedEvents({
                       backgroundColor: Colors[resolvedTheme].eventItem_bg,
                       textAlign: "left",
                       fontWeight: 900,
-                      alignSelf: "start",
+                      alignSelf: "flex-start",
                     }}
                   >
                     {monthName}
@@ -77,7 +77,7 @@ export default function GroupedEvents({
                         textAlign: "left",
                         fontWeight: 600,
                         fontSize: "15px",
-                        alignSelf: "start",
+                        alignSelf: "flex-start",
                       }}
                     >
                       {dayStr}

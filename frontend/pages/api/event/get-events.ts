@@ -9,12 +9,8 @@ export default async function getEvents(
   res: NextApiResponse
 ) {
   if (req.method === "POST") {
-    if (!req.body) {
-      res.status(400).json({ error: "Missing request body" });
-      return;
-    }
-
-    const { filter } = JSON.parse(req.body);
+    const data = JSON.parse(req.body);
+    const { filter } = data;
 
     if (!filter) {
       res.status(400).json({ error: "Missing filter in request body" });
@@ -35,19 +31,34 @@ export default async function getEvents(
       });
       const today = new Date(moment().format("YYYY-MM-DD") + " 00:00:00");
       let events: any[] = [];
-      if (filter === "going")
+      if (filter === "going") {
+        const { endTime } = data;
         events = await prisma.event.findMany({
           where: {
             hostId: user?.id,
             startTime: {
               gte: today,
             },
+            ...(endTime
+              ? {
+                  OR: [
+                    {
+                      endTime: {
+                        lt: new Date(endTime),
+                      },
+                    },
+                    {
+                      endTime: null,
+                    },
+                  ],
+                }
+              : {}),
           },
           orderBy: {
             startTime: "asc",
           },
         });
-      else if (filter === "past")
+      } else if (filter === "past")
         events = await prisma.event.findMany({
           where: {
             hostId: user?.id,

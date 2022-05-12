@@ -13,7 +13,7 @@ import { createEvents } from "ics";
 import fileDownload from "js-file-download";
 
 import Colors from "lib/colors";
-import { useEventsFilter } from "lib/hooks";
+import { useEventsFilter, useForceUpdate } from "lib/hooks";
 import { EventDetails, EventDetailsOption } from "lib/types";
 import { eventObjectFromDetails, groupEventsByMonth } from "lib/utils";
 
@@ -43,10 +43,13 @@ export default function FilteredEventsList({
   const showMenu = (e: HTMLElement) => setAnchorEl(e);
   const closeMenu = () => setAnchorEl(null);
   const [selEventId, selectEvent] = React.useState<number>(-1);
-
+  const forceUpdate = useForceUpdate();
   const onDeleteEvent = () => {
     const index = events.findIndex((e: EventDetails) => e.id === selEventId);
-    if (index != -1) events.splice(index, 1);
+    if (index != -1) {
+      events.splice(index, 1);
+      forceUpdate();
+    }
   };
 
   // TODO
@@ -119,13 +122,15 @@ export default function FilteredEventsList({
             marginRight: "1.5%",
           }}
         >
-          <EventDetailsMenu
-            events={events}
-            anchorElMenu={anchorEl}
-            closeMenu={closeMenu}
-            selEventId={selEventId}
-            onDeleteEvent={onDeleteEvent}
-          />
+          {showDetailsMenu && (
+            <EventDetailsMenu
+              events={events}
+              anchorElMenu={anchorEl}
+              closeMenu={closeMenu}
+              selEventId={selEventId}
+              onDeleteEvent={onDeleteEvent}
+            />
+          )}
           {showExportButton && (
             <Button
               variant="contained"
