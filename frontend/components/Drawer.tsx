@@ -228,22 +228,28 @@ export default function ImpishDrawer({
         })
       ).json();
 
-      setSavingEvent(false);
       if (result?.status !== "ok") {
+        setSavingEvent(false);
         alert("Save event failed!");
         console.log(result);
         return;
       }
-      setEventSaved(true);
-      resetState();
       if (result?.eventId) {
-        router.push({
-          pathname: `/events/${result.eventId}`,
-        });
+        router.push(
+          {
+            pathname: `/events/${result.eventId}`,
+          },
+          undefined,
+          { shallow: true }
+        );
+        setSavingEvent(false);
+        setEventSaved(true);
+        resetState();
       } else {
         router.push({
           pathname: "/events",
         });
+        setSavingEvent(false);
       }
     } catch (error) {
       alert(error);
