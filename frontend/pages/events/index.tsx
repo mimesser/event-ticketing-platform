@@ -197,6 +197,8 @@ function Events() {
                       borderColor: Colors[resolvedTheme].tab_divider,
                       borderRadius: "16px",
                       marginBottom: "8px",
+                      paddingTop: "0px",
+                      paddingBottom: "0px",
                     }}
                   >
                     {events.map((event: EventDetails, index: number) => (
@@ -247,11 +249,17 @@ function Events() {
               marginRight: "2.5%",
               paddingLeft: "16px",
               paddingRight: "16px",
-              backgroundColor: Colors[resolvedTheme].eventItem_bg,
+              backgroundColor: user
+                ? Colors[resolvedTheme].eventItem_bg
+                : "transparent",
               color: Colors[resolvedTheme].primary,
-              borderWidth: "1px",
-              borderStyle: "solid",
-              borderColor: Colors[resolvedTheme].tab_divider,
+              ...(user
+                ? {
+                    borderWidth: "1px",
+                    borderStyle: "solid",
+                    borderColor: Colors[resolvedTheme].tab_divider,
+                  }
+                : {}),
             }}
           >
             {/* Header */}
@@ -269,7 +277,9 @@ function Events() {
                 variant="h5"
                 sx={{
                   color: Colors[resolvedTheme]?.primary,
-                  backgroundColor: Colors[resolvedTheme].eventItem_bg,
+                  backgroundColor: user
+                    ? Colors[resolvedTheme].eventItem_bg
+                    : "transparent",
                   textAlign: "left",
                   fontWeight: 900,
                 }}
@@ -278,45 +288,47 @@ function Events() {
               </Typography>
             </div>
             {/* discover event modes */}
-            <div
-              style={{
-                marginTop: "16px",
-                display: "flex",
-                flexDirection: "row",
-                gap: "16px",
-              }}
-            >
-              {modes.map((strMode, index) => (
-                <Button
-                  key={index}
-                  onClick={() => {
-                    setEventsFinding(false);
-                    setMode(index);
-                  }}
-                  sx={{
-                    color:
-                      mode === index
-                        ? Colors[resolvedTheme].active_btn_color
-                        : Colors[resolvedTheme].primary,
-                    backgroundColor:
-                      mode === index
-                        ? Colors[resolvedTheme].active_btn_back
-                        : Colors[resolvedTheme].eventDetailsBtn_bg,
-                    borderRadius: "16px",
-                    fontWeight: 600,
-                    ":hover": {
+            {user && (
+              <div
+                style={{
+                  marginTop: "16px",
+                  display: "flex",
+                  flexDirection: "row",
+                  gap: "16px",
+                }}
+              >
+                {modes.map((strMode, index) => (
+                  <Button
+                    key={index}
+                    onClick={() => {
+                      setEventsFinding(false);
+                      setMode(index);
+                    }}
+                    sx={{
+                      color:
+                        mode === index
+                          ? Colors[resolvedTheme].active_btn_color
+                          : Colors[resolvedTheme].primary,
                       backgroundColor:
                         mode === index
-                          ? Colors[resolvedTheme].active_btn_hover
-                          : Colors[resolvedTheme].eventDetailsBtn_hover,
-                    },
-                    textTransform: "none",
-                  }}
-                >
-                  {strMode}
-                </Button>
-              ))}
-            </div>
+                          ? Colors[resolvedTheme].active_btn_back
+                          : Colors[resolvedTheme].eventDetailsBtn_bg,
+                      borderRadius: "16px",
+                      fontWeight: 600,
+                      ":hover": {
+                        backgroundColor:
+                          mode === index
+                            ? Colors[resolvedTheme].active_btn_hover
+                            : Colors[resolvedTheme].eventDetailsBtn_hover,
+                      },
+                      textTransform: "none",
+                    }}
+                  >
+                    {strMode}
+                  </Button>
+                ))}
+              </div>
+            )}
             {/* list of discovered events */}
             <div style={{ marginTop: "16px" }}>
               {finding || !foundEvents ? (
@@ -328,6 +340,7 @@ function Events() {
                     flexDirection: "column",
                     alignItems: "center",
                     justifyContent: "center",
+                    paddingBottom: "48px",
                   }}
                 >
                   <CalendarMonthRoundedIcon

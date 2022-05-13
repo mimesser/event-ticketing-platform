@@ -175,29 +175,32 @@ export default function EventCellVert({
         </div>
         {/* Share Event Button */}
         {showShareArrow && (
-          <IconButton
-            onClick={(e) => {
-              e.stopPropagation();
-              onShare && onShare(e.currentTarget);
-            }}
-            sx={{
-              backgroundColor: Colors[resolvedTheme].icon_bg,
-              padding: "4px",
-              ":hover": {
-                background: Colors[resolvedTheme].close_hover,
-              },
-              alignSelf: "flex-end",
-              marginBottom: "16px",
-              marginRight: "8px",
-              transform: "scaleX(-1)",
-            }}
-          >
-            <ReplyOutlinedIcon
-              sx={{
-                color: Colors[resolvedTheme].secondary,
+          <div style={{ width: "100%", display: "flex" }}>
+            <IconButton
+              onClick={(e) => {
+                e.stopPropagation();
+                onShare && onShare(e.currentTarget);
               }}
-            />
-          </IconButton>
+              sx={{
+                backgroundColor: Colors[resolvedTheme].icon_bg,
+                borderRadius: "8px",
+                ":hover": {
+                  background: Colors[resolvedTheme].close_hover,
+                },
+                marginLeft: "8px",
+                marginRight: "8px",
+                marginBottom: "8px",
+                transform: "scaleX(-1)",
+                flexGrow: 1,
+              }}
+            >
+              <ReplyOutlinedIcon
+                sx={{
+                  color: Colors[resolvedTheme].secondary,
+                }}
+              />
+            </IconButton>
+          </div>
         )}
       </Box>
       {options.showDetailsMenu && (
