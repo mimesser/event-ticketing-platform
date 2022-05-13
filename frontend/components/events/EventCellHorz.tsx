@@ -21,8 +21,8 @@ export default function EventCell({
 }) {
   const router = useRouter();
   const { resolvedTheme } = useTheme();
-  const coverWidth = layout === "horizontal" ? 200 : 380;
-  const coverHeight = layout === "horizontal" ? 150 : 200;
+  const coverWidth = layout === "horizontal" ? 180 : 380;
+  const coverHeight = layout === "horizontal" ? 140 : 200;
   const viewEvent = (eventId: number) => {
     router.push("/events/" + eventId);
   };
@@ -54,7 +54,7 @@ export default function EventCell({
           display: "flex",
           flexDirection: layout === "vertical" ? "column" : "row",
           flexGrow: layout === "horizontal" ? 1 : 0,
-          padding: layout === "horizontal" ? "10px" : "0px",
+          padding: layout === "horizontal" ? "8px" : "0px",
           border: "none",
           ":hover": {
             borderRadius: "15px",
