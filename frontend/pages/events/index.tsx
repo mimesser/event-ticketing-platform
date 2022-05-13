@@ -29,7 +29,7 @@ function Events() {
   const router = useRouter();
   const { user } = useUserInfo();
   const [mounted, setMounted] = useState(false);
-  const { resolvedTheme, setTheme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const { loading, events } = useEventsFilter("going");
 
   // useEffect only runs on the client, so now we can safely show the UI
@@ -122,7 +122,11 @@ function Events() {
           <CircularProgress size={120} />
         </div>
       ) : (
-        <>
+        <div
+          style={{
+            paddingBottom: "32px",
+          }}
+        >
           {/* your events */}
           {user && !loading && events.length ? (
             <div
@@ -201,35 +205,39 @@ function Events() {
                       paddingBottom: "0px",
                     }}
                   >
-                    {events.map((event: EventDetails, index: number) => (
-                      <div
-                        style={{
-                          display: "flex",
-                          flexGrow: 1,
-                          flexDirection: "column",
-                        }}
-                        key={index}
-                      >
-                        {index ? (
-                          <Divider
-                            sx={{
-                              margin: "0px 10px",
-                              padding: "0px",
-                              borderColor: Colors[resolvedTheme].divider,
-                              width: "calc(100% - 220px)",
-                              alignSelf: "flex-end",
-                            }}
+                    {events.map((event: EventDetails, index: number) =>
+                      index < 3 ? (
+                        <div
+                          style={{
+                            display: "flex",
+                            flexGrow: 1,
+                            flexDirection: "column",
+                          }}
+                          key={index}
+                        >
+                          {index ? (
+                            <Divider
+                              sx={{
+                                margin: "0px 10px",
+                                padding: "0px",
+                                borderColor: Colors[resolvedTheme].divider,
+                                width: "calc(100% - 220px)",
+                                alignSelf: "flex-end",
+                              }}
+                            />
+                          ) : (
+                            <></>
+                          )}
+                          <EventCellHorz
+                            layout={"horizontal"}
+                            event={event}
+                            options={horzCellOptions}
                           />
-                        ) : (
-                          <></>
-                        )}
-                        <EventCellHorz
-                          layout={"horizontal"}
-                          event={event}
-                          options={horzCellOptions}
-                        />
-                      </div>
-                    ))}
+                        </div>
+                      ) : (
+                        <></>
+                      )
+                    )}
                   </MenuList>
                 </>
               }
@@ -364,7 +372,7 @@ function Events() {
               )}
             </div>
           </div>
-        </>
+        </div>
       )}
     </Layout>
   );
