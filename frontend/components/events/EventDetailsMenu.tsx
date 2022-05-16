@@ -32,7 +32,7 @@ import fileDownload from "js-file-download";
 import { stringify } from "csv-stringify/sync";
 
 import Colors from "lib/colors";
-import { EventDetails, EventDetailsOption } from "lib/types";
+import { EventDetails } from "lib/types";
 import {
   eventObjectFromDetails,
   getEventLink,
@@ -80,18 +80,13 @@ export default function EventDetailsMenu({
 
   // export guest list
   const onExportGuestList = async () => {
-    const { guests } = await (
+    const { csv } = await (
       await fetch("/api/event/get-guests", {
         method: "POST",
         body: JSON.stringify({ eventId: selEventId }),
       })
     ).json();
-    const guestList = stringify(guests, {
-      columns: ["name", "username", "status"],
-      quoted: true,
-    });
-    const header = "Name, Username, Status";
-    fileDownload(header + "\n" + guestList, "GuestList.csv");
+    fileDownload(csv, "GuestList.csv");
   };
 
   // cancel event

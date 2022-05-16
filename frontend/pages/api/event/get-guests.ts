@@ -1,6 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { stringify } from "csv-stringify/sync";
 import { Guest } from "lib/types";
 import prisma from "lib/prisma";
+import { getLoginSession } from "lib/auth";
 
 export default async function getEvents(
   req: NextApiRequest,
@@ -28,9 +30,17 @@ export default async function getEvents(
       },
     });
 
-    const guests: Guest[] = [];
+    let csv = "";
+
     if (event) {
+      const session = await getLoginSession(req);
+      const currentUser = await prisma.user.findUnique({
+        where: { email: session.email },
+        select: { id: true },
+      });
       const hostId = event?.hostId;
+      const isCEO =
+        session?.email === "hj@dystopialabs.com" && currentUser?.id === hostId;
       const user = await prisma.user.findUnique({
         where: {
           id: hostId as any,
@@ -39,18 +49,39 @@ export default async function getEvents(
           username: true,
           name: true,
           walletAddress: true,
+          email: isCEO,
         },
       });
+      const guests: Guest[] = [];
+
       if (user) {
         guests.push({
           username:
             (user?.username ? user?.username : user?.walletAddress) || "",
           name: user?.name ? user?.name : "",
           status: "Going",
+          ...(isCEO ? { email: user.email } : {}),
         });
       }
+      let columns = ["name", "username"];
+      let headers = "Name, Username, ";
+
+      if (isCEO) {
+        columns.push("email");
+        headers += "Email, ";
+      }
+      columns.push("status");
+      headers += "Status";
+
+      csv =
+        headers +
+        "\n" +
+        stringify(guests, {
+          columns,
+          quoted: true,
+        });
     }
-    res.status(200).json({ guests });
+    res.status(200).json({ csv });
   } else {
     res.status(400).json({ error: "Wrong method" });
     return;
