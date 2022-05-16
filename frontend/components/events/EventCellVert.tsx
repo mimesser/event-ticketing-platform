@@ -92,14 +92,19 @@ export default function EventCellVert({
           }}
         >
           {event.coverPhoto?.url ? (
-            <img
-              src={event.coverPhoto?.url}
-              alt="Cover photo"
+            <div
               style={{
                 width: "100%",
-                aspectRatio: "16/9",
               }}
-            />
+            >
+              <Image
+                src={event.coverPhoto?.url}
+                alt="Cover photo"
+                width={160}
+                height={90}
+                layout="responsive"
+              />
+            </div>
           ) : (
             <CalendarViewMonthIcon
               sx={{
