@@ -22,7 +22,7 @@ export default async function getEvents(
     try {
       const session = await getLoginSession(req);
       if (!session) {
-        res.status(400).json({ error: "Missing session" });
+        res.status(500).json({ error: "should log in" });
         return;
       }
       const user = await prisma.user.findUnique({
