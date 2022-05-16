@@ -14,7 +14,7 @@ export default async function user(req: NextApiRequest, res: NextApiResponse) {
     // of sending the session's payload directly
 
     if (!session) {
-      res.status(400).json({ error: "Missing session" });
+      res.status(200).json({ user: null });
       return;
     }
 
