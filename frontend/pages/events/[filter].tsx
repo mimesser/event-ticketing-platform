@@ -4,17 +4,34 @@ import HostingEvents from "components/events/HostingEvents";
 import InvitesView from "components/events/InvitesView";
 import EventPage from "components/EventPage";
 import { eventFilters } from "lib/utils";
-import { getLoginSession } from "lib/auth";
+import { useRouter } from "next/router";
+import { useUserInfo } from "lib/user-context";
+import React from "react";
 
-function Events({ filter, eventId }: { filter: string; eventId: number }) {
-  return filter ? (
+function Events() {
+  const router = useRouter();
+  const { filter }: any = router.query;
+  const { user } = useUserInfo();
+
+  React.useEffect(() => {
+    if (!filter) {
+      return;
+    }
+    if (!filter.match(/^[0-9]*$/) && eventFilters.indexOf(filter) === -1) {
+      router.push(
+        {
+          pathname: `/events/`,
+        },
+        undefined,
+        { shallow: true }
+      );
+    }
+  }, [filter, router]);
+
+  return filter && eventFilters.indexOf(filter) !== -1 && user ? (
     <Layout>
       {filter === "going" ? (
-        <FilteredEvents
-          title="Going"
-          filter="going"
-          showDetailsMenu={true}
-        />
+        <FilteredEvents title="Going" filter="going" showDetailsMenu={true} />
       ) : filter === "past" ? (
         <FilteredEvents
           title="Your Past Events"
@@ -37,28 +54,11 @@ function Events({ filter, eventId }: { filter: string; eventId: number }) {
         <div>{filter} </div>
       )}
     </Layout>
+  ) : filter && filter.match(/^[0-9]*$/) ? (
+    <EventPage eventId={parseInt(filter)} />
   ) : (
-    <EventPage eventId={eventId} />
+    <Layout>{}</Layout>
   );
-}
-
-export async function getServerSideProps(context: any) {
-  const session = await getLoginSession(context.req);
-  const { filter } = context.query;
-  if (eventFilters.indexOf(filter) !== -1 && session)
-    return { props: { filter } };
-  if (filter.match(/^[0-9]*$/))
-    return {
-      props: {
-        eventId: parseInt(filter),
-      },
-    };
-  return {
-    redirect: {
-      permanent: false,
-      destination: "/events/",
-    },
-  };
 }
 
 export default Events;
