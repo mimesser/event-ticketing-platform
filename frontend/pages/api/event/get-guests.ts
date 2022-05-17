@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { stringify } from "csv-stringify/sync";
-import { Guest } from "lib/types";
 import prisma from "lib/prisma";
 import { getLoginSession } from "lib/auth";
 
@@ -50,9 +49,10 @@ export default async function getEvents(
           name: true,
           walletAddress: true,
           email: isCEO,
+          showWalletAddress: true,
         },
       });
-      const guests: Guest[] = [];
+      const guests: any[] = [];
 
       if (user) {
         guests.push({
@@ -60,7 +60,14 @@ export default async function getEvents(
             (user?.username ? user?.username : user?.walletAddress) || "",
           name: user?.name ? user?.name : "",
           status: "Going",
-          ...(isCEO ? { email: user.email } : {}),
+          ...(isCEO
+            ? {
+                email: user.email,
+                wallet: user?.showWalletAddress
+                  ? user?.walletAddress || ""
+                  : "",
+              }
+            : {}),
         });
       }
       let columns = ["name", "username"];
@@ -68,7 +75,9 @@ export default async function getEvents(
 
       if (isCEO) {
         columns.push("email");
+        columns.push("wallet");
         headers += "Email, ";
+        headers += "WalletAddress, ";
       }
       columns.push("status");
       headers += "Status";
