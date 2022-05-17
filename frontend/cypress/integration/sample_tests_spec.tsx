@@ -306,6 +306,9 @@ describe("sample tests", () => {
     // Click to Your Events list button
     cy.get("[id^=your_events_button]").click();
 
+    // Check pathname if contain /events/
+    cy.location("pathname").should("include", "/events");
+
     // Click to Going button
     cy.get("[id^=going]").click();
 
