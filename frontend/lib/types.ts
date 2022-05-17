@@ -34,5 +34,5 @@ export type Guest = {
   username: string;
   name: string;
   status: "Going";
+  wallet: string;
 };
-
