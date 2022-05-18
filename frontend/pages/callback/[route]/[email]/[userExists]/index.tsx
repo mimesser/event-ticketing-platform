@@ -1,7 +1,8 @@
-import CircularProgress from "@mui/material/CircularProgress";
-import { magic } from "lib/magic";
-import Router, { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import Router, { useRouter } from "next/router";
+import CircularProgress from "@mui/material/CircularProgress";
+import LoadingScene from "components/LoadingScene";
+import { magic } from "lib/magic";
 
 function Callback() {
   const router = useRouter();
@@ -58,19 +59,7 @@ function Callback() {
   }, [router.isReady, router.query]);
 
   if (loading) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          width: "100vw",
-          height: "100vh",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <CircularProgress size={120} />
-      </div>
-    );
+    return <LoadingScene />;
   }
 }
 

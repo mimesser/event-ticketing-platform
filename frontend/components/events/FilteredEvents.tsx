@@ -17,6 +17,7 @@ import { useEventsFilter, useForceUpdate } from "lib/hooks";
 import { EventDetails, EventDetailsOption } from "lib/types";
 import { eventObjectFromDetails, groupEventsByMonth } from "lib/utils";
 
+import LoadingScene from "components/LoadingScene";
 import VerticalEventsView from "./VerticalEventsView";
 import EventsCarousel from "./EventsCarousel";
 import EventDetailsMenu from "./EventDetailsMenu";
@@ -82,17 +83,7 @@ export default function FilteredEventsList({
   return (
     <>
       {loading || !events ? (
-        <div
-          style={{
-            display: "flex",
-            width: "100%",
-            height: "calc(100% - 64px)",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <CircularProgress size={120} />
-        </div>
+        <LoadingScene width={"100%"} height={"calc(100% - 64px)"} />
       ) : events.length === 0 ? (
         <Box sx={{ p: 4 }}>
           <Grid
