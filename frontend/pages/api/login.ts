@@ -19,9 +19,9 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
       return;
     }
 
-    const metadata = !isTest
-      ? await magic.users.getMetadataByToken(didToken)
-      : mockTestUserMetadata;
+    const metadata = isTest
+      ? mockTestUserMetadata
+      : await magic.users.getMetadataByToken(didToken);
 
     if (!metadata?.email || !metadata?.issuer || !metadata?.publicAddress) {
       res

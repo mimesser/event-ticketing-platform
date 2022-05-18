@@ -11,6 +11,7 @@ workflows:
   e2e-test:
     jobs:
       - cypress/install:
+          build: npm run build
           executor: node16
           working_directory: frontend
           cache-key: >-
@@ -27,7 +28,7 @@ workflows:
             cache-{{ arch }}-{{ .Branch }}-{{ checksum "frontend/package.json"
             }}
           store_artifacts: true
-          start: npm run cy:dev
+          start: npm run cy:start
           wait-on: 'http://localhost:3000'
           parallel: true
           spec: cypress/integration/sample_tests_spec.tsx
@@ -43,7 +44,7 @@ workflows:
             cache-{{ arch }}-{{ .Branch }}-{{ checksum "frontend/package.json"
             }}
           store_artifacts: true
-          start: npm run cy:dev
+          start: npm run cy:start
           wait-on: 'http://localhost:3000'
           parallel: true
           spec: cypress/integration/sample_tests2_spec.tsx
