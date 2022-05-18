@@ -277,18 +277,18 @@ describe("sample tests", () => {
     cy.get("[id^=buy_crypto_header]").click();
 
     // Wait for moonpay-verify status code: 200 response
-    cy.wait("@moonpay-verify").then(({ response }: any) => {
+    cy.wait("@moonpay-verify", { timeout: 15000 }).then(({ response }: any) => {
       expect(response.statusCode).to.eq(200);
     });
 
     // Click to Header buy crypto modal close button
-    cy.get("[id^=header_crypto_modal_close]").click();
+    cy.get("[id^=header_crypto_modal_close]").click().wait(3000);
 
     // Click to Purchase MATIC text which is dashboard Moonpay banner
     cy.contains("Purchase MATIC").click();
 
     // Wait for moonpay-verify status code: 200 response
-    cy.wait("@moonpay-verify").then(({ response }: any) => {
+    cy.wait("@moonpay-verify", { timeout: 15000 }).then(({ response }: any) => {
       expect(response.statusCode).to.eq(200);
     });
 
@@ -303,11 +303,14 @@ describe("sample tests", () => {
     // Get Event button at homepage, wait 3sec then click
     cy.get("[id^=go_events_homepage]").wait(3000).click();
 
+    // Check pathname if contain /events/
+    cy.location("pathname").should("include", "/events");
+
     // Click to Your Events list button
     cy.get("[id^=your_events_button]").click();
 
-    // Check pathname if contain /events/
-    cy.location("pathname").should("include", "/events");
+    // Check pathname if contain /events/calendar
+    cy.location("pathname").should("include", "/events/calendar");
 
     // Click to Going button
     cy.get("[id^=going]").click();

@@ -9,10 +9,10 @@ const customNodeOptions = {
 export const magic = isBrowser
   ? new Magic(
       process.env.NEXT_PUBLIC_MAGIC_PUBLISHABLE_KEY ?? "",
-      isProduction
-        ? { network: customNodeOptions }
-        : isTest
+      isTest
         ? { testMode: true }
+        : isProduction
+        ? { network: customNodeOptions }
         : { network: "ropsten" }
     )
   : undefined;
