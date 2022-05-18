@@ -25,6 +25,7 @@ export default function LocationSelector({
   const { placePredictions, getPlacePredictions, placesService } = useGoogleMap(
     {
       apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API,
+      libraries: ["places"],
     }
   );
   const debounceTime = 500;
@@ -64,7 +65,7 @@ export default function LocationSelector({
   };
 
   React.useEffect(() => {
-    placePredictions.map((place) => {
+    placePredictions?.map((place) => {
       placesService?.getDetails(
         { placeId: place.place_id },
         (placeDetails: any) => {
@@ -125,7 +126,7 @@ export default function LocationSelector({
         PaperProps={PaperProps}
       >
         <MenuList sx={{ paddingTop: 0, paddingBottom: 0 }}>
-          {places.map((place: any, index: any) => {
+          {places?.map((place: any, index: any) => {
             const isSearchStr = index === places.length - 1;
             return (
               <MenuItem

@@ -36,8 +36,9 @@ import MapMarker from "components/MapMarker";
 import Colors from "lib/colors";
 import { useEvent, useUser } from "lib/hooks";
 import { shortenAddress, getLocationString, modalStyleUtil } from "lib/utils";
-import styles from "styles/components/Preview.module.scss";
 import MapStyle from "lib/mapstyle";
+import styles from "styles/components/Preview.module.scss";
+import LoadingScene from "./LoadingScene";
 
 function Event({ eventId }: { eventId: number }) {
   const { resolvedTheme } = useTheme();
@@ -62,7 +63,6 @@ function Event({ eventId }: { eventId: number }) {
   const cover = event?.coverPhoto
     ? JSON.parse(event?.coverPhoto)
     : { url: "", pos: {} };
-  if (typeof cover.pos === "string") cover.pos = JSON.parse(cover.pos);
   const eventDay = moment(event?.startTime).date();
   const eventLocation = event?.location
     ? JSON.parse(event?.location)
@@ -87,21 +87,13 @@ function Event({ eventId }: { eventId: number }) {
   const [inviteModal, showInviteModal] = React.useState(false);
 
   const modalStyle = modalStyleUtil(resolvedTheme);
-
+  const gotoEditPage = () => {
+    router.push(`/events/edit/${eventId}`);
+  };
   return (
     <>
       {loading || loadingUser ? (
-        <div
-          style={{
-            display: "flex",
-            width: "100vw",
-            height: "100vh",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <CircularProgress size={120} />
-        </div>
+        <LoadingScene />
       ) : !event ? (
         <></>
       ) : (
@@ -275,6 +267,7 @@ function Event({ eventId }: { eventId: number }) {
                           fontWeight: 500,
                         }}
                         disableRipple
+                        onClick={gotoEditPage}
                       >
                         <EditRounded
                           fontSize="small"
@@ -543,6 +536,7 @@ function Event({ eventId }: { eventId: number }) {
                       <GoogleMapReact
                         bootstrapURLKeys={{
                           key: process.env.NEXT_PUBLIC_GOOGLE_MAP_API || "",
+                          libraries: ["places"],
                         }}
                         center={eventLocation?.location}
                         options={{

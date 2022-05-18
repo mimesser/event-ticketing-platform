@@ -1,4 +1,5 @@
 import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import EmailIcon from "@mui/icons-material/Email";
 import FmdGoodIcon from "@mui/icons-material/FmdGood";
@@ -6,17 +7,18 @@ import LockIcon from "@mui/icons-material/Lock";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import PublicIcon from "@mui/icons-material/Public";
 import RoomIcon from "@mui/icons-material/Room";
-import Avatar from "components/Avatar";
-import Typography from "@mui/material/Typography";
-import MapMarker from "components/MapMarker";
+import Image from "next/image";
+import { useTheme } from "next-themes";
+
 import GoogleMapReact from "google-map-react";
+import AvatarEditor from "react-avatar-editor";
+
+import Avatar from "components/Avatar";
+import MapMarker from "components/MapMarker";
 import Colors from "lib/colors";
 import { shortenAddress, getLocationString } from "lib/utils";
-import { useTheme } from "next-themes";
-import styles from "styles/components/Preview.module.scss";
 import MapStyle from "lib/mapstyle";
-import AvatarEditor from "react-avatar-editor";
-import Image from "next/image";
+import styles from "styles/components/Preview.module.scss";
 
 export default function Preview({
   eventName,
@@ -386,6 +388,7 @@ export default function Preview({
               <GoogleMapReact
                 bootstrapURLKeys={{
                   key: process.env.NEXT_PUBLIC_GOOGLE_MAP_API || "",
+                  libraries: ["places"],
                 }}
                 center={eventLocation?.location}
                 options={{

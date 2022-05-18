@@ -52,6 +52,30 @@ export default async function getHosts(
 
       if (!events || events.length !== 1) return res.status(200).json({});
 
+      const coHostIds = await prisma.coHosts.findMany({
+        where: {
+          eventId,
+        },
+        select: {
+          cohostId: true,
+        },
+      });
+
+      const userIdList = coHostIds.map((item) => item.cohostId || -1);
+      const coHosts = await prisma.user.findMany({
+        where: {
+          id: {
+            in: userIdList,
+          },
+        },
+        select: {
+          id: true,
+          username: true,
+          name: true,
+          avatarImage: true,
+        },
+      });
+
       const owner = await prisma.user.findUnique({
         where: { id: events[0].hostId as number },
         select: {
@@ -66,6 +90,7 @@ export default async function getHosts(
         event: {
           ...events[0],
           ...owner,
+          coHosts,
         },
       });
     } catch (error) {

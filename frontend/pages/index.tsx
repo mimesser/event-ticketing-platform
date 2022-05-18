@@ -11,6 +11,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import Colors from "lib/colors";
 import styles from "styles/pages/Home.module.scss";
+import LoadingScene from "components/LoadingScene";
 
 // Setup project details
 const description: string =
@@ -80,19 +81,7 @@ export default function Home() {
   };
 
   if (loading) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          width: "100vw",
-          height: "100vh",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <CircularProgress size={120} />
-      </div>
-    );
+    return <LoadingScene />;
   }
 
   return (
