@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getLoginSession } from "lib/auth";
 import prisma from "lib/prisma";
 import { User } from "@prisma/client";
+import { isTest, mockTestUserMetadata } from "lib/utils";
 
 export default async function linkUser(
   req: NextApiRequest,
@@ -12,7 +13,7 @@ export default async function linkUser(
       res.status(400).json({ error: "Wrong method! Only POST or DELETE" });
       return;
     }
-    const session = await getLoginSession(req);
+    const session = isTest ? mockTestUserMetadata : await getLoginSession(req);
 
     if (!session) {
       res.status(400).json({ error: "Missing session" });

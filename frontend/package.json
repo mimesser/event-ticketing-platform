@@ -9,10 +9,11 @@
     "cy": "cypress open",
     "cy:run": "cypress run",
     "cy:dev": "CYPRESS=true next dev",
+    "cy:start": "CYPRESS=true next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
     "prepare": "cd .. && husky install",
-    "e2e": "start-server-and-test cy:dev http://localhost:3000 cy:run"
+    "e2e": "start-server-and-test cy:start http://localhost:3000 cy:run"
   },
   "dependencies": {
     "@emotion/react": "^11.7.1",

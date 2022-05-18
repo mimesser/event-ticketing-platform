@@ -3,6 +3,7 @@ import { EventDetails, LocationInfo } from "lib/types";
 import prisma from "lib/prisma";
 import { getLoginSession } from "lib/auth";
 import moment from "moment";
+import { isTest, mockTestUserMetadata } from "lib/utils";
 
 export default async function getEvents(
   req: NextApiRequest,
@@ -20,7 +21,9 @@ export default async function getEvents(
     // TODO: filter events
     // filter: going, host, invites, past, ...
     try {
-      const session = await getLoginSession(req);
+      const session = isTest
+        ? mockTestUserMetadata
+        : await getLoginSession(req);
       if (!session) {
         res.status(500).json({ error: "should log in" });
         return;
