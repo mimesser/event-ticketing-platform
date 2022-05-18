@@ -30,6 +30,7 @@ import Colors from "lib/colors";
 import { magic } from "lib/magic";
 import styles from "styles/components/Layout.module.scss";
 import { isTest, modalStyleUtil } from "lib/utils";
+import LoadingScene from "./LoadingScene";
 
 export default function Layout({
   children,
@@ -216,17 +217,7 @@ export default function Layout({
   return (
     <>
       {loading ? (
-        <div
-          style={{
-            display: "flex",
-            width: "100vw",
-            height: "100vh",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <CircularProgress size={120} />
-        </div>
+        <LoadingScene />
       ) : (
         <div
           style={{

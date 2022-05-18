@@ -1,9 +1,11 @@
 import moment from "moment";
 import { ReactElement, createContext, useContext, useState } from "react";
+import { LocationInfo } from "./types";
 
 const EventContext = createContext<{
+  eventId?: number;
   eventName?: string;
-  eventLocation?: any;
+  eventLocation?: LocationInfo;
   timezone?: any;
   eventDescription?: string;
   eventStartDate?: string;
@@ -14,6 +16,7 @@ const EventContext = createContext<{
   showGuestList?: boolean;
   coHosts?: any;
 
+  setEventId?: any;
   setEventName?: any;
   setEventLocation?: any;
   setTimezone?: any;
@@ -34,6 +37,7 @@ export default function EventProvider({
 }: {
   children: ReactElement | ReactElement[];
 }) {
+  const [eventId, setEventId] = useState(0);
   const [eventName, setEventName] = useState("");
   const [eventLocation, setEventLocation] = useState({});
   const [timezone, setTimezone] = useState({});
@@ -63,6 +67,7 @@ export default function EventProvider({
   return (
     <EventContext.Provider
       value={{
+        eventId,
         eventName,
         eventLocation,
         timezone,
@@ -75,6 +80,7 @@ export default function EventProvider({
         showGuestList,
         coHosts,
 
+        setEventId,
         setEventName,
         setEventLocation,
         setTimezone,

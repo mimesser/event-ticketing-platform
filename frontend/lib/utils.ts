@@ -65,19 +65,23 @@ export const eventTime = () => {
   return uniqueChars;
 };
 
+export const formatStartEndTime = (hours: number, minutes: number) => {
+  const ampm = hours >= 12 ? "PM" : "AM";
+  const strTime: string =
+    (hours === 12 ? 12 : hours % 12) +
+    ":" +
+    (minutes < 10 ? "0" + minutes : minutes) +
+    " " +
+    ampm;
+  return strTime.toString();
+};
+
 export const roundUpTime = () => {
   const date = new Date(Math.ceil(new Date().getTime() / 3600000) * 3600000);
-  var hours: number = date.getHours();
-  var minutes: number | string = date.getMinutes();
-  var ampm = hours >= 12 ? "PM" : "AM";
+  let hours: number = date.getHours();
+  const minutes: number = date.getMinutes();
 
-  hours = hours % 12;
-  hours = hours ? hours : 12; // the hour '0' should be '12'
-  minutes = minutes < 10 ? "0" + minutes : minutes;
-
-  var strTime: string = hours + ":" + minutes + " " + ampm;
-
-  return strTime.toString();
+  return formatStartEndTime(hours, minutes);
 };
 
 export const roundUpTimePlus3 = () => {
@@ -86,16 +90,10 @@ export const roundUpTimePlus3 = () => {
 
   date.setTime(date.getTime() + h * 60 * 60 * 1000);
 
-  var hours: number = date.getHours();
-  var minutes: number | string = date.getMinutes();
-  var ampm: string = hours >= 12 ? "PM" : "AM";
+  const hours: number = date.getHours();
+  const minutes: number | string = date.getMinutes();
 
-  hours = hours % 12;
-  hours = hours ? hours : 12; // the hour '0' should be '12'
-  minutes = minutes < 10 ? "0" + minutes : minutes;
-
-  var strTime: string = hours + ":" + minutes + " " + ampm;
-  return strTime.toString();
+  return formatStartEndTime(hours, minutes);
 };
 
 export const getTimezoneByLocation = async (lat: number, lng: number) => {
@@ -262,6 +260,11 @@ export const eventObjectFromDetails = (e: EventDetails) => {
       },
     };
   return event;
+};
+
+export const extractDateAndTime = (dt: string) => {
+  const d = moment(dt).toDate();
+  return [d, d.toTimeString()];
 };
 
 export const mockTestUserMetadata = {

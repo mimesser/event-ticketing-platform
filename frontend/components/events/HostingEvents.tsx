@@ -8,6 +8,7 @@ import { EventDetails, EventDetailsOption } from "lib/types";
 
 import VerticalEventsView from "./VerticalEventsView";
 import EventDetailsMenu from "./EventDetailsMenu";
+import LoadingScene from "components/LoadingScene";
 
 export default function HostingEvents() {
   const { resolvedTheme } = useTheme();
@@ -52,17 +53,7 @@ export default function HostingEvents() {
   return (
     <>
       {loading ? (
-        <div
-          style={{
-            display: "flex",
-            width: "100%",
-            height: "calc(100% - 64px)",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <CircularProgress size={120} />
-        </div>
+        <LoadingScene width={"100%"} height={"calc(100% - 64px)"} />
       ) : (
         <div
           style={{
