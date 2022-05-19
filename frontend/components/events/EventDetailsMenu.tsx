@@ -40,16 +40,14 @@ import {
 } from "lib/utils";
 
 export default function EventDetailsMenu({
-  events,
   anchorElMenu,
   closeMenu,
-  selEventId,
+  event,
   onDeleteEvent,
 }: {
-  events: EventDetails[];
+  event: EventDetails | null;
   anchorElMenu: HTMLElement | null;
   closeMenu: any;
-  selEventId: number;
   onDeleteEvent: any;
 }) {
   const { resolvedTheme } = useTheme();
@@ -59,7 +57,8 @@ export default function EventDetailsMenu({
 
   // copy event link
   const onCopyEventLink = () => {
-    copy(getEventLink(selEventId));
+    if (!event) return;
+    copy(getEventLink(event?.id));
     showSnackBar(true);
   };
   const [snackBar, showSnackBar] = React.useState<boolean>(false);
@@ -83,7 +82,7 @@ export default function EventDetailsMenu({
     const { csv } = await (
       await fetch("/api/event/get-guests", {
         method: "POST",
-        body: JSON.stringify({ eventId: selEventId }),
+        body: JSON.stringify({ eventId: event?.id }),
       })
     ).json();
     fileDownload(csv, "GuestList.csv");
@@ -100,12 +99,14 @@ export default function EventDetailsMenu({
     showCancelEventDialog(true);
   };
 
-  const cancelEvent = (eventId: number) => {
+  const cancelEvent = (eventId: number | undefined | null) => {
+    if (!eventId) return;
     // TODO
     console.log("cancel event: ", eventId);
   };
 
-  const deleteEvent = async (eventId: number) => {
+  const deleteEvent = async (eventId: number | undefined | null) => {
+    if (!eventId) return;
     const res = await fetch("/api/event/delete-event", {
       method: "DELETE",
       body: JSON.stringify({ eventId }),
@@ -173,7 +174,7 @@ export default function EventDetailsMenu({
                   flexDirection: "column",
                 }}
               >
-                <span>{getEventLinkString(selEventId)}</span>
+                <span>{getEventLinkString(event?.id)}</span>
                 <span
                   style={{
                     color: Colors[resolvedTheme].secondary,
@@ -331,8 +332,8 @@ export default function EventDetailsMenu({
                   textTransform: "none",
                 }}
                 onClick={() => {
-                  const selEvent = events.find((e) => e.id === selEventId);
-                  if (selEvent != null) exportEvent(selEvent);
+                  if (!event) return;
+                  exportEvent(event);
                   showExportEventDialog(false);
                 }}
               >
@@ -540,13 +541,13 @@ export default function EventDetailsMenu({
                 onClick={async () => {
                   if (cancelDelete) {
                     setRemovingEvent(true);
-                    const bSuccess = await deleteEvent(selEventId);
+                    const bSuccess = await deleteEvent(event?.id);
                     setRemovingEvent(false);
                     if (bSuccess) {
                       handleCloseMenu();
                       onDeleteEvent();
                     }
-                  } else cancelEvent(selEventId);
+                  } else cancelEvent(event?.id);
                   showCancelEventDialog(false);
                 }}
               >
