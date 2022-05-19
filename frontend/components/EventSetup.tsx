@@ -251,7 +251,7 @@ export default function EventSetup() {
       }
       isEditMode && formData.append("eventId", String(eventId || 0));
 
-      if (coverPhotoFile) {
+      if (coverPhotoPath && coverPhotoFile) {
         formData.append("file", coverPhotoFile);
         formData.append("pos", JSON.stringify(cover.pos));
       }
@@ -788,10 +788,23 @@ export default function EventSetup() {
   const Input = styled("input")({
     display: "none",
   });
-  const [coverPhotoPath, setCoverPhotoPath] = React.useState<string>("");
+  const [coverPhotoPath, setCoverPhotoPath] = React.useState<string>(
+    isEditMode && cover?.url ? cover?.url : ""
+  );
   const [, setCoverPhotoRef] = React.useState<any>(null);
-  const [coverPhotoReposition, setCoverPhotoReposition] = React.useState(false);
+  const [coverPhotoReposition, setCoverPhotoReposition] = React.useState(
+    isEditMode && cover?.url ? true : false
+  );
   const [coverPhotoFile, setCoverPhotoFile] = React.useState<Blob | null>(null);
+  React.useEffect(() => {
+    if (!isEditMode || !cover?.url) return;
+    fetch(cover?.url)
+      .then((res) => res.blob())
+      .then((blob) => {
+        setCoverPhotoFile(blob);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const onSelectCoverPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const url = URL.createObjectURL(e.target.files[0]);
@@ -809,8 +822,13 @@ export default function EventSetup() {
   };
   const onDeleteCoverPhoto = () => {
     setCoverPhotoPath("");
+    setCoverPhotoFile(null);
     setCover({
       url: "",
+      pos: {
+        x: 0,
+        y: 0,
+      },
     });
   };
   const onCoverPhotoMove = (pos: { x: number; y: number }) => {
@@ -2990,6 +3008,7 @@ export default function EventSetup() {
                           border={0}
                           onPositionChange={onCoverPhotoMove}
                           onMouseMove={() => setCoverPhotoReposition(false)}
+                          position={cover?.pos ? cover?.pos : { x: 0, y: 0 }}
                         />
                         {coverPhotoReposition && (
                           <div
