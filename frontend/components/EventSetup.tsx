@@ -44,6 +44,7 @@ import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import LanguageIcon from "@mui/icons-material/Language";
 import LockIcon from "@mui/icons-material/Lock";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import EmailRoundedIcon from "@mui/icons-material/EmailRounded";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
@@ -512,7 +513,7 @@ export default function EventSetup() {
   };
   const breadcrumbs = [
     <BreadcrumLink
-      onClick={() => discard("/events")}
+      onClick={() => discard("/events/")}
       key="1"
       sx={{
         cursor: "pointer",
@@ -788,11 +789,11 @@ export default function EventSetup() {
   const Input = styled("input")({
     display: "none",
   });
-  const [coverPhotoPath, setCoverPhotoPath] = React.useState<string>(
+  const [coverPhotoPath, setCoverPhotoPath] = React.useState<string>(() =>
     isEditMode && cover?.url ? cover?.url : ""
   );
   const [, setCoverPhotoRef] = React.useState<any>(null);
-  const [coverPhotoReposition, setCoverPhotoReposition] = React.useState(
+  const [coverPhotoReposition, setCoverPhotoReposition] = React.useState(() =>
     isEditMode && cover?.url ? true : false
   );
   const [coverPhotoFile, setCoverPhotoFile] = React.useState<Blob | null>(null);
@@ -2512,6 +2513,12 @@ export default function EventSetup() {
                         ":focus": {
                           borderColor: (theme) => theme.palette.primary.main,
                         },
+                        ":disabled": {
+                          backgroundColor:
+                            Colors[resolvedTheme].disabled_item_back,
+                          cursor: "not-allowed",
+                          pointerEvents: "all !important",
+                        },
                       }}
                       disabled={isEditMode}
                       aria-controls={
@@ -2522,22 +2529,38 @@ export default function EventSetup() {
                       onClick={handleClickEventPrivacy}
                       startIcon={
                         <>
-                          {privacy === "Privacy" && (
-                            <LockIcon
-                              sx={{
-                                margin: 1,
-                                color: Colors[resolvedTheme].primary,
-                              }}
-                            />
-                          )}
-                          {privacy === "Private" && (
-                            <LockIcon
-                              sx={{
-                                margin: 1,
-                                color: Colors[resolvedTheme].primary,
-                              }}
-                            />
-                          )}
+                          {privacy === "Privacy" &&
+                            (!isEditMode ? (
+                              <LockIcon
+                                sx={{
+                                  margin: 1,
+                                  color: Colors[resolvedTheme].primary,
+                                }}
+                              />
+                            ) : (
+                              <LockOutlinedIcon
+                                sx={{
+                                  margin: 1,
+                                  color: Colors[resolvedTheme].primary,
+                                }}
+                              />
+                            ))}
+                          {privacy === "Private" &&
+                            (!isEditMode ? (
+                              <LockIcon
+                                sx={{
+                                  margin: 1,
+                                  color: Colors[resolvedTheme].primary,
+                                }}
+                              />
+                            ) : (
+                              <LockOutlinedIcon
+                                sx={{
+                                  margin: 1,
+                                  color: Colors[resolvedTheme].primary,
+                                }}
+                              />
+                            ))}
                           {privacy === "Public" && (
                             <PublicRoundedIcon
                               sx={{
@@ -2575,7 +2598,9 @@ export default function EventSetup() {
                               color: (theme) =>
                                 openPrivacy
                                   ? theme.palette.primary.main
-                                  : "undefined",
+                                  : isEditMode
+                                  ? Colors[resolvedTheme].secondary
+                                  : Colors[resolvedTheme].primary,
                             }}
                             component="span"
                           >
@@ -2583,7 +2608,9 @@ export default function EventSetup() {
                           </Typography>
                           <Typography
                             sx={{
-                              color: Colors[resolvedTheme].primary,
+                              color: isEditMode
+                                ? Colors[resolvedTheme].secondary
+                                : Colors[resolvedTheme].primary,
                             }}
                           >
                             {privacy}
@@ -2593,14 +2620,17 @@ export default function EventSetup() {
                     </Button>
                     {privacy === "Private" && (
                       <FormControlLabel
+                        disabled={isEditMode}
                         control={
                           <IOSSwitch
-                            sx={{ m: 1 }}
+                            disabled={isEditMode}
+                            sx={{
+                              m: 1,
+                            }}
                             checked={invitable}
                             onChange={(event) =>
                               setInvitable(event.target.checked)
                             }
-                            disabled={isEditMode}
                           />
                         }
                         label={
@@ -2608,6 +2638,7 @@ export default function EventSetup() {
                             style={{
                               display: "flex",
                               flexDirection: "column",
+                              color: Colors[resolvedTheme].primary,
                             }}
                           >
                             <b>Guests Can Invite People</b>
@@ -2629,6 +2660,10 @@ export default function EventSetup() {
                           flexDirection: "row-reverse",
                           alignItems: "start",
                           justifyContent: "space-between",
+                          "&.Mui-disabled": {
+                            cursor: "not-allowed",
+                            pointerEvents: "all !important",
+                          },
                         }}
                       />
                     )}
