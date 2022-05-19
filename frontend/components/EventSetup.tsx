@@ -644,9 +644,9 @@ export default function EventSetup() {
 
   React.useEffect(() => {
     if (!isEditMode || !eventLocation) return;
+    setLocationInput(eventLocation?.name || "");
+    setLocationName(eventLocation?.name || "");
     if (eventLocation?.hasLocation) {
-      setLocationInput(eventLocation?.name || "");
-      setLocationName(eventLocation?.name || "");
       setEditLocation(eventLocation);
     }
   }, [isEditMode, eventLocation]);
