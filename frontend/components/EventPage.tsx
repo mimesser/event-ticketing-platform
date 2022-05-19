@@ -2,7 +2,6 @@ import {
   Backdrop,
   Box,
   Button,
-  CircularProgress,
   Divider,
   IconButton,
   ListItem,
@@ -39,6 +38,7 @@ import { shortenAddress, getLocationString, modalStyleUtil } from "lib/utils";
 import MapStyle from "lib/mapstyle";
 import styles from "styles/components/Preview.module.scss";
 import LoadingScene from "./LoadingScene";
+import EventDetailsMenu from "./events/EventDetailsMenu";
 
 function Event({ eventId }: { eventId: number }) {
   const { resolvedTheme } = useTheme();
@@ -90,6 +90,14 @@ function Event({ eventId }: { eventId: number }) {
   const gotoEditPage = () => {
     router.push(`/events/edit/${eventId}`);
   };
+
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
+  const showMenu = (e: HTMLElement) => setAnchorEl(e);
+  const closeMenu = () => setAnchorEl(null);
+  const onDeleteEvent = () => {
+    router.push("/events/");
+  };
+
   return (
     <>
       {loading || loadingUser ? (
@@ -286,6 +294,9 @@ function Event({ eventId }: { eventId: number }) {
                           fontWeight: 500,
                         }}
                         disableRipple
+                        onClick={(e) => {
+                          showMenu(e.currentTarget);
+                        }}
                       >
                         ...
                       </Button>
@@ -651,6 +662,13 @@ function Event({ eventId }: { eventId: number }) {
               </div>
             </div>
           </div>
+
+          <EventDetailsMenu
+            event={event}
+            anchorElMenu={anchorEl}
+            closeMenu={closeMenu}
+            onDeleteEvent={onDeleteEvent}
+          />
 
           {cover.url && (
             <Backdrop

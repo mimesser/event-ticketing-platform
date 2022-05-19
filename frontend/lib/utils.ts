@@ -215,12 +215,14 @@ export const groupEventsByMonth = (events: EventDetails[]) => {
   return groupedEvents;
 };
 
-export const getEventLink = (id: number) => {
+export const getEventLink = (id: number | undefined | null) => {
+  if (!id) return "";
   if (process.env.NODE_ENV === "production") return `https://impish.fun/${id}`;
   return `http://localhost:3000/events/${id}`;
 };
 
-export const getEventLinkString = (id: number) => {
+export const getEventLinkString = (id: number | undefined | null) => {
+  if (!id) return "";
   return `impish.fun/${id}`;
 };
 
