@@ -47,6 +47,7 @@ const Colors: any = {
     active_btn_color: "rgb(25, 118, 210, 0.8)",
     active_btn_back: "rgb(231, 243, 255)",
     active_btn_hover: "rgba(25, 118, 210, 0.2)",
+    disabled_item_back: "rgba(255,255,255,0.1)",
   },
   light: {
     header_bg: "#FFFFFF",
@@ -91,6 +92,7 @@ const Colors: any = {
     active_btn_color: "rgb(25, 118, 210, 0.8)",
     active_btn_back: "rgb(231, 243, 255)",
     active_btn_hover: "rgba(25, 118, 210, 0.2)",
+    disabled_item_back: "#F0F2F5",
   },
 };
 
