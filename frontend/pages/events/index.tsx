@@ -41,10 +41,12 @@ function Events() {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const showMenu = (e: HTMLElement) => setAnchorEl(e);
   const closeMenu = () => setAnchorEl(null);
-  const [selEventId, selectEvent] = useState<number>(-1);
+  const [selectedEvent, selectEvent] = useState<any>(null);
   const forceUpdate = useForceUpdate();
   const onDeleteEvent = () => {
-    const index = events.findIndex((e: EventDetails) => e.id === selEventId);
+    const index = events.findIndex(
+      (e: EventDetails) => e.id === selectedEvent?.id
+    );
     if (index != -1) {
       events.splice(index, 1);
       forceUpdate();
@@ -55,7 +57,7 @@ function Events() {
     showDetailsMenu: true,
     showMenu: showMenu,
     onDetails: (event: EventDetails) => {
-      selectEvent(event.id);
+      selectEvent(event);
     },
   };
 
@@ -188,10 +190,9 @@ function Events() {
                 /* Event List */
                 <>
                   <EventDetailsMenu
-                    events={events}
                     anchorElMenu={anchorEl}
                     closeMenu={closeMenu}
-                    selEventId={selEventId}
+                    event={selectedEvent}
                     onDeleteEvent={onDeleteEvent}
                   />
                   <MenuList

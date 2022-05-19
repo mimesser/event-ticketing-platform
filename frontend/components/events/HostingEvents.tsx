@@ -25,10 +25,13 @@ export default function HostingEvents() {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const showMenu = (e: HTMLElement) => setAnchorEl(e);
   const closeMenu = () => setAnchorEl(null);
-  const [selEventId, selectEvent] = React.useState<number>(-1);
+  const [selectedEvent, selectEvent] = React.useState<any>(null);
   const forceUpdate = useForceUpdate();
   const onDeleteEvent = () => {
-    const index = events.findIndex((e: EventDetails) => e.id === selEventId);
+    if (!selectedEvent) return;
+    const index = events.findIndex(
+      (e: EventDetails) => e.id === selectedEvent?.id
+    );
     if (index != -1) {
       events.splice(index, 1);
       forceUpdate();
@@ -43,7 +46,7 @@ export default function HostingEvents() {
     showDetailsMenu: showDetailsMenu,
     showMenu: showMenu,
     onDetails: (event: EventDetails) => {
-      selectEvent(event.id);
+      selectEvent(event);
     },
   };
 
@@ -161,10 +164,9 @@ export default function HostingEvents() {
             ) : (
               <>
                 <EventDetailsMenu
-                  events={events}
                   anchorElMenu={anchorEl}
                   closeMenu={closeMenu}
-                  selEventId={selEventId}
+                  event={selectedEvent}
                   onDeleteEvent={onDeleteEvent}
                 />
 
