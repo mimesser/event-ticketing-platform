@@ -171,7 +171,7 @@ export default function EventSetup() {
     const eventEnd = moment(eventEndDate).toDate();
     return formatStartEndTime(eventEnd.getHours(), eventEnd.getMinutes());
   });
-  const [goToRoute, setGoToRoute] = React.useState("");
+  let goToRoute = "";
   const [openStart, setOpenStart] = React.useState(false);
   const [openEnd, setOpenEnd] = React.useState(false);
   const [times] = React.useState(eventTime() || []);
@@ -415,7 +415,7 @@ export default function EventSetup() {
 
   // page navigation
   const discard = (route: string) => {
-    setGoToRoute(route);
+    goToRoute = route;
 
     if (changed()) {
       showDiscardModal(true);
@@ -442,7 +442,7 @@ export default function EventSetup() {
 
   const goHome = () => {
     if (changed()) {
-      setGoToRoute("/");
+      goToRoute = "/";
       showDiscardModal(true);
     } else {
       router.push({
@@ -525,7 +525,7 @@ export default function EventSetup() {
       Event
     </BreadcrumLink>,
     <BreadcrumLink
-      onClick={() => discard("/events/create")}
+      onClick={() => discard(!isEditMode ? "/events/create" : "/events/")}
       key="2"
       sx={{
         cursor: "pointer",
@@ -534,7 +534,7 @@ export default function EventSetup() {
       }}
       underline="hover"
     >
-      Create Event
+      {!isEditMode ? "Create Event" : "Edit Event"}
     </BreadcrumLink>,
   ];
   const modalStyle = modalStyleUtil(resolvedTheme);
