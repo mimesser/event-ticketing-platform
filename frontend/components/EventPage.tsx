@@ -263,6 +263,7 @@ function Event({ eventId }: { eventId: number }) {
                         Invite
                       </Button>
                       <Button
+                        id="edit_event_btn"
                         sx={{
                           borderRadius: "5px",
                           textTransform: "none",
