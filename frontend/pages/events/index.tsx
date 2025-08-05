@@ -365,7 +365,7 @@ function Events() {
                     }}
                     variant="body1"
                   >
-                    No events found.
+                    No events found
                   </Typography>
                 </div>
               ) : (
