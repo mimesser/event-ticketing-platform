@@ -167,7 +167,6 @@ function Create() {
                       }}
                     />
                   </Box>
-
                   <Typography
                     variant="body1"
                     sx={{
@@ -178,7 +177,6 @@ function Create() {
                   >
                     In Person
                   </Typography>
-
                   <Typography
                     variant="subtitle1"
                     sx={{
